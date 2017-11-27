@@ -8,6 +8,18 @@
 						span.icon
 							i.fa.fa-home
 						span.label {{ "Home" | i18n }}
+				
+				router-link(tag="li", to="/projects")
+					a(:title="_('Projects')")
+						span.icon
+							i.fa.fa-tasks
+						span.label {{ "Projects" | i18n }}
+
+				router-link(tag="li", to="/mytasks")
+					a(:title="_('MyTasks')")
+						span.icon
+							i.fa.fa-tasks
+						span.label {{ "MyTasks" | i18n }}
 
 				router-link(tag="li", to="/counter")
 					a(:title="_('Demo')")
