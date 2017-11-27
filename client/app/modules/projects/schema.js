@@ -24,13 +24,13 @@ module.exports = {
 				}
 			}
 			, {
-				title: _("Purpose"),
-				field: "purpose"
-			}
-			, {
 				title: _("Name"),
 				field: "name"
             }
+			, {
+				title: _("Purpose"),
+				field: "purpose"
+			}
             , {
 				title: _("Goal"),
 				field: "goal"

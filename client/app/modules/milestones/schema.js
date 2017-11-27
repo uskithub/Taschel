@@ -8,28 +8,31 @@ import { find } from "lodash";
 let _ = Vue.prototype._;
 
 module.exports = {
-	id : "mytasks"
-	, title: _("My Tasks")
-	, table: {
-		multiSelect : true
-		, columns : [
+
+	id: "milestones"
+	, title: _("Milestones")
+	, table_project: {
+		multiSelect: true,
+		columns: [
 			{
-				title: _("ID"),
-				field: "code",
-				align: "left",
-				formatter(value, model) {
-					return model ? model.code : "";
-				}
-			}
-			, {
-				title: _("Type"),
-				field: "type",
-				formatter(value) {
-					let type = find(taskTypes, (type) => type.id == value);
-					return type ? type.name : value;
-				}
-			}
-			, {
+				title: _("Name")
+				, field: "name"
+				, align: "left"
+            }
+		],
+
+		rowClasses: function(model) {
+			return {
+				inactive: !model.status
+			};
+		}
+
+	},
+
+	table_milestone: {
+		multiSelect: true
+		, columns: [
+			{
 				title: _("Name"),
 				field: "name"
 			}
@@ -56,15 +59,18 @@ module.exports = {
 					return moment(value).fromNow();
 				}
 			}
-		]
-		, rowClasses : function (model) {
+		],
+
+		rowClasses: function(model) {
 			return {
 				inactive: !model.status
 			};
 		}
-	}
-	, form : {
-		fields : [
+
+	},
+
+	form: {
+		fields: [
 			{
 				type: "text",
 				label: _("ID"),
@@ -78,18 +84,19 @@ module.exports = {
 					else
 						return _("※自動採番");
 				}
-			}
-			, {
-				type: "select",
+			},
+			{
+				type: "text",
 				label: _("TaskType"),
 				model: "type",
-				required: true,
+                readonly: true,
+                disabled: true,
 				values: taskTypes,
-				default: "step",
-				validator: validators.required
-
-			}
-			, {
+				get(model) {
+					return _("project");
+				}
+			},	
+			{
 				type: "text",
 				label: _("名称"),
 				model: "name",
@@ -97,8 +104,8 @@ module.exports = {
 				required: true,
 				placeholder: _("タスクの名称（何をするかが連想できる様に）"),
 				validator: validators.string
-			}
-			, {
+			},
+			{
 				type: "text",
 				label: _("目的"),
                 model: "purpose",
@@ -106,21 +113,21 @@ module.exports = {
 				featured: false,
 				required: true,
 				validator: validators.string
-			}
-			, {
+			},	
+			{
 				type: "text",
 				label: _("ゴール"),
 				model: "goal",
 				placeholder: _("どういった状態になったら嬉しいか"),
 				validator: validators.string
-			}
-			, {
+			},
+			{
 				type: "label",
 				label: _("LastCommunication"),
 				model: "lastCommunication",
 				get(model) { return model && model.lastCommunication ? moment(model.lastCommunication).fromNow() : "-"; }
-			}
-			, {
+			},
+			{
 				type: "switch",
 				label: _("Status"),
 				model: "status",
@@ -132,9 +139,11 @@ module.exports = {
 				valueOff: 0
 			}
 		]
-	}
-	, options : {
+	},
+
+	options: {
 		searchable: true,
+
 
 		enableNewButton: true,
 		enabledSaveButton: true,
@@ -144,8 +153,9 @@ module.exports = {
 		validateAfterLoad: false, // Validate after load a model
 		validateAfterChanged: false, // Validate after every changes on the model
 		validateBeforeSave: true // Validate before save a model
-	}
-	, events : {
+	},
+
+	events: {
 		onSelect: null,
 		onNewItem: null,
 		onCloneItem: null,
@@ -156,11 +166,13 @@ module.exports = {
 			if (errors.length > 0)
 				console.warn("Validation error in page! Errors:", errors, ", Model:", model);
 		}
-	}
-	, resources: {
+	},
+
+	resources: {
         addCaption: _("追加／更新／削除"),
 		saveCaption: _("Save"),
 		cloneCaption: _("Clone"),
 		deleteCaption: _("Delete")
 	}
+
 };

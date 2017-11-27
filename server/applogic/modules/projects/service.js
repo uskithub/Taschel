@@ -6,13 +6,13 @@ let C 	 		= require("../../../core/constants");
 
 let _			= require("lodash");
 
-let Task 		= require("./models/task");
+let Task 		= require("../tasks/models/task");
 
 module.exports = {
 	settings: {
-		name: "tasks",
+		name: "projects",
 		version: 1,
-		namespace: "tasks",
+		namespace: "projects",
 		rest: true,
 		ws: true,
 		graphql: true,
@@ -20,14 +20,14 @@ module.exports = {
 		role: "user",
 		collection: Task,
 		
-		modelPropFilter: "code type purpose name goal status lastCommunication createdAt updatedAt"
+		modelPropFilter: "code type name purpose goal status lastCommunication createdAt updatedAt"
 	},
 	
 	actions: {
 		find: {
 			cache: true,
 			handler(ctx) {
-				let filter = { type : { $ne: "project" } };
+				let filter = { type : "project" };
 
 				let query = Task.find(filter);
 				return ctx.queryPageSort(query).exec().then( (docs) => {
@@ -49,7 +49,7 @@ module.exports = {
 			this.validateParams(ctx, true);
 			
 			let task = new Task({
-				type: ctx.params.type
+				type: "project"
                 , name: ctx.params.name
                 , purpose: ctx.params.purpose
 				, goal: ctx.params.goal
@@ -161,20 +161,20 @@ module.exports = {
 			task(code: String): Task
 		`,
 
-		types: `
-			type Task {
-				code: String!
-				purpose: String
-				type: String
-				name: String
-				goal: String
-				status: Int
-				lastCommunication: Timestamp
-			}
-		`,
+		// types: `
+		// 	type Task {
+		// 		code: String!
+		// 		type: String
+        //         name: String
+        //         purpose: String
+		// 		goal: String
+		// 		status: Int
+		// 		lastCommunication: Timestamp
+		// 	}
+		// `,
 
 		mutation: `
-			taskCreate(name: String!, purpose: String, type: String, goal: String, status: Int): Task
+			taskCreate(name: String!, type: String, purpose: String, goal: String, status: Int): Task
 			taskUpdate(code: String!, name: String, purpose: String, type: String, goal: String, status: Int): Task
 			taskRemove(code: String!): Task
 		`,

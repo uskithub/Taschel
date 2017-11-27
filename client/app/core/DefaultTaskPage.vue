@@ -7,9 +7,11 @@
 				button.button.is-primary(@click="newModel")
 					i.icon.fa.fa-plus 
 					| {{ schema.resources.addCaption || _("Add") }}
-			.right {{ _("SelectedOfAll", { selected: selected.length, all: rows.length } ) }}
+			.right {{ _("SelectedOfAll", { selected: selected.length, all: rows_project.length } ) }}
 		br
-		data-table(:schema="schema.table", :rows="rows", :order="order", :search="search", :selected="selected", :select="select", :select-all="selectAll")
+		data-table(:schema="schema.table_project", :rows="rows_project", :order="order", :search="search", :selected="selected", :select="select", :select-all="selectAll")
+		br
+		data-table(:schema="schema.table_milestone", :rows="rows_milestone", :order="order", :search="search", :selected="selected", :select="select", :select-all="selectAll")
 
 		.form(v-if="model")
 			vue-form-generator(:schema='schema.form', :model='model', :options='options', :multiple="selected.length > 1", ref="form", :is-new-model="isNewModel")
@@ -47,9 +49,10 @@
 		},
 
 		props: [
-			"schema",
-			"selected",
-			"rows"
+			"schema"
+			, "selected"
+            , "rows_project"
+            , "rows_milestone"
 		],
 
 		data() {
@@ -116,7 +119,7 @@
 				this.isNewModel = false;
 
 				let filter = Vue.filter("filterBy");
-				let filteredRows = filter(this.rows, this.search);
+				let filteredRows = filter(this.rows_project, this.search);
 
 				if (this.selected.length < filteredRows.length) {
 					// Select all

@@ -21,31 +21,31 @@ let schemaOptions = {
 };
 
 let TaskSchema = new Schema({
-	purpose: {
-		type: String,
-		trim: true
-	},
 	type: {
 		type: String,
 		trim: true
-	},
-	name: {
+	}
+	, name: {
 		type: String,
 		trim: true
-	},
-	goal: {
+	}
+	, purpose: {
 		type: String,
 		trim: true
-	},
-	status: {
+	}
+	, goal: {
+		type: String,
+		trim: true
+	}
+	, status: {
 		type: Number,
 		"default": 1
-	},
-	lastCommunication: {
+	}
+	, lastCommunication: {
 		type: Date,	
 		"default": Date.now
-	},
-	metadata: {}
+	}
+	, metadata: {}
 
 }, schemaOptions);
 

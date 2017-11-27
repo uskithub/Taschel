@@ -5,6 +5,7 @@ import VueRouter from "vue-router";
 
 import Home from "../modules/home";
 import Projects from "../modules/projects"; 
+import Milestones from "../modules/milestones"; 
 import MyTasks from "../modules/mytasks";
 import Counter from "../modules/counter";
 import Devices from "../modules/devices";
@@ -18,6 +19,7 @@ export default new VueRouter({
 	routes: [
 		{ path: "/", component: Home }
 		, { path: "/projects", component: Projects }
+		, { path: "/milestones", component: Milestones }
 		, { path: "/mytasks", component: MyTasks }
 		, { path: "/devices", component: Devices }
 		, { path: "/posts", component: Posts }

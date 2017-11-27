@@ -15,6 +15,12 @@
 							i.fa.fa-tasks
 						span.label {{ "Projects" | i18n }}
 
+				router-link(tag="li", to="/milestones")
+					a(:title="_('Milestones')")
+						span.icon
+							i.fa.fa-tasks
+						span.label {{ "Milestones" | i18n }}
+
 				router-link(tag="li", to="/mytasks")
 					a(:title="_('MyTasks')")
 						span.icon
