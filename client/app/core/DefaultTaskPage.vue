@@ -7,7 +7,7 @@
 				button.button.is-primary(@click="newModel")
 					i.icon.fa.fa-plus 
 					| {{ schema.resources.addCaption || _("Add") }}
-			.right {{ _("SelectedOfAll", { selected: selected.length, all: rows_project.length } ) }}
+			.right {{ _("SelectedOfAll", { selected: selected.length, all: rows_milestone.length } ) }}
 		br
 		data-table(:schema="schema.table_project", :rows="rows_project", :order="order", :search="search", :selected="selected", :select="select_project", :select-all="selectAll")
 		br
@@ -48,11 +48,12 @@
 			DataTable
 		},
 
+        // task-page(:schema="schema", :selected="selected", :rows_project="getProjects", :rows_milestone="getMilestones") に対応させる
 		props: [
 			"schema"
-			, "selected"
             , "rows_project"
             , "rows_milestone"
+            , "selected"
 		],
 
 		data() {

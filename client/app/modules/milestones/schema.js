@@ -27,8 +27,7 @@ module.exports = {
 			};
 		}
 
-	},
-
+	}
 	, table_milestone: {
 		multiSelect: true
 		, columns: [

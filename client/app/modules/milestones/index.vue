@@ -1,5 +1,5 @@
 <template lang="pug">
-	task-page(:schema="schema", :selected="selected", :rows_project="projects", :rows_milestone="projects")
+	task-page(:schema="schema", :selected="selected", :rows_project="getProjects", :rows_milestone="getMilestones")
 </template>
 
 <script>
@@ -16,9 +16,10 @@
 			TaskPage: TaskPage
 		},
 
-		computed: mapGetters("projects", [
-			"projects",
-			"selected"
+		computed: mapGetters("milestones", [
+			"getProjects"
+			, "getMilestones"
+			, "selected"
 		]),
 
 		/**
@@ -68,16 +69,16 @@
 		},		
 
 		methods: {
-			...mapActions("projects", [
-				"downloadRows",
-				"created",
-				"updated",
-				"removed",
-				"selectRow",
-				"clearSelection",
-				"saveRow",
-				"updateRow",
-				"removeRow"
+			...mapActions("milestones", [
+				"downloadRows"
+				, "created"
+				, "updated"
+				, "removed"
+				, "selectRow"
+				, "clearSelection"
+				, "saveRow"
+				, "updateRow"
+				, "removeRow"
 			])
 		},
 

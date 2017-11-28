@@ -3,6 +3,7 @@ import Vuex from "vuex";
 
 import session from "../modules/session/store";
 import projects from "../modules/projects/store";
+import milestones from "../modules/milestones/store";
 import mytasks from "../modules/mytasks/store";
 import devices from "../modules/devices/store";
 import posts from "../modules/posts/store";
@@ -14,8 +15,9 @@ Vue.use(Vuex);
 export default new Vuex.Store({
 	modules: {
 		session
-		, mytasks
 		, projects
+		, milestones
+		, mytasks
 		, counter
 		, devices
 		, posts
