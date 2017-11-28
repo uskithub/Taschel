@@ -1,5 +1,5 @@
 <template lang="pug">
-	admin-page(:schema="schema", :selected="selected", :rows="mytasks")
+	admin-page(:schema="schema", :selected="selected", :rows="tasks")
 </template>
 
 <script>
@@ -15,12 +15,10 @@
 		components : {
 			AdminPage: AdminPage
 		}
-
-		, computed : mapGetters("mytasks", [
-			"mytasks",
+		, computed : mapGetters("tasks", [
+			"tasks",
 			"selected"
 		])
-
 		/**
 		 * Set page schema as data property
 		 */
@@ -29,7 +27,6 @@
 				schema
 			};
 		}
-
 		/**
 		 * Socket handlers. Every property is an event handler
 		 */
@@ -65,8 +62,8 @@
 			}
 		}		
 		, methods : {
-			...mapActions("mytasks", [
-				"downloadRows",
+			...mapActions("tasks", [
+				"downloadTasks",
 				"created",
 				"updated",
 				"removed",
@@ -83,7 +80,7 @@
 		 */
 		, created() {
 			// Download rows for the page
-			this.downloadRows();
+			this.downloadTasks("project");
 		}
 	};
 </script>

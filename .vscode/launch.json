@@ -4,11 +4,12 @@
 	// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
 	"version": "0.2.0",
 	"configurations": [
+
 		{
 			"type": "node",
 			"request": "launch",
 			"name": "Launch in Dev mode",
-			"program": "${workspaceRoot}\\server\\index.js",
+			"program": "${workspaceRoot}/server/index.js",
 			"cwd": "${workspaceRoot}",
 			"env": {
 				"NODE_ENV": "development"
@@ -18,7 +19,7 @@
 			"type": "node",
 			"request": "launch",
 			"name": "Launch in Test mode",
-			"program": "${workspaceRoot}\\server\\index.js",
+			"program": "${workspaceRoot}/server/index.js",
 			"cwd": "${workspaceRoot}",
 			"env": {
 				"NODE_ENV": "test"
@@ -31,7 +32,7 @@
 			"port": 5858,
 			"restart": true
 		},
-		 {
+		{
             "name": "Launch browser with sourcemaps",
             "type": "chrome",
             "request": "launch",

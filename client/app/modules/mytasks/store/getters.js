@@ -1,4 +1,4 @@
-export function mytasks(state) {
+export function tasks(state) {
 	return state.rows;
 }
 

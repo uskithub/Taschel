@@ -13,8 +13,9 @@ export const clearSelection = ({ commit }) => {
 	commit(CLEAR_SELECT);
 };
 
-export const downloadRows = ({ commit }) => {
-	axios.get(NAMESPACE).then((response) => {
+export const downloadTasks = ({ commit }, taskType, user) => {
+	let url = (taskType !== undefined) ? `${NAMESPACE}?type=${taskType}` : NAMESPACE;
+	axios.get(url).then((response) => {
 		let res = response.data;
 		if (res.status == 200 && res.data)
 			commit(LOAD, res.data);

@@ -27,12 +27,19 @@ module.exports = {
 		find: {
 			cache: true,
 			handler(ctx) {
-				let filter = { type : { $ne: "project" } };
-
-				let query = Task.find(filter);
-				return ctx.queryPageSort(query).exec().then( (docs) => {
-					return this.toJSON(docs);
-				});
+				if (ctx.params.type !== undefined) {
+					let filter = { type : ctx.params.type };
+					let query = Task.find(filter);
+					return ctx.queryPageSort(query).exec().then( (docs) => {
+						return this.toJSON(docs);
+					});
+				} else {
+					let filter = { type : { $ne: "project" } };
+					let query = Task.find(filter);
+					return ctx.queryPageSort(query).exec().then( (docs) => {
+						return this.toJSON(docs);
+					});
+				}
 			}
 		},
 

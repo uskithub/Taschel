@@ -16,6 +16,7 @@
 			TaskPage: TaskPage
 		},
 
+		// getters.js に対応
 		computed: mapGetters("milestones", [
 			"getProjects"
 			, "getMilestones"
@@ -27,6 +28,7 @@
 		 */
 		data() {
 			return {
+				// task-pageに当てはめる値を定義したオブジェクト
 				schema
 			};
 		},
@@ -69,6 +71,7 @@
 		},		
 
 		methods: {
+			// actions.jsと対応
 			...mapActions("milestones", [
 				"downloadRows"
 				, "created"

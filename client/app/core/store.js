@@ -4,7 +4,7 @@ import Vuex from "vuex";
 import session from "../modules/session/store";
 import projects from "../modules/projects/store";
 import milestones from "../modules/milestones/store";
-import mytasks from "../modules/mytasks/store";
+import tasks from "../modules/mytasks/store";
 import devices from "../modules/devices/store";
 import posts from "../modules/posts/store";
 import counter from "../modules/counter/store";
@@ -17,7 +17,7 @@ export default new Vuex.Store({
 		session
 		, projects
 		, milestones
-		, mytasks
+		, tasks
 		, counter
 		, devices
 		, posts
