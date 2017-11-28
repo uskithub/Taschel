@@ -7,14 +7,14 @@
 				button.button.is-primary(@click="newModel")
 					i.icon.fa.fa-plus 
 					| {{ schema.resources.addCaption || _("Add") }}
-			.right {{ _("SelectedOfAll", { selected: selected.length, all: rows_milestone.length } ) }}
+			.right {{ _("SelectedOfAll", { selected: selectedTasks.length, all: tasks.length } ) }}
 		br
-		data-table(:schema="schema.table_project", :rows="rows_project", :order="order", :search="search", :selected="selected", :select="select_project", :select-all="selectAll")
+		data-table(:schema="schema.projectTable", :rows="projects", :order="order", :search="search", :selected="selectedProject", :select="_selectProject", :select-all="selectAll")
 		br
-		data-table(:schema="schema.table_milestone", :rows="rows_milestone", :order="order", :search="search", :selected="selected", :select="select_milestone", :select-all="selectAll")
+		data-table(:schema="schema.taskTable", :rows="tasks", :order="order", :search="search", :selected="selectedTasks", :select="_selectTasks", :select-all="selectAll")
 
 		.form(v-if="model")
-			vue-form-generator(:schema='schema.form', :model='model', :options='options', :multiple="selected.length > 1", ref="form", :is-new-model="isNewModel")
+			vue-form-generator(:schema='schema.form', :model='model', :options='options', :multiple="selectedTasks.length > 1", ref="form", :is-new-model="isNewModel")
 
 			.errors.text-center
 				div.alert.alert-danger(v-for="(item, index) in validationErrors", :key="index") {{ item.field.label }}: 
@@ -48,12 +48,13 @@
 			DataTable
 		},
 
-        // task-page(:schema="schema", :selected="selected", :rows_project="getProjects", :rows_milestone="getMilestones") に対応させる
+        // task-page(:schema="schema", :selectedProject="selectedProject", :selectedTasks="selectedTasks", :projects="projects", :tasks="tasks") に対応させる
 		props: [
 			"schema"
-            , "rows_project"
-            , "rows_milestone"
-            , "selected"
+            , "projects"
+            , "tasks"
+			, "selectedProject"
+			, "selectedTasks"
 		],
 
 		data() {
@@ -89,7 +90,7 @@
 		},	
 
 		watch: {
-			selected() {
+			_selected() {
 				if (!this.isNewModel)
 					this.generateModel();
 			}
@@ -106,22 +107,26 @@
 
 		methods: {
 
-			select_project(event, row, add) {
+			_selectProject(event, row, add) {
 				this.isNewModel = false;
-				
-				if (this.schema.table_project.multiSelect === true && (add || (event && event.ctrlKey))) {
-					this.$parent.selectRow(row, true);
+
+				if (0 < this.selectedProject.length && this.selectedProject[0] == row) {
+					this.$parent.deselectProject();
 				} else {
-					this.$parent.selectRow(row, false);
+					this.$parent.selectProject(row);
 				}
 			}
-			, select_milestone(event, row, add) {
+			, _selectTasks(event, row, add) {
 				this.isNewModel = false;
-				
-				if (this.schema.table_milestone.multiSelect === true && (add || (event && event.ctrlKey))) {
-					this.$parent.selectRow(row, true);
+
+				if (0 < this.selectedTasks.length && this.selectedTasks.includes(row)) {
+					this.$parent.deselectTask(row);
 				} else {
-					this.$parent.selectRow(row, false);
+					if (this.schema.taskTable.multiSelect === true && (add || (event && event.ctrlKey))) {
+						this.$parent.selectTasks(row, true);
+					} else {
+						this.$parent.selectTasks(row, false);
+					}
 				}
 			}
 
@@ -129,7 +134,7 @@
 				this.isNewModel = false;
 
 				let filter = Vue.filter("filterBy");
-				let filteredRows = filter(this.rows_project, this.search);
+				let filteredRows = filter(this.projects, this.search);
 
 				if (this.selected.length < filteredRows.length) {
 					// Select all

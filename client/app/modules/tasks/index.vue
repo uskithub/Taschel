@@ -1,5 +1,5 @@
 <template lang="pug">
-	task-page(:schema="schema", :selected="selected", :rows_project="getProjects", :rows_milestone="getMilestones")
+	task-page(:schema="schema", :selectedProject="selectedProject", :selectedTasks="selectedTasks", :projects="projects", :tasks="tasks")
 </template>
 
 <script>
@@ -17,10 +17,11 @@
 		},
 
 		// getters.js に対応
-		computed: mapGetters("milestones", [
-			"getProjects"
-			, "getMilestones"
-			, "selected"
+		computed: mapGetters("tasks", [
+			"projects"
+			, "tasks"
+			, "selectedProject"
+			, "selectedTasks"
 		]),
 
 		/**
@@ -72,12 +73,15 @@
 
 		methods: {
 			// actions.jsと対応
-			...mapActions("milestones", [
-				"downloadRows"
+			...mapActions("tasks", [
+				"downloadProjects"
 				, "created"
 				, "updated"
 				, "removed"
-				, "selectRow"
+				, "selectProject"
+				, "selectTasks"
+				, "deselectProject"
+				, "deselectTask"
 				, "clearSelection"
 				, "saveRow"
 				, "updateRow"
@@ -90,7 +94,7 @@
 		 */
 		created() {
 			// Download rows for the page
-			this.downloadRows();
+			this.downloadProjects();
 		}
 	};
 </script>

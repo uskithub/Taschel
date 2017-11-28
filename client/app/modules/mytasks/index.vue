@@ -15,7 +15,7 @@
 		components : {
 			AdminPage: AdminPage
 		}
-		, computed : mapGetters("tasks", [
+		, computed : mapGetters("common", [
 			"tasks",
 			"selected"
 		])
@@ -62,7 +62,7 @@
 			}
 		}		
 		, methods : {
-			...mapActions("tasks", [
+			...mapActions("common", [
 				"downloadTasks",
 				"created",
 				"updated",

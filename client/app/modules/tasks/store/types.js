@@ -1,0 +1,10 @@
+export const LOAD_PROJECTS 	= "LOAD_PROJECTS";
+export const LOAD_TASKS 	= "LOAD_TASKS";
+export const ADD 			= "ADD";
+export const SELECT_TASKS	= "SELECT_TASKS";
+export const SELECT_PROJECT	= "SELECT_PROJECT";
+export const DESELECT_PROJECT	= "DESELECT_PROJECT";
+export const DESELECT_TASK	= "DESELECT_TASK";
+export const CLEAR_SELECT	= "CLEAR_SELECT";
+export const UPDATE			= "UPDATE";
+export const REMOVE			= "REMOVE";

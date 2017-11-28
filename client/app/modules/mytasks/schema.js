@@ -87,7 +87,6 @@ module.exports = {
 				values: taskTypes,
 				default: "step",
 				validator: validators.required
-
 			}
 			, {
 				type: "text",

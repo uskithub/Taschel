@@ -9,9 +9,9 @@ let _ = Vue.prototype._;
 
 module.exports = {
 
-	id: "milestones"
-	, title: _("Milestones")
-	, table_project: {
+	id: "tasks"
+	, title: _("Tasks")
+	, projectTable: {
 		multiSelect: true,
 		columns: [
 			{
@@ -28,7 +28,7 @@ module.exports = {
 		}
 
 	}
-	, table_milestone: {
+	, taskTable: {
 		multiSelect: true
 		, columns: [
 			{
@@ -85,15 +85,13 @@ module.exports = {
 				}
 			},
 			{
-				type: "text",
+				type: "select",
 				label: _("TaskType"),
 				model: "type",
-                readonly: true,
-                disabled: true,
+				required: true,
 				values: taskTypes,
-				get(model) {
-					return _("project");
-				}
+				default: "step",
+				validator: validators.required
 			},	
 			{
 				type: "text",

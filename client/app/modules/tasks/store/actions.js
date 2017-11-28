@@ -1,23 +1,47 @@
 import Vue from "vue";
 import toastr from "../../../core/toastr";
-import { LOAD, ADD, SELECT, CLEAR_SELECT, UPDATE, REMOVE } from "./types";
+import { LOAD_PROJECTS, LOAD_TASKS, ADD, SELECT_TASKS, SELECT_PROJECT, DESELECT_PROJECT, DESELECT_TASK, CLEAR_SELECT, UPDATE, REMOVE } from "./types";
 import axios from "axios";
 
 export const NAMESPACE = "/api/tasks";
 
-export const selectRow = ({ commit }, row, multiSelect) => {
-	commit(SELECT, row, multiSelect);
+export const selectProject = ({ commit }, row) => {
+	commit(SELECT_PROJECT, row);
+	console.log(row.code, row);
+	axios.get(NAMESPACE).then((response) => {
+		let res = response.data;
+		if (res.status == 200 && res.data)
+			commit(LOAD_TASKS, res.data);
+		else
+			console.error("Request error!", res.error);
+
+	}).catch((response) => {
+		console.error("Request error!", response.statusText);
+	});
+};
+
+export const selectTasks = ({ commit }, row, multiSelect) => {
+	commit(SELECT_TASKS, row, multiSelect);
+};
+
+export const deselectProject = ({ commit }) => {
+	commit(DESELECT_PROJECT);
+	commit(LOAD_TASKS, []);
+};
+
+export const deselectTask = ({ commit }, row) => {
+	commit(DESELECT_TASK, row);
 };
 
 export const clearSelection = ({ commit }) => {
 	commit(CLEAR_SELECT);
 };
 
-export const downloadRows = ({ commit }) => {
-	axios.get(NAMESPACE).then((response) => {
+export const downloadProjects = ({ commit }) => {
+	axios.get(`${NAMESPACE}?type=project`).then((response) => {
 		let res = response.data;
 		if (res.status == 200 && res.data)
-			commit(LOAD, res.data);
+			commit(LOAD_PROJECTS, res.data);
 		else
 			console.error("Request error!", res.error);
 
