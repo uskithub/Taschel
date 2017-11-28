@@ -9,9 +9,9 @@
 					| {{ schema.resources.addCaption || _("Add") }}
 			.right {{ _("SelectedOfAll", { selected: selected.length, all: rows_project.length } ) }}
 		br
-		data-table(:schema="schema.table_project", :rows="rows_project", :order="order", :search="search", :selected="selected", :select="select", :select-all="selectAll")
+		data-table(:schema="schema.table_project", :rows="rows_project", :order="order", :search="search", :selected="selected", :select="select_project", :select-all="selectAll")
 		br
-		data-table(:schema="schema.table_milestone", :rows="rows_milestone", :order="order", :search="search", :selected="selected", :select="select", :select-all="selectAll")
+		data-table(:schema="schema.table_milestone", :rows="rows_milestone", :order="order", :search="search", :selected="selected", :select="select_milestone", :select-all="selectAll")
 
 		.form(v-if="model")
 			vue-form-generator(:schema='schema.form', :model='model', :options='options', :multiple="selected.length > 1", ref="form", :is-new-model="isNewModel")
@@ -105,17 +105,26 @@
 
 		methods: {
 
-			select(event, row, add) {
+			select_project(event, row, add) {
 				this.isNewModel = false;
 				
-				if (this.schema.table.multiSelect === true && (add || (event && event.ctrlKey))) {
+				if (this.schema.table_project.multiSelect === true && (add || (event && event.ctrlKey))) {
 					this.$parent.selectRow(row, true);
 				} else {
 					this.$parent.selectRow(row, false);
 				}
-			},
+			}
+			, select_milestone(event, row, add) {
+				this.isNewModel = false;
+				
+				if (this.schema.table_milestone.multiSelect === true && (add || (event && event.ctrlKey))) {
+					this.$parent.selectRow(row, true);
+				} else {
+					this.$parent.selectRow(row, false);
+				}
+			}
 
-			selectAll(event) {
+			, selectAll(event) {
 				this.isNewModel = false;
 
 				let filter = Vue.filter("filterBy");

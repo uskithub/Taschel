@@ -29,7 +29,7 @@ module.exports = {
 
 	},
 
-	table_milestone: {
+	, table_milestone: {
 		multiSelect: true
 		, columns: [
 			{
