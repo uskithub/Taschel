@@ -80,7 +80,7 @@
 		 */
 		, created() {
 			// Download rows for the page
-			this.downloadTasks("project");
+			this.downloadTasks();
 		}
 	};
 </script>

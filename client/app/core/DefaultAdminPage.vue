@@ -167,7 +167,7 @@
 			},
 
 			saveModel() {
-				console.log("Save model...");
+				console.log("Save model...", this.model);
 				if (this.options.validateBeforeSave === false ||  this.validate()) {
 
 					if (this.isNewModel)

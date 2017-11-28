@@ -79,9 +79,10 @@ module.exports = {
 				label: _("TaskType"),
 				model: "type",
                 readonly: true,
-                disabled: true,
+				disabled: true,
+				default: "project",
 				get(model) {
-					return _("project");
+					return _(model.type);
 				}
 			},	
 			{
