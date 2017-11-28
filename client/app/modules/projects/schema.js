@@ -1,6 +1,5 @@
 import Vue from "vue";
 import moment from "moment";
-import { taskTypes } from "./types";
 import { validators } from "vue-form-generator";
 
 import { find } from "lodash";
@@ -8,7 +7,6 @@ import { find } from "lodash";
 let _ = Vue.prototype._;
 
 module.exports = {
-
 	id: "projects",
 	title: _("Projects"),
 
@@ -82,7 +80,6 @@ module.exports = {
 				model: "type",
                 readonly: true,
                 disabled: true,
-				values: taskTypes,
 				get(model) {
 					return _("project");
 				}

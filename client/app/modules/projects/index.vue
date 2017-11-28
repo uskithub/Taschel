@@ -1,5 +1,5 @@
 <template lang="pug">
-	admin-page(:schema="schema", :selected="selected", :rows="projects")
+	admin-page(:schema="schema", :selected="selected", :rows="tasks")
 </template>
 
 <script>
@@ -16,8 +16,8 @@
 			AdminPage: AdminPage
 		},
 
-		computed: mapGetters("projects", [
-			"projects",
+		computed: mapGetters("tasks", [
+			"tasks",
 			"selected"
 		]),
 
@@ -68,8 +68,8 @@
 		},		
 
 		methods: {
-			...mapActions("projects", [
-				"downloadRows",
+			...mapActions("tasks", [
+				"downloadTasks",
 				"created",
 				"updated",
 				"removed",
@@ -86,7 +86,7 @@
 		 */
 		created() {
 			// Download rows for the page
-			this.downloadRows();
+			this.downloadTasks("project");
 		}
 	};
 </script>
