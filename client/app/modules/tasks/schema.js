@@ -85,6 +85,13 @@ module.exports = {
 				}
 			},
 			{
+				type: "text",
+				label: _("RootTask"),
+				model: "root",
+				readonly: true,
+				disabled: true
+			},
+			{
 				type: "select",
 				label: _("TaskType"),
 				model: "type",

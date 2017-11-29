@@ -41,6 +41,16 @@ let TaskSchema = new Schema({
 		type: Number,
 		"default": 1
 	}
+	// projectのid
+	, root_id : {
+		type: Schema.Types.ObjectId
+		, ref: "Task"
+	}
+	// 親タスクのid
+	, parent_id : {
+		type: Schema.Types.ObjectId
+		, ref: "Task"
+	}
 	, lastCommunication: {
 		type: Date,	
 		"default": Date.now

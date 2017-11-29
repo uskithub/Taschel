@@ -61,6 +61,8 @@ module.exports = {
                 , purpose: ctx.params.purpose
 				, goal: ctx.params.goal
 				, status: ctx.params.status
+				, root_id: null //Task.schema.methods.decodeID(ctx.params.root)
+				, parent_id: null //Task.schema.methods.decodeID(ctx.params.root)
 			});
 
 			return task.save()

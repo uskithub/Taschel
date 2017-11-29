@@ -110,7 +110,7 @@
 			_selectProject(event, row, add) {
 				this.isNewModel = false;
 
-				if (0 < this.selectedProject.length && this.selectedProject[0] == row) {
+				if (this.selectedProject.length > 0 && this.selectedProject[0] == row) {
 					this.$parent.deselectProject();
 				} else {
 					this.$parent.selectProject(row);
@@ -119,7 +119,7 @@
 			, _selectTasks(event, row, add) {
 				this.isNewModel = false;
 
-				if (0 < this.selectedTasks.length && this.selectedTasks.includes(row)) {
+				if (this.selectedTasks.length > 0 && this.selectedTasks.includes(row)) {
 					this.$parent.deselectTask(row);
 				} else {
 					if (this.schema.taskTable.multiSelect === true && (add || (event && event.ctrlKey))) {
@@ -162,7 +162,14 @@
 				this.$parent.clearSelection();
 
 				let newRow = schemaUtils.createDefaultObject(this.schema.form);
-				this.isNewModel = true;
+                this.isNewModel = true;
+                
+                // projectが設定されている場合、projectを設定
+                if (this.selectedProject.length > 0) {
+                    let root =  this.selectedProject[0];
+                    newRow.root = root.code;
+                }
+
 				this.model = newRow;
 
 				this.$nextTick(() => {
