@@ -139,6 +139,7 @@ module.exports = {
 		enabledSaveButton: true,
 		enableDeleteButton: true,
 		enableCloneButton: false,
+		enableBreakdownButton: true,
 
 		validateAfterLoad: false, // Validate after load a model
 		validateAfterChanged: false, // Validate after every changes on the model
@@ -160,6 +161,7 @@ module.exports = {
         addCaption: _("追加／更新／削除"),
 		saveCaption: _("Save"),
 		cloneCaption: _("Clone"),
+		breakdownCaption: _("Breakdown"),
 		deleteCaption: _("Delete")
 	}
 };

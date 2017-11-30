@@ -22,6 +22,9 @@
 				button.button.primary(@click="saveModel", :disabled="!enabledSave")
 					i.icon.fa.fa-save 
 					| {{ schema.resources.saveCaption || _("Save") }}
+				button.button.outline(@click="breakdown", :disabled="!enabledBreakdown")
+					i.icon.fa.fa-copy 
+					| {{ schema.resources.breakdownCaption || _("Breakdown") }}
 				button.button.outline(@click="cloneModel", :disabled="!enabledClone")
 					i.icon.fa.fa-copy 
 					| {{ schema.resources.cloneCaption || _("Clone") }}
@@ -74,6 +77,7 @@
 			enabledNew() 	{ return (this.options.enableNewButton !== false); },
 			enabledSave() 	{ return (this.model && this.options.enabledSaveButton !== false); },
 			enabledClone() 	{ return (this.model && !this.isNewModel && this.options.enableDeleteButton !== false); },
+			enabledBreakdown() 	{ return (this.model && !this.isNewModel && this.options.enabledBreakdownButton !== false); },
 			enabledDelete() { return (this.model && !this.isNewModel && this.options.enableDeleteButton !== false); },
 
 			validationErrors() {
@@ -164,9 +168,26 @@
 				newRow.code = null;
 				this.isNewModel = true;
 				this.model = newRow;
-			},
+			}
 
-			saveModel() {
+			, breakdown() {
+				console.log("Breakdown model...");
+				let baseModel = this.model;
+				this.$parent.clearSelection();
+
+				let newRow = cloneDeep(baseModel);
+				newRow.id = null;
+				newRow.code = null;
+				newRow.type = "step";
+				newRow.name = null;
+				newRow.goal = null;
+				newRow.parent_code = this.model.code;
+				newRow.asignee_code = null;
+				this.isNewModel = true;
+				this.model = newRow;
+			}
+
+			, saveModel() {
 				console.log("Save model...", this.model);
 				if (this.options.validateBeforeSave === false ||  this.validate()) {
 
