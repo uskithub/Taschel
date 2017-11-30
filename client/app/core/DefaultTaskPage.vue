@@ -91,9 +91,24 @@
 		},	
 
 		watch: {
-			_selected() {
-				if (!this.isNewModel)
-					this.generateModel();
+			// propsで指定した名前に合わせる必要あり
+			// TODO: 値は保持されるのに、画面表示が更新されない不具合あり
+			selectedProject() {
+				if (!this.isNewModel) {
+					if (this.model == null) return;
+					if (this.selectedProject.length > 0) {
+						this.model.root_code = this.selectedProject[0].code;
+					} else {
+						this.model.root_code = null
+					}
+				}
+			}
+
+			// propsで指定した名前に合わせる必要あり
+			, selectedTask() {
+				console.log("●● selectedTask")
+				// if (!this.isNewModel)
+				// 	this.generateModel();
 			}
 
 			/*
@@ -130,7 +145,6 @@
 					}
 				}
 			}
-
 			, selectAll(event) {
 				this.isNewModel = false;
 
@@ -144,9 +158,9 @@
 					// Unselect all 
 					this.$parent.clearSelection();
 				}
-			},	
+			}
 
-			generateModel() {
+			, generateModel() {
 				if (this.selected.length == 1) {
 					this.model = cloneDeep(this.selected[0]);
 				}
@@ -162,15 +176,15 @@
 
 				// 動的にユーザー一覧を設定している
 				this.schema.form.fields.forEach(f => {
-				if (f.model == "asignee") {
-					f.values = this.users.map(user => {
-						return {
-							id : user.code
-							, name : user.username
-						}
-					});
-				}
-			});	
+					if (f.model == "asignee") {
+						f.values = this.users.map(user => {
+							return {
+								id : user.code
+								, name : user.username
+							}
+						});
+					}
+				});	
 				this.$parent.clearSelection();
 
 				let newRow = schemaUtils.createDefaultObject(this.schema.form);

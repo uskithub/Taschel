@@ -14,6 +14,7 @@ const state = {
 const mutations = {
 	[LOAD_PROJECTS] (state, models) {
 		state.projects.splice(0);
+		state._projects.splice(0);
 		state.projects.push(...models);
 		state._projects.push(...models);
 	}

@@ -93,11 +93,17 @@ module.exports = {
 				}
 			},
 			{
-				type: "text",
-				label: _("RootTask"),
-				model: "root_code",
-				readonly: true,
-				disabled: true
+				type: "text"
+				, label: _("RootTask")
+				, model: "root_code"
+				, readonly: true
+				, disabled: true
+				, get(model) {
+					if (model.root_code)
+						return model.root_code;
+					else
+						return _("未設定");
+				}
 			},
 			{
 				type: "select",
