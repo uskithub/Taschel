@@ -142,7 +142,7 @@ module.exports = {
 			{
 				type: "select",
 				label: _("Asignee"),
-				model: "asignee",
+				model: "asignee_code",
 				values: [] // index.vueにて後から設定している
 			},
 			{

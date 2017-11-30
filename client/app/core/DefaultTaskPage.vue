@@ -176,7 +176,7 @@
 
 				// 動的にユーザー一覧を設定している
 				this.schema.form.fields.forEach(f => {
-					if (f.model == "asignee") {
+					if (f.model == "asignee_code") {
 						f.values = this.users.map(user => {
 							return {
 								id : user.code

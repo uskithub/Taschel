@@ -41,7 +41,8 @@ module.exports = {
 				} else if (ctx.params.root_code !== undefined) {
 					filter.root = this.taskService.decodeID(ctx.params.root_code);
 				} else if (ctx.params.user_code !== undefined) {
-					filter.author = this.personService.decodeID(ctx.params.user_code);
+					let user_code = this.personService.decodeID(ctx.params.user_code);
+					filter.$or = [ {author : user_code}, {asignee : user_code} ];
 				} else {
 					filter.type = { $ne: "project" };
 				}
@@ -78,6 +79,7 @@ module.exports = {
 				, root: (ctx.params.root_code !== undefined) ? this.taskService.decodeID(ctx.params.root_code) : -1
 				, parent: null //this.taskService.decodeID(ctx.params.root_code)
 				, author : ctx.user.id
+				, asignee : (ctx.params.asignee_code !== undefined) ? this.personService.decodeID(ctx.params.asignee_code) : null
 			});
 
 			return task.save()
