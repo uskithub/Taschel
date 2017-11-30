@@ -40,7 +40,7 @@
   "config": {
     "dbName": "boilerplate"
   },
-  "author": "Icebob",
+  "author": "Yusuke SAITO",
   "license": "MIT",
   "dependencies": {
     "agenda": "0.9.1",

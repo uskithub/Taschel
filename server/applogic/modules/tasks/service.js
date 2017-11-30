@@ -20,7 +20,12 @@ module.exports = {
 		role: "user",
 		collection: Task,
 		
-		modelPropFilter: "code type purpose name goal status lastCommunication createdAt updatedAt"
+		modelPropFilter: "code type purpose name goal root_id parent_id status lastCommunication createdAt updatedAt"
+
+		, modelPopulates: {
+			"author": "persons",
+			"inCharge": "persons"
+		}
 	},
 	
 	actions: {
@@ -34,7 +39,7 @@ module.exports = {
 						return this.toJSON(docs);
 					});
 				} else if (ctx.params.root_id !== undefined) {
-					let filter = { root_id : Task.schema.methods.decodeID(ctx.params.root_id) };
+					let filter = { root_id : this.taskService.decodeID(ctx.params.root_id) };
 					let query = Task.find(filter);
 					return ctx.queryPageSort(query).exec().then( (docs) => {
 						return this.toJSON(docs);
@@ -67,7 +72,7 @@ module.exports = {
                 , purpose: ctx.params.purpose
 				, goal: ctx.params.goal
 				, status: ctx.params.status
-				, root_id: (ctx.params.root !== undefined) ? Task.schema.methods.decodeID(ctx.params.root) : -1
+				, root_id: (ctx.params.root !== undefined) ? this.taskService.decodeID(ctx.params.root) : -1
 				, parent_id: null //Task.schema.methods.decodeID(ctx.params.root)
 			});
 
@@ -161,6 +166,7 @@ module.exports = {
 
 	init(ctx) {
 		// Fired when start the service
+		this.taskService = ctx.services("tasks");
 	},
 
 	socket: {
