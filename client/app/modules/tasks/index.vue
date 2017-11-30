@@ -10,6 +10,7 @@
 
 	import { mapGetters, mapActions } from "vuex";
 
+    // @see: https://github.com/vue-generators/vue-form-generator
 	export default {
 		
 		components: {

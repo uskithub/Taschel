@@ -134,6 +134,12 @@ module.exports = {
 				validator: validators.string
 			},
 			{
+				type: "select",
+				label: _("Asignee"),
+				model: "asignee",
+				values: users,
+			},
+			{
 				type: "label",
 				label: _("LastCommunication"),
 				model: "lastCommunication",
