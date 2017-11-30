@@ -33,6 +33,12 @@ module.exports = {
 					return ctx.queryPageSort(query).exec().then( (docs) => {
 						return this.toJSON(docs);
 					});
+				} else if (ctx.params.root_id !== undefined) {
+					let filter = { root_id : Task.schema.methods.decodeID(ctx.params.root_id) };
+					let query = Task.find(filter);
+					return ctx.queryPageSort(query).exec().then( (docs) => {
+						return this.toJSON(docs);
+					});
 				} else {
 					let filter = { type : { $ne: "project" } };
 					let query = Task.find(filter);
@@ -61,7 +67,7 @@ module.exports = {
                 , purpose: ctx.params.purpose
 				, goal: ctx.params.goal
 				, status: ctx.params.status
-				, root_id: null //Task.schema.methods.decodeID(ctx.params.root)
+				, root_id: (ctx.params.root !== undefined) ? Task.schema.methods.decodeID(ctx.params.root) : -1
 				, parent_id: null //Task.schema.methods.decodeID(ctx.params.root)
 			});
 

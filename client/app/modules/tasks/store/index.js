@@ -19,9 +19,9 @@ const mutations = {
 		state.tasks.push(...models);
 	}
 	, [ADD] (state, model) {
-		let found = find(state.rows_project, (item) => item.code == model.code);
+		let found = find(state.selectedTasks, (item) => item.code == model.code);
 		if (!found)
-			state.rows_project.push(model);
+			state.tasks.push(model);
 	}
 	, [SELECT_PROJECT] (state, row) {
 		state.selectedProject.splice(0);
@@ -56,13 +56,13 @@ const mutations = {
 		state.selectedTasks.splice(0);
 	}
 	, [UPDATE] (state, model) {
-		each(state.rows_project, (item) => {
+		each(state.selectedTasks, (item) => {
 			if (item.code == model.code)
 				assign(item, model);
 		});
 	}
 	, [REMOVE] (state, model) {
-		state.rows_project = state.rows_project.filter(item => item.code != model.code);
+		state.selectedTasks = state.selectedTasks.filter(item => item.code != model.code);
 	}	
 };
 

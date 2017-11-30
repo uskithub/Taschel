@@ -7,8 +7,9 @@ export const NAMESPACE = "/api/tasks";
 
 export const selectProject = ({ commit }, row) => {
 	commit(SELECT_PROJECT, row);
-	console.log(row.code, row);
-	axios.get(NAMESPACE).then((response) => {
+
+	// downloadTasks
+	axios.get(`${NAMESPACE}?root_id=${row.code}`).then((response) => {
 		let res = response.data;
 		if (res.status == 200 && res.data)
 			commit(LOAD_TASKS, res.data);
@@ -56,7 +57,8 @@ export const saveRow = ({ commit }, model) => {
 		let res = response.data;
 
 		if (res.status == 200 && res.data)
-			created({ commit }, res.data, true);
+			// created({ commit }, res.data, true);
+			created({ commit }, res.data); // 作成後、選択状態にしたくない場合
 	}).catch((response) => {
 		if (response.data.error)
 			toastr.error(response.data.error.message);
@@ -66,7 +68,7 @@ export const saveRow = ({ commit }, model) => {
 export const created = ({ commit }, row, needSelect) => {
 	commit(ADD, row);
 	if (needSelect)
-		commit(SELECT, row, false);
+		commit(SELECT_TASKS, row, false);
 };
 
 export const updateRow = ({ commit }, row) => {

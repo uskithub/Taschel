@@ -43,8 +43,11 @@ let TaskSchema = new Schema({
 	}
 	// projectのid
 	, root_id : {
-		type: Schema.Types.ObjectId
-		, ref: "Task"
+		// 検索後に実体をもたせたい場合はこちら
+		// type: Schema.Types.ObjectId, ref: "Task"
+
+		// 今回はフィルタに使いたいだけなので、数値だけでOK
+		type: Number
 	}
 	// 親タスクのid
 	, parent_id : {
