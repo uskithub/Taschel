@@ -42,17 +42,23 @@ let TaskSchema = new Schema({
 		"default": 1
 	}
 	// projectのid
-	, root_id : {
+	, root : {
 		// 検索後に実体をもたせたい場合はこちら
 		// type: Schema.Types.ObjectId, ref: "Task"
 
 		// 今回はフィルタに使いたいだけなので、数値だけでOK
 		type: Number
+		, ref: "Task"
 	}
 	// 親タスクのid
-	, parent_id : {
-		type: Schema.Types.ObjectId
+	, parent : {
+		type: Number
 		, ref: "Task"
+	}
+	, author: {
+		type: Number,
+		required: "Please fill in an author ID",
+		ref: "User"
 	}
 	, lastCommunication: {
 		type: Date,	

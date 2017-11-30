@@ -9,7 +9,7 @@ export const selectProject = ({ commit }, row) => {
 	commit(SELECT_PROJECT, row);
 
 	// downloadTasks
-	axios.get(`${NAMESPACE}?root_id=${row.code}`).then((response) => {
+	axios.get(`${NAMESPACE}?root_code=${row.code}`).then((response) => {
 		let res = response.data;
 		if (res.status == 200 && res.data)
 			commit(LOAD_TASKS, res.data);

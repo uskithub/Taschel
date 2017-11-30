@@ -87,7 +87,7 @@ module.exports = {
 			{
 				type: "text",
 				label: _("RootTask"),
-				model: "root",
+				model: "root_code",
 				readonly: true,
 				disabled: true
 			},

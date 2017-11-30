@@ -167,7 +167,7 @@
                 // projectが設定されている場合、projectを設定
                 if (this.selectedProject.length > 0) {
                     let root =  this.selectedProject[0];
-                    newRow.root = root.code;
+                    newRow.root_code = root.code;
                 }
 
 				this.model = newRow;

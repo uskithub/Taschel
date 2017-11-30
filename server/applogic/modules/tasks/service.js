@@ -20,11 +20,13 @@ module.exports = {
 		role: "user",
 		collection: Task,
 		
-		modelPropFilter: "code type purpose name goal root_id parent_id status lastCommunication createdAt updatedAt"
+		modelPropFilter: "code type purpose name goal status root parent author inCharge lastCommunication createdAt updatedAt"
 
 		, modelPopulates: {
-			"author": "persons",
-			"inCharge": "persons"
+			"root": "tasks"
+			, "parent": "tasks"
+			, "author": "persons"
+			, "inCharge": "persons"
 		}
 	},
 	
@@ -32,25 +34,24 @@ module.exports = {
 		find: {
 			cache: true,
 			handler(ctx) {
+				let filter = {};
+
 				if (ctx.params.type !== undefined) {
-					let filter = { type : ctx.params.type };
-					let query = Task.find(filter);
-					return ctx.queryPageSort(query).exec().then( (docs) => {
-						return this.toJSON(docs);
-					});
-				} else if (ctx.params.root_id !== undefined) {
-					let filter = { root_id : this.taskService.decodeID(ctx.params.root_id) };
-					let query = Task.find(filter);
-					return ctx.queryPageSort(query).exec().then( (docs) => {
-						return this.toJSON(docs);
-					});
+					filter.type = ctx.params.type;
+				} else if (ctx.params.root_code !== undefined) {
+					filter.root = this.taskService.decodeID(ctx.params.root_code);
 				} else {
-					let filter = { type : { $ne: "project" } };
-					let query = Task.find(filter);
-					return ctx.queryPageSort(query).exec().then( (docs) => {
-						return this.toJSON(docs);
-					});
+					filter.type = { $ne: "project" };
 				}
+
+				let query = Task.find(filter);
+
+				return ctx.queryPageSort(query).exec().then( (docs) => {
+					return this.toJSON(docs);
+				})
+				.then((json) => {
+					return this.populateModels(json);
+				});
 			}
 		},
 
@@ -72,8 +73,9 @@ module.exports = {
                 , purpose: ctx.params.purpose
 				, goal: ctx.params.goal
 				, status: ctx.params.status
-				, root_id: (ctx.params.root !== undefined) ? this.taskService.decodeID(ctx.params.root) : -1
-				, parent_id: null //Task.schema.methods.decodeID(ctx.params.root)
+				, root: (ctx.params.root_code !== undefined) ? this.taskService.decodeID(ctx.params.root_code) : -1
+				, parent: null //this.taskService.decodeID(ctx.params.root_code)
+				, author : ctx.user.id
 			});
 
 			return task.save()
