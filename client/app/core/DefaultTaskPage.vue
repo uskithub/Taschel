@@ -48,11 +48,12 @@
 			DataTable
 		},
 
-        // task-page(:schema="schema", :selectedProject="selectedProject", :selectedTasks="selectedTasks", :projects="projects", :tasks="tasks") に対応させる
+        // task-page(:schema="schema", :selectedProject="selectedProject", :selectedTasks="selectedTasks", :projects="projects", :tasks="tasks", :users="users") に対応させる
 		props: [
 			"schema"
             , "projects"
-            , "tasks"
+			, "tasks"
+			, "users"
 			, "selectedProject"
 			, "selectedTasks"
 		],
@@ -154,11 +155,22 @@
 				}
 				else
 					this.model = null;
-			},
+			}
 
-			newModel() {
+			, newModel() {
 				console.log("Create new model...");
 
+				// 動的にユーザー一覧を設定している
+				this.schema.form.fields.forEach(f => {
+				if (f.model == "asignee") {
+					f.values = this.users.map(user => {
+						return {
+							id : user.code
+							, name : user.username
+						}
+					});
+				}
+			});	
 				this.$parent.clearSelection();
 
 				let newRow = schemaUtils.createDefaultObject(this.schema.form);
