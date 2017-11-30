@@ -6,6 +6,10 @@ export function tasks(state) {
 	return state.tasks;
 }
 
+export function users(state) {
+	return state.users;
+}
+
 export function selectedProject(state) {
 	return state.selectedProject;
 }

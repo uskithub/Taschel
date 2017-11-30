@@ -20,6 +20,7 @@
 		computed: mapGetters("tasks", [
 			"projects"
 			, "tasks"
+			, "users" 
 			, "selectedProject"
 			, "selectedTasks"
 		]),
@@ -75,6 +76,7 @@
 			// actions.jsと対応
 			...mapActions("tasks", [
 				"downloadProjects"
+				, "downloadUsers"
 				, "created"
 				, "updated"
 				, "removed"
@@ -95,6 +97,7 @@
 		created() {
 			// Download rows for the page
 			this.downloadProjects();
+			this.downloadUsers();
 		}
 	};
 </script>

@@ -1,5 +1,6 @@
 export const LOAD_PROJECTS 	= "LOAD_PROJECTS";
 export const LOAD_TASKS 	= "LOAD_TASKS";
+export const LOAD_USERS 	= "LOAD_USERS";
 export const ADD 			= "ADD";
 export const SELECT_TASKS	= "SELECT_TASKS";
 export const SELECT_PROJECT	= "SELECT_PROJECT";

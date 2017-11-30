@@ -1,6 +1,6 @@
 import Vue from "vue";
 import toastr from "../../../core/toastr";
-import { LOAD_PROJECTS, LOAD_TASKS, ADD, SELECT_TASKS, SELECT_PROJECT, DESELECT_PROJECT, DESELECT_TASK, CLEAR_SELECT, UPDATE, REMOVE } from "./types";
+import { LOAD_PROJECTS, LOAD_TASKS, LOAD_USERS, ADD, SELECT_TASKS, SELECT_PROJECT, DESELECT_PROJECT, DESELECT_TASK, CLEAR_SELECT, UPDATE, REMOVE } from "./types";
 import axios from "axios";
 
 export const NAMESPACE = "/api/tasks";
@@ -43,6 +43,20 @@ export const downloadProjects = ({ commit }) => {
 		let res = response.data;
 		if (res.status == 200 && res.data)
 			commit(LOAD_PROJECTS, res.data);
+		else
+			console.error("Request error!", res.error);
+
+	}).catch((response) => {
+		console.error("Request error!", response.statusText);
+	});
+
+};
+
+export const downloadUsers = ({ commit }) => {
+	axios.get("/api/persons").then((response) => {
+		let res = response.data;
+		if (res.status == 200 && res.data)
+			commit(LOAD_USERS, res.data);
 		else
 			console.error("Request error!", res.error);
 

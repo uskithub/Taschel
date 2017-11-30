@@ -1,10 +1,12 @@
-import { LOAD_PROJECTS, LOAD_TASKS, ADD, SELECT_TASKS, SELECT_PROJECT, DESELECT_PROJECT, DESELECT_TASK, CLEAR_SELECT, UPDATE, REMOVE } from "./types";
+import { LOAD_PROJECTS, LOAD_TASKS, LOAD_USERS, ADD, SELECT_TASKS, SELECT_PROJECT, DESELECT_PROJECT, DESELECT_TASK, CLEAR_SELECT, UPDATE, REMOVE } from "./types";
 
 import { each, find, assign, remove, isArray } from "lodash";
 
 const state = {
 	projects: []
+	, _projects: [] // 見本用
 	, tasks: []
+	, users: []
     , selectedProject: []
 	, selectedTasks: []
 };
@@ -13,10 +15,15 @@ const mutations = {
 	[LOAD_PROJECTS] (state, models) {
 		state.projects.splice(0);
 		state.projects.push(...models);
+		state._projects.push(...models);
 	}
 	, [LOAD_TASKS] (state, models) {
 		state.tasks.splice(0);
 		state.tasks.push(...models);
+	}
+	, [LOAD_USERS] (state, models) {
+		state.users.splice(0);
+		state.users.push(...models);
 	}
 	, [ADD] (state, model) {
 		let found = find(state.selectedTasks, (item) => item.code == model.code);
@@ -24,6 +31,8 @@ const mutations = {
 			state.tasks.push(model);
 	}
 	, [SELECT_PROJECT] (state, row) {
+		state.projects.splice(0);
+		state.projects.push(row);
 		state.selectedProject.splice(0);
 		state.selectedProject.push(row);
 	}
@@ -46,6 +55,8 @@ const mutations = {
 	}
 	, [DESELECT_PROJECT] (state) {
 		state.selectedProject.splice(0);
+		state.projects.splice(0);
+		state.projects.push(...state._projects);
 	}
 	, [DESELECT_TASK] (state, row) {
 		state.selectedTasks = state.selectedTasks.filter((item) => {

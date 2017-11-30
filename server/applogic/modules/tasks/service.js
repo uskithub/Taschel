@@ -20,13 +20,13 @@ module.exports = {
 		role: "user",
 		collection: Task,
 		
-		modelPropFilter: "code type purpose name goal status root parent author inCharge lastCommunication createdAt updatedAt"
+		modelPropFilter: "code type purpose name goal status root parent author asignee lastCommunication createdAt updatedAt"
 
 		, modelPopulates: {
 			"root": "tasks"
 			, "parent": "tasks"
 			, "author": "persons"
-			, "inCharge": "persons"
+			, "asignee": "persons"
 		}
 	},
 	

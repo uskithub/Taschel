@@ -55,9 +55,13 @@ let TaskSchema = new Schema({
 		type: Number
 		, ref: "Task"
 	}
-	, author: {
+	, author : {
 		type: Number,
 		required: "Please fill in an author ID",
+		ref: "User"
+	}
+	, asignee : {
+		type: Number,
 		ref: "User"
 	}
 	, lastCommunication: {

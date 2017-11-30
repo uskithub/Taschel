@@ -26,7 +26,7 @@ module.exports = {
 	
 	actions: {
 		// return all model
-		/*find: {
+		find: {
 			cache: true,
 			handler(ctx) {
 				return ctx.queryPageSort(User.find({})).exec().then( (docs) => {
@@ -36,7 +36,7 @@ module.exports = {
 					return this.populateModels(json);					
 				});
 			}
-		},*/
+		},
 
 		// return a model by ID
 		get: {

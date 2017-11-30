@@ -86,7 +86,7 @@
 		 */
 		, created() {
 			// Download rows for the page
-			this.downloadTasks({ user :  this.me.code});
+			this.downloadTasks({user : this.me.code});
 		}
 	};
 </script>

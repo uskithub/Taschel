@@ -44,10 +44,18 @@ module.exports = {
 				field: "goal"
 			}
 			, {
-				title: _("Status"),
-				field: "status",
+				title: _("Asignee"),
+				field: "asignee",
 				formatter(value, model, col) {
-					return value ? "<i class='fa fa-check'/>" : "<i class='fa fa-ban'/>";
+					return (model.asignee) ? model.asignee.username : "-";
+				},
+				align: "center"
+			}
+			, {
+				title: _("Author"),
+				field: "author",
+				formatter(value, model, col) {
+					return model.author.username;
 				},
 				align: "center"
 			}
