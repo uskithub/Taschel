@@ -15,10 +15,16 @@
 		components : {
 			AdminPage: AdminPage
 		}
-		, computed : mapGetters("common", [
-			"tasks",
-			"selected"
-		])
+		, computed : {
+			...mapGetters("common", [
+				"tasks",
+				"selected"
+			]),
+			...mapGetters("session", [
+				"me"
+			])
+		}
+
 		/**
 		 * Set page schema as data property
 		 */
@@ -80,7 +86,7 @@
 		 */
 		, created() {
 			// Download rows for the page
-			this.downloadTasks();
+			this.downloadTasks({ user :  this.me.code});
 		}
 	};
 </script>

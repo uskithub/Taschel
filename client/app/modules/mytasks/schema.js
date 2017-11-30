@@ -1,6 +1,6 @@
 import Vue from "vue";
 import moment from "moment";
-import { taskTypes } from "./types";
+import { taskTypes } from "../tasks/types";
 import { validators } from "vue-form-generator";
 
 import { find } from "lodash";

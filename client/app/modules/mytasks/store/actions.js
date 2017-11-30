@@ -13,8 +13,21 @@ export const clearSelection = ({ commit }) => {
 	commit(CLEAR_SELECT);
 };
 
-export const downloadTasks = ({ commit }, taskType, user) => {
-	let url = (taskType !== undefined) ? `${NAMESPACE}?type=${taskType}` : NAMESPACE;
+// options = {
+//   taskType : "project"
+//    , user : People.code
+// }
+export const downloadTasks = ({ commit }, options) => {
+	let url = NAMESPACE;
+
+	if (options !== undefined) {
+		if (options.taskType !== undefined) {
+			url = `${url}?type=${options.taskType}`;
+		} else if (options.user !== undefined) {
+			url = `${url}?user_code=${options.user}`;
+		}
+	} 
+	
 	axios.get(url).then((response) => {
 		let res = response.data;
 		if (res.status == 200 && res.data)

@@ -40,6 +40,8 @@ module.exports = {
 					filter.type = ctx.params.type;
 				} else if (ctx.params.root_code !== undefined) {
 					filter.root = this.taskService.decodeID(ctx.params.root_code);
+				} else if (ctx.params.user_code !== undefined) {
+					filter.author = this.personService.decodeID(ctx.params.user_code);
 				} else {
 					filter.type = { $ne: "project" };
 				}
@@ -169,6 +171,7 @@ module.exports = {
 	init(ctx) {
 		// Fired when start the service
 		this.taskService = ctx.services("tasks");
+		this.personService = ctx.services("persons");
 	},
 
 	socket: {
