@@ -1,7 +1,14 @@
 # TODO
 
+- [] TasksでのProjectへの子タスク追加時、rootしか指定していないが、parentも同時に指定するようにする（この場合、root=parent）
+- [] ProjectsにはBreakdownを出さないようにする（Adminコンポーネントにスイッチを仕込むか）
+- [] Tasksで、form入力時にはProjectの名前を表示するようにする
+- [] My Tasksも、選択の解除を可能にする
+- [] My Tasksのformに、parent／root表示する
+- [] Tasks／MyTasksで、Cloneをしたとき、デフォルトのparent及びrootはコピー元と同じとするが、その後selectで選べるようにする（Cloneのときだけ場合分け？）
+- [] My Tasks でタスクツリーの Vueコンポーネントを作る
+- [] My Tasks でカンバンの Vueコンポーネントを作る
 - [] 機能一覧を出したら見積りに使えるようにする
-
 
 # Vue, Express, MongoDB full-stack JS Boilerplate
 
