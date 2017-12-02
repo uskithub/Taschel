@@ -54,9 +54,21 @@ export const saveRow = ({ commit }, model) => {
 };
 
 export const created = ({ commit }, row, needSelect) => {
-	commit(ADD, row);
-	if (needSelect)
-		commit(SELECT, row, false);
+
+	if (row.parent !== undefined) {
+		// Breakdownした時はこちらに入る
+		// { parent : JSON, child : JSON }
+		commit(UPDATE, row.parent);
+		commit(ADD, row.child);
+
+		if (needSelect)
+			commit(SELECT, row.child, false);
+	} else {
+		commit(ADD, row);
+
+		if (needSelect)
+			commit(SELECT, row, false);
+	}
 };
 
 export const updateRow = ({ commit }, row) => {

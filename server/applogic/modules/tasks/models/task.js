@@ -55,6 +55,10 @@ let TaskSchema = new Schema({
 		type: Number
 		, ref: "Task"
 	}
+	, children : [{
+		type: Number
+		, ref: "Task"
+	}]
 	, author : {
 		type: Number,
 		required: "Please fill in an author ID",

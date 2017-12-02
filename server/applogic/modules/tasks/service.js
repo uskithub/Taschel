@@ -20,11 +20,12 @@ module.exports = {
 		role: "user",
 		collection: Task,
 		
-		modelPropFilter: "code type purpose name goal status root parent author asignee lastCommunication createdAt updatedAt"
+		modelPropFilter: "code type purpose name goal status root parent children author asignee lastCommunication createdAt updatedAt"
 
 		, modelPopulates: {
-			"root": "tasks"
-			, "parent": "tasks"
+			// "root": "tasks"			// 親にchildrenを持たせたので、populateすると循環参照になってpopulateが終わらなくなるので注意
+			// , "parent": "tasks"		//
+			"children": "tasks"
 			, "author": "persons"
 			, "asignee": "persons"
 		}
@@ -70,17 +71,19 @@ module.exports = {
 		create(ctx) {
 			this.validateParams(ctx, true);
 			
-			let task = new Task({
+			let hoge = {
 				type: ctx.params.type
                 , name: ctx.params.name
                 , purpose: ctx.params.purpose
 				, goal: ctx.params.goal
 				, status: ctx.params.status
 				, root: (ctx.params.root_code !== undefined) ? this.taskService.decodeID(ctx.params.root_code) : -1
-				, parent: null //this.taskService.decodeID(ctx.params.root_code)
+				, parent: (ctx.params.parent_code !== undefined) ? this.taskService.decodeID(ctx.params.parent_code) : -1
 				, author : ctx.user.id
-				, asignee : (ctx.params.asignee_code !== undefined) ? this.personService.decodeID(ctx.params.asignee_code) : null
-			});
+				, asignee : (ctx.params.asignee_code !== undefined) ? this.personService.decodeID(ctx.params.asignee_code) : -1
+			};
+
+			let task = new Task(hoge);
 
 			return task.save()
 			.then((doc) => {
@@ -92,7 +95,13 @@ module.exports = {
 			.then((json) => {
 				this.notifyModelChanges(ctx, "created", json);
 				return json;
-			});	
+			})
+			.then((json) => {
+				let childId = this.taskService.decodeID(json.code);
+				return { parent : this.actions.breakdown(ctx, childId)
+					, child : json
+				};
+			});
 		},
 
 		update(ctx) {
@@ -142,6 +151,31 @@ module.exports = {
 				this.notifyModelChanges(ctx, "removed", json);
 				return json;
 			});		
+		}
+
+		// 子タスクのcreate時に、同時に親の方に子タスクを付け加える
+		, breakdown(ctx, childId) {
+			// TODO: エラーコード／メッセージは見直すこと
+			if (ctx.params.parent_code === undefined)
+				throw this.errorBadRequest(C.ERR_MODEL_NOT_FOUND, ctx.t("app:TaskNotFound"));
+
+			let parentId = this.taskService.decodeID(ctx.params.parent_code);
+
+			return this.collection.findById(parentId).exec()
+			.then((doc) => {
+				return Task.findByIdAndUpdate(doc.id, { $addToSet: { children: childId }}, { "new": true });
+			})
+			.then((doc) => {
+				console.log("●ここは来てる After", doc);
+				return this.toJSON(doc);
+			})
+			.then((json) => {
+				return this.populateModels(json);
+			})
+			.then((json) => {
+				this.notifyModelChanges(ctx, "brokedown", json);
+				return json;
+			});
 		}
 
 	},

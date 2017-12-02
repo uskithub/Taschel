@@ -180,9 +180,11 @@
 				newRow.code = null;
 				newRow.type = "step";
 				newRow.name = null;
+				newRow.purpose = `${this.model.goal} にするため`;
 				newRow.goal = null;
+				newRow.root_code = this.model.root.code;
 				newRow.parent_code = this.model.code;
-				newRow.asignee_code = null;
+				newRow.asignee_code = undefined;
 				this.isNewModel = true;
 				this.model = newRow;
 			}
