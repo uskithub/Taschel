@@ -1,6 +1,6 @@
 # TODO
 
-- [] TasksでのProjectへの子タスク追加時、rootしか指定していないが、parentも同時に指定するようにする（この場合、root=parent）
+- [x] TasksでのProjectへの子タスク追加時、rootしか指定していないが、parentも同時に指定するようにする（この場合、root=parent）
 - [] ProjectsにはBreakdownを出さないようにする（Adminコンポーネントにスイッチを仕込むか）
 - [] Tasksで、form入力時にはProjectの名前を表示するようにする
 - [] My Tasksも、選択の解除を可能にする

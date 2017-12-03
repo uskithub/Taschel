@@ -26,10 +26,12 @@ const mutations = {
 		state.users.splice(0);
 		state.users.push(...models);
 	}
-	, [ADD] (state, model) {
-		let found = find(state.selectedTasks, (item) => item.code == model.code);
-		if (!found)
-			state.tasks.push(model);
+	, [ADD] (state, models) {
+		// models : { parent, cihld }
+		let isNotUpdate = !find(state.selectedTasks, (item) => item.code == models.child.code);
+		if (isNotUpdate) {
+			state.tasks.push(models.child);
+		}
 	}
 	, [SELECT_PROJECT] (state, row) {
 		state.projects.splice(0);
