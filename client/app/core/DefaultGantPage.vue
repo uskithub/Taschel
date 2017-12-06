@@ -2,15 +2,17 @@
 	.container
 		h3.title {{ schema.title }}
 
-		vue-tree-list(:model="data" default-tree-node-name="new node" default-leaf-node-name="new leaf")
+		data-table(:schema="schema.projectTable", :rows="projects", :order="order", :search="search", :selected="selectedProject", :select="_selectProject", :select-all="selectAll")
+		br
+		vue-tree-list(:isRoot="true", :node="selectedProject.length > 0 ? selectedProject[0] : null")
 
 </template>
 
 <script>
 	import Vue from "vue";
 	import { schema as schemaUtils } from "vue-form-generator";
+	import DataTable from "./dataTable.vue";
     import { VueTreeList, Tree, TreeNode } from "./components/treeList";
-    // import { VueTreeList, Tree, TreeNode } from 'vue-tree-list'
 
 	import { each, find, cloneDeep, isFunction } from "lodash";
 
@@ -19,86 +21,91 @@
 	export default {
 
 		components: {
-            VueTreeList
+			DataTable
+            , VueTreeList
 		},
 
 		props: [
-			"schema",
-			"selected",
-			"rows"
-		],
+			"schema"
+			, "projects"
+			, "selectedProject"
+		]
 
-		data() {
-            return {
-                newTree: {},
-                data: new Tree([
-                    {
-                        name: 'Node 1',
-                        id: 1,
-                        pid: 0,
-                        children: [
-                            {
-                                name: 'Node 1-2',
-                                id: 2,
-                                isLeaf: true,
-                                pid: 1
-                            }
-                        ]
-                    }
-                    , {
-                        name: 'Node 2',
-                        id: 3,
-                        pid: 0
-                    }
-                    , {
-                        name: 'Node 3',
-                        id: 4,
-                        pid: 0
-                    }
-                ])
-            }
-		},
-
-		// computed: {
-		// 	...mapGetters("session", {
-		// 		search: "searchText"
-		// 	}),
-
-		// 	options() 		{ return this.schema.options || {};	},
-
-		// 	enabledNew() 	{ return (this.options.enableNewButton !== false); },
-		// 	enabledSave() 	{ return (this.model && this.options.enabledSaveButton !== false); },
-		// 	enabledClone() 	{ return (this.model && !this.isNewModel && this.options.enableDeleteButton !== false); },
-		// 	enabledBreakdown() 	{ return (this.model && !this.isNewModel && this.options.enabledBreakdownButton !== false); },
-		// 	enabledDelete() { return (this.model && !this.isNewModel && this.options.enableDeleteButton !== false); },
-
-		// 	validationErrors() {
-		// 		if (this.$refs.form && this.$refs.form.errors) 
-		// 			return this.$refs.form.errors;
-
-		// 		return [];
-		// 	}
-		// },	
-
-		watch: {
-			// selected() {
-			// 	if (!this.isNewModel)
-			// 		this.generateModel();
-			// }
-
-			/*
-			model: {
-				handler: function(newVal, oldVal) {
-					if (newVal === oldVal) // call only if a property changed, not the model
-						console.log("Model property changed!");
+		, data() {
+			return {
+				order: {
+					field: "id",
+					direction: 1
 				},
-				deep: true
-			}*/
-		},
 
-		methods: {
+				model: null,
+				isNewModel: false
+			};
+		}
 
-			addNode() {
+		, computed: {
+			...mapGetters("session", {
+				search: "searchText"
+			}),
+
+			options() 		{ return this.schema.options || {};	},
+
+			enabledNew() 	{ return (this.options.enableNewButton !== false); },
+			enabledSave() 	{ return (this.model && this.options.enabledSaveButton !== false); },
+			enabledClone() 	{ return (this.model && !this.isNewModel && this.options.enableDeleteButton !== false); },
+			enabledBreakdown() 	{ return (this.model && !this.isNewModel && this.options.enabledBreakdownButton !== false); },
+			enabledDelete() { return (this.model && !this.isNewModel && this.options.enableDeleteButton !== false); },
+
+			validationErrors() {
+				if (this.$refs.form && this.$refs.form.errors) 
+					return this.$refs.form.errors;
+
+				return [];
+			}
+		}
+
+		, watch: {
+			// propsで指定した名前に合わせる必要あり
+			// TODO: 値は保持されるのに、画面表示が更新されない不具合あり
+			selectedProject() {
+				if (!this.isNewModel) {
+					if (this.model == null) return;
+					if (this.selectedProject.length > 0) {
+						this.model.root_code = this.selectedProject[0].code;
+					} else {
+						this.model.root_code = null
+					}
+				}
+			}
+		}
+
+		, methods: {
+
+			_selectProject(event, row, add) {
+				this.isNewModel = false;
+
+				if (this.selectedProject.length > 0 && this.selectedProject[0] == row) {
+					this.$parent.deselectProject();
+				} else {
+					this.$parent.selectProject(row);
+				}
+			}
+			, selectAll(event) {
+				this.isNewModel = false;
+
+				let filter = Vue.filter("filterBy");
+				let filteredRows = filter(this.projects, this.search);
+
+				if (this.selected.length < filteredRows.length) {
+					// Select all
+					this.$parent.selectRow(filteredRows, false);
+				} else {
+					// Unselect all 
+					this.$parent.clearSelection();
+				}
+			}
+			
+			, addNode() {
                 var node = new TreeNode('new node', false)
                 if (!this.data.children) this.data.children = []
                 this.data.addChildren(node)
@@ -126,7 +133,7 @@
 		},
 
 		created() {
-		}	
+		}
 	};
 
 </script>

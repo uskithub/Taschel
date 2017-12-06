@@ -3,6 +3,7 @@ import Vuex from "vuex";
 
 import session from "../modules/session/store";
 import tasks from "../modules/tasks/store";
+import gant from "../modules/gant/store";
 import common from "../modules/mytasks/store";
 import devices from "../modules/devices/store";
 import posts from "../modules/posts/store";
@@ -15,6 +16,7 @@ export default new Vuex.Store({
 	modules: {
 		session
 		, tasks
+		, gant
 		, common
 		, counter
 		, devices

@@ -1,5 +1,5 @@
 <template lang="pug">
-	gant-page(:schema="schema", :selected="selected", :rows="tasks")
+	gant-page(:schema="schema", :selectedProject="selectedProject", :projects="projects")
 </template>
 
 <script>
@@ -16,12 +16,9 @@
 			GantPage: GantPage
 		}
 		, computed : {
-			...mapGetters("common", [
-				"tasks",
-				"selected"
-			]),
-			...mapGetters("session", [
-				"me"
+			...mapGetters("gant", [
+				"projects"
+				, "selectedProject"
 			])
 		}
 
@@ -30,6 +27,7 @@
 		 */
 		, data() {
 			return {
+				// gant-pageに当てはめる値を定義したオブジェクト
 				schema
 			};
 		}
@@ -68,17 +66,11 @@
 			}
 		}		
 		, methods : {
-			...mapActions("common", [
-				"downloadTasks",
-				"created",
-				"updated",
-				"removed",
-				"selectRow",
-				"clearSelection",
-				"saveRow",
-				"updateRow",
-				"removeRow"
-			])
+			...mapActions("gant", [
+				"downloadProjects"
+				, "selectProject"
+				, "deselectProject"
+			]),
 		}
 
 		/**
@@ -86,7 +78,7 @@
 		 */
 		, created() {
 			// Download rows for the page
-			this.downloadTasks({user : this.me.code});
+			this.downloadProjects();
 		}
 	};
 </script>

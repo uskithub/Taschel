@@ -10,7 +10,7 @@ let _ = Vue.prototype._;
 module.exports = {
 	id : "gant"
 	, title: _("Gant")
-	, table: {
+	, projectTable: {
 		multiSelect : true
 		, columns : [
 			{
