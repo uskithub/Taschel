@@ -27,6 +27,13 @@
 							i.fa.fa-tasks
 						span.label {{ "MyTasks" | i18n }}
 
+				router-link(tag="li", to="/gant")
+					a(:title="_('Gant')")
+						span.icon
+							i.fa.fa-tasks
+						span.label {{ "Gant" | i18n }}
+
+
 				router-link(tag="li", to="/counter")
 					a(:title="_('Demo')")
 						span.icon

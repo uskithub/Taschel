@@ -7,6 +7,7 @@ import Home from "../modules/home";
 import Projects from "../modules/projects"; 
 import Tasks from "../modules/tasks"; 
 import MyTasks from "../modules/mytasks";
+import Gant from "../modules/gant";
 import Counter from "../modules/counter";
 import Devices from "../modules/devices";
 import Posts from "../modules/posts";
@@ -21,6 +22,7 @@ export default new VueRouter({
 		, { path: "/projects", component: Projects }
 		, { path: "/tasks", component: Tasks }
 		, { path: "/mytasks", component: MyTasks }
+		, { path: "/gant", component: Gant }
 		, { path: "/devices", component: Devices }
 		, { path: "/posts", component: Posts }
 		, { path: "/counter", component: Counter }
