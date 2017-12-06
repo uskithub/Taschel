@@ -1,40 +1,21 @@
 <template lang="pug">
     div
-        div(v-if="model.name !== 'root'")
-            div.border.up(:class="{'active': isDragEnterUp}" @drop="dropUp", genter="dragEnterUp", @dragover='dragOverUp', @dragleave="dragLeaveUp")
+        div
+            div.border.up
 
-            div.tree-node(:id='model.id', :class="{'active': isDragEnterNode}", draggable="true", @click="", @dragstart='dragStart', @dragover='dragOver', @dragenter='dragEnter', @dragleave='dragLeave', @drop='drop', @dragend='dragEnd', @mouseover='mouseOver', @mouseout='mouseOut')
-                span.caret.icon.is-small(v-if="model.children && model.children.length > 0")
-                    i.vue-tree-icon(:class="caretClass" @click.prevent.stop="toggle")
-                span(v-if="model.isLeaf")
-                    slot(name="leafNodeIcon")
-                        i.vue-tree-icon.item-icon.icon-file
-                span(v-else)
-                    slot(name="treeNodeIcon")
-                        i.vue-tree-icon.item-icon.icon-folder
+            div.tree-node(:id='node.code')
+                span.caret.icon.is-small(v-if="node.children && node.children.length > 0")
+                    i.vue-tree-icon(:class="caretClass")
+                
+                slot(name="treeNodeIcon")
+                    i.vue-tree-icon.item-icon.icon-folder
 
-                div.node-content(v-if="!editable") {{model.name}}
+                div.node-content {{node.name}}
 
-                input(v-else class="vue-tree-input" type="text" ref="nodeInput", :value="model.name" @input="updateName" @blur="setUnEditable")
-            
-                div.operation(v-show="isHover")
-                    span(title="add tree node" @click.stop.prevent="addChild(false)" v-if="!model.isLeaf")
-                    slot(name="addTreeNode")
-                        i.vue-tree-icon.icon-folder-plus-e
-                span(title="add tree node" @click.stop.prevent="addChild(true)" v-if="!model.isLeaf")
-                    slot(name="addLeafNode")
-                        i.vue-tree-icon.icon-plus
-                span(title="edit" @click.stop.prevent="setEditable")
-                    slot(name="edit")
-                        i.vue-tree-icon.icon-edit
-                span(title="delete" @click.stop.prevent="delNode")
-                    slot(name="edit")
-                        i.vue-tree-icon.icon-trash
+            div(v-if="node.children && node.children.length > 0", class="border bottom")
 
-            div(v-if="model.children && model.children.length > 0 && expanded", class="border bottom", :class="{'active': isDragEnterBottom}", @drop="dropBottom", @dragenter="dragEnterBottom", @dragover='dragOverBottom', @dragleave="dragLeaveBottom")
-
-        div(:class="{'tree-margin': model.name !== 'root'}" v-show="expanded" v-if="isFolder")
-            item(v-for="model in model.children" , :default-tree-node-name="defaultTreeNodeName" , :default-leaf-node-name="defaultLeafNodeName" , :model="model" , :key='model.id')
+        div(:class="{'tree-margin': true}")
+            item(v-for="child in node.children", :node="child" , :key='child.code')
 
 </template>
 
@@ -44,39 +25,47 @@
     let fromComp = ''
 
     export default {
-        data: function () {
-            return {
-                isHover: false,
-                editable: false,
-                isDragEnterUp: false,
-                isDragEnterBottom: false,
-                isDragEnterNode: false,
-                expanded: true
-            }
-        },
+        // data: function () {
+        //     return {
+        //         isHover: false,
+        //         editable: false,
+        //         isDragEnterUp: false,
+        //         isDragEnterBottom: false,
+        //         isDragEnterNode: false,
+        //         expanded: true
+        //     }
+        // }
+        
+        //, 
+        props: [
+            "isRoot"
+            , "node"
+        ]
 
-        props: {
-            model: {
-                type: Object
-            },
-            defaultLeafNodeName: {
-                type: String,
-                default: 'New leaf node'
-            },
-            defaultTreeNodeName: {
-                type: String,
-                default: 'New tree node'
-            }
-        },
-        computed: {
+
+        // props: {
+        //     model: {
+        //         type: Object
+        //     },
+        //     defaultLeafNodeName: {
+        //         type: String,
+        //         default: 'New leaf node'
+        //     },
+        //     defaultTreeNodeName: {
+        //         type: String,
+        //         default: 'New tree node'
+        //     }
+        // },
+        , computed: {
             itemIconClass () {
-                return this.model.isLeaf ? 'icon-file' : 'icon-folder'
+                //return this.model.isLeaf ? 'icon-file' : 'icon-folder'
+                return 'icon-folder'
             },
             caretClass () {
                 return this.expanded ? 'icon-caret-down' : 'icon-caret-right'
             },
             isFolder() {
-                return this.model.children && this.model.children.length
+                return this.node.children && this.node.children.length > 0
             }
         },
         mounted () {
@@ -92,99 +81,102 @@
             $(window).off('keyup')
         },
         methods: {
-            updateName (e) {
-                this.model.changeName(e.target.value)
-            },
-            delNode () {
-                const vm = this
-                if (window.confirm('Are you sure?')) {
-                    vm.model.remove()
-                }
-            },
-            setEditable () {
-                this.editable = true
-                this.$nextTick(() => {
-                    $(this.$refs.nodeInput).trigger('focus')
-                })
-            },
-            setUnEditable () {
-                this.editable = false
-            },
-            toggle() {
-                if (this.isFolder) {
-                    this.expanded = !this.expanded
-                }
-            },
-            mouseOver(e) {
-                this.isHover = true
-            },
-            mouseOut(e) {
-                this.isHover = false
-            },
-            addChild(isLeaf) {
-                const name = isLeaf ? this.defaultLeafNodeName : this.defaultTreeNodeName
-                this.expanded = true
-                var node = new TreeNode(name, isLeaf)
-                this.model.addChildren(node, true)
-            },
-            dragStart(e) {
-                fromComp = this
-                // for firefox
-                e.dataTransfer.setData("data","data");
-                e.dataTransfer.effectAllowed = 'move'
-                return true
-            },
-            dragEnd(e) {
-                fromComp = null
-            },
-            dragOver(e) {
-                e.preventDefault()
-                return true
-            },
-            dragEnter(e) {
-                if (this.model.isLeaf) {
-                    return
-                }
-                this.isDragEnterNode = true
-            },
-            dragLeave(e) {
-                this.isDragEnterNode = false
-            },
-            drop(e) {
-                fromComp.model.moveInto(this.model)
-                this.isDragEnterNode = false
-            },
-            dragEnterUp () {
-                this.isDragEnterUp = true
-            },
-            dragOverUp (e) {
-                e.preventDefault()
-                return true
-            },
-            dragLeaveUp () {
-                this.isDragEnterUp = false
-            },
-            dropUp () {
-                fromComp.model.insertBefore(this.model)
-                this.isDragEnterUp = false
-            },
-            dragEnterBottom () {
-                this.isDragEnterBottom = true
-            },
-            dragOverBottom (e) {
-                e.preventDefault()
-                return true
-            },
-            dragLeaveBottom () {
-                this.isDragEnterBottom = false
-            },
-            dropBottom () {
-                fromComp.model.insertAfter(this.model)
-                this.isDragEnterBottom = false
-            }
+            // updateName (e) {
+            //     this.node.changeName(e.target.value)
+            // },
+            // delNode () {
+            //     const vm = this
+            //     if (window.confirm('Are you sure?')) {
+            //         vm.node.remove()
+            //     }
+            // },
+            // setEditable () {
+            //     this.editable = true
+            //     this.$nextTick(() => {
+            //         $(this.$refs.nodeInput).trigger('focus')
+            //     })
+            // },
+            // setUnEditable () {
+            //     this.editable = false
+            // },
+            // toggle() {
+            //     if (this.isFolder) {
+            //         this.expanded = !this.expanded
+            //     }
+            // },
+            // mouseOver(e) {
+            //     // this.isHover = true
+            // },
+            // mouseOut(e) {
+            //     // this.isHover = false
+            // },
+            // addChild(isLeaf) {
+            //     const name = 'hoge'
+            //     this.expanded = true
+            //     var node = new TreeNode(name, isLeaf)
+            //     //this.model.addChildren(node, true)
+            // },
+            // dragStart(e) {
+            //     fromComp = this
+            //     // for firefox
+            //     e.dataTransfer.setData("data","data");
+            //     e.dataTransfer.effectAllowed = 'move'
+            //     return true
+            // },
+            // dragEnd(e) {
+            //     fromComp = null
+            // },
+            // dragOver(e) {
+            //     e.preventDefault()
+            //     return true
+            // },
+            // dragEnter(e) {
+            //     // if (this.model.isLeaf) {
+            //     //     return
+            //     // }
+            //     this.isDragEnterNode = true
+            // },
+            // dragLeave(e) {
+            //     this.isDragEnterNode = false
+            // },
+            // drop(e) {
+            //     // fromComp.model.moveInto(this.model)
+            //     this.isDragEnterNode = false
+            // },
+            // dragEnterUp () {
+            //     this.isDragEnterUp = true
+            // },
+            // dragOverUp (e) {
+            //     e.preventDefault()
+            //     return true
+            // },
+            // dragLeaveUp () {
+            //     this.isDragEnterUp = false
+            // },
+            // dropUp () {
+            //     // fromComp.model.insertBefore(this.model)
+            //     this.isDragEnterUp = false
+            // },
+            // dragEnterBottom () {
+            //     this.isDragEnterBottom = true
+            // },
+            // dragOverBottom (e) {
+            //     e.preventDefault()
+            //     return true
+            // },
+            // dragLeaveBottom () {
+            //     this.isDragEnterBottom = false
+            // },
+            // dropBottom () {
+            //     // fromComp.model.insertAfter(this.model)
+            //     this.isDragEnterBottom = false
+            // }
         },
         beforeCreate () {
             this.$options.components.item = require('./treeList.vue')
+        }
+        , created() {
+            
         }
     }
 </script>
