@@ -30,6 +30,10 @@ module.exports = {
 			, "author": "persons"
 			, "asignee": "persons"
 		}
+		, idEncodes: {
+			"root": "tasks"
+			, "parent": "tasks"
+		}
 	},
 	
 	actions: {
@@ -75,7 +79,7 @@ module.exports = {
 		create(ctx) {
 			this.validateParams(ctx, true);
 			
-			let hoge = {
+			let task = new Task({
 				type: ctx.params.type
                 , name: ctx.params.name
                 , purpose: ctx.params.purpose
@@ -85,9 +89,7 @@ module.exports = {
 				, parent: (ctx.params.parent_code !== undefined) ? this.taskService.decodeID(ctx.params.parent_code) : -1
 				, author : ctx.user.id
 				, asignee : (ctx.params.asignee_code !== undefined) ? this.personService.decodeID(ctx.params.asignee_code) : -1
-			};
-
-			let task = new Task(hoge);
+			});
 
 			return task.save()
 			.then((doc) => {
@@ -102,7 +104,9 @@ module.exports = {
 			})
 			.then((json) => {
 				let childId = this.taskService.decodeID(json.code);
-				return { parent : this.actions.breakdown(ctx, childId)
+				// breakdownで親にupdateしているので、{ parent, child } の形で返している
+				return { 
+					parent : this.actions.breakdown(ctx, childId)
 					, child : json
 				};
 			});

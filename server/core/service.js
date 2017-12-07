@@ -192,7 +192,65 @@ class Service {
 	 * 
 	 * @memberOf Service
 	 */
-	populateModels(docs, populateSchema) {
+	populateModels(docs, populateSchema, encodeSchema) {
+		populateSchema = populateSchema || this.$settings.modelPopulates; 
+		encodeSchema = this.$settings.idEncodes;
+
+		// 生idで持っている値をencodeして返すための処理
+		if (docs != null && encodeSchema) {
+			_.forIn(encodeSchema, (serviceName, field) => {
+				if (_.isString(serviceName)) {
+					let service = Services.get(serviceName);
+					if (service && _.isFunction(service["encodeID"])) {
+						let items = _.isArray(docs) ? docs : [docs]; 
+						items.forEach((doc) => {
+							let value = doc[field];
+							if (value == undefined) return;
+							if (_.isArray(value)) {
+								doc[field] = value.map((v) => {
+									if ( v > 0 ) {
+										return service.encodeID(v);
+									} else {
+										return null;
+									}
+								});
+							} else {
+								if ( value > 0 ) {
+									doc[field] = service.encodeID(value);
+								}
+							}
+						});
+					}
+				}
+			});
+		}
+
+		if (docs != null && populateSchema) {
+			let promises = [];
+			_.forIn(populateSchema, (serviceName, field) => {
+				if (_.isString(serviceName)) {
+					let service = Services.get(serviceName);
+					if (service && _.isFunction(service["getByID"])) {
+						let items = _.isArray(docs) ? docs : [docs]; 
+						items.forEach((doc) => {
+							promises.push(service.getByID(doc[field]).then((populated) => {
+								doc[field] = populated;
+							}));
+						});
+					}
+				}
+			});
+
+			if (promises.length > 0) {
+				return Promise.all(promises).then(() => {
+					return docs;
+				});
+			}
+		}
+		return Promise.resolve(docs);	
+	}
+	
+	_populateModels(docs, populateSchema) {
 		populateSchema = populateSchema || this.$settings.modelPopulates; 
 		if (docs != null && populateSchema) {
 			let promises = [];

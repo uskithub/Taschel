@@ -7,7 +7,7 @@ let logger    		= require("../../../../core/logger");
 let db	    		= require("../../../../core/mongo");
 let mongoose 		= require("mongoose");
 let Schema 			= mongoose.Schema;
-let hashids 		= require("../../../../libs/hashids")("mytasks");
+let hashids 		= require("../../../../libs/hashids")("tasks");
 let autoIncrement 	= require("mongoose-auto-increment");
 
 let schemaOptions = {
@@ -85,8 +85,10 @@ TaskSchema.plugin(autoIncrement.plugin, {
 	startAt: 1
 });
 
-TaskSchema.methods.encodeID = function() {
-	return hashids.encodeHex(this._id);
+TaskSchema.methods.encodeID = function(id) 
+{
+	id = id || this._id;
+	return hashids.encodeHex(id);
 };
 
 TaskSchema.methods.decodeID = function(code) {
