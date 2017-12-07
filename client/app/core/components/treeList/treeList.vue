@@ -1,17 +1,18 @@
 <template lang="pug">
     div(v-if="node != null")
         div
-            div.border.up(:class="{'active': isDragging}"
-                @drop="drop" 
-                @dragenter="dragenter"
+            div.border.up(:class="{'active': isDraggingToGoUp}"
+                @drop="dropUp" 
+                @dragenter="dragenterUp"
                 @dragover="dragover"
-                @dragleave="dragleave")
+                @dragleave="dragleaveUp")
 
-            div.tree-node(:id="node.code", :class="{'active': isDraggingIntoChild}"
+            div.tree-node(:id="node.code", :class="{'active': isDraggingIntoChild}" draggable="true"
+                @click=""
                 @dragstart="dragstart"
                 @dragover="dragover"
                 @dragenter="dragenter"
-                @dragleave="dragLeave"
+                @dragleave="dragleave"
                 @drop="drop"
                 @dragend="dragend"
                 @mouseover="mouseover"
@@ -24,19 +25,26 @@
 
                 div.node-content {{node.name}}
 
-                div.operation(v-show="isOpen")
+                div.operation(v-show="isHovering")
                     span(title="add tree node")
                     slot(name="addTreeNode")
                         i.vue-tree-icon.icon-folder-plus-e
 
-            div(v-if="node.children && node.children.length > 0", class="border bottom")
+            div(v-if="node.children && node.children.length > 0 && isOpen", class="border bottom", :class="{'active': isDraggingToGoDown}"
+                @drop="dropDown"
+                @dragenter="dragenterDown"
+                @dragover="dragover"
+                @dragleave="dragleaveDown")
 
-        div(:class="{'tree-margin': true}")
-            item(v-for="child in node.children", :node="child" , :key='child.code')
+        div(:class="{'tree-margin': true}", v-show="isOpen")
+            tree-list(v-for="child in node.children", :node="child" , :key='child.code')
 
 </template>
 
 <script>
+    // TODO: この方法はどうも上手くいかない
+    // import TreeList from "./treeList.vue";
+    
     import $ from 'jquery';
     let _self = null;
 
@@ -44,12 +52,16 @@
         data: function () {
             return {
                 isHovering: false
-                , isDroppable: false
-                , isDraggingInsertBelow: false
+                , isDraggingToGoUp: false
+                , isDraggingToGoDown: false
                 , isDraggingIntoChild: false
                 , isOpen: true
             }
         } 
+        // TODO: この方法はどうも上手くいかない
+        // , components: {
+		// 	TreeList
+		// }
         , props: [
             "isRoot"
             , "node"
@@ -57,10 +69,10 @@
         , computed: {
             itemIconClass () {
                 //return this.model.isLeaf ? 'icon-file' : 'icon-folder'
-                return 'icon-folder'
+                return 'icon-folder';
             },
             caretClass () {
-                return this.expanded ? 'icon-caret-down' : 'icon-caret-right'
+                return this.isOpen ? 'icon-caret-down' : 'icon-caret-right';
             },
             isFolder() {
                 return this.node.children && this.node.children.length > 0
@@ -79,26 +91,7 @@
             $(window).off('keyup')
         }
         , methods: {
-            dummy() {}
-            // updateName (e) {
-            //     this.node.changeName(e.target.value)
-            // },
-            // delNode () {
-            //     const vm = this
-            //     if (window.confirm('Are you sure?')) {
-            //         vm.node.remove()
-            //     }
-            // },
-            // setEditable () {
-            //     this.editable = true
-            //     this.$nextTick(() => {
-            //         $(this.$refs.nodeInput).trigger('focus')
-            //     })
-            // },
-            // setUnEditable () {
-            //     this.editable = false
-            // },
-            , toggle() {
+            toggle() {
                 this.isOpen = !this.isOpen;
             }
             , mouseover(e) {
@@ -107,15 +100,10 @@
             , mouseout(e) {
                 this.isHovering = false;
             }
-            // , addChild(isLeaf) {
-            //     const name = 'hoge'
-            //     this.expanded = true
-            //     var node = new TreeNode(name, isLeaf)
-            //     //this.model.addChildren(node, true)
-            // }
+
             // ドラッグ開始
             , dragstart(e) {
-                _self = this
+                _self = this;
                 // for firefox
                 e.dataTransfer.setData("data", "data");
                 e.dataTransfer.effectAllowed = "move";
@@ -124,58 +112,55 @@
             , dragend(e) {
                 _self = null;
             }
-            // dragOver(e) {
-            //     e.preventDefault()
-            //     return true
-            // },
-            // dragEnter(e) {
-            //     // if (this.model.isLeaf) {
-            //     //     return
-            //     // }
-            //     this.isDragEnterNode = true
-            // },
-            // dragLeave(e) {
-            //     this.isDragEnterNode = false
-            // },
-            // drop(e) {
-            //     // fromComp.model.moveInto(this.model)
-            //     this.isDragEnterNode = false
-            // },
+
             // ドラッグしている要素がドロップ領域に入った
-            , dragenter() {
-                this.isDroppable = true;
-            }
+            , dragenterUp(e) { this.isDraggingToGoUp = true; }
+            , dragenter(e) { this.isDraggingIntoChild = true; }
+            , dragenterDown(e) { this.isDraggingToGoDown = true; }
+
             // ドラッグしている要素がドロップ領域にある
             , dragover(e) {
                 e.preventDefault();
                 return true;
             }
+            
             // ドラッグしている要素がドロップ領域から出たとき
-            , dragleave () {
-                this.isDroppable = false;
-            }
+            , dragleaveUp (e) { this.isDraggingToGoUp = false; }
+            , dragleave (e) { this.isDraggingIntoChild = false; }
+            , dragleaveDown (e) { this.isDraggingToGoDown = false; }
+
             // ドラッグしている要素がドロップ領域にドロップされた
-            , drop() {
-                // fromComp.model.insertBefore(this.model)
-                this.isDroppable = false;
+            , dropUp(e) {
+                console.log(`● up ${ _self.node.name }, ${ this.node.name }`, this.$parent);
+                this.$parent.move({
+                    moving: _self.node
+                    , target: this.node
+                    , type: "up"});
+                this.isDraggingToGoUp = false;
             }
-            // dragEnterBottom () {
-            //     this.isDragEnterBottom = true
-            // },
-            // dragOverBottom (e) {
-            //     e.preventDefault()
-            //     return true
-            // },
-            // dragLeaveBottom () {
-            //     this.isDragEnterBottom = false
-            // },
-            // dropBottom () {
-            //     // fromComp.model.insertAfter(this.model)
-            //     this.isDragEnterBottom = false
-            // }
-        },
-        beforeCreate () {
-            this.$options.components.item = require('./treeList.vue')
+            , drop(e) {
+                console.log(`● into ${ _self.node.name }, ${ this.node.name }`, this.$parent);
+                this.$parent.move({
+                    moving: _self.node
+                    , target: this.node
+                    , type: "into"});
+                this.isDraggingIntoChild = false;
+            }
+            , dropDown(e) {
+                console.log(`● down ${ _self.node.name }, ${ this.node.name }`, this.$parent);
+                this.$parent.move({
+                    moving: _self.node
+                    , target: this.node
+                    , type: "down"});
+                this.isDraggingToGoDown = false;
+            }
+            // TreeListはVueComponentが再帰的に入れ子になっているので、最終的な読み出し元のindex.vueまで処理を上げていく
+            , move(moveContext) {
+                this.$parent.move(moveContext);
+            }
+        }
+        , beforeCreate () {
+            this.$options.components.TreeList = require('./treeList.vue');
         }
         , created() {
 
@@ -264,7 +249,7 @@
             border-bottom: 1px solid blue;
         }
         &:hover {
-            background-color: #f0f0f0;
+            background-color: #C0C0C0;
         }
         &.active {
             outline: 2px dashed pink;

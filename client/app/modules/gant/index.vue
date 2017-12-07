@@ -70,6 +70,7 @@
 				"downloadProjects"
 				, "selectProject"
 				, "deselectProject"
+				, "move"
 			]),
 		}
 

@@ -5,6 +5,7 @@
 		data-table(:schema="schema.projectTable", :rows="projects", :order="order", :search="search", :selected="selectedProject", :select="_selectProject", :select-all="selectAll")
 		br
 		vue-tree-list(:isRoot="true", :node="selectedProject.length > 0 ? selectedProject[0] : null")
+		//- vue-tree-list(:model="data" default-tree-node-name="new node" default-leaf-node-name="new leaf")
 
 </template>
 
@@ -13,6 +14,7 @@
 	import { schema as schemaUtils } from "vue-form-generator";
 	import DataTable from "./dataTable.vue";
     import { VueTreeList, Tree, TreeNode } from "./components/treeList";
+    // import { VueTreeList, Tree, TreeNode } from "vue-tree-list";
 
 	import { each, find, cloneDeep, isFunction } from "lodash";
 
@@ -40,7 +42,56 @@
 
 				model: null,
 				isNewModel: false
-			};
+            };
+            // return {
+            //     newTree: {},
+            //     data: new Tree([
+            //         {
+            //             name: 'Node 1',
+            //             id: 1,
+            //             pid: 0,
+            //             children: [
+            //                 {
+            //                     name: 'Node 1-2',
+            //                     id: 2,
+            //                     pid: 1,
+            //                     children: [
+            //                         {
+            //                             name: 'Node 1-2-1',
+            //                             id: 5,
+            //                             pid: 2,
+            //                             children: [
+            //                                 {
+            //                                     name: 'Node 1-2-1-1',
+            //                                     id: 6,
+            //                                     pid: 3,
+            //                                     children: [
+            //                                         {
+            //                                             name: 'Node 1-2-1-1-1',
+            //                                             id: 7,
+            //                                             isLeaf: true,
+            //                                             pid: 4
+            //                                         }
+            //                                     ]
+            //                                 }
+            //                             ]
+            //                         }
+            //                     ]
+            //                 }
+            //             ]
+            //         }
+            //         , {
+            //             name: 'Node 2',
+            //             id: 3,
+            //             pid: 0
+            //         }
+            //         , {
+            //             name: 'Node 3',
+            //             id: 4,
+            //             pid: 0
+            //         }
+            //     ])
+            // }
 		}
 
 		, computed: {
@@ -129,6 +180,11 @@
                     return newNode
                 }
                 vm.newTree = _dfs(vm.data)
+            }
+
+            // for gant
+            , move(moveContext) {
+                this.$parent.move(moveContext);
             }
 		},
 
