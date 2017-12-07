@@ -1,16 +1,33 @@
 <template lang="pug">
     div
         div
-            div.border.up
+            div.border.up(:class="{'active': isDragging}"
+                @drop="drop" 
+                @dragenter="dragenter"
+                @dragover="dragover"
+                @dragleave="dragleave")
 
-            div.tree-node(:id='node.code')
+            div.tree-node(:id="node.code", :class="{'active': isDraggingIntoChild}"
+                @dragstart="dragstart"
+                @dragover="dragover"
+                @dragenter="dragenter"
+                @dragleave="dragLeave"
+                @drop="drop"
+                @dragend="dragend"
+                @mouseover="mouseover"
+                @mouseout="mouseout")
                 span.caret.icon.is-small(v-if="node.children && node.children.length > 0")
-                    i.vue-tree-icon(:class="caretClass")
+                    i.vue-tree-icon(:class="caretClass" @click.prevent.stop="toggle")
                 
                 slot(name="treeNodeIcon")
                     i.vue-tree-icon.item-icon.icon-folder
 
                 div.node-content {{node.name}}
+
+                div.operation(v-show="isOpen")
+                    span(title="add tree node")
+                    slot(name="addTreeNode")
+                        i.vue-tree-icon.icon-folder-plus-e
 
             div(v-if="node.children && node.children.length > 0", class="border bottom")
 
@@ -20,42 +37,23 @@
 </template>
 
 <script>
-    import { Tree, TreeNode } from './tree.js'
-    import $ from 'jquery'
-    let fromComp = ''
+    import $ from 'jquery';
+    let _self = null;
 
     export default {
-        // data: function () {
-        //     return {
-        //         isHover: false,
-        //         editable: false,
-        //         isDragEnterUp: false,
-        //         isDragEnterBottom: false,
-        //         isDragEnterNode: false,
-        //         expanded: true
-        //     }
-        // }
-        
-        //, 
-        props: [
+        data: function () {
+            return {
+                isHovering: false
+                , isDroppable: false
+                , isDraggingInsertBelow: false
+                , isDraggingIntoChild: false
+                , isOpen: true
+            }
+        } 
+        , props: [
             "isRoot"
             , "node"
         ]
-
-
-        // props: {
-        //     model: {
-        //         type: Object
-        //     },
-        //     defaultLeafNodeName: {
-        //         type: String,
-        //         default: 'New leaf node'
-        //     },
-        //     defaultTreeNodeName: {
-        //         type: String,
-        //         default: 'New tree node'
-        //     }
-        // },
         , computed: {
             itemIconClass () {
                 //return this.model.isLeaf ? 'icon-file' : 'icon-folder'
@@ -67,8 +65,8 @@
             isFolder() {
                 return this.node.children && this.node.children.length > 0
             }
-        },
-        mounted () {
+        }
+        , mounted () {
             const vm = this
             $(window).on('keyup', function (e) {
                 // click enter
@@ -76,11 +74,12 @@
                     vm.editable = false
                 }
             })
-        },
-        beforeDestroy () {
+        }
+        , beforeDestroy () {
             $(window).off('keyup')
-        },
-        methods: {
+        }
+        , methods: {
+            dummy() {}
             // updateName (e) {
             //     this.node.changeName(e.target.value)
             // },
@@ -99,33 +98,32 @@
             // setUnEditable () {
             //     this.editable = false
             // },
-            // toggle() {
-            //     if (this.isFolder) {
-            //         this.expanded = !this.expanded
-            //     }
-            // },
-            // mouseOver(e) {
-            //     // this.isHover = true
-            // },
-            // mouseOut(e) {
-            //     // this.isHover = false
-            // },
-            // addChild(isLeaf) {
+            , toggle() {
+                this.isOpen = !this.isOpen;
+            }
+            , mouseover(e) {
+                this.isHovering = true;
+            }
+            , mouseout(e) {
+                this.isHovering = false;
+            }
+            // , addChild(isLeaf) {
             //     const name = 'hoge'
             //     this.expanded = true
             //     var node = new TreeNode(name, isLeaf)
             //     //this.model.addChildren(node, true)
-            // },
-            // dragStart(e) {
-            //     fromComp = this
-            //     // for firefox
-            //     e.dataTransfer.setData("data","data");
-            //     e.dataTransfer.effectAllowed = 'move'
-            //     return true
-            // },
-            // dragEnd(e) {
-            //     fromComp = null
-            // },
+            // }
+            // ドラッグ開始
+            , dragstart(e) {
+                _self = this
+                // for firefox
+                e.dataTransfer.setData("data", "data");
+                e.dataTransfer.effectAllowed = "move";
+                return true;
+            }
+            , dragend(e) {
+                _self = null;
+            }
             // dragOver(e) {
             //     e.preventDefault()
             //     return true
@@ -143,20 +141,24 @@
             //     // fromComp.model.moveInto(this.model)
             //     this.isDragEnterNode = false
             // },
-            // dragEnterUp () {
-            //     this.isDragEnterUp = true
-            // },
-            // dragOverUp (e) {
-            //     e.preventDefault()
-            //     return true
-            // },
-            // dragLeaveUp () {
-            //     this.isDragEnterUp = false
-            // },
-            // dropUp () {
-            //     // fromComp.model.insertBefore(this.model)
-            //     this.isDragEnterUp = false
-            // },
+            // ドラッグしている要素がドロップ領域に入った
+            , dragenter() {
+                this.isDroppable = true;
+            }
+            // ドラッグしている要素がドロップ領域にある
+            , dragover(e) {
+                e.preventDefault();
+                return true;
+            }
+            // ドラッグしている要素がドロップ領域から出たとき
+            , dragleave () {
+                this.isDroppable = false;
+            }
+            // ドラッグしている要素がドロップ領域にドロップされた
+            , drop() {
+                // fromComp.model.insertBefore(this.model)
+                this.isDroppable = false;
+            }
             // dragEnterBottom () {
             //     this.isDragEnterBottom = true
             // },
@@ -176,7 +178,7 @@
             this.$options.components.item = require('./treeList.vue')
         }
         , created() {
-            
+
         }
     }
 </script>
