@@ -1,5 +1,5 @@
 <template lang="pug">
-    div
+    div(v-if="node != null")
         div
             div.border.up
 

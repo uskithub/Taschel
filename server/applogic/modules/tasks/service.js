@@ -22,6 +22,7 @@ module.exports = {
 		
 		modelPropFilter: "code type purpose name goal status root parent children author asignee lastCommunication createdAt updatedAt"
 
+		// TODO: populateModelsを改造すれば、下にのみpopulate、上にのみpopulateもできる
 		, modelPopulates: {
 			// "root": "tasks"			// 親にchildrenを持たせたので、populateすると循環参照になってpopulateが終わらなくなるので注意
 			// , "parent": "tasks"		//
@@ -38,10 +39,13 @@ module.exports = {
 				let filter = {};
 
 				if (ctx.params.type !== undefined) {
+					// /tasks?type=project
 					filter.type = ctx.params.type;
 				} else if (ctx.params.root_code !== undefined) {
+					// /tasks?root_code=${hash}
 					filter.root = this.taskService.decodeID(ctx.params.root_code);
 				} else if (ctx.params.user_code !== undefined) {
+					// /tasks?user_code=${hash}
 					let user_code = this.personService.decodeID(ctx.params.user_code);
 					filter.$or = [ {author : user_code}, {asignee : user_code} ];
 				} else {
