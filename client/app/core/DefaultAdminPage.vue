@@ -182,7 +182,13 @@
 				newRow.name = null;
 				newRow.purpose = `${this.model.goal} にするため`;
 				newRow.goal = null;
-				newRow.root_code = this.model.root.code;
+				newRow.children = [];
+				// TODO: 今はrootは必ずtype==projectであるとしている
+				if (this.model.root === undefined) {
+					newRow.root_code = (this.model.type == "project") ? this.model.code : null;
+				} else {
+					newRow.root_code = this.model.root.code;
+				}
 				newRow.parent_code = this.model.code;
 				newRow.asignee_code = undefined;
 				this.isNewModel = true;
