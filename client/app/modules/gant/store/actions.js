@@ -57,20 +57,20 @@ export const move = ({ commit }, moveContext) => {
         // 更新対象：
         //    - movingのparent（children）
         //    - moving（parent）
-        //    - targetのparent（children）
-        moving.parent.children = moving.parent.children.filter(c => c.code != moving.code);
-        moving.parent = target.parent;
-        let index = 0;
-        for (c in target.parent.children) {
-            if (c.code == target) {
-                break
-            }
-            index++;
-        }
-        target.parent.children.splice(index, 0, moving);
+		//    - targetのparent（children）
+		moving.parent.children = moving.parent.children.filter(c => c.code != moving.code);
+		moving.parent = target.parent;
+		let index = 0;
+		for (let c in target.parent.children) {
+			if (c.code == target) {
+				break;
+			}
+			index++;
+		}
+		target.parent.children.splice(index, 0, moving);
         
 	} else if (moveContext.type == "into") {
-        console.log("into =====");
+		console.log("into =====");
         // movingがtargetの子になる
         // - movingのparentのcildrenからmovingを削除
         // - targetをmovingのparentに
@@ -81,7 +81,7 @@ export const move = ({ commit }, moveContext) => {
         //    - target（children）
 		
 	} else {
-        console.log("else =====", moveContext.type);
+		console.log("else =====", moveContext.type);
         // movingがtargetの弟になる
         // - movingのparentのcildrenからmovingを削除
         // - targetのparentをmovingのparentに
@@ -90,16 +90,16 @@ export const move = ({ commit }, moveContext) => {
         //    - movingのparent（children）
         //    - moving（parent）
         //    - targetのparent（children）
-        moving.parent.children = moving.parent.children.filter(c => c.code != moving.code);
-        moving.parent = target.parent;
-        let index = 0;
-        for (c in target.parent.children) {
-            if (c.code == target) {
-                break
-            }
-            index++;
-        }
-        target.parent.children.splice(index+1, 0, moving);
+		moving.parent.children = moving.parent.children.filter(c => c.code != moving.code);
+		moving.parent = target.parent;
+		let index = 0;
+		for (let c in target.parent.children) {
+			if (c.code == target) {
+				break;
+			}
+			index++;
+		}
+		target.parent.children.splice(index+1, 0, moving);
 	}
 };
 
