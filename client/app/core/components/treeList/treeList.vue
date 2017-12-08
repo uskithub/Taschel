@@ -30,7 +30,7 @@
                     slot(name="addTreeNode")
                         i.vue-tree-icon.icon-folder-plus-e
 
-            div(v-if="node.children && node.children.length > 0 && isOpen", class="border bottom", :class="{'active': isDraggingToGoDown}"
+            div(class="border bottom", :class="{'active': isDraggingToGoDown}"
                 @drop="dropDown"
                 @dragenter="dragenterDown"
                 @dragover="dragover"
@@ -70,11 +70,11 @@
             itemIconClass () {
                 //return this.model.isLeaf ? 'icon-file' : 'icon-folder'
                 return 'icon-folder';
-            },
-            caretClass () {
+            }
+            , caretClass () {
                 return this.isOpen ? 'icon-caret-down' : 'icon-caret-right';
-            },
-            isFolder() {
+            }
+            , isFolder() {
                 return this.node.children && this.node.children.length > 0
             }
         }
@@ -129,30 +129,66 @@
             , dragleave (e) { this.isDraggingIntoChild = false; }
             , dragleaveDown (e) { this.isDraggingToGoDown = false; }
 
+            // obj1がobj2の子孫の場合、trueを返す
+            , isDescendant(obj1, obj2) {
+                if (obj1.parent == undefined) {
+                    return false;
+                } else {
+                    if (obj1.parent.code == obj2.code) {
+                        return true;
+                    } else {
+                        return this.isDescendant(obj1.parent, obj2);
+                    }
+                }
+            }
+            // obj1がobj2の子の場合、trueを返す
+            , isParent(obj1, obj2) {
+                return (obj1.parent != undefined && obj1.parent.code == obj2.code);
+            }
+
             // ドラッグしている要素がドロップ領域にドロップされた
             , dropUp(e) {
-                console.log(`● up ${ _self.node.name }, ${ this.node.name }`, this.$parent);
+                // - 子孫には移動不可
+                // - rootより上には移動不可
+                // - 自分の上には移動不可
+                console.log(`● up ${ _self.node.name }, ${ this.node.name }`);
+
+                this.isDraggingToGoUp = false;
+                if (this.node.parent == undefined) return;
+                if (_self.node.code == this.node.code) return;
+                let isDescendant = this.isDescendant(this.node, _self.node);
+                if (isDescendant) return;
+
                 this.$parent.move({
                     moving: _self.node
                     , target: this.node
                     , type: "up"});
-                this.isDraggingToGoUp = false;
             }
             , drop(e) {
-                console.log(`● into ${ _self.node.name }, ${ this.node.name }`, this.$parent);
+                // - 子孫には移動不可
+                // -  親には移動不可
+                console.log(`● into ${ _self.node.name }, ${ this.node.name }`);
+
+                this.isDraggingIntoChild = false;
+                let isDescendant = this.isDescendant(this.node, _self.node);
+                if (isDescendant) return;
+
+                let isParent = this.isParent(_self.node, this.node);
+                if (isParent) return;
+
                 this.$parent.move({
                     moving: _self.node
                     , target: this.node
                     , type: "into"});
-                this.isDraggingIntoChild = false;
             }
             , dropDown(e) {
-                console.log(`● down ${ _self.node.name }, ${ this.node.name }`, this.$parent);
+                // - 子孫にはい移動不可
+                console.log(`● down ${ _self.node.name }, ${ this.node.name }`);
+                this.isDraggingToGoDown = false;
                 this.$parent.move({
                     moving: _self.node
                     , target: this.node
                     , type: "down"});
-                this.isDraggingToGoDown = false;
             }
             // TreeListはVueComponentが再帰的に入れ子になっているので、最終的な読み出し元のindex.vueまで処理を上げていく
             , move(moveContext) {
@@ -232,7 +268,7 @@
             background-color: transparent;
         }
         &.bottom {
-            background-color: transparent;
+            background-color: #c00;
         }
         &.active {
             border-bottom: 3px dashed blue;
