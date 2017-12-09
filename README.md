@@ -1,12 +1,17 @@
 # TODO
 
+- [] タスクのformに開始日／期日を追加（自動的に工数を出す）
+  - [] 日付入力のコンポーネントを使えるようにする
 - [x] TasksでのProjectへの子タスク追加時、rootしか指定していないが、parentも同時に指定するようにする（この場合、root=parent）
 - [] ProjectsにはBreakdownを出さないようにする（Adminコンポーネントにスイッチを仕込むか）
 - [] Tasksで、form入力時にはProjectの名前を表示するようにする
 - [] My Tasksも、選択の解除を可能にする
-- [] My Tasksのformに、parent／root表示する
+- [x] My Tasksのformに、parent／root表示する
 - [] Tasks／MyTasksで、Cloneをしたとき、デフォルトのparent及びrootはコピー元と同じとするが、その後selectで選べるようにする（Cloneのときだけ場合分け？）
 - [] My Tasks でタスクツリーの Vueコンポーネントを作る
+  - [x] タスクツリーを表示
+  - [x] タスクツリーでタスクをドラッグ＆ドロップでぐりぐり移動
+  - [] 移動後のタスクを更新
 - [] My Tasks でカンバンの Vueコンポーネントを作る
 - [] 機能一覧を出したら見積りに使えるようにする
 
