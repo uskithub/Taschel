@@ -167,6 +167,7 @@
             , drop(e) {
                 // - 子孫には移動不可
                 // -  親には移動不可
+                // -  自身には移動不可
                 console.log(`● into ${ _self.node.name }, ${ this.node.name }`);
 
                 this.isDraggingIntoChild = false;
@@ -175,6 +176,8 @@
 
                 let isParent = this.isParent(_self.node, this.node);
                 if (isParent) return;
+
+                if (_self.node.code == this.node.code) return;
 
                 this.$parent.move({
                     moving: _self.node
