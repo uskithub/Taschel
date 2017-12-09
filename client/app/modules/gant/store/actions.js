@@ -48,8 +48,8 @@ export const move = ({ commit }, moveContext) => {
 	let moving = moveContext.moving;
 	let target = moveContext.target;
 
-	if (moveContext.type == "up") {
-        console.log("up =====");
+	if (moveContext.type == "above") {
+        console.log("above: before", target.parent.children.map(c => c.name));
         // movingがtargetの兄になる
         // - movingのparentのcildrenからmovingを削除
         // - targetのparentをmovingのparentに
@@ -61,16 +61,19 @@ export const move = ({ commit }, moveContext) => {
 		moving.parent.children = moving.parent.children.filter(c => c.code != moving.code);
 		moving.parent = target.parent;
 		let index = 0;
-		for (let c in target.parent.children) {
-			if (c.code == target) {
+		for (let i in target.parent.children) {
+            let c = target.parent.children[i];
+			if (c.code == target.code) {
 				break;
 			}
 			index++;
-		}
-		target.parent.children.splice(index, 0, moving);
+        }
+        target.parent.children.splice(index, 0, moving);
+        
+        //console.log("above: after ", index,  target.parent.children.map(c => c.name));
         
 	} else if (moveContext.type == "into") {
-		console.log("into =====");
+		console.log("into: before", target.parent.children.map(c => c.name));
         // movingがtargetの子になる
         // - movingのparentのcildrenからmovingを削除
         // - targetをmovingのparentに
@@ -79,9 +82,14 @@ export const move = ({ commit }, moveContext) => {
         //    - movingのparent（children）
         //    - moving（parent）
         //    - target（children）
+        moving.parent.children = moving.parent.children.filter(c => c.code != moving.code);
+        moving.parent = target;
+        target.children.unshift(moving);
+
+        // console.log("into: after ", target.parent.children.map(c => c.name));
 		
 	} else {
-		console.log("else =====", moveContext.type);
+		console.log("below: before", target.parent.children.map(c => c.name));
         // movingがtargetの弟になる
         // - movingのparentのcildrenからmovingを削除
         // - targetのparentをmovingのparentに
@@ -93,13 +101,16 @@ export const move = ({ commit }, moveContext) => {
 		moving.parent.children = moving.parent.children.filter(c => c.code != moving.code);
 		moving.parent = target.parent;
 		let index = 0;
-		for (let c in target.parent.children) {
-			if (c.code == target) {
+		for (let i in target.parent.children) {
+			let c = target.parent.children[i];
+			if (c.code == target.code) {
 				break;
 			}
 			index++;
 		}
-		target.parent.children.splice(index+1, 0, moving);
+        target.parent.children.splice(index+1, 0, moving);
+        
+        //console.log("below: after ", target.parent.children.map(c => c.name));
 	}
 };
 

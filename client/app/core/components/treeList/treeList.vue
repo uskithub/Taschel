@@ -2,10 +2,10 @@
     div(v-if="node != null")
         div
             div.border.up(:class="{'active': isDraggingToGoUp}"
-                @drop="dropUp" 
-                @dragenter="dragenterUp"
+                @drop="dropAbove"
+                @dragenter="dragenterAbove"
                 @dragover="dragover"
-                @dragleave="dragleaveUp")
+                @dragleave="dragleaveAbove")
 
             div.tree-node(:id="node.code", :class="{'active': isDraggingIntoChild}" draggable="true"
                 @click=""
@@ -31,10 +31,10 @@
                         i.vue-tree-icon.icon-folder-plus-e
 
             div(class="border bottom", :class="{'active': isDraggingToGoDown}"
-                @drop="dropDown"
-                @dragenter="dragenterDown"
+                @drop="dropBelow"
+                @dragenter="dragenterBelow"
                 @dragover="dragover"
-                @dragleave="dragleaveDown")
+                @dragleave="dragleaveBelow")
 
         div(:class="{'tree-margin': true}", v-show="isOpen")
             tree-list(v-for="child in node.children", :node="child" , :key='child.code')
@@ -114,9 +114,9 @@
             }
 
             // ドラッグしている要素がドロップ領域に入った
-            , dragenterUp(e) { this.isDraggingToGoUp = true; }
+            , dragenterAbove(e) { this.isDraggingToGoUp = true; }
             , dragenter(e) { this.isDraggingIntoChild = true; }
-            , dragenterDown(e) { this.isDraggingToGoDown = true; }
+            , dragenterBelow(e) { this.isDraggingToGoDown = true; }
 
             // ドラッグしている要素がドロップ領域にある
             , dragover(e) {
@@ -125,9 +125,9 @@
             }
             
             // ドラッグしている要素がドロップ領域から出たとき
-            , dragleaveUp (e) { this.isDraggingToGoUp = false; }
+            , dragleaveAbove (e) { this.isDraggingToGoUp = false; }
             , dragleave (e) { this.isDraggingIntoChild = false; }
-            , dragleaveDown (e) { this.isDraggingToGoDown = false; }
+            , dragleaveBelow (e) { this.isDraggingToGoDown = false; }
 
             // obj1がobj2の子孫の場合、trueを返す
             , isDescendant(obj1, obj2) {
@@ -147,11 +147,11 @@
             }
 
             // ドラッグしている要素がドロップ領域にドロップされた
-            , dropUp(e) {
+            , dropAbove(e) {
                 // - 子孫には移動不可
                 // - rootより上には移動不可
                 // - 自分の上には移動不可
-                console.log(`● up ${ _self.node.name }, ${ this.node.name }`);
+                console.log(`● above ${ _self.node.name }, ${ this.node.name }`);
 
                 this.isDraggingToGoUp = false;
                 if (this.node.parent == undefined) return;
@@ -162,7 +162,7 @@
                 this.$parent.move({
                     moving: _self.node
                     , target: this.node
-                    , type: "up"});
+                    , type: "above"});
             }
             , drop(e) {
                 // - 子孫には移動不可
@@ -181,14 +181,14 @@
                     , target: this.node
                     , type: "into"});
             }
-            , dropDown(e) {
+            , dropBelow(e) {
                 // - 子孫にはい移動不可
-                console.log(`● down ${ _self.node.name }, ${ this.node.name }`);
+                console.log(`● below ${ _self.node.name }, ${ this.node.name }`);
                 this.isDraggingToGoDown = false;
                 this.$parent.move({
                     moving: _self.node
                     , target: this.node
-                    , type: "down"});
+                    , type: "below"});
             }
             // TreeListはVueComponentが再帰的に入れ子になっているので、最終的な読み出し元のindex.vueまで処理を上げていく
             , move(moveContext) {
