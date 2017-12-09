@@ -73,7 +73,7 @@ export const move = ({ commit }, moveContext) => {
         //console.log("above: after ", index,  target.parent.children.map(c => c.name));
         
 	} else if (moveContext.type == "into") {
-		console.log("into: before", target.parent.children.map(c => c.name));
+		console.log("into: before", target.children.map(c => c.name));
         // movingがtargetの子になる
         // - movingのparentのcildrenからmovingを削除
         // - targetをmovingのparentに
@@ -86,7 +86,7 @@ export const move = ({ commit }, moveContext) => {
         moving.parent = target;
         target.children.unshift(moving);
 
-        // console.log("into: after ", target.parent.children.map(c => c.name));
+        // console.log("into: after ", target.children.map(c => c.name));
 		
 	} else {
 		console.log("below: before", target.parent.children.map(c => c.name));
@@ -109,7 +109,7 @@ export const move = ({ commit }, moveContext) => {
 			index++;
 		}
         target.parent.children.splice(index+1, 0, moving);
-        
+
         //console.log("below: after ", target.parent.children.map(c => c.name));
 	}
 };
