@@ -14,6 +14,7 @@
   - [] 移動後のタスクを更新
 - [] My Tasks でカンバンの Vueコンポーネントを作る
 - [] 機能一覧を出したら見積りに使えるようにする
+- [] projectsでBreakdownが成功したあと、stepなのにprojectのdata-tableが増えてしまう
 
 # Vue, Express, MongoDB full-stack JS Boilerplate
 

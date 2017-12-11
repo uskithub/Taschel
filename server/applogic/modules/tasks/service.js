@@ -74,9 +74,9 @@ module.exports = {
 				ctx.assertModelIsExist(ctx.t("app:TaskNotFound"));
 				return Promise.resolve(ctx.model);
 			}
-		},
+		}
 
-		create(ctx) {
+		, create(ctx) {
 			this.validateParams(ctx, true);
 			
 			let task = new Task({
@@ -101,21 +101,15 @@ module.exports = {
 			.then((json) => {
 				if (ctx.params.parent_code !== undefined) {
 					// breakdownの場合
-					let childId = this.taskService.decodeID(json.code);
-
-					// breakdownで親にupdateしているので、{ parent, child } の形で返している
-					let parentJson = this.actions.breakdown(ctx, childId);
-					this.notifyModelChanges(ctx, "brokedown", parentJson);
-					return { parent : parentJson, child : json };
-					
+					return this.actions.breakdown(ctx, json);
 				} else {
 					this.notifyModelChanges(ctx, "created", json);
 					return json;
 				}
 			});
-		},
+		}
 
-		update(ctx) {
+		, update(ctx) {
 			ctx.assertModelIsExist(ctx.t("app:TaskNotFound"));
 			this.validateParams(ctx);
 
@@ -149,9 +143,9 @@ module.exports = {
 				this.notifyModelChanges(ctx, "updated", json);
 				return json;
 			});								
-		},
+		}
 
-		remove(ctx) {
+		, remove(ctx) {
 			ctx.assertModelIsExist(ctx.t("app:TaskNotFound"));
 
 			return Task.remove({ _id: ctx.modelID })
@@ -165,23 +159,27 @@ module.exports = {
 		}
 
 		// 子タスクのcreate時に、同時に親の方に子タスクを付け加える
-		, breakdown(ctx, childId) {
+		, breakdown(ctx, childJson) {
 			// TODO: エラーコード／メッセージは見直すこと
 			if (ctx.params.parent_code === undefined)
 				throw this.errorBadRequest(C.ERR_MODEL_NOT_FOUND, ctx.t("app:TaskNotFound"));
 
 			let parentId = this.taskService.decodeID(ctx.params.parent_code);
+			let childId = this.taskService.decodeID(childJson.code);
 
 			return this.collection.findById(parentId).exec()
 			.then((doc) => {
 				return Task.findByIdAndUpdate(doc.id, { $addToSet: { children: childId }}, { "new": true });
 			})
 			.then((doc) => {
-				console.log("●ここは来てる After", doc);
 				return this.toJSON(doc);
 			})
 			.then((json) => {
 				return this.populateModels(json);
+			})
+			.then((json) => {
+				this.notifyModelChanges(ctx, "brokedown", { parent : json, child : childJson });
+				return { parent : json, child : childJson };
 			});
 		}
 

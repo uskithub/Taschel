@@ -249,33 +249,6 @@ class Service {
 		}
 		return Promise.resolve(docs);	
 	}
-	
-	_populateModels(docs, populateSchema) {
-		populateSchema = populateSchema || this.$settings.modelPopulates; 
-		if (docs != null && populateSchema) {
-			let promises = [];
-			_.forIn(populateSchema, (serviceName, field) => {
-				if (_.isString(serviceName)) {
-					let service = Services.get(serviceName);
-					if (service && _.isFunction(service["getByID"])) {
-						let items = _.isArray(docs) ? docs : [docs]; 
-						items.forEach((doc) => {
-							promises.push(service.getByID(doc[field]).then((populated) => {
-								doc[field] = populated;
-							}));
-						});
-					}
-				}
-			});
-
-			if (promises.length > 0) {
-				return Promise.all(promises).then(() => {
-					return docs;
-				});
-			}
-		}
-		return Promise.resolve(docs);		
-	}	
 
 	/**
 	 * Get model(s) by ID(s). The `id` can be a number or an array with IDs.
