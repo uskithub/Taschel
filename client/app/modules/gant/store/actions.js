@@ -58,19 +58,28 @@ export const move = ({ commit }, moveContext) => {
         //    - movingのparent（children）
         //    - moving（parent）
 		//    - targetのparent（children）
-		moving.parent.children = moving.parent.children.filter(c => c.code != moving.code);
-		moving.parent = target.parent;
-		let index = 0;
-		for (let i in target.parent.children) {
-            let c = target.parent.children[i];
-			if (c.code == target.code) {
-				break;
+		axios.put(`${NAMESPACE}/${moving.code}?above=${target.parent}`, moving).then((response) => {
+			let res = response.data;
+	
+			if (res.data) {
+				moving.parent.children = moving.parent.children.filter(c => c.code != moving.code);
+				moving.parent = target.parent;
+				let index = 0;
+				for (let i in target.parent.children) {
+					let c = target.parent.children[i];
+					if (c.code == target.code) {
+						break;
+					}
+					index++;
+				}
+				target.parent.children.splice(index, 0, moving);
+				
+				//console.log("above: after ", index,  target.parent.children.map(c => c.name));
 			}
-			index++;
-        }
-        target.parent.children.splice(index, 0, moving);
-        
-        //console.log("above: after ", index,  target.parent.children.map(c => c.name));
+		}).catch((response) => {
+			if (response.data.error)
+				toastr.error(response.data.error.message);
+		});
         
 	} else if (moveContext.type == "into") {
 		console.log("into: before", target.children.map(c => c.name));
