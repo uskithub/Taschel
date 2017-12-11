@@ -99,16 +99,19 @@ module.exports = {
 				return this.populateModels(json);
 			})
 			.then((json) => {
-				this.notifyModelChanges(ctx, "created", json);
-				return json;
-			})
-			.then((json) => {
-				let childId = this.taskService.decodeID(json.code);
-				// breakdownで親にupdateしているので、{ parent, child } の形で返している
-				return { 
-					parent : this.actions.breakdown(ctx, childId)
-					, child : json
-				};
+				if (ctx.params.parent_code !== undefined) {
+					// breakdownの場合
+					let childId = this.taskService.decodeID(json.code);
+
+					// breakdownで親にupdateしているので、{ parent, child } の形で返している
+					let parentJson = this.actions.breakdown(ctx, childId);
+					this.notifyModelChanges(ctx, "brokedown", parentJson);
+					return { parent : parentJson, child : json };
+					
+				} else {
+					this.notifyModelChanges(ctx, "created", json);
+					return json;
+				}
 			});
 		},
 
@@ -179,11 +182,12 @@ module.exports = {
 			})
 			.then((json) => {
 				return this.populateModels(json);
-			})
-			.then((json) => {
-				this.notifyModelChanges(ctx, "brokedown", json);
-				return json;
 			});
+		}
+
+		// タスクの入れ替え
+		, arrange(ctx) {
+
 		}
 
 	},

@@ -45,8 +45,16 @@ export const saveRow = ({ commit }, model) => {
 	axios.post(NAMESPACE, model).then((response) => {
 		let res = response.data;
 
-		if (res.status == 200 && res.data)
-			created({ commit }, res.data, true);
+		console.log("● saveRow on action.js", res);
+
+		if (res.status == 200 && res.data) {
+			if (res.data.child) {
+				// Breakdownした時はこちらに入る
+				brokedown({ commit }, res.data, true);
+			} else {
+				created({ commit }, res.data, true);
+			}
+		}
 	}).catch((response) => {
 		if (response.data.error)
 			toastr.error(response.data.error.message);
@@ -54,21 +62,19 @@ export const saveRow = ({ commit }, model) => {
 };
 
 export const created = ({ commit }, row, needSelect) => {
+	console.log("● created on action.js", row);
+	commit(ADD, row);
+	if (needSelect)
+		commit(SELECT, row, false);
+};
 
-	if (row.parent !== undefined) {
-		// Breakdownした時はこちらに入る
-		// { parent : JSON, child : JSON }
-		commit(UPDATE, row.parent);
-		commit(ADD, row.child);
+export const brokedown = ({ commit }, result, needSelect) => {
+	console.log("● brokedown on action.js", result);
+	commit(UPDATE, result.parent);
+	commit(ADD, result.child);
 
-		if (needSelect)
-			commit(SELECT, row.child, false);
-	} else {
-		commit(ADD, row);
-
-		if (needSelect)
-			commit(SELECT, row, false);
-	}
+	if (needSelect)
+		commit(SELECT, result.child, false);
 };
 
 export const updateRow = ({ commit }, row) => {
