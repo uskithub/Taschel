@@ -37,31 +37,39 @@
 		 * Socket handlers. Every property is an event handler
 		 */
 		, socket : {
-			prefix : "/mytasks/"
+			prefix : "/tasks/"
 			, events : {
 				/**
 				 * New task added
 				 * @param  {Object} res Task object
 				 */
 				created(res) {
+					// server側の this.notifyModelChanges(ctx, "created", json); で呼ばれる
+					console.log("● created on index.vue", res.data);
 					this.created(res.data);
 					toast.success(this._("TaskNameAdded", res), this._("追加しました"));
 				},
+
+				brokedown(res) {
+					console.log("● brokedown on index.vue", res.data);
+					this.brokedown(res.data);
+					toast.success(this._("TaskNameAdded", res), this._("ブレークダウンしました"));
+				}
 
 				/**
 				 * Task updated
 				 * @param  {Object} res Task object
 				 */
-				updated(res) {
+				, updated(res) {
 					this.updated(res.data);
 					toast.success(this._("TaskNameUpdated", res), this._("更新しました"));
-				},
+				}
 
 				/**
 				 * Task removed
 				 * @param  {Object} res Response object
 				 */
-				removed(res) {
+				, removed(res) {
 					this.removed(res.data);	
 					toast.success(this._("TaskNameDeleted", res), this._("削除しました"));
 				}
@@ -69,15 +77,16 @@
 		}		
 		, methods : {
 			...mapActions("common", [
-				"downloadTasks",
-				"created",
-				"updated",
-				"removed",
-				"selectRow",
-				"clearSelection",
-				"saveRow",
-				"updateRow",
-				"removeRow"
+				"downloadTasks"
+				, "created"
+				, "brokedown"
+				, "updated"
+				, "removed"
+				, "selectRow"
+				, "clearSelection"
+				, "saveRow"
+				, "updateRow"
+				, "removeRow"
 			])
 		}
 
