@@ -49,10 +49,10 @@ export const move = ({ commit }, moveContext) => {
 	let target = moveContext.target;
 
 	if (moveContext.type == "above") {
-        console.log("above: before", target.parent.children.map(c => c.name));
+		console.log("above: before", target.parent.children.map(c => c.name));
         // movingがtargetの兄になる
         // - movingのparentのcildrenからmovingを削除
-        // - targetのparentをmovingのparentに
+        // - movingのparentにtargetのparentを設定
         // - targetのparentのchildrenにmovingを追加（targetの前に）
         // 更新対象：
         //    - movingのparent（children）
@@ -76,15 +76,15 @@ export const move = ({ commit }, moveContext) => {
 		console.log("into: before", target.children.map(c => c.name));
         // movingがtargetの子になる
         // - movingのparentのcildrenからmovingを削除
-        // - targetをmovingのparentに
+        // - movingのparentにtargetを設定
         // - targetのchildrenにmovingを追加（先頭）
         // 更新対象：
         //    - movingのparent（children）
         //    - moving（parent）
         //    - target（children）
-        moving.parent.children = moving.parent.children.filter(c => c.code != moving.code);
-        moving.parent = target;
-        target.children.unshift(moving);
+		moving.parent.children = moving.parent.children.filter(c => c.code != moving.code);
+		moving.parent = target;
+		target.children.unshift(moving);
 
         // console.log("into: after ", target.children.map(c => c.name));
 		
@@ -92,7 +92,7 @@ export const move = ({ commit }, moveContext) => {
 		console.log("below: before", target.parent.children.map(c => c.name));
         // movingがtargetの弟になる
         // - movingのparentのcildrenからmovingを削除
-        // - targetのparentをmovingのparentに
+        // - movingのparentにtargetのparentを設定
         // - targetのparentのchildrenにmovingを追加（targetの後に）
         // 更新対象：
         //    - movingのparent（children）
@@ -108,7 +108,7 @@ export const move = ({ commit }, moveContext) => {
 			}
 			index++;
 		}
-        target.parent.children.splice(index+1, 0, moving);
+		target.parent.children.splice(index+1, 0, moving);
 
         //console.log("below: after ", target.parent.children.map(c => c.name));
 	}
