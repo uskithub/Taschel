@@ -291,6 +291,7 @@ module.exports = {
 				this.notifyModelChanges(ctx, "arranged", jsons);
 				if (type == "into") {
 					return {
+						// ここでのkeyは入れ替え前の「movingParent」
 						moving : jsons[0]
 						, movingParent : jsons[1]
 						, target : jsons[0]
