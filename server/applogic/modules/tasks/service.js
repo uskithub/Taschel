@@ -113,6 +113,10 @@ module.exports = {
 			ctx.assertModelIsExist(ctx.t("app:TaskNotFound"));
 			this.validateParams(ctx);
 
+			if (ctx.params.above !== undefined) {
+				return this.actions.arrange(ctx, 'above');
+			}
+
 			return this.collection.findById(ctx.modelID).exec()
 			.then((doc) => {
 
@@ -184,8 +188,50 @@ module.exports = {
 		}
 
 		// タスクの入れ替え
-		, arrange(ctx) {
+		, arrange(ctx, type) {
+			let promises = [];
 
+			// - movingのparentのcildrenからmovingを削除
+			let parentId = this.taskService.decodeID(ctx.params.parent);
+			let movingId = this.taskService.decodeID(ctx.params.code);
+			promises.push(this.collection.findById(parentId).exec()
+				.then((doc) => {
+					// wip: 作り掛け
+					doc.children = doc.children.map(c => c.id)
+				})
+			)
+
+
+			return this.collection.findById(ctx.modelID).exec()
+			.then((doc) => {
+
+				if (ctx.params.above != null)
+					doc.purpose = ctx.params.purpose;
+
+				if (ctx.params.type != null)
+					doc.type = ctx.params.type;
+
+				if (ctx.params.name != null)
+					doc.name = ctx.params.name;
+
+				if (ctx.params.goal != null)
+					doc.goal = ctx.params.goal;
+
+				if (ctx.params.status != null)
+					doc.status = ctx.params.status;
+
+				return doc.save();
+			})
+			.then((doc) => {
+				return this.toJSON(doc);
+			})
+			.then((json) => {
+				return this.populateModels(json);
+			})
+			.then((json) => {
+				this.notifyModelChanges(ctx, "updated", json);
+				return json;
+			});			
 		}
 
 	},

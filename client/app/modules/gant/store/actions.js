@@ -57,12 +57,19 @@ export const move = ({ commit }, moveContext) => {
         // 更新対象：
         //    - movingのparent（children）
         //    - moving（parent）
-		//    - targetのparent（children）
-		axios.put(`${NAMESPACE}/${moving.code}?above=${target.parent}`, moving).then((response) => {
+        //    - targetのparent（children）
+        
+        // 循環参照を断ち切る
+        let movingParent = moving.parent;
+        moving.parent = moving.parent.code;
+
+        console.log("回避", moving.parent);
+
+		axios.put(`${NAMESPACE}/${moving.code}?above=${target.parent.code}`, moving).then((response) => {
 			let res = response.data;
 	
 			if (res.data) {
-				moving.parent.children = moving.parent.children.filter(c => c.code != moving.code);
+                movingParent.children = movingParent.children.filter(c => c.code != moving.code);
 				moving.parent = target.parent;
 				let index = 0;
 				for (let i in target.parent.children) {
@@ -77,6 +84,7 @@ export const move = ({ commit }, moveContext) => {
 				//console.log("above: after ", index,  target.parent.children.map(c => c.name));
 			}
 		}).catch((response) => {
+            console.log("● err", response)
 			if (response.data.error)
 				toastr.error(response.data.error.message);
 		});
