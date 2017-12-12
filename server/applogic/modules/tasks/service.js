@@ -259,8 +259,7 @@ module.exports = {
 					});
 				})
 			);
-
-
+			
 			promises.push(this.collection.findById(movingId).exec()
 				.then((movingDoc) => {
 					if (type == "into") {
@@ -279,7 +278,7 @@ module.exports = {
 			return Promise.all(promises)
 			.then((docs) => {
 				// flatten
-				return [docs[0][0], docs[0][1], docs[1]];
+				return [docs[1], docs[0][0], docs[0][1]];
 			})
 			.then((docs) => {
 				console.log("●", docs);
@@ -292,15 +291,16 @@ module.exports = {
 				this.notifyModelChanges(ctx, "arranged", jsons);
 				if (type == "into") {
 					return {
-						movingParent : jsons[0]
-						, target : jsons[1]
-						, moving : jsons[0]
+						moving : jsons[0]
+						, movingParent : jsons[1]
+						, target : jsons[0]
+						
 					};
 				} else {
 					return {
-						movingParent : jsons[0]
-						, targetParent : jsons[1]
-						, moving : jsons[0]
+						moving : jsons[0]
+						, movingParent : jsons[1]
+						, targetParent : jsons[2]
 					};
 				}
 			});			
