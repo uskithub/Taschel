@@ -1,5 +1,6 @@
 # TODO
 
+- [] authorのpopulateを削る
 - [] タスクのformに開始日／期日を追加（自動的に工数を出す）
   - [] 日付入力のコンポーネントを使えるようにする
 - [x] TasksでのProjectへの子タスク追加時、rootしか指定していないが、parentも同時に指定するようにする（この場合、root=parent）
