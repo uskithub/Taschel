@@ -19,6 +19,20 @@ let recursiveSetParentReference = function(model) {
 	}
 };
 
+let recursiveRevertParentReference = function(model) {
+	if (model.parent != -1) {
+		model.parent = model.parent.code;
+	}
+	if (model.children == undefined) {
+		return model;
+	} else {
+		model.children = model.children.map((c) => {
+			return recursiveRevertParentReference(c);
+		});
+		return model;
+	}
+};
+
 export const selectProject = ({ commit }, row) => {
 	commit(SELECT_PROJECT, row);
 };
@@ -48,6 +62,12 @@ export const move = ({ commit }, moveContext) => {
 	let moving = moveContext.moving;
 	let target = moveContext.target;
 
+	// 循環参照を断ち切る
+	let movingParent = moving.parent;
+	moving = recursiveRevertParentReference(moving);
+
+	console.log("###", moving);
+
 	if (moveContext.type == "above") {
 		console.log("above: before", target.parent.children.map(c => c.name));
         // movingがtargetの兄になる
@@ -58,11 +78,6 @@ export const move = ({ commit }, moveContext) => {
         //    - movingのparent（children）
         //    - moving（parent）
         //    - targetのparent（children）
-        
-		// 循環参照を断ち切る（APIが成功した時は、Client側での入れ替え時に入れ替え後のオブジェクトで上書きされるので後処理は不要）
-		let movingParent = moving.parent;
-		moving.parent = moving.parent.code;
-
 		axios.put(`${NAMESPACE}/${moving.code}?arrange=above&target=${target.code}&targetParent=${target.parent.code}`, moving).then((response) => {
 			let res = response.data;
 	
@@ -70,6 +85,7 @@ export const move = ({ commit }, moveContext) => {
 				// ClientはClientで入れ替えをしている
 				movingParent.children = movingParent.children.filter(c => c.code != moving.code);
 				moving.parent = target.parent;
+				recursiveSetParentReference(moving);
 				let index = 0;
 				for (let i in target.parent.children) {
 					let c = target.parent.children[i];
@@ -84,9 +100,8 @@ export const move = ({ commit }, moveContext) => {
 			}
 		}).catch((response) => {
 			console.log("● err", response);
-			// parentへの参照を戻す
 			moving.parent = movingParent;
-
+			recursiveSetParentReference(moving);
 			if (response.data.error)
 				toastr.error(response.data.error.message);
 		});
@@ -101,11 +116,6 @@ export const move = ({ commit }, moveContext) => {
         //    - movingのparent（children）
         //    - moving（parent）
 		//    - target（children）
-		
-		// 循環参照を断ち切る（APIが成功した時は、Client側での入れ替え時に入れ替え後のオブジェクトで上書きされるので後処理は不要）
-		let movingParent = moving.parent;
-		moving.parent = moving.parent.code;
-
 		axios.put(`${NAMESPACE}/${moving.code}?arrange=into&target=${target.code}`, moving).then((response) => {
 			let res = response.data;
 
@@ -113,15 +123,15 @@ export const move = ({ commit }, moveContext) => {
 				// ClientはClientで入れ替えをしている
 				movingParent.children = movingParent.children.filter(c => c.code != moving.code);
 				moving.parent = target;
+				recursiveSetParentReference(moving);
 				target.children.unshift(moving);
 				
 				// console.log("into: after ", target.children.map(c => c.name));
 			}
 		}).catch((response) => {
 			console.log("● err", response);
-			// parentへの参照を戻す
 			moving.parent = movingParent;
-
+			recursiveSetParentReference(moving);
 			if (response.data.error)
 				toastr.error(response.data.error.message);
 		});
@@ -136,11 +146,6 @@ export const move = ({ commit }, moveContext) => {
         //    - movingのparent（children）
         //    - moving（parent）
 		//    - targetのparent（children）
-		
-		// 循環参照を断ち切る（APIが成功した時は、Client側での入れ替え時に入れ替え後のオブジェクトで上書きされるので後処理は不要）
-		let movingParent = moving.parent;
-		moving.parent = moving.parent.code;
-
 		axios.put(`${NAMESPACE}/${moving.code}?arrange=below&target=${target.code}&targetParent=${target.parent.code}`, moving).then((response) => {
 			let res = response.data;
 
@@ -148,6 +153,7 @@ export const move = ({ commit }, moveContext) => {
 				// ClientはClientで入れ替えをしている
 				movingParent.children = movingParent.children.filter(c => c.code != moving.code);
 				moving.parent = target.parent;
+				recursiveSetParentReference(moving);
 				let index = 0;
 				for (let i in target.parent.children) {
 					let c = target.parent.children[i];
@@ -162,9 +168,8 @@ export const move = ({ commit }, moveContext) => {
 			}
 		}).catch((response) => {
 			console.log("● err", response);
-			// parentへの参照を戻す
 			moving.parent = movingParent;
-
+			recursiveSetParentReference(moving);
 			if (response.data.error)
 				toastr.error(response.data.error.message);
 		});
