@@ -35,15 +35,16 @@
 		 * Socket handlers. Every property is an event handler
 		 */
 		, socket : {
-			prefix : "/gant/"
+			prefix : "/tasks/"
 			, events : {
 				/**
 				 * New task added
 				 * @param  {Object} res Task object
 				 */
-				created(res) {
-					this.created(res.data);
-					toast.success(this._("TaskNameAdded", res), this._("追加しました"));
+				arranged(res) {
+					console.log("● arranged", res);
+					// this.created(res.data);
+					toast.success(this._("TaskNameAdded", res), this._("再配置しました"));
 				},
 
 				/**

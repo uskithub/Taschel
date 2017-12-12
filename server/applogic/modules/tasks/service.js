@@ -113,8 +113,8 @@ module.exports = {
 			ctx.assertModelIsExist(ctx.t("app:TaskNotFound"));
 			this.validateParams(ctx);
 
-			if (ctx.params.above !== undefined) {
-				return this.actions.arrange(ctx, 'above');
+			if (ctx.params.arrange) {
+				return this.actions.arrange(ctx, ctx.params.arrange);
 			}
 
 			return this.collection.findById(ctx.modelID).exec()
@@ -189,51 +189,122 @@ module.exports = {
 
 		// タスクの入れ替え
 		, arrange(ctx, type) {
+			// TODO: バリデータ
+			// ?arrange=above&target=${target.code}&targetParent=${target.parent.code}
+
+			let movingId = this.taskService.decodeID(ctx.params.code);
+			let targetId = this.taskService.decodeID(ctx.params.target);
+			let targetParentId = this.taskService.decodeID(ctx.params.targetParent);
+			let parentId = this.taskService.decodeID(ctx.params.parent);
+			
 			let promises = [];
 
-			// - movingのparentのcildrenからmovingを削除
-			let parentId = this.taskService.decodeID(ctx.params.parent);
-			let movingId = this.taskService.decodeID(ctx.params.code);
+			// movingがtargetの兄になる
+			// 1. (moving->parent).cildrenからmovingを削除
+			// 2. moving.parentにtarget.parentを設定
+			// 3. (target->parent).childrenにmovingを追加（targetの前に）
+
+			// movingがtargetの子になる
+			// 1. (moving->parent).cildrenからmovingを削除
+			// 2. moving.parentにtargetを設定
+			// 3. target.childrenにmovingを追加（先頭）
+
+			// movingがtargetの弟になる
+			// 1. (moving->parent).cildrenからmovingを削除
+			// 2. moving.parentにtarget.parentを設定
+			// 3. (target->parent).childrenにmovingを追加（targetの後に）
+			
+			// above/into/below共通
+			// 1. (moving->parent).cildrenからmovingを削除
 			promises.push(this.collection.findById(parentId).exec()
-				.then((doc) => {
-					// wip: 作り掛け
-					doc.children = doc.children.map(c => c.id)
+				.then((parentDoc) => {
+					parentDoc.children = parentDoc.children.filter(c => c != movingId);
+					parentDoc.save();
+
+					// into 3. target.childrenにmovingを追加（先頭）
+					if (type == "into") {
+						return this.collection.findById(targetId).exec()
+						.then((targetDoc) => {
+							targetDoc.children.unshift(movingId);
+							targetDoc.save();
+							return [parentDoc, targetDoc];
+						});
+					}
+
+					// above 3. (target->parent).childrenにmovingを追加（targetの前に）
+					// below 3. (target->parent).childrenにmovingを追加（targetの後に）
+					return Promise.resolve()
+					.then(() => {
+						// 親が同じ中で入れ替えの場合はわざわざfindしない
+						if (parentId == targetParentId) {
+							return parentDoc;
+						} else {
+							return this.collection.findById(targetParentId).exec();
+						}
+					}).then((targetParentDoc) => {
+						let index = 0;
+						for (let i in targetParentDoc.children) {
+							let c = targetParentDoc.children[i];
+							if (c == targetId) {
+								break;
+							}
+							index++;
+						}
+						console.log("● before:", targetParentDoc.children);
+						targetParentDoc.children.splice((type=="below" ? index+1 : index), 0, movingId);
+						console.log("● after :", targetParentDoc.children);
+						targetParentDoc.save();
+	
+						return [parentDoc, targetParentDoc];
+					});
 				})
-			)
+			);
 
 
-			return this.collection.findById(ctx.modelID).exec()
-			.then((doc) => {
+			promises.push(this.collection.findById(movingId).exec()
+				.then((movingDoc) => {
+					if (type == "into") {
+						// into 2. moving.parentにtargetを設定
+						movingDoc.parent = targetId;
+					} else {
+						// above/below共通
+						// 2. moving.parentにtarget.parentを設定
+						movingDoc.parent = targetParentId;
+					}
+					movingDoc.save();
+					return movingDoc;
+				})
+			);
 
-				if (ctx.params.above != null)
-					doc.purpose = ctx.params.purpose;
-
-				if (ctx.params.type != null)
-					doc.type = ctx.params.type;
-
-				if (ctx.params.name != null)
-					doc.name = ctx.params.name;
-
-				if (ctx.params.goal != null)
-					doc.goal = ctx.params.goal;
-
-				if (ctx.params.status != null)
-					doc.status = ctx.params.status;
-
-				return doc.save();
+			return Promise.all(promises)
+			.then((docs) => {
+				// flatten
+				return [docs[0][0], docs[0][1], docs[1]];
 			})
-			.then((doc) => {
-				return this.toJSON(doc);
+			.then((docs) => {
+				console.log("●", docs);
+				return this.toJSON(docs);
 			})
-			.then((json) => {
-				return this.populateModels(json);
+			.then((jsons) => {
+				return this.populateModels(jsons);
 			})
-			.then((json) => {
-				this.notifyModelChanges(ctx, "updated", json);
-				return json;
+			.then((jsons) => {
+				this.notifyModelChanges(ctx, "arranged", jsons);
+				if (type == "into") {
+					return {
+						movingParent : jsons[0]
+						, target : jsons[1]
+						, moving : jsons[0]
+					};
+				} else {
+					return {
+						movingParent : jsons[0]
+						, targetParent : jsons[1]
+						, moving : jsons[0]
+					};
+				}
 			});			
 		}
-
 	},
 	
 	methods: {

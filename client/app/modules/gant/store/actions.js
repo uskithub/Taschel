@@ -51,25 +51,24 @@ export const move = ({ commit }, moveContext) => {
 	if (moveContext.type == "above") {
 		console.log("above: before", target.parent.children.map(c => c.name));
         // movingがtargetの兄になる
-        // - movingのparentのcildrenからmovingを削除
-        // - movingのparentにtargetのparentを設定
-        // - targetのparentのchildrenにmovingを追加（targetの前に）
+        // - (moving->parent).cildrenからmovingを削除
+		// - moving.parentにtarget.parentを設定
+		// - (target->parent).childrenにmovingを追加（targetの前に）
         // 更新対象：
         //    - movingのparent（children）
         //    - moving（parent）
         //    - targetのparent（children）
         
-        // 循環参照を断ち切る
-        let movingParent = moving.parent;
-        moving.parent = moving.parent.code;
+		// 循環参照を断ち切る（APIが成功した時は、Client側での入れ替え時に入れ替え後のオブジェクトで上書きされるので後処理は不要）
+		let movingParent = moving.parent;
+		moving.parent = moving.parent.code;
 
-        console.log("回避", moving.parent);
-
-		axios.put(`${NAMESPACE}/${moving.code}?above=${target.parent.code}`, moving).then((response) => {
+		axios.put(`${NAMESPACE}/${moving.code}?arrange=above&target=${target.code}&targetParent=${target.parent.code}`, moving).then((response) => {
 			let res = response.data;
 	
 			if (res.data) {
-                movingParent.children = movingParent.children.filter(c => c.code != moving.code);
+				// ClientはClientで入れ替えをしている
+				movingParent.children = movingParent.children.filter(c => c.code != moving.code);
 				moving.parent = target.parent;
 				let index = 0;
 				for (let i in target.parent.children) {
@@ -84,7 +83,10 @@ export const move = ({ commit }, moveContext) => {
 				//console.log("above: after ", index,  target.parent.children.map(c => c.name));
 			}
 		}).catch((response) => {
-            console.log("● err", response)
+			console.log("● err", response);
+			// parentへの参照を戻す
+			moving.parent = movingParent;
+
 			if (response.data.error)
 				toastr.error(response.data.error.message);
 		});
@@ -92,42 +94,80 @@ export const move = ({ commit }, moveContext) => {
 	} else if (moveContext.type == "into") {
 		console.log("into: before", target.children.map(c => c.name));
         // movingがtargetの子になる
-        // - movingのparentのcildrenからmovingを削除
-        // - movingのparentにtargetを設定
-        // - targetのchildrenにmovingを追加（先頭）
+        // - (moving->parent).cildrenからmovingを削除
+        // - moving.parentにtargetを設定
+        // - target.childrenにmovingを追加（先頭）
         // 更新対象：
         //    - movingのparent（children）
         //    - moving（parent）
-        //    - target（children）
-		moving.parent.children = moving.parent.children.filter(c => c.code != moving.code);
-		moving.parent = target;
-		target.children.unshift(moving);
+		//    - target（children）
+		
+		// 循環参照を断ち切る（APIが成功した時は、Client側での入れ替え時に入れ替え後のオブジェクトで上書きされるので後処理は不要）
+		let movingParent = moving.parent;
+		moving.parent = moving.parent.code;
 
-        // console.log("into: after ", target.children.map(c => c.name));
+		axios.put(`${NAMESPACE}/${moving.code}?arrange=into&target=${target.code}`, moving).then((response) => {
+			let res = response.data;
+
+			if (res.data) {
+				// ClientはClientで入れ替えをしている
+				movingParent.children = movingParent.children.filter(c => c.code != moving.code);
+				moving.parent = target;
+				target.children.unshift(moving);
+				
+				// console.log("into: after ", target.children.map(c => c.name));
+			}
+		}).catch((response) => {
+			console.log("● err", response);
+			// parentへの参照を戻す
+			moving.parent = movingParent;
+
+			if (response.data.error)
+				toastr.error(response.data.error.message);
+		});
 		
 	} else {
 		console.log("below: before", target.parent.children.map(c => c.name));
         // movingがtargetの弟になる
-        // - movingのparentのcildrenからmovingを削除
-        // - movingのparentにtargetのparentを設定
-        // - targetのparentのchildrenにmovingを追加（targetの後に）
+        // - (moving->parent).cildrenからmovingを削除
+        // - moving.parentにtarget.parentを設定
+        // - (target->parent).childrenにmovingを追加（targetの後に）
         // 更新対象：
         //    - movingのparent（children）
         //    - moving（parent）
-        //    - targetのparent（children）
-		moving.parent.children = moving.parent.children.filter(c => c.code != moving.code);
-		moving.parent = target.parent;
-		let index = 0;
-		for (let i in target.parent.children) {
-			let c = target.parent.children[i];
-			if (c.code == target.code) {
-				break;
-			}
-			index++;
-		}
-		target.parent.children.splice(index+1, 0, moving);
+		//    - targetのparent（children）
+		
+		// 循環参照を断ち切る（APIが成功した時は、Client側での入れ替え時に入れ替え後のオブジェクトで上書きされるので後処理は不要）
+		let movingParent = moving.parent;
+		moving.parent = moving.parent.code;
 
-        //console.log("below: after ", target.parent.children.map(c => c.name));
+		axios.put(`${NAMESPACE}/${moving.code}?arrange=below&target=${target.code}&targetParent=${target.parent.code}`, moving).then((response) => {
+			let res = response.data;
+
+			if (res.data) {
+				// ClientはClientで入れ替えをしている
+				movingParent.children = movingParent.children.filter(c => c.code != moving.code);
+				moving.parent = target.parent;
+				let index = 0;
+				for (let i in target.parent.children) {
+					let c = target.parent.children[i];
+					if (c.code == target.code) {
+						break;
+					}
+					index++;
+				}
+				target.parent.children.splice(index+1, 0, moving);
+				
+				//console.log("below: after ", index,  target.parent.children.map(c => c.name));
+			}
+		}).catch((response) => {
+			console.log("● err", response);
+			// parentへの参照を戻す
+			moving.parent = movingParent;
+
+			if (response.data.error)
+				toastr.error(response.data.error.message);
+		});
 	}
 };
 
