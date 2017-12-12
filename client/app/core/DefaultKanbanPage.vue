@@ -11,7 +11,8 @@
 		br
 		data-table(:schema="schema.projectTable", :rows="projects", :order="order", :search="search", :selected="selectedProject", :select="_selectProject", :select-all="selectAll")
 		br
-		kanban(:schema="schema.taskTable", :rows="tasks", :order="order", :search="search", :selected="selectedTasks", :select="_selectTasks", :select-all="selectAll")
+		kanban-board(:stages="statuses", :blocks="blocks",  @update-block="updateBlock")
+		//- kanban(:schema="schema.taskTable", :rows="tasks", :order="order", :search="search", :selected="selectedTasks", :select="_selectTasks", :select-all="selectAll")
 
 		.form(v-if="model")
 			vue-form-generator(:schema='schema.form', :model='model', :options='options', :multiple="selectedTasks.length > 1", ref="form", :is-new-model="isNewModel")
@@ -34,12 +35,15 @@
 </template>
 
 <script>
+    import faker from "faker";
 	import Vue from "vue";
 	import { schema as schemaUtils } from "vue-form-generator";
 	import DataTable from "./dataTable.vue";
-	import Kanban from "./kanban.vue";
+    import Kanban from "./kanban.vue";
+    // import KanbanBoard from "vue-kanban";
+    import KanbanBoard from "./kanban2.vue";
 
-	import { each, find, cloneDeep, isFunction } from "lodash";
+	import { each, find, cloneDeep, isFunction, debounce } from "lodash";
 
 	import { mapGetters, mapActions } from "vuex";
 
@@ -47,7 +51,8 @@
 
 		components: {
 			DataTable
-			, Kanban
+            , Kanban
+            , KanbanBoard
 		},
 
         // task-page(:schema="schema", :selectedProject="selectedProject", :selectedTasks="selectedTasks", :projects="projects", :tasks="tasks", :users="users") に対応させる
@@ -58,19 +63,30 @@
 			, "users"
 			, "selectedProject"
 			, "selectedTasks"
-		],
+        ]
 
-		data() {
+		, data() {
 			return {
+                statuses: ['on-hold', 'in-progress', 'needs-review', 'approved'],
+                blocks: [],
 				order: {
 					field: "id",
 					direction: 1
 				},
-
 				model: null,
 				isNewModel: false
-			};
-		},
+            };
+        },
+        
+        mounted() {
+            for (let i = 0; i <= 10; i += 1) {
+                this.blocks.push({
+                    id: i,
+                    status: this.statuses[Math.floor(Math.random() * 4)],
+                    title: faker.company.bs(),
+                });
+            }
+        },
 
 		computed: {
 			...mapGetters("session", {
@@ -124,6 +140,10 @@
 		},
 
 		methods: {
+
+            updateBlock: debounce(function (id, status) {
+                this.blocks.find(b => b.id === Number(id)).status = status;
+            }, 500),
 
 			_selectProject(event, row, add) {
 				this.isNewModel = false;
@@ -269,8 +289,79 @@
 
 </script>
 
-<style lang="scss" scoped>
-	@import "../../scss/common/mixins";
+<style lang="scss">
+    @import "../../scss/common/mixins";
+    @import "../../scss/kanban.scss";
+
+    $on-hold: #FB7D44;
+    $in-progress: #2A92BF;
+    $needs-review: #F4CE46;
+    $approved: #00B961;
+
+    * {
+    	box-sizing: border-box;
+    }
+
+    body {
+    	background: #33363D;
+    	color: white;
+    	font-family: 'Lato';
+    	font-weight: 300;
+    	line-height: 1.5;
+    	-webkit-font-smoothing: antialiased;
+    }
+
+    .drag-column {
+        &-on-hold {
+            .drag-column-header,
+            .is-moved,
+            .drag-options {
+                background: $on-hold;
+            }
+        }
+
+        &-in-progress {
+            .drag-column-header,
+            .is-moved,
+            .drag-options {
+                background: $in-progress;
+            }
+        }
+
+        &-needs-review {
+            .drag-column-header,
+            .is-moved,
+            .drag-options{
+                background: $needs-review;
+            }
+        }
+
+        &-approved {
+            .drag-column-header,
+            .is-moved,
+            .drag-options {
+                background: $approved;
+            }
+        }
+    }
+
+    .section {
+    	padding: 20px;
+    	text-align: center;
+
+    	a {
+    		color: white;
+    		text-decoration: none;
+    		font-weight: 300;
+    	}
+
+    	h4 {
+    		font-weight: 400;
+    		a {
+    			font-weight: 600;
+    		}
+    	}
+    }
 
 	.container {
 		padding: 1rem;
