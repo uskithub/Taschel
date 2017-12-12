@@ -283,6 +283,15 @@ class Service {
 				query = this.collection.findById(id);
 
 			return query.exec().then((docs) => {
+				if (_.isArray(docs)) {
+					// findの結果、_idの昇順に並び替わってしまうので、元の並びになるようにしている
+					let _docs = docs.reduce((obj, d) => { 
+						obj[d._id] = d;
+						return obj;
+					}, {});
+					let reorderedDocs = id.map(id => _docs[id]);
+					return this.toJSON(reorderedDocs);
+				}
 				return this.toJSON(docs);
 			})
 			.then((json) => {
