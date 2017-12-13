@@ -21,6 +21,12 @@
 							i.fa.fa-tasks
 						span.label {{ "Tasks" | i18n }}
 
+				router-link(tag="li", to="/kanban")
+					a(:title="_('Kanban')")
+						span.icon
+							i.fa.fa-tasks
+						span.label {{ "Kanban" | i18n }}
+
 				router-link(tag="li", to="/mytasks")
 					a(:title="_('MyTasks')")
 						span.icon

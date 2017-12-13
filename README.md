@@ -9,10 +9,10 @@
 - [] My Tasksも、選択の解除を可能にする
 - [x] My Tasksのformに、parent／root表示する
 - [] Tasks／MyTasksで、Cloneをしたとき、デフォルトのparent及びrootはコピー元と同じとするが、その後selectで選べるようにする（Cloneのときだけ場合分け？）
-- [] My Tasks でタスクツリーの Vueコンポーネントを作る
+- [x] My Tasks でタスクツリーの Vueコンポーネントを作る
   - [x] タスクツリーを表示
   - [x] タスクツリーでタスクをドラッグ＆ドロップでぐりぐり移動
-  - [] 移動後のタスクを更新
+  - [x] 移動後のタスクを更新
 - [] My Tasks でカンバンの Vueコンポーネントを作る
 - [] 機能一覧を出したら見積りに使えるようにする
 - [] projectsでBreakdownが成功したあと、stepなのにprojectのdata-tableが増えてしまう

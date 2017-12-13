@@ -5,7 +5,8 @@ import VueRouter from "vue-router";
 
 import Home from "../modules/home";
 import Projects from "../modules/projects"; 
-import Tasks from "../modules/tasks"; 
+import Tasks from "../modules/tasks";
+import Kanban from "../modules/kanban"; 
 import MyTasks from "../modules/mytasks";
 import Gant from "../modules/gant";
 import Counter from "../modules/counter";
@@ -21,6 +22,7 @@ export default new VueRouter({
 		{ path: "/", component: Home }
 		, { path: "/projects", component: Projects }
 		, { path: "/tasks", component: Tasks }
+		, { path: "/kanban", component: Kanban }
 		, { path: "/mytasks", component: MyTasks }
 		, { path: "/gant", component: Gant }
 		, { path: "/devices", component: Devices }
