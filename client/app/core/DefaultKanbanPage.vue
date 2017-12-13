@@ -35,7 +35,6 @@
 </template>
 
 <script>
-    import faker from "faker";
 	import Vue from "vue";
 	import { schema as schemaUtils } from "vue-form-generator";
 	import DataTable from "./dataTable.vue";
@@ -83,7 +82,7 @@
                 this.blocks.push({
                     id: i,
                     status: this.statuses[Math.floor(Math.random() * 4)],
-                    title: faker.company.bs(),
+                    title: "hogehoge",
                 });
             }
         },
