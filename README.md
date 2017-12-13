@@ -17,6 +17,7 @@
 - [] 機能一覧を出したら見積りに使えるようにする
 - [] projectsでBreakdownが成功したあと、stepなのにprojectのdata-tableが増えてしまう
 - [] ジャーニーマップライクに配置できて、プロセス分析できるようにしたい
+- [] -1で無駄に検索されている箇所があるので検索されないようにする
 
 # Vue, Express, MongoDB full-stack JS Boilerplate
 
