@@ -76,7 +76,7 @@
 		methods: {
 			// actions.jsと対応
 			...mapActions("tasks", [
-				"downloadProjects"
+				"downloadProjects" // `this.downloadProjects()` を `this.$store.dispatch('downloadProjects')` にマッピングする
 				, "downloadUsers"
 				, "created"
 				, "updated"

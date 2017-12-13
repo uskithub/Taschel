@@ -1,6 +1,6 @@
 import Vue from "vue";
 import moment from "moment";
-import { taskTypes } from "../tasks/types";
+import { groupTypes } from "./types";
 import { validators } from "vue-form-generator";
 
 import { find } from "lodash";
@@ -79,42 +79,29 @@ module.exports = {
 	form: {
 		fields: [
 			{
-				type: "text",
-				label: _("ID"),
-				model: "code",
+				type: "select",
+				label: _("GroupType"),
+				model: "type",
 				readonly: true,
 				disabled: true,
-				multi: false,
-				get(model) {
-					if (model.code)
-						return model.code;
-					else
-						return _("※自動採番");
-				}
-			},
-			{
-				type: "text"
-				, label: _("RootTask")
-				, model: "root_code"
-				, readonly: true
-				, disabled: true
-				, get(model) {
-					if (model.root_code)
-						return model.root_code;
-					else
-						return _("未設定");
-				}
-			},
-			{
-				type: "select",
-				label: _("TaskType"),
-				model: "type",
-				required: true,
-				values: taskTypes,
-				default: "step",
-				validator: validators.required
-			},	
-			{
+				values: groupTypes,
+				default: "kanban"
+			}
+			// , {
+			// 	type: "text",
+			// 	label: _("ID"),
+			// 	model: "code",
+			// 	readonly: true,
+			// 	disabled: true,
+			// 	multi: false,
+			// 	get(model) {
+			// 		if (model.code)
+			// 			return model.code;
+			// 		else
+			// 			return _("※自動採番");
+			// 	}
+			// }
+			, {
 				type: "text",
 				label: _("名称"),
 				model: "name",
@@ -122,8 +109,8 @@ module.exports = {
 				required: true,
 				placeholder: _("タスクの名称（何をするかが連想できる様に）"),
 				validator: validators.string
-			},
-			{
+			}
+			, {
 				type: "text",
 				label: _("目的"),
                 model: "purpose",
@@ -131,43 +118,18 @@ module.exports = {
 				featured: false,
 				required: true,
 				validator: validators.string
-			},	
-			{
-				type: "text",
-				label: _("ゴール"),
-				model: "goal",
-				placeholder: _("どういった状態になったら嬉しいか"),
-				validator: validators.string
-			},
-			{
-				type: "select",
-				label: _("Asignee"),
-				model: "asignee_code",
-				values: [] // index.vueにて後から設定している
-			},
-			{
-				type: "label",
-				label: _("LastCommunication"),
-				model: "lastCommunication",
-				get(model) { return model && model.lastCommunication ? moment(model.lastCommunication).fromNow() : "-"; }
-			},
-			{
-				type: "switch",
-				label: _("Status"),
-				model: "status",
-				multi: true,
-				default: 1,
-				textOn: _("Active"),
-				textOff: _("Inactive"),
-				valueOn: 1,
-				valueOff: 0
 			}
+			// , {
+			// 	type: "label",
+			// 	label: _("LastCommunication"),
+			// 	model: "lastCommunication",
+			// 	get(model) { return model && model.lastCommunication ? moment(model.lastCommunication).fromNow() : "-"; }
+			// }
 		]
 	},
 
 	options: {
 		searchable: true,
-
 
 		enableNewButton: true,
 		enabledSaveButton: true,

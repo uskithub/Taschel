@@ -1,3 +1,6 @@
+
+// stateから値を取り出すのはgetterを使う
+
 export function projects(state) {
 	return state.projects;
 }

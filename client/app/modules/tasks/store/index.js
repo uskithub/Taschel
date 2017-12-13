@@ -11,6 +11,9 @@ const state = {
 	, selectedTasks: []
 };
 
+// mutationにはstateを変更する処理を実装する。
+// mutationは同期でなければならない。
+
 const mutations = {
 	[LOAD_PROJECTS] (state, models) {
 		state.projects.splice(0);
