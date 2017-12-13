@@ -11,8 +11,7 @@
 		br
 		data-table(:schema="schema.projectTable", :rows="projects", :order="order", :search="search", :selected="selectedProject", :select="_selectProject", :select-all="selectAll")
 		br
-		kanban-board(:stages="statuses", :blocks="blocks",  @update-block="updateBlock")
-		//- kanban(:schema="schema.taskTable", :rows="tasks", :order="order", :search="search", :selected="selectedTasks", :select="_selectTasks", :select-all="selectAll")
+		kanban(:stages="statuses", :blocks="blocks",  @update-block="updateBlock")
 
 		.form(v-if="model")
 			vue-form-generator(:schema='schema.form', :model='model', :options='options', :multiple="selectedTasks.length > 1", ref="form", :is-new-model="isNewModel")
@@ -39,8 +38,6 @@
 	import { schema as schemaUtils } from "vue-form-generator";
 	import DataTable from "./dataTable.vue";
     import Kanban from "./kanban.vue";
-    // import KanbanBoard from "vue-kanban";
-    import KanbanBoard from "./kanban2.vue";
 
 	import { each, find, cloneDeep, isFunction, debounce } from "lodash";
 
@@ -51,7 +48,6 @@
 		components: {
 			DataTable
             , Kanban
-            , KanbanBoard
 		},
 
         // task-page(:schema="schema", :selectedProject="selectedProject", :selectedTasks="selectedTasks", :projects="projects", :tasks="tasks", :users="users") に対応させる
