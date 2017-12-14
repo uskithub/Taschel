@@ -37,7 +37,7 @@
 	import Vue from "vue";
 	import { schema as schemaUtils } from "vue-form-generator";
 	import DataTable from "./dataTable.vue";
-    import Kanban from "./kanban.vue";
+    import Kanban from "./components/kanban/index";
 
 	import { each, find, cloneDeep, isFunction, debounce } from "lodash";
 
