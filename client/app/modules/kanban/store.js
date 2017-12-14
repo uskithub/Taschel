@@ -16,6 +16,7 @@ import { each, find, assign, remove, isArray } from "lodash";
 const state = {
 	projects: []
 	, _projects: [] // 見本用
+	, groups: []
 	, tasks: []
 	, users: []
     , selectedProject: []
@@ -25,6 +26,7 @@ const state = {
 // stateから値を取り出すのはgetterを使う
 const getters = {
 	projects(state) { return state.projects; }
+	, groups(state) { return state.groups; }
 	, tasks(state) { return state.tasks; }
 	, users(state) { return state.users; }
 	, selectedProject(state) { return state.selectedProject; }
@@ -44,19 +46,20 @@ const mutations = {
 		state._projects.push(...models);
 	}
 	, [LOAD] (state, models) {
-		state.tasks.splice(0);
-		state.tasks.push(...models);
+		state.groups.splice(0);
+		state.groups.push(...models);
 	}
 	, [LOAD_USERS] (state, models) {
 		state.users.splice(0);
 		state.users.push(...models);
 	}
-	, [ADD] (state, models) {
+	, [ADD] (state, model) {
 		// models : { parent, cihld }
-		let isNotUpdate = !find(state.selectedTasks, (item) => item.code == models.child.code);
-		if (isNotUpdate) {
-			state.tasks.push(models.child);
-		}
+		// let isNotUpdate = !find(state.selectedTasks, (item) => item.code == models.child.code);
+		// if (isNotUpdate) {
+		// 	state.tasks.push(models.child);
+		// }
+		state.groups.push(model);
 	}
 	, [SELECT_PROJECT] (state, row) {
 		state.projects.splice(0);
@@ -65,22 +68,21 @@ const mutations = {
 		state.selectedProject.push(row);
 	}
 	, [SELECT] (state, row, multiSelect) {
-		console.log("●よばれとるんか??");
-		if (isArray(row)) {
-			state.selectedTasks.splice(0);
-			state.selectedTasks.push(...row);
-		} else {
-			if (multiSelect === true) {
-				if (state.selectedTasks.indexOf(row) != -1)
-					state.selectedTasks = state.selectedTasks.filter(item => item != row);
-				else
-					state.selectedTasks.push(row);
+		// if (isArray(row)) {
+		// 	state.selectedTasks.splice(0);
+		// 	state.selectedTasks.push(...row);
+		// } else {
+		// 	if (multiSelect === true) {
+		// 		if (state.selectedTasks.indexOf(row) != -1)
+		// 			state.selectedTasks = state.selectedTasks.filter(item => item != row);
+		// 		else
+		// 			state.selectedTasks.push(row);
 
-			} else {
-				state.selectedTasks.splice(0);
-				state.selectedTasks.push(row);
-			}
-		}
+		// 	} else {
+		// 		state.selectedTasks.splice(0);
+		// 		state.selectedTasks.push(row);
+		// 	}
+		// }
 	}
 	, [DESELECT_PROJECT] (state) {
 		state.selectedProject.splice(0);
@@ -108,12 +110,12 @@ const mutations = {
 
 // import * as getters from "./getters";
 import { createTask, readTasks, updateTask, deleteTask } from "../common/tasks/actions";
-import { createGroup  } from "../common/groups/actions";
+import { createGroup, readGroups  } from "../common/groups/actions";
 
 export default {
 	namespaced : true
 	, state
 	, getters
-	, actions : { createGroup, createTask, readTasks, updateTask, deleteTask }
+	, actions : { createGroup, readGroups, createTask, readTasks, updateTask, deleteTask }
 	, mutations
 };

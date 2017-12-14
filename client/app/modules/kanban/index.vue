@@ -1,5 +1,5 @@
 <template lang="pug">
-	kanban-page(:schema="schema", :selectedProject="selectedProject", :selectedTasks="selectedTasks", :projects="projects", :tasks="tasks", :users="users")
+	kanban-page(:schema="schema", :selectedProject="selectedProject", :selectedTasks="selectedTasks", :projects="projects", :groups="groups", :tasks="tasks", :users="users")
 </template>
 
 <script>
@@ -21,6 +21,7 @@
 		// getters.js に対応
 		computed: mapGetters("kanbanPage", [
 			"projects"
+			, "groups"
 			, "tasks"
 			, "users" 
 			, "selectedProject"
@@ -49,7 +50,7 @@
 				 */
 				created(res) {
 					this.created(res.data);
-					toast.success(this._("TaskNameAdded", res), this._("追加しました"));
+					toast.success(this._("GroupAdded", res), this._("追加しました"));
 				},
 
 				/**
@@ -58,7 +59,7 @@
 				 */
 				updated(res) {
 					this.updated(res.data);
-					toast.success(this._("TaskNameUpdated", res), this._("更新しました"));
+					toast.success(this._("GroupUpdated", res), this._("更新しました"));
 				},
 
 				/**
@@ -67,7 +68,7 @@
 				 */
 				removed(res) {
 					this.removed(res.data);	
-					toast.success(this._("TaskNameDeleted", res), this._("削除しました"));
+					toast.success(this._("GroupDeleted", res), this._("削除しました"));
 				}
 			}
 		},		
@@ -85,14 +86,15 @@
 			})
 			, ...mapActions("kanbanPage", {
 				getTasks : "readTasks"
+				, getGroups : "readGroups"
 				, updateModel : "updateTask"
 				, createModel : "createGroup"
 				, deleteModel : "deleteTask"
 			})
 			, selectProject(row) {
 				this._selectProject(row);
-				this.getTasks({
-					options: { root : row.code }
+				this.getGroups({
+					options: { parent : row.code }
 					, mutation: LOAD
 				});
 			}

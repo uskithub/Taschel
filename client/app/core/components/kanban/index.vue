@@ -1,41 +1,32 @@
 <template lang="pug">
 	div.drag-container
 		ul.drag-list
-			li(v-for="stage in stages" class="drag-column", :class="{['drag-column-' + stage]: true}", :key="stage")
+			li(v-for="board in boards" class="drag-column", :class="{['drag-column-' + board]: true}", :key="board")
 				span.drag-column-header
-					h2 {{ stage }}
+					h2 {{ board.name }}
 				div.drag-options
-				ul.drag-inner-list(ref="list", :data-status="stage")
-					li.drag-item(v-for="block in getBlocks(stage)", :data-block-id="block.id", :key="block.id")
-						slot(:name="block.id")
-							strong {{ block.status }}
-							div {{ block.id }}
+				ul.drag-inner-list(ref="list", :data-status="board")
+					li.drag-item(v-for="task in board.children", :data-task-id="task.code", :key="task.code")
+						slot(:name="task.name")
+							strong {{ task.name }}
+							div {{ task.code }}
 </template>
 
 <script>
 	import dragula from 'dragula';
 
 	export default {
-		props: {
-			stages: {}
-			, blocks: {}
-		}
+		props: [
+			"boards"
+			, "tasks"
+		]
 
-		, data() {
-			return {
-
-			};
-		}
 		, computed: {
-			localBlocks() {
-				return this.blocks;
-			}
+
 		}
 		
 		, methods: {
-			getBlocks(status) {
-				return this.localBlocks.filter(block => block.status === status);
-			}
+
 		}
 
 		, mounted() {
@@ -43,12 +34,12 @@
 				.on('drag', (el) => {
 					el.classList.add('is-moving');
 				})
-				.on('drop', (block, list) => {
+				.on('drop', (task, list) => {
 					let index = 0;
 					for (index = 0; index < list.children.length; index += 1) {
 						if (list.children[index].classList.contains('is-moving')) break;
 					}
-					this.$emit('update-block', block.dataset.blockId, list.dataset.status, index);
+					this.$emit('update-task', task.dataset.taskId, list.dataset.status, index);
 				})
 				.on('dragend', (el) => {
 					el.classList.remove('is-moving');

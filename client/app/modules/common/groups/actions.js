@@ -1,5 +1,6 @@
 import Vue from "vue";
 import toastr from "../../../core/toastr";
+import { ADD, SELECT } from "../../../common/mutationTypes";
 import axios from "axios";
 
 export const NAMESPACE = "/api/groups";
@@ -24,8 +25,22 @@ export const createGroup = ({ commit }, model) => {
 	});
 };
 
-export const readGroups = ({ commit }, mutation) => {
-	axios.get(NAMESPACE).then((response) => {
+// payload = {
+// 	options : {	
+//		parent : Task.code
+// 	}
+//	, mutation : "LOAD"
+// }
+export const readGroups = ({ commit }, { options, mutation }) => {
+	let url = NAMESPACE;
+	
+	if (options != undefined) {
+		if (options.parent != undefined) {
+			url = `${url}?parent_code=${options.parent}`;
+		}
+	} 
+
+	axios.get(url).then((response) => {
 		let res = response.data;
 		if (res.status == 200 && res.data)
 			commit(mutation, res.data);

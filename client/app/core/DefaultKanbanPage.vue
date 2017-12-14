@@ -9,9 +9,9 @@
 					| {{ schema.resources.addCaption || _("Add") }}
 			.right {{ _("SelectedOfAll", { selected: selectedTasks.length, all: tasks.length } ) }}
 		br
-		data-table(:schema="schema.projectTable", :rows="projects", :order="order", :search="search", :selected="selectedProject", :select="_selectProject", :select-all="selectAll")
+		data-table(:schema="schema.projectTable", :rows="projects", :order="order", :search="search", :selected="selectedProject", :select="didSelectProject", :select-all="selectAll")
 		br
-		kanban(:stages="statuses", :blocks="blocks",  @update-block="updateBlock")
+		kanban(:boards="groups", :tasks="tasks",  @update-block="updateBlock")
 
 		.form(v-if="model")
 			vue-form-generator(:schema='schema.form', :model='model', :options='options', :multiple="selectedTasks.length > 1", ref="form", :is-new-model="isNewModel")
@@ -53,7 +53,8 @@
         // task-page(:schema="schema", :selectedProject="selectedProject", :selectedTasks="selectedTasks", :projects="projects", :tasks="tasks", :users="users") に対応させる
 		props: [
 			"schema"
-            , "projects"
+			, "projects"
+			, "groups"
 			, "tasks"
 			, "users"
 			, "selectedProject"
@@ -138,9 +139,9 @@
 
             updateBlock: debounce(function (id, status) {
                 this.blocks.find(b => b.id === Number(id)).status = status;
-            }, 500),
+            }, 500)
 
-			_selectProject(event, row, add) {
+			, didSelectProject(event, row, add) {
 				this.isNewModel = false;
 
 				if (this.selectedProject.length > 0 && this.selectedProject[0] == row) {
@@ -197,7 +198,6 @@
                 // projectが設定されている場合、projectを設定
                 if (this.selectedProject.length > 0) {
                     let root =  this.selectedProject[0];
-					newRow.root_code = root.code;
 					newRow.parent_code = root.code;
                 }
 

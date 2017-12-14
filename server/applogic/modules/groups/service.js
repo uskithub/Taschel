@@ -7,6 +7,7 @@ let C 	 		= require("../../../core/constants");
 let _			= require("lodash");
 
 let Group 		= require("./models/group");
+let Task 		= require("../tasks/models/task");
 
 module.exports = {
 	settings: {
@@ -39,28 +40,41 @@ module.exports = {
 			cache: true,
 			handler(ctx) {
 				let filter = {};
-
-				if (ctx.params.type !== undefined) {
-					// /tasks?type=project
-					filter.type = ctx.params.type;
-				} else if (ctx.params.root_code !== undefined) {
-					// /tasks?root_code=${hash}
-					filter.root = this.groupService.decodeID(ctx.params.root_code);
-				} else if (ctx.params.user_code !== undefined) {
-					// /tasks?user_code=${hash}
-					let user_code = this.personService.decodeID(ctx.params.user_code);
-					filter.$or = [ {author : user_code}, {asignee : user_code} ];
-				} else {
-					filter.type = { $ne: "project" };
+				if (ctx.params.parent_code !== undefined) {
+					filter.root = this.taskService.decodeID(ctx.params.parent_code);
 				}
-
 				let query = Task.find(filter);
+				
+				return ctx.queryPageSort(query).exec().then( (taskDocs) => {
+					let filter = {};
+					if (ctx.params.parent_code !== undefined) {
+						filter.parent = this.taskService.decodeID(ctx.params.parent_code);
+					}
+					let query = Group.find(filter);
 
-				return ctx.queryPageSort(query).exec().then( (docs) => {
-					return this.toJSON(docs);
-				})
-				.then((json) => {
-					return this.populateModels(json);
+					return ctx.queryPageSort(query).exec().then( (docs) => {
+						return this.toJSON(docs);
+					})
+					.then((json) => {
+						let classifiedTasks = json.reduce((arr, g) => {
+							return arr.concat(g.children);
+						}, []);
+
+						let unclassifiedTasks = taskDocs.filter(d => { return !classifiedTasks.includes(d._id)});
+						let unclassifiedGroup = {
+							type: "kanban"
+							, name: "unclassified"
+							, purpose: "for_classify"
+							, parent: (ctx.params.parent_code !== undefined) ? this.taskService.decodeID(ctx.params.parent_code) : -1
+							, children : unclassifiedTasks
+							, author : ctx.user.id
+						};
+						return this.populateModels(json)
+						.then((json) => {
+							json.unshift(unclassifiedGroup);
+							return json;
+						});
+					});
 				});
 			}
 		},
@@ -69,19 +83,19 @@ module.exports = {
 		get: {
 			cache: true,
 			handler(ctx) {
-				ctx.assertModelIsExist(ctx.t("app:TaskNotFound"));
+				ctx.assertModelIsExist(ctx.t("app:GroupNotFound"));
 				return Promise.resolve(ctx.model);
 			}
 		}
 
 		, create(ctx) {
 			this.validateParams(ctx, true);
-			
+
 			let group = new Group({
 				type: ctx.params.type
                 , name: ctx.params.name
                 , purpose: ctx.params.purpose
-				, parent: (ctx.params.parent_code !== undefined) ? this.groupService.decodeID(ctx.params.parent_code) : -1
+				, parent: (ctx.params.parent_code !== undefined) ? this.taskService.decodeID(ctx.params.parent_code) : -1
 				, author : ctx.user.id
 			});
 
@@ -93,23 +107,14 @@ module.exports = {
 				return this.populateModels(json);
 			})
 			.then((json) => {
-				if (ctx.params.parent_code !== undefined) {
-					// breakdownの場合
-					return this.actions.breakdown(ctx, json);
-				} else {
-					this.notifyModelChanges(ctx, "created", json);
-					return json;
-				}
+				this.notifyModelChanges(ctx, "created", json);
+				return json;
 			});
 		}
 
 		, update(ctx) {
-			ctx.assertModelIsExist(ctx.t("app:TaskNotFound"));
+			ctx.assertModelIsExist(ctx.t("app:GroupNotFound"));
 			this.validateParams(ctx);
-
-			if (ctx.params.arrange) {
-				return this.actions.arrange(ctx, ctx.params.arrange);
-			}
 
 			return this.collection.findById(ctx.modelID).exec()
 			.then((doc) => {
@@ -117,17 +122,8 @@ module.exports = {
 				if (ctx.params.purpose != null)
 					doc.purpose = ctx.params.purpose;
 
-				if (ctx.params.type != null)
-					doc.type = ctx.params.type;
-
 				if (ctx.params.name != null)
 					doc.name = ctx.params.name;
-
-				if (ctx.params.goal != null)
-					doc.goal = ctx.params.goal;
-
-				if (ctx.params.status != null)
-					doc.status = ctx.params.status;
 
 				return doc.save();
 			})
@@ -144,7 +140,7 @@ module.exports = {
 		}
 
 		, remove(ctx) {
-			ctx.assertModelIsExist(ctx.t("app:TaskNotFound"));
+			ctx.assertModelIsExist(ctx.t("app:GroupNotFound"));
 
 			return Task.remove({ _id: ctx.modelID })
 			.then(() => {
@@ -154,31 +150,6 @@ module.exports = {
 				this.notifyModelChanges(ctx, "removed", json);
 				return json;
 			});		
-		}
-
-		// 子タスクのcreate時に、同時に親の方に子タスクを付け加える
-		, breakdown(ctx, childJson) {
-			// TODO: エラーコード／メッセージは見直すこと
-			if (ctx.params.parent_code === undefined)
-				throw this.errorBadRequest(C.ERR_MODEL_NOT_FOUND, ctx.t("app:TaskNotFound"));
-
-			let parentId = this.groupService.decodeID(ctx.params.parent_code);
-			let childId = this.groupService.decodeID(childJson.code);
-
-			return this.collection.findById(parentId).exec()
-			.then((doc) => {
-				return Task.findByIdAndUpdate(doc.id, { $addToSet: { children: childId }}, { "new": true });
-			})
-			.then((doc) => {
-				return this.toJSON(doc);
-			})
-			.then((json) => {
-				return this.populateModels(json);
-			})
-			.then((json) => {
-				this.notifyModelChanges(ctx, "brokedown", { parent : json, child : childJson });
-				return { parent : json, child : childJson };
-			});
 		}
 	},
 	
@@ -194,9 +165,6 @@ module.exports = {
 			if (strictMode || ctx.hasParam("name"))
 				ctx.validateParam("name").trim().notEmpty(ctx.t("app:TaskNameCannotBeBlank")).end();
 
-			if (strictMode || ctx.hasParam("status"))
-				ctx.validateParam("status").isNumber();
-
 			ctx.validateParam("purpose").trim().end();
 			ctx.validateParam("type").trim().end();
 
@@ -208,6 +176,7 @@ module.exports = {
 	init(ctx) {
 		// Fired when start the service
 		this.groupService = ctx.services("groups");
+		this.taskService = ctx.services("tasks");
 		this.personService = ctx.services("persons");
 	},
 
