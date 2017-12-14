@@ -105,10 +105,10 @@
 			}
 
 			// propsで指定した名前に合わせる必要あり
-			, selectedTask() {
+			, selectedTasks() {
 				console.log("●● selectedTask")
-				// if (!this.isNewModel)
-				// 	this.generateModel();
+				if (!this.isNewModel)
+					this.generateModel();
 			}
 
 			/*
@@ -161,11 +161,11 @@
 			}
 
 			, generateModel() {
-				if (this.selected.length == 1) {
-					this.model = cloneDeep(this.selected[0]);
+				if (this.selectedTasks.length == 1) {
+					this.model = cloneDeep(this.selectedTasks[0]);
 				}
 				else if (this.selected.length > 1) {
-					this.model = schemaUtils.mergeMultiObjectFields(this.schema.form, this.selected);
+					this.model = schemaUtils.mergeMultiObjectFields(this.schema.form, this.selectedTasks);
 				}
 				else
 					this.model = null;

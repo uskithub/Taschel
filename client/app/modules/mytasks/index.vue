@@ -8,7 +8,8 @@
 	import schema from "./schema";
 	import toast from "../../core/toastr";
 
-	import { mapGetters, mapActions } from "vuex";
+	import { mapGetters, mapMutations, mapActions } from "vuex";
+	import { LOAD, SELECT, CLEAR_SELECT, ADD , UPDATE, REMOVE } from "../../common/mutationTypes";
 
 	export default {
 		
@@ -16,11 +17,11 @@
 			ListPage: ListPage
 		}
 		, computed : {
-			...mapGetters("common", [
+			...mapGetters("mytasksPage", [
 				"tasks",
 				"selected"
-			]),
-			...mapGetters("session", [
+			])
+			, ...mapGetters("session", [
 				"me"
 			])
 		}
@@ -48,11 +49,13 @@
 					console.log("● created on index.vue", res.data);
 					this.created(res.data);
 					toast.success(this._("TaskNameAdded", res), this._("追加しました"));
-				},
+				}
 
-				brokedown(res) {
+				, brokedown(res) {
 					console.log("● brokedown on index.vue", res.data);
-					this.brokedown(res.data);
+					this.update(res.data.parent);
+					this.created(res.data.child);
+					this.selectRow(res.data.child, false);
 					toast.success(this._("TaskNameAdded", res), this._("ブレークダウンしました"));
 				}
 
@@ -76,18 +79,19 @@
 			}
 		}		
 		, methods : {
-			...mapActions("common", [
-				"downloadTasks"
-				, "created"
-				, "brokedown"
-				, "updated"
-				, "removed"
-				, "selectRow"
-				, "clearSelection"
-				, "saveRow"
-				, "updateRow"
-				, "removeRow"
-			])
+			...mapMutations("mytasksPage", {
+				selectRow : SELECT
+				, updated : UPDATE
+				, clearSelection : CLEAR_SELECT
+				, created : ADD
+				, removed : REMOVE
+			})
+			, ...mapActions("mytasksPage", {
+				getTasks : "readTasks"
+				, updateRow : "updateTask"
+				, saveRow : "createTask"
+				, removeRow : "deleteTask"
+			})
 		}
 
 		/**
@@ -95,7 +99,10 @@
 		 */
 		, created() {
 			// Download rows for the page
-			this.downloadTasks({user : this.me.code});
+			this.getTasks({ 
+				options: { user : this.me.code }
+				, mutation: LOAD
+			});
 		}
 	};
 </script>

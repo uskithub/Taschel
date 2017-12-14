@@ -8,7 +8,8 @@
 	import schema from "./schema";
 	import toast from "../../core/toastr";
 
-	import { mapGetters, mapActions } from "vuex";
+	import { mapGetters, mapMutations, mapActions } from "vuex";
+	import { LOAD_PROJECTS, SELECT_PROJECT, DESELECT_PROJECT } from "../../common/mutationTypes";
 
 	export default {
 		
@@ -16,7 +17,7 @@
 			GantPage: GantPage
 		}
 		, computed : {
-			...mapGetters("gant", [
+			...mapGetters("gantPage", [
 				"projects"
 				, "selectedProject"
 			])
@@ -67,12 +68,17 @@
 			}
 		}		
 		, methods : {
-			...mapActions("gant", [
-				"downloadProjects"
-				, "selectProject"
-				, "deselectProject"
-				, "move"
-			]),
+			...mapMutations("gantPage", {
+				selectProject : SELECT_PROJECT
+				, deselectProject : DESELECT_PROJECT
+			})
+			, ...mapActions("gantPage", {
+				getTasks : "readTasks"
+				// , updateRow : "updateTask"
+				// , saveRow : "createTask"
+				// , removeRow : "deleteTask"
+				, move : "moveTask"
+			}),
 		}
 
 		/**
@@ -80,7 +86,10 @@
 		 */
 		, created() {
 			// Download rows for the page
-			this.downloadProjects();
+			this.getTasks({
+				options: { taskType : "project", populateParent : true }
+				, mutation: LOAD_PROJECTS
+			});
 		}
 	};
 </script>

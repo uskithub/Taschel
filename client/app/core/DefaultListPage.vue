@@ -111,10 +111,8 @@
 				
 				if (this.schema.table.multiSelect === true && (add || (event && event.ctrlKey))) {
 					this.$parent.selectRow(row, true);
-					// this.$parent.store.commit('selectRow', row, true);
 				} else {
 					this.$parent.selectRow(row, false);
-					// this.$parent.store.commit('selectRow', row, false);
 				}
 			},
 
@@ -127,7 +125,6 @@
 				if (this.selected.length < filteredRows.length) {
 					// Select all
 					this.$parent.selectRow(filteredRows, false);
-					// this.$parent.store.commit('selectRow', filteredRows, false);
 				} else {
 					// Unselect all 
 					this.$parent.clearSelection();
@@ -143,9 +140,9 @@
 				}
 				else
 					this.model = null;
-			},
+			}
 
-			newModel() {
+			, newModel() {
 				console.log("Create new model...");
 
 				this.$parent.clearSelection();

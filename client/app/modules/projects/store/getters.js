@@ -1,5 +1,5 @@
-export function tasks(state) {
-	return state.tasks;
+export function projects(state) {
+	return state.projects;
 }
 
 export function selected(state) {

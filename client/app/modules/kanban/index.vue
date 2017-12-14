@@ -8,7 +8,8 @@
 	import schema from "./schema";
 	import toast from "../../core/toastr";
 
-	import { mapGetters, mapActions } from "vuex";
+	import { mapGetters, mapMutations, mapActions } from "vuex";
+	import { LOAD_PROJECTS, SELECT, CLEAR_SELECT, ADD , UPDATE, REMOVE } from "../../common/mutationTypes";
 
     // @see: https://github.com/vue-generators/vue-form-generator
 	export default {
@@ -18,7 +19,7 @@
 		},
 
 		// getters.js に対応
-		computed: mapGetters("tasks", [
+		computed: mapGetters("kanbanPage", [
 			"projects"
 			, "tasks"
 			, "users" 
@@ -74,22 +75,19 @@
 		},		
 
 		methods: {
-			// actions.jsと対応
-			...mapActions("tasks", [
-				"downloadProjects"
-				, "downloadUsers"
-				, "created"
-				, "updated"
-				, "removed"
-				, "selectProject"
-				, "selectTasks"
-				, "deselectProject"
-				, "deselectTask"
-				, "clearSelection"
-				, "saveRow"
-				, "updateRow"
-				, "removeRow"
-			])
+			...mapMutations("kanbanPage", {
+				selectRow : SELECT
+				, updated : UPDATE
+				, clearSelection : CLEAR_SELECT
+				, created : ADD
+				, removed : REMOVE
+			})
+			, ...mapActions("kanbanPage", {
+				getTasks : "readTasks"
+				, updateRow : "updateTask"
+				, saveRow : "createTask"
+				, removeRow : "deleteTask"
+			})
 		},
 
 		/**
@@ -97,8 +95,10 @@
 		 */
 		created() {
 			// Download rows for the page
-			this.downloadProjects();
-			this.downloadUsers();
+			this.getTasks({
+				options: { taskType : "project" }
+				, mutation: LOAD_PROJECTS
+			});
 		}
 	};
 </script>

@@ -8,7 +8,8 @@
 	import schema from "./schema";
 	import toast from "../../core/toastr";
 
-	import { mapGetters, mapActions } from "vuex";
+	import { mapGetters, mapMutations, mapActions } from "vuex";
+	import { LOAD, SELECT, CLEAR_SELECT, ADD , UPDATE, REMOVE, LOAD_PROJECTS, LOAD_USERS, SELECT_PROJECT, DESELECT_PROJECT, DESELECT } from "../../common/mutationTypes";
 
     // @see: https://github.com/vue-generators/vue-form-generator
 	export default {
@@ -18,7 +19,7 @@
 		},
 
 		// getters.js に対応
-		computed: mapGetters("tasks", [
+		computed: mapGetters("tasksPage", [
 			"projects"
 			, "tasks"
 			, "users" 
@@ -40,9 +41,7 @@
 		 * Socket handlers. Every property is an event handler
 		 */
 		socket: {
-
-			prefix: "/projects/",
-
+			prefix: "/tasks/",
 			events: {
 				/**
 				 * New task added
@@ -50,6 +49,7 @@
 				 */
 				created(res) {
 					this.created(res.data);
+					this.deselectTask(res.data);
 					toast.success(this._("TaskNameAdded", res), this._("追加しました"));
 				},
 
@@ -74,22 +74,35 @@
 		},		
 
 		methods: {
-			// actions.jsと対応
-			...mapActions("tasks", [
-				"downloadProjects" // `this.downloadProjects()` を `this.$store.dispatch('downloadProjects')` にマッピングする
-				, "downloadUsers"
-				, "created"
-				, "updated"
-				, "removed"
-				, "selectProject"
-				, "selectTasks"
-				, "deselectProject"
-				, "deselectTask"
-				, "clearSelection"
-				, "saveRow"
-				, "updateRow"
-				, "removeRow"
-			])
+			...mapMutations("tasksPage", {
+				_selectProject : SELECT_PROJECT
+				, selectTasks : SELECT
+				, _deselectProject : DESELECT_PROJECT
+				, loadTasks : LOAD
+				, deselectTask : DESELECT
+				, clearSelection : CLEAR_SELECT
+				, created : ADD
+				, updated : UPDATE
+				, removed : REMOVE
+			})
+			, ...mapActions("tasksPage", {
+				getTasks : "readTasks"		// `this.getTasks()` を `this.$store.dispatch('getTasks')` にマッピングする
+				, updateRow : "updateTask"
+				, saveRow : "createTask"
+				, removeRow : "deleteTask"
+				, getUsers : "readUsers"
+			})
+			, selectProject(row) {
+				this._selectProject(row);
+				this.getTasks({
+					options: { root : row.code }
+					, mutation: LOAD
+				});
+			}
+			, deselectProject() {
+				this._deselectProject();
+				this.loadTasks([]);
+			}
 		},
 
 		/**
@@ -97,8 +110,11 @@
 		 */
 		created() {
 			// Download rows for the page
-			this.downloadProjects();
-			this.downloadUsers();
+			this.getTasks({ 
+				options: { taskType : "project" }
+				, mutation: LOAD_PROJECTS
+			});
+			this.getUsers();
 		}
 	};
 </script>

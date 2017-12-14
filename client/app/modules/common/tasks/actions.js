@@ -1,9 +1,12 @@
 import Vue from "vue";
 import toastr from "../../../core/toastr";
-import { LOAD_PROJECTS, SELECT_PROJECT, DESELECT_PROJECT } from "./types";
+import { UPDATE, ADD, REMOVE, SELECT } from "../../../common/mutationTypes";
 import axios from "axios";
 
 export const NAMESPACE = "/api/tasks";
+
+
+/* private */
 
 // APIの戻りでは、childrenは実体だが、parentはcodeになっている
 // これを再帰的にparentのObject（参照）にしている
@@ -19,6 +22,7 @@ let recursiveSetParentReference = function(model) {
 	}
 };
 
+// 相互参照しているオブジェクトをJSON化しようとすると無限ループになるので、parentをcodeに戻す
 let recursiveRevertParentReference = function(model) {
 	if (model.parent != -1) {
 		model.parent = model.parent.code;
@@ -33,43 +37,104 @@ let recursiveRevertParentReference = function(model) {
 	}
 };
 
-export const selectProject = ({ commit }, row) => {
-	commit(SELECT_PROJECT, row);
+
+
+// actionは非同期処理を実行する際に使う。
+// action自体はstateの変更はしない。
+// stateの変更にはmutationをcommitすることで行うこと。
+
+// { commit } はES2015 の引数分割束縛（argument destructuring）という文法
+
+export const createTask = ({ commit }, model) => {
+	axios.post(NAMESPACE, model).then((response) => {
+		let res = response.data;
+
+		if (res.status == 200 && res.data) {
+			if (res.data.child) {
+				// Breakdownした時はこちらに入る
+				commit(UPDATE, res.data.parent);
+				commit(ADD, res.data.child);
+				commit(SELECT, res.data.child, false);
+			} else {
+				commit(ADD, res.data);
+				commit(SELECT, res.data, false);
+			}
+		}
+	}).catch((response) => {
+		if (response.data.error)
+			toastr.error(response.data.error.message);
+	});
 };
 
-export const deselectProject = ({ commit }) => {
-	commit(DESELECT_PROJECT);
-};
+// payload = {
+// 	options : {	
+//		taskType : "project"
+//    	, user : People.code
+//    	, root : Task.code
+//    	, populateParent : true
+// 	}
+//	, mutation : "LOAD"
+// }
+export const readTasks = ({ commit }, payload) => {
+	let url = NAMESPACE;
 
-export const downloadProjects = ({ commit }) => {
-	axios.get(`${NAMESPACE}?type=project`).then((response) => {
+	if (payload && payload.options != undefined) {
+		if (payload.options.taskType !== undefined) {
+			url = `${url}?type=${payload.options.taskType}`;
+		} else if (payload.options.user !== undefined) {
+			url = `${url}?user_code=${payload.options.user}`;
+		} else if (payload.options.root !== undefined) {
+			url = `${url}?root_code=${payload.options.root}`;
+		}
+	} 
+	
+	axios.get(url).then((response) => {
 		let res = response.data;
 		if (res.status == 200 && res.data)
-			commit(LOAD_PROJECTS, res.data.map(d => recursiveSetParentReference(d)));
+			commit(payload.mutation, (payload.options && payload.options.populateParent) ? res.data.map(d => recursiveSetParentReference(d)) : res.data);
 		else
 			console.error("Request error!", res.error);
 
 	}).catch((response) => {
 		console.error("Request error!", response.statusText);
 	});
-
 };
 
-export const move = ({ commit }, moveContext) => {
-	// commit(DESELECT_PROJECT);
-	console.log("● move", moveContext.moving.name, moveContext.target.name, moveContext.type);
+export const updateTask = ({ commit }, row) => {
+	axios.put(NAMESPACE + "/" + row.code, row).then((response) => {
+		let res = response.data;
+		if (res.data)
+			commit(UPDATE, res.data);
+	}).catch((response) => {
+		if (response.data.error)
+			toastr.error(response.data.error.message);
+	});	
+};
+
+export const deleteTask = ({ commit }, row) => {
+	axios.delete(NAMESPACE + "/" + row.code).then((response) => {
+		commit(REMOVE, row);
+	}).catch((response) => {
+		if (response.data.error)
+			toastr.error(response.data.error.message);
+	});
+};
+
+export const moveTask = ({ commit }, moveContext) => {
+	console.log("● move", moveContext);
 
 	let moving = moveContext.moving;
 	let target = moveContext.target;
+	let targetParentCode = target.parent.code;
 
 	// 循環参照を断ち切る
 	let movingParent = moving.parent;
+	let targetParent = target.parent;
 	moving = recursiveRevertParentReference(moving);
 
-	console.log("###", moving);
+	console.log("###", moving.code, target, targetParent);
 
 	if (moveContext.type == "above") {
-		console.log("above: before", target.parent.children.map(c => c.name));
         // movingがtargetの兄になる
         // - (moving->parent).cildrenからmovingを削除
 		// - moving.parentにtarget.parentを設定
@@ -78,7 +143,7 @@ export const move = ({ commit }, moveContext) => {
         //    - movingのparent（children）
         //    - moving（parent）
         //    - targetのparent（children）
-		axios.put(`${NAMESPACE}/${moving.code}?arrange=above&target=${target.code}&targetParent=${target.parent.code}`, moving).then((response) => {
+		axios.put(`${NAMESPACE}/${moving.code}?arrange=above&target=${target.code}&targetParent=${targetParentCode}`, moving).then((response) => {
 			let res = response.data;
 	
 			if (res.data) {
@@ -107,7 +172,6 @@ export const move = ({ commit }, moveContext) => {
 		});
         
 	} else if (moveContext.type == "into") {
-		console.log("into: before", target.children.map(c => c.name));
         // movingがtargetの子になる
         // - (moving->parent).cildrenからmovingを削除
         // - moving.parentにtargetを設定
@@ -137,7 +201,6 @@ export const move = ({ commit }, moveContext) => {
 		});
 		
 	} else {
-		console.log("below: before", target.parent.children.map(c => c.name));
         // movingがtargetの弟になる
         // - (moving->parent).cildrenからmovingを削除
         // - moving.parentにtarget.parentを設定
@@ -146,7 +209,7 @@ export const move = ({ commit }, moveContext) => {
         //    - movingのparent（children）
         //    - moving（parent）
 		//    - targetのparent（children）
-		axios.put(`${NAMESPACE}/${moving.code}?arrange=below&target=${target.code}&targetParent=${target.parent.code}`, moving).then((response) => {
+		axios.put(`${NAMESPACE}/${moving.code}?arrange=below&target=${target.code}&targetParent=${targetParentCode}`, moving).then((response) => {
 			let res = response.data;
 
 			if (res.data) {
@@ -175,4 +238,3 @@ export const move = ({ commit }, moveContext) => {
 		});
 	}
 };
-

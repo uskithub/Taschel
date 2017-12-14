@@ -1,4 +1,4 @@
-import { LOAD_PROJECTS,SELECT_PROJECT, DESELECT_PROJECT } from "./types";
+import { LOAD_PROJECTS, SELECT_PROJECT, DESELECT_PROJECT } from "../../../common/mutationTypes";
 
 import { each, find, assign, remove, isArray } from "lodash";
 
@@ -31,12 +31,12 @@ const mutations = {
 };
 
 import * as getters from "./getters";
-import * as actions from "./actions";
+import { createTask, readTasks, updateTask, deleteTask, moveTask } from "../../common/tasks/actions";
 
 export default {
 	namespaced : true
 	, state
 	, getters
-	, actions
+	, actions : { createTask, readTasks, updateTask, deleteTask, moveTask }
 	, mutations
 };

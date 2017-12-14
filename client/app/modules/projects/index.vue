@@ -1,5 +1,5 @@
 <template lang="pug">
-	list-page(:schema="schema", :selected="selected", :rows="tasks")
+	list-page(:schema="schema", :selected="selected", :rows="projects")
 </template>
 
 <script>
@@ -8,7 +8,8 @@
 	import schema from "./schema";
 	import toast from "../../core/toastr";
 
-	import { mapGetters, mapActions } from "vuex";
+	import { mapGetters, mapMutations, mapActions } from "vuex";
+	import { LOAD, SELECT, CLEAR_SELECT, ADD , UPDATE, REMOVE } from "../../common/mutationTypes";
 
 	export default {
 		
@@ -16,8 +17,8 @@
 			ListPage: ListPage
 		},
 
-		computed: mapGetters("common", [
-			"tasks",
+		computed: mapGetters("projectsPage", [
+			"projects",
 			"selected"
 		]),
 
@@ -34,9 +35,7 @@
 		 * Socket handlers. Every property is an event handler
 		 */
 		socket: {
-
 			prefix: "/tasks/",
-
 			events: {
 				/**
 				 * New task added
@@ -47,9 +46,13 @@
 					toast.success(this._("TaskNameAdded", res), this._("追加しました"));
 				}
 
-				,brokedown(res) {
+				// TODO: ブレークダウン後のタスクがProjectに差し込まれてしまう
+				// ブレークダウンを表示さないようにする
+				, brokedown(res) {
 					console.log("● brokedown on index.vue", res.data);
-					this.brokedown(res.data);
+					this.update(res.data.parent);
+					this.created(res.data.child);
+					this.selectRow(res.data.child, false);
 					toast.success(this._("TaskNameAdded", res), this._("ブレークダウンしました"));
 				}
 
@@ -74,26 +77,30 @@
 		},		
 
 		methods: {
-			...mapActions("common", [
-				"downloadTasks"
-				, "created"
-				, "brokedown"
-				, "updated"
-				, "removed" 
-				, "selectRow"
-				, "clearSelection"
-				, "saveRow"
-				, "updateRow"
-				, "removeRow"
-			])
-		},
+			...mapMutations("projectsPage", {
+				selectRow : SELECT
+				, updated : UPDATE
+				, clearSelection : CLEAR_SELECT
+				, created : ADD
+				, removed : REMOVE
+			})
+			, ...mapActions("projectsPage", {
+				getTasks : "readTasks"
+				, updateRow : "updateTask"
+				, saveRow : "createTask"
+				, removeRow : "deleteTask"
+			})
+		}
 
 		/**
 		 * Call if the component is created
 		 */
-		created() {
+		, created() {
 			// Download rows for the page
-			this.downloadTasks({ taskType : "project" });
+			this.getTasks({
+				options: { taskType : "project" }
+				, mutation: LOAD
+			});
 		}
 	};
 </script>

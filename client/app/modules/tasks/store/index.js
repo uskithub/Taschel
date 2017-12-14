@@ -1,4 +1,15 @@
-import { LOAD_PROJECTS, LOAD_TASKS, LOAD_USERS, ADD, SELECT_TASKS, SELECT_PROJECT, DESELECT_PROJECT, DESELECT_TASK, CLEAR_SELECT, UPDATE, REMOVE } from "./types";
+import { LOAD_PROJECTS
+	, LOAD
+	, LOAD_USERS
+	, ADD
+	, SELECT
+	, SELECT_PROJECT
+	, DESELECT_PROJECT
+	, DESELECT
+	, CLEAR_SELECT
+	, UPDATE
+	, REMOVE 
+} from "../../../common/mutationTypes";
 
 import { each, find, assign, remove, isArray } from "lodash";
 
@@ -15,13 +26,15 @@ const state = {
 // mutationは同期でなければならない。
 
 const mutations = {
+	// 定数を関数名として使用できる ES2015 の算出プロパティ名（computed property name）機能を使用することで
+	// Lintできるようになったり、mutationの一覧性ができる
 	[LOAD_PROJECTS] (state, models) {
 		state.projects.splice(0);
 		state._projects.splice(0);
 		state.projects.push(...models);
 		state._projects.push(...models);
 	}
-	, [LOAD_TASKS] (state, models) {
+	, [LOAD] (state, models) {
 		state.tasks.splice(0);
 		state.tasks.push(...models);
 	}
@@ -42,7 +55,8 @@ const mutations = {
 		state.selectedProject.splice(0);
 		state.selectedProject.push(row);
 	}
-	, [SELECT_TASKS] (state, row, multiSelect) {
+	, [SELECT] (state, row, multiSelect) {
+		console.log("●よばれとるんか??");
 		if (isArray(row)) {
 			state.selectedTasks.splice(0);
 			state.selectedTasks.push(...row);
@@ -64,7 +78,7 @@ const mutations = {
 		state.projects.splice(0);
 		state.projects.push(...state._projects);
 	}
-	, [DESELECT_TASK] (state, row) {
+	, [DESELECT] (state, row) {
 		state.selectedTasks = state.selectedTasks.filter((item) => {
 			return item != row;
 		});
@@ -84,12 +98,13 @@ const mutations = {
 };
 
 import * as getters from "./getters";
-import * as actions from "./actions";
+import { createTask, readTasks, updateTask, deleteTask } from "../../common/tasks/actions";
+import { readUsers } from "../../common/persons/actions";
 
 export default {
 	namespaced : true
 	, state
 	, getters
-	, actions
+	, actions : { createTask, readTasks, updateTask, deleteTask, readUsers }
 	, mutations
 };
