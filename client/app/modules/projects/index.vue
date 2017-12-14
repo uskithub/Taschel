@@ -50,7 +50,7 @@
 				// ブレークダウンを表示さないようにする
 				, brokedown(res) {
 					console.log("● brokedown on index.vue", res.data);
-					this.update(res.data.parent);
+					this.updated(res.data.parent);
 					this.created(res.data.child);
 					this.selectRow(res.data.child, false);
 					toast.success(this._("TaskNameAdded", res), this._("ブレークダウンしました"));
