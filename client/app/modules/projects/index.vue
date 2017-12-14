@@ -1,10 +1,10 @@
 <template lang="pug">
-	admin-page(:schema="schema", :selected="selected", :rows="tasks")
+	list-page(:schema="schema", :selected="selected", :rows="tasks")
 </template>
 
 <script>
 	import Vue from "vue";
-	import AdminPage from "../../core/DefaultAdminPage.vue";
+	import ListPage from "../../core/DefaultListPage.vue";
 	import schema from "./schema";
 	import toast from "../../core/toastr";
 
@@ -13,7 +13,7 @@
 	export default {
 		
 		components: {
-			AdminPage: AdminPage
+			ListPage: ListPage
 		},
 
 		computed: mapGetters("common", [

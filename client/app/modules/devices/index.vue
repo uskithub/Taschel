@@ -4,7 +4,7 @@
 
 <script>
 	import Vue from "vue";
-	import AdminPage from "../../core/DefaultAdminPage.vue";
+	import AdminPage from "../../core/DefaultListPage.vue";
 	import schema from "./schema";
 	import toast from "../../core/toastr";
 
