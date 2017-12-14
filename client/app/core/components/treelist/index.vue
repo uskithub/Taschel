@@ -199,7 +199,7 @@
             }
         }
         , beforeCreate () {
-            this.$options.components.TreeList = require('./treeList.vue');
+            this.$options.components.TreeList = require('./index.vue');
         }
         , created() {
 

@@ -12,7 +12,7 @@
 	import Vue from "vue";
 	import { schema as schemaUtils } from "vue-form-generator";
 	import DataTable from "./dataTable.vue";
-    import TreeList from "./treeList.vue";
+    import TreeList from "./components/treelist/index";
 
 	import { each, find, cloneDeep, isFunction } from "lodash";
 
