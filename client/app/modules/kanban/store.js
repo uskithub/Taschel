@@ -9,7 +9,7 @@ import { LOAD_PROJECTS
 	, CLEAR_SELECT
 	, UPDATE
 	, REMOVE 
-} from "../../../common/mutationTypes";
+} from "../../common/mutationTypes";
 
 import { each, find, assign, remove, isArray } from "lodash";
 
@@ -20,6 +20,15 @@ const state = {
 	, users: []
     , selectedProject: []
 	, selectedTasks: []
+};
+
+// stateから値を取り出すのはgetterを使う
+const getters = {
+	projects(state) { return state.projects; }
+	, tasks(state) { return state.tasks; }
+	, users(state) { return state.users; }
+	, selectedProject(state) { return state.selectedProject; }
+	, selectedTasks(state) { return state.selectedTasks; }
 };
 
 // mutationにはstateを変更する処理を実装する。
@@ -97,14 +106,14 @@ const mutations = {
 	}	
 };
 
-import * as getters from "./getters";
-import { createTask, readTasks, updateTask, deleteTask } from "../../common/tasks/actions";
-import { readUsers } from "../../common/persons/actions";
+// import * as getters from "./getters";
+import { createTask, readTasks, updateTask, deleteTask } from "../common/tasks/actions";
+import { createGroup  } from "../common/groups/actions";
 
 export default {
 	namespaced : true
 	, state
 	, getters
-	, actions : { createTask, readTasks, updateTask, deleteTask, readUsers }
+	, actions : { createGroup, createTask, readTasks, updateTask, deleteTask }
 	, mutations
 };

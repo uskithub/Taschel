@@ -9,7 +9,7 @@ import { LOAD_PROJECTS
 	, CLEAR_SELECT
 	, UPDATE
 	, REMOVE 
-} from "../../../common/mutationTypes";
+} from "../../common/mutationTypes";
 
 import { each, find, assign, remove, isArray } from "lodash";
 
@@ -21,6 +21,18 @@ const state = {
     , selectedProject: []
 	, selectedTasks: []
 };
+
+// stateから値を取り出すのはgetterを使う
+const getters = {
+	projects(state) { return state.projects; }
+	, tasks(state) { return state.tasks; }
+	, users(state) { return state.users; }
+	, selectedProject(state) { return state.selectedProject; }
+	, selectedTasks(state) { return state.selectedTasks; }
+};
+
+// mutationにはstateを変更する処理を実装する。
+// mutationは同期でなければならない。
 
 const mutations = {
 	// 定数を関数名として使用できる ES2015 の算出プロパティ名（computed property name）機能を使用することで
@@ -53,7 +65,6 @@ const mutations = {
 		state.selectedProject.push(row);
 	}
 	, [SELECT] (state, row, multiSelect) {
-		console.log("●よばれとるんか??");
 		if (isArray(row)) {
 			state.selectedTasks.splice(0);
 			state.selectedTasks.push(...row);
@@ -94,13 +105,13 @@ const mutations = {
 	}	
 };
 
-import * as getters from "./getters";
-import { createTask, readTasks, updateTask, deleteTask } from "../../common/tasks/actions";
+import { createTask, readTasks, updateTask, deleteTask } from "../common/tasks/actions";
+import { readUsers } from "../common/persons/actions";
 
 export default {
 	namespaced : true
 	, state
 	, getters
-	, actions : { createTask, readTasks, updateTask, deleteTask }
+	, actions : { createTask, readTasks, updateTask, deleteTask, readUsers }
 	, mutations
 };

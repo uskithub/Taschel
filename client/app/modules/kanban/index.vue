@@ -9,7 +9,7 @@
 	import toast from "../../core/toastr";
 
 	import { mapGetters, mapMutations, mapActions } from "vuex";
-	import { LOAD_PROJECTS, SELECT, CLEAR_SELECT, ADD , UPDATE, REMOVE } from "../../common/mutationTypes";
+	import { LOAD, LOAD_PROJECTS, SELECT_PROJECT, DESELECT_PROJECT, SELECT, CLEAR_SELECT, ADD , UPDATE, REMOVE } from "../../common/mutationTypes";
 
     // @see: https://github.com/vue-generators/vue-form-generator
 	export default {
@@ -41,9 +41,7 @@
 		 * Socket handlers. Every property is an event handler
 		 */
 		socket: {
-
 			prefix: "/kanban/",
-
 			events: {
 				/**
 				 * New task added
@@ -76,7 +74,10 @@
 
 		methods: {
 			...mapMutations("kanbanPage", {
-				selectRow : SELECT
+				_selectProject : SELECT_PROJECT
+				, selectRow : SELECT
+				, _deselectProject : DESELECT_PROJECT
+				, loadTasks : LOAD
 				, updated : UPDATE
 				, clearSelection : CLEAR_SELECT
 				, created : ADD
@@ -84,10 +85,21 @@
 			})
 			, ...mapActions("kanbanPage", {
 				getTasks : "readTasks"
-				, updateRow : "updateTask"
-				, saveRow : "createTask"
-				, removeRow : "deleteTask"
+				, updateModel : "updateTask"
+				, createModel : "createGroup"
+				, deleteModel : "deleteTask"
 			})
+			, selectProject(row) {
+				this._selectProject(row);
+				this.getTasks({
+					options: { root : row.code }
+					, mutation: LOAD
+				});
+			}
+			, deselectProject() {
+				this._deselectProject();
+				this.loadTasks([]);
+			}
 		},
 
 		/**

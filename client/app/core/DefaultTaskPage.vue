@@ -4,7 +4,7 @@
 
 		.flex.align-center.justify-space-around
 			.left(v-if="enabledNew")
-				button.button.is-primary(@click="newModel")
+				button.button.is-primary(@click="buttonNewDidPush")
 					i.icon.fa.fa-plus 
 					| {{ schema.resources.addCaption || _("Add") }}
 			.right {{ _("SelectedOfAll", { selected: selectedTasks.length, all: tasks.length } ) }}
@@ -21,13 +21,13 @@
 					strong {{ item.error }}
 
 			.buttons.flex.justify-space-around
-				button.button.primary(@click="saveModel", :disabled="!enabledSave")
+				button.button.primary(@click="buttonSaveDidPush", :disabled="!enabledSave")
 					i.icon.fa.fa-save 
 					| {{ schema.resources.saveCaption || _("Save") }}
-				button.button.outline(@click="cloneModel", :disabled="!enabledClone")
+				button.button.outline(@click="buttonCloneDidPush", :disabled="!enabledClone")
 					i.icon.fa.fa-copy 
 					| {{ schema.resources.cloneCaption || _("Clone") }}
-				button.button.danger(@click="deleteModel", :disabled="!enabledDelete")
+				button.button.danger(@click="buttonDeleteDidPush", :disabled="!enabledDelete")
 					i.icon.fa.fa-trash 
 					| {{ schema.resources.deleteCaption || _("Delete") }}
 
@@ -171,7 +171,7 @@
 					this.model = null;
 			}
 
-			, newModel() {
+			, buttonNewDidPush() {
 				console.log("Create new model...");
 
 				// 動的にユーザー一覧を設定している
@@ -204,9 +204,23 @@
 					if (el)
 						el.focus();
 				});
-			},	
+			}	
 
-			cloneModel() {
+			, buttonSaveDidPush() {
+				console.log("Save model...");
+				if (this.options.validateBeforeSave === false ||  this.validate()) {
+
+					if (this.isNewModel)
+						this.$parent.createModel(this.model);
+					else
+						this.$parent.updateModel(this.model);
+
+				} else {
+					// Validation error
+				}
+			}
+
+			, buttonCloneDidPush() {
 				console.log("Clone model...");
 				let baseModel = this.model;
 				this.$parent.clearSelection();
@@ -216,25 +230,11 @@
 				newRow.code = null;
 				this.isNewModel = true;
 				this.model = newRow;
-			},
+			}
 
-			saveModel() {
-				console.log("Save model...");
-				if (this.options.validateBeforeSave === false ||  this.validate()) {
-
-					if (this.isNewModel)
-						this.$parent.saveRow(this.model);
-					else
-						this.$parent.updateRow(this.model);
-
-				} else {
-					// Validation error
-				}
-			},
-
-			deleteModel() {
+			, buttonDeleteDidPush() {
 				if (this.selected.length > 0) {
-					each(this.selected, (row) => this.$parent.removeRow(row) );
+					each(this.selected, (row) => this.$parent.deleteModel(row) );
 					this.$parent.clearSelection();
 				}
 			},

@@ -87,9 +87,9 @@
 			})
 			, ...mapActions("tasksPage", {
 				getTasks : "readTasks"		// `this.getTasks()` を `this.$store.dispatch('getTasks')` にマッピングする
-				, updateRow : "updateTask"
-				, saveRow : "createTask"
-				, removeRow : "deleteTask"
+				, updateModel : "updateTask"
+				, createModel : "createTask"
+				, deleteModel : "deleteTask"
 				, getUsers : "readUsers"
 			})
 			, selectProject(row) {
@@ -114,7 +114,7 @@
 				options: { taskType : "project" }
 				, mutation: LOAD_PROJECTS
 			});
-			this.getUsers();
+			this.getUsers({ mutation: LOAD_USERS });
 		}
 	};
 </script>

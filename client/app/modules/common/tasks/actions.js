@@ -75,23 +75,23 @@ export const createTask = ({ commit }, model) => {
 // 	}
 //	, mutation : "LOAD"
 // }
-export const readTasks = ({ commit }, payload) => {
+export const readTasks = ({ commit }, { options, mutation }) => {
 	let url = NAMESPACE;
 
-	if (payload && payload.options != undefined) {
-		if (payload.options.taskType !== undefined) {
-			url = `${url}?type=${payload.options.taskType}`;
-		} else if (payload.options.user !== undefined) {
-			url = `${url}?user_code=${payload.options.user}`;
-		} else if (payload.options.root !== undefined) {
-			url = `${url}?root_code=${payload.options.root}`;
+	if (options != undefined) {
+		if (options.taskType != undefined) {
+			url = `${url}?type=${options.taskType}`;
+		} else if (options.user != undefined) {
+			url = `${url}?user_code=${options.user}`;
+		} else if (options.root != undefined) {
+			url = `${url}?root_code=${options.root}`;
 		}
 	} 
 	
 	axios.get(url).then((response) => {
 		let res = response.data;
 		if (res.status == 200 && res.data)
-			commit(payload.mutation, (payload.options && payload.options.populateParent) ? res.data.map(d => recursiveSetParentReference(d)) : res.data);
+			commit(mutation, (options && options.populateParent) ? res.data.map(d => recursiveSetParentReference(d)) : res.data);
 		else
 			console.error("Request error!", res.error);
 

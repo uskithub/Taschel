@@ -1,16 +1,22 @@
-import { LOAD, SELECT, CLEAR_SELECT, ADD , UPDATE, REMOVE } from "../../../common/mutationTypes";
+import { LOAD, SELECT, CLEAR_SELECT, ADD , UPDATE, REMOVE } from "../../common/mutationTypes";
 
 import { each, find, assign, remove, isArray } from "lodash";
 
 const state = {
-	tasks: []
+	projects: []
 	, selected: []
 };
 
+const getters = {
+	projects(state) { return state.projects; }
+	, selected(state) { return state.selected; }
+};
+
+// stateを操作するためのメソッド
 const mutations = {
 	[LOAD] (state, models) {
-		state.tasks.splice(0);
-		state.tasks.push(...models);
+		state.projects.splice(0);
+		state.projects.push(...models);
 	}
 	, [SELECT] (state, row, multiSelect) {
 		if (isArray(row)) {
@@ -33,23 +39,22 @@ const mutations = {
 		state.selected.splice(0);
 	}
 	, [ADD] (state, model) {
-		let found = find(state.tasks, (item) => item.code == model.code);
+		let found = find(state.projects, (item) => item.code == model.code);
 		if (!found)
-			state.tasks.push(model);
+			state.projects.push(model);
 	}
 	, [UPDATE] (state, model) {
-		each(state.tasks, (item) => {
+		each(state.projects, (item) => {
 			if (item.code == model.code)
 				assign(item, model);
 		});
 	}
 	, [REMOVE] (state, model) {
-		state.tasks = state.tasks.filter(item => item.code != model.code);
+		state.projects = state.projects.filter(item => item.code != model.code);
 	}
 };
 
-import * as getters from "./getters";
-import { createTask, readTasks, updateTask, deleteTask } from "../../common/tasks/actions";
+import { createTask, readTasks, updateTask, deleteTask } from "../common/tasks/actions";
 
 export default {
 	namespaced : true

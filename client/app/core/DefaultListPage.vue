@@ -89,6 +89,7 @@
 		},	
 
 		watch: {
+			// propsで指定した名前に合わせる必要あり
 			selected() {
 				if (!this.isNewModel)
 					this.generateModel();
