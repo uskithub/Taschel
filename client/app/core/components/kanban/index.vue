@@ -42,7 +42,11 @@
 						if (ul.children[index].classList.contains("is-moving")) 
 							break;
 					}
-					this.$emit("update-task", li.dataset.code, ul.dataset.code, previousBoardCode, index);
+					this.$emit("update-handler", { moving: li.dataset.code
+						, from: previousBoardCode
+						, to: ul.dataset.code
+						, index: index 
+					});
 				})
 				.on("dragend", (li) => {
 					previousBoardCode = null;

@@ -11,7 +11,7 @@
 		br
 		data-table(:schema="schema.projectTable", :rows="projects", :order="order", :search="search", :selected="selectedProject", :select="didSelectProject", :select-all="selectAll")
 		br
-		kanban(:boards="groups", :tasks="tasks",  @update-task="updateTask")
+		kanban(:boards="groups", :tasks="tasks",  @update-handler="arrange")
 
 		.form(v-if="model")
 			vue-form-generator(:schema='schema.form', :model='model', :options='options', :multiple="selectedTasks.length > 1", ref="form", :is-new-model="isNewModel")
@@ -124,10 +124,10 @@
 		},
 
 		methods: {
-
-            updateTask: debounce(function (taskCode, newGroupCode, oldGroupCode, index) {
-                console.log("●", taskCode, newGroupCode, oldGroupCode, index);
-            }, 500)
+			// TODO: ネーミング気になる。統一感がないのでどうにかする
+            arrange(context) {
+				this.$parent.arrange(context);
+            }
 
 			, didSelectProject(event, row, add) {
 				this.isNewModel = false;

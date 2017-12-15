@@ -120,12 +120,14 @@ export const deleteTask = ({ commit }, row) => {
 	});
 };
 
+// TODO: state（に保存されているtask）の更新を直に行ってしまっているので、その部分はmutationでやるべき
 export const arrangeTask = ({ commit }, { moving, target, type }) => {
 	console.log("● arrange", moving, target, type);
 
 	let targetParentCode = target.parent.code;
 
 	// 循環参照を断ち切る
+	// TODO: cloneするべきか
 	let movingParent = moving.parent;
 	let targetParent = target.parent;
 	moving = recursiveRevertParentReference(moving);

@@ -65,10 +65,10 @@ module.exports = {
 					return this.populateModels(json);
 				});
 			}
-		},
+		}
 
 		// return a model by ID
-		get: {
+		, get: {
 			cache: true,
 			handler(ctx) {
 				ctx.assertModelIsExist(ctx.t("app:TaskNotFound"));

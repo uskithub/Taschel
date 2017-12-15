@@ -1,7 +1,9 @@
 import Vue from "vue";
 import toastr from "../../../core/toastr";
-import { ADD, SELECT } from "../../../common/mutationTypes";
+import { ADD, SELECT, UPDATE } from "../../../common/mutationTypes";
 import axios from "axios";
+
+const UNCLASSIFIED = "UNCLASSIFIED";
 
 export const NAMESPACE = "/api/groups";
 
@@ -16,8 +18,8 @@ export const createGroup = ({ commit }, model) => {
 		let res = response.data;
 
 		if (res.status == 200 && res.data) {
-            commit(ADD, res.data);
-            commit(SELECT, res.data, false);
+			commit(ADD, res.data);
+			commit(SELECT, res.data, false);
 		}
 	}).catch((response) => {
 		if (response.data.error)
@@ -53,3 +55,33 @@ export const readGroups = ({ commit }, { options, mutation }) => {
 
 };
 
+export const updateGroups = ({ commit }, { moving, from, to, index }) => {
+
+	console.log("● do update", { moving, from, to, index });
+
+	// ① from, to => UNCLASSIFIED, xxx
+	//		/api/groups/${to}?task=${moving}&index=${index}&from=UNCLASSIFIED
+
+	// ② from, to => xxx, UNCLASSIFIED
+	//		/api/groups/${from}?task=${moving}&index=${index}&to=UNCLASSIFIED
+
+	// ③ from, to => xxx, yyy
+	// ④ from, to => xxx, xxx
+	//		/api/groups/${to}?task=${moving}&index=${index}&from=${from}
+
+	let url = (to == UNCLASSIFIED) 
+		? `${NAMESPACE}/${from}?task=${moving}&index=${index}&to=${UNCLASSIFIED}`
+		: `${NAMESPACE}/${to}?task=${moving}&index=${index}&from=${from}`;
+
+	axios.put(url).then((response) => {
+		let res = response.data;
+
+		console.log("●response", res);
+
+		if (res.data)
+			commit(UPDATE, res.data);
+	}).catch((response) => {
+		if (response.data.error)
+			toastr.error(response.data.error.message);
+	});	
+};

@@ -90,6 +90,7 @@
 				, updateModel : "updateTask"
 				, createModel : "createGroup"
 				, deleteModel : "deleteTask"
+				, arrange : "updateGroups"
 			})
 			, selectProject(row) {
 				this._selectProject(row);

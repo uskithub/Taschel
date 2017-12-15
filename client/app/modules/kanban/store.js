@@ -110,12 +110,12 @@ const mutations = {
 
 // import * as getters from "./getters";
 import { createTask, readTasks, updateTask, deleteTask } from "../common/tasks/actions";
-import { createGroup, readGroups  } from "../common/groups/actions";
+import { createGroup, readGroups, updateGroups } from "../common/groups/actions";
 
 export default {
 	namespaced : true
 	, state
 	, getters
-	, actions : { createGroup, readGroups, createTask, readTasks, updateTask, deleteTask }
+	, actions : { createGroup, readGroups, updateGroups, createTask, readTasks, updateTask, deleteTask }
 	, mutations
 };

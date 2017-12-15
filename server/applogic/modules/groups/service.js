@@ -9,6 +9,8 @@ let _			= require("lodash");
 let Group 		= require("./models/group");
 let Task 		= require("../tasks/models/task");
 
+const UNCLASSIFIED = "UNCLASSIFIED";
+
 module.exports = {
 	settings: {
 		name: "groups",
@@ -68,7 +70,7 @@ module.exports = {
 						return this.populateModels(json)
 						.then((json) => {
 							let unclassifiedGroup = {
-								code: "unclassified"
+								code: UNCLASSIFIED
 								, type: "kanban"
 								, name: "unclassified"
 								, purpose: "for_classify"
@@ -81,10 +83,10 @@ module.exports = {
 					});
 				});
 			}
-		},
+		}
 
 		// return a model by ID
-		get: {
+		, get: {
 			cache: true,
 			handler(ctx) {
 				ctx.assertModelIsExist(ctx.t("app:GroupNotFound"));
@@ -120,26 +122,89 @@ module.exports = {
 			ctx.assertModelIsExist(ctx.t("app:GroupNotFound"));
 			this.validateParams(ctx);
 
-			return this.collection.findById(ctx.modelID).exec()
-			.then((doc) => {
+			let movingId = this.taskService.decodeID(ctx.params.task);
+			let index = ctx.params.index;
 
-				if (ctx.params.purpose != null)
-					doc.purpose = ctx.params.purpose;
+			console.log("● update", ctx.modelID, movingId, index, ctx.params.from);
 
-				if (ctx.params.name != null)
-					doc.name = ctx.params.name;
+			// ① from, to => UNCLASSIFIED, xxx
+			//		- toに追加のみ
+			// ② from, to => xxx, UNCLASSIFIED
+			//		- fromから削除のみ
+			// ③ from, to => xxx, yyy
+			//		- toに追加
+			//		- fromから削除
+			// ④ from, to => xxx, xxx
+			//		- to（=from）内で移動
 
-				return doc.save();
+			return Promise.resolve()
+			.then(() => {
+				if (ctx.params.from) {
+					let toId = ctx.modelID;
+					if (ctx.params.from == UNCLASSIFIED) {
+						// ① from, to => UNCLASSIFIED, xxx
+						return this.collection.findById(toId).exec()
+						.then((doc) => {
+							doc.children.splice(index, 0, movingId);
+							return doc.save()
+							.then((doc) => {
+								return [doc];
+							});
+						});	
+					} else {
+						let fromId = this.groupService.decodeID(ctx.params.from);
+						if (toId != fromId) {
+							// ③ from, to => xxx, yyy
+							return this.collection.findById(toId).exec()
+							.then((doc) => {
+								doc.children.splice(index, 0, movingId);
+								return doc.save()
+								.then((toDoc) => {
+									return this.collection.findById(fromId).exec()
+									.then((fromDoc) => {
+										fromDoc.children = fromDoc.children.filter( c => { return c != movingId; });
+										return fromDoc.save();
+									})
+									.then((fromDoc) => {
+										return [toDoc, fromDoc];
+									});
+								});
+							});	
+						} else {
+							// ④ from, to => xxx, xxx
+							return this.collection.findById(toId).exec()
+							.then((doc) => {
+								doc.children = doc.children.filter( c => { return c != movingId; });
+								doc.children.splice(index, 0, movingId);
+								return doc.save()
+								.then((doc) => {
+									return [doc];
+								});
+							});
+						}
+					}
+				} else {
+					// ② from, to => xxx, UNCLASSIFIED
+					let fromId = ctx.modelID;
+					return this.collection.findById(fromId).exec()
+					.then((fromDoc) => {
+						fromDoc.children = fromDoc.children.filter( c => { return c != movingId; });
+						return fromDoc.save();
+					})
+					.then((fromDoc) => {
+						return [fromDoc];
+					});
+				}
 			})
-			.then((doc) => {
-				return this.toJSON(doc);
+			.then((docs) => {
+				return this.toJSON(docs);
 			})
-			.then((json) => {
-				return this.populateModels(json);
+			.then((jsons) => {
+				return this.populateModels(jsons);
 			})
-			.then((json) => {
-				this.notifyModelChanges(ctx, "updated", json);
-				return json;
+			.then((jsons) => {
+				this.notifyModelChanges(ctx, "updated", jsons);
+				return jsons;
 			});								
 		}
 
