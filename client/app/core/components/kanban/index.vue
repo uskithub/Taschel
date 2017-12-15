@@ -15,6 +15,7 @@
 <script>
 	import dragula from 'dragula';
 	let previousBoardCode = null;
+	let drake = null;
 
 	export default {
 		props: [
@@ -25,39 +26,47 @@
 		, computed: {
 
 		}
-		
-		, methods: {
 
+		, updated() {
+			this.makeDraggable();
 		}
 
 		, mounted() {
-			dragula(this.$refs.boards)
-				.on("drag", (li, ul) => {
-					previousBoardCode = ul.dataset.code;
-					li.classList.add("is-moving");
-				})
-				.on("drop", (li, ul) => {
-					let index = 0;
-					for (; index < ul.children.length; index += 1) {
-						if (ul.children[index].classList.contains("is-moving")) 
-							break;
-					}
-					this.$emit("update-handler", { moving: li.dataset.code
-						, from: previousBoardCode
-						, to: ul.dataset.code
-						, index: index 
-					});
-				})
-				.on("dragend", (li) => {
-					previousBoardCode = null;
-					li.classList.remove("is-moving");
-					window.setTimeout(() => {
-						li.classList.add("is-moved");
+			this.makeDraggable();
+		}
+		, methods : {
+			makeDraggable() {
+				if (drake) {
+					drake.destroy();
+				}
+				drake = dragula(this.$refs.boards)
+					.on("drag", (li, ul) => {
+						previousBoardCode = ul.dataset.code;
+						li.classList.add("is-moving");
+					})
+					.on("drop", (li, ul) => {
+						let index = 0;
+						for (; index < ul.children.length; index += 1) {
+							if (ul.children[index].classList.contains("is-moving")) 
+								break;
+						}
+						this.$emit("update-handler", { moving: li.dataset.code
+							, from: previousBoardCode
+							, to: ul.dataset.code
+							, index: index 
+						});
+					})
+					.on("dragend", (li) => {
+						previousBoardCode = null;
+						li.classList.remove("is-moving");
 						window.setTimeout(() => {
-							li.classList.remove("is-moved");
-						}, 600);
-					}, 100);
-				});
+							li.classList.add("is-moved");
+							window.setTimeout(() => {
+								li.classList.remove("is-moved");
+							}, 600);
+						}, 100);
+					});
+			}
 		}
 	};
 </script>
