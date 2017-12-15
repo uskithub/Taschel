@@ -1,5 +1,5 @@
 <template lang="pug">
-	task-page(:schema="schema", :selectedProject="selectedProject", :selectedTasks="selectedTasks", :projects="projects", :tasks="tasks", :users="users")
+	task-page(:schema="schema", :selectedTasks="selectedTasks", :projects="projects", :tasks="tasks", :users="users")
 </template>
 
 <script>
@@ -9,7 +9,7 @@
 	import toast from "../../core/toastr";
 
 	import { mapGetters, mapMutations, mapActions } from "vuex";
-	import { LOAD, SELECT, CLEAR_SELECT, ADD , UPDATE, REMOVE, LOAD_PROJECTS, LOAD_USERS, SELECT_PROJECT, DESELECT_PROJECT, DESELECT } from "../../common/mutationTypes";
+	import { LOAD, SELECT, CLEAR_SELECT, ADD , UPDATE, REMOVE, LOAD_PROJECTS, LOAD_USERS, DESELECT } from "../../common/mutationTypes";
 
     // @see: https://github.com/vue-generators/vue-form-generator
 	export default {
@@ -23,7 +23,6 @@
 			"projects"
 			, "tasks"
 			, "users" 
-			, "selectedProject"
 			, "selectedTasks"
 		])
 
@@ -75,9 +74,7 @@
 
 		methods: {
 			...mapMutations("tasksPage", {
-				_selectProject : SELECT_PROJECT
-				, selectTasks : SELECT
-				, _deselectProject : DESELECT_PROJECT
+				selectTasks : SELECT
 				, loadTasks : LOAD
 				, deselectTask : DESELECT
 				, clearSelection : CLEAR_SELECT
@@ -92,15 +89,13 @@
 				, deleteModel : "deleteTask"
 				, getUsers : "readUsers"
 			})
-			, selectProject(row) {
-				this._selectProject(row);
+			, selectProject(code) {
 				this.getTasks({
-					options: { root : row.code }
+					options: { root : code }
 					, mutation: LOAD
 				});
 			}
 			, deselectProject() {
-				this._deselectProject();
 				this.loadTasks([]);
 			}
 		},

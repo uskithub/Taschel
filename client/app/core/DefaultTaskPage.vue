@@ -11,10 +11,8 @@
 		br
 
 		.form
-			vue-form-generator(:schema="projectSelector",:model="selectedProject", ref="projectSelector")
+			vue-form-generator(:schema="projectSelector", :model="modelProjectSelector", ref="projectSelector", @model-updated="modelUpdated")
 
-		data-table(:schema="schema.projectTable", :rows="projects", :order="order", :search="search", :selected="selectedProject", :select="_selectProject", :select-all="selectAll")
-		br
 		data-table(:schema="schema.taskTable", :rows="tasks", :order="order", :search="search", :selected="selectedTasks", :select="_selectTasks", :select-all="selectAll")
 
 		.form(v-if="model")
@@ -58,7 +56,6 @@
             , "projects"
 			, "tasks"
 			, "users"
-			, "selectedProject"
 			, "selectedTasks"
 		],
 
@@ -71,6 +68,9 @@
 
 				model: null,
 				isNewModel: false
+
+				// 選択したプロジェクトが格納される
+				, modelProjectSelector: {}
 			};
 		},
 
@@ -81,7 +81,7 @@
 
 			, projectSelector() {
 				this.schema.projectSelector.fields.forEach(f => {
-					if (f.model == "task_code") {
+					if (f.model == "code") {
 						f.values = this.projects.map(project => {
 							return {
 								id : project.code
@@ -108,45 +108,28 @@
 		},	
 
 		watch: {
-			// propsで指定した名前に合わせる必要あり
-			// TODO: 値は保持されるのに、画面表示が更新されない不具合あり
-			selectedProject() {
-				if (!this.isNewModel) {
-					if (this.model == null) return;
-					if (this.selectedProject.length > 0) {
-						this.model.root_code = this.selectedProject[0].code;
-					} else {
-						this.model.root_code = null
-					}
-				}
-			}
 
 			// propsで指定した名前に合わせる必要あり
-			, selectedTasks() {
+			selectedTasks() {
 				console.log("●● selectedTask")
 				if (!this.isNewModel)
 					this.generateModel();
 			}
 
-			/*
-			model: {
-				handler: function(newVal, oldVal) {
-					if (newVal === oldVal) // call only if a property changed, not the model
-						console.log("Model property changed!");
-				},
-				deep: true
-			}*/
+			// 呼ばれるけど、初めしか値が変わらない
+			// , modelProjectSelector(model) {
+			// 	console.log("●", model);	
+			// }
 		},
 
 		methods: {
 
-			_selectProject(event, row, add) {
-				this.isNewModel = false;
-
-				if (this.selectedProject.length > 0 && this.selectedProject[0] == row) {
-					this.$parent.deselectProject();
+			modelUpdated(newVal, schema) {
+				console.log(`● ${schema}: ${newVal}`);
+				if (newVal) {
+					this.$parent.selectProject(newVal);
 				} else {
-					this.$parent.selectProject(row);
+					this.$parent.deselectProject();
 				}
 			}
 			, _selectTasks(event, row, add) {
@@ -181,7 +164,7 @@
 				if (this.selectedTasks.length == 1) {
 					this.model = cloneDeep(this.selectedTasks[0]);
 				}
-				else if (this.selected.length > 1) {
+				else if (this.selectedTasks.length > 1) {
 					this.model = schemaUtils.mergeMultiObjectFields(this.schema.form, this.selectedTasks);
 				}
 				else
@@ -208,10 +191,9 @@
                 this.isNewModel = true;
                 
                 // projectが設定されている場合、projectを設定
-                if (this.selectedProject.length > 0) {
-                    let root =  this.selectedProject[0];
-					newRow.root_code = root.code;
-					newRow.parent_code = root.code;
+                if (this.modelProjectSelector.code) {
+					newRow.root_code = this.modelProjectSelector.code;
+					newRow.parent_code = this.modelProjectSelector.code;
                 }
 
 				this.model = newRow;

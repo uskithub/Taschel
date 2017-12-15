@@ -11,23 +11,6 @@ module.exports = {
 
 	id: "tasks"
 	, title: _("Tasks")
-	, projectTable: {
-		multiSelect: true,
-		columns: [
-			{
-				title: _("Name")
-				, field: "name"
-				, align: "left"
-            }
-		],
-
-		rowClasses: function(model) {
-			return {
-				inactive: !model.status
-			};
-		}
-
-	}
 	, taskTable: {
 		multiSelect: true
 		, columns: [
@@ -81,7 +64,7 @@ module.exports = {
 			{
 				type: "select",
 				label: _("Project"),
-				model: "task_code",
+				model: "code",
 				values: [] // index.vueにて後から設定している
 			},	
 		]
