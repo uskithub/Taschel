@@ -11,7 +11,7 @@
 		br
 		data-table(:schema="schema.projectTable", :rows="projects", :order="order", :search="search", :selected="selectedProject", :select="didSelectProject", :select-all="selectAll")
 		br
-		kanban(:boards="groups", :tasks="tasks",  @update-block="updateBlock")
+		kanban(:boards="groups", :tasks="tasks",  @update-task="updateTask")
 
 		.form(v-if="model")
 			vue-form-generator(:schema='schema.form', :model='model', :options='options', :multiple="selectedTasks.length > 1", ref="form", :is-new-model="isNewModel")
@@ -63,8 +63,6 @@
 
 		, data() {
 			return {
-                statuses: ['on-hold', 'in-progress', 'needs-review', 'approved'],
-                blocks: [],
 				order: {
 					field: "id",
 					direction: 1
@@ -72,16 +70,6 @@
 				model: null,
 				isNewModel: false
             };
-        },
-        
-        mounted() {
-            for (let i = 0; i <= 10; i += 1) {
-                this.blocks.push({
-                    id: i,
-                    status: this.statuses[Math.floor(Math.random() * 4)],
-                    title: "hogehoge",
-                });
-            }
         },
 
 		computed: {
@@ -137,8 +125,8 @@
 
 		methods: {
 
-            updateBlock: debounce(function (id, status) {
-                this.blocks.find(b => b.id === Number(id)).status = status;
+            updateTask: debounce(function (taskCode, newGroupCode, oldGroupCode, index) {
+                console.log("●", taskCode, newGroupCode, oldGroupCode, index);
             }, 500)
 
 			, didSelectProject(event, row, add) {

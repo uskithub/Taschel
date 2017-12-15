@@ -5,8 +5,8 @@
 				span.drag-column-header
 					h2 {{ board.name }}
 				div.drag-options
-				ul.drag-inner-list(ref="list", :data-status="board.code")
-					li.drag-item(v-for="task in board.children", :data-task-id="task.code", :key="task.code")
+				ul.drag-inner-list(ref="boards", :data-code="board.code")
+					li.drag-item(v-for="task in board.children", :data-code="task.code", :key="task.code")
 						slot(:name="task.name")
 							strong {{ task.name }}
 							div {{ task.code }}
@@ -14,6 +14,7 @@
 
 <script>
 	import dragula from 'dragula';
+	let previousBoardCode = null;
 
 	export default {
 		props: [
@@ -30,26 +31,29 @@
 		}
 
 		, mounted() {
-			dragula(this.$refs.list)
-				.on('drag', (el) => {
-					el.classList.add('is-moving');
+			dragula(this.$refs.boards)
+				.on("drag", (li, ul) => {
+					previousBoardCode = ul.dataset.code;
+					li.classList.add("is-moving");
 				})
-				.on('drop', (task, list) => {
+				.on("drop", (li, ul) => {
 					let index = 0;
-					for (index = 0; index < list.children.length; index += 1) {
-						if (list.children[index].classList.contains('is-moving')) break;
+					for (; index < ul.children.length; index += 1) {
+						if (ul.children[index].classList.contains("is-moving")) 
+							break;
 					}
-					this.$emit('update-task', task.dataset.taskId, list.dataset.status, index);
+					this.$emit("update-task", li.dataset.code, ul.dataset.code, previousBoardCode, index);
 				})
-				.on('dragend', (el) => {
-					el.classList.remove('is-moving');
+				.on("dragend", (li) => {
+					previousBoardCode = null;
+					li.classList.remove("is-moving");
 					window.setTimeout(() => {
-					el.classList.add('is-moved');
-					window.setTimeout(() => {
-						el.classList.remove('is-moved');
-					}, 600);
-				}, 100);
-			});
+						li.classList.add("is-moved");
+						window.setTimeout(() => {
+							li.classList.remove("is-moved");
+						}, 600);
+					}, 100);
+				});
 		}
 	};
 </script>

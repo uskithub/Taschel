@@ -73,7 +73,7 @@ module.exports = {
 								, name: "unclassified"
 								, purpose: "for_classify"
 								, parent: ctx.params.parent_code
-								, children : unclassifiedTasks
+								, children: unclassifiedTasks
 							};
 							json.unshift(unclassifiedGroup);
 							return json;

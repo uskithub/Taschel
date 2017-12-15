@@ -77,7 +77,7 @@
 				// , updateRow : "updateTask"
 				// , saveRow : "createTask"
 				// , removeRow : "deleteTask"
-				, move : "moveTask"
+				, arrange : "arrangeTask"
 			}),
 		}
 

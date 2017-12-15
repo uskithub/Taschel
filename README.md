@@ -14,10 +14,15 @@
   - [x] タスクツリーでタスクをドラッグ＆ドロップでぐりぐり移動
   - [x] 移動後のタスクを更新
 - [] My Tasks でカンバンの Vueコンポーネントを作る
+  - [x] カンバンを表示
+  - [x] カンバン（board）の追加
+  - [x] タスクの移動
+  - [] タスクの保存
 - [] 機能一覧を出したら見積りに使えるようにする
 - [] projectsでBreakdownが成功したあと、stepなのにprojectのdata-tableが増えてしまう
 - [] ジャーニーマップライクに配置できて、プロセス分析できるようにしたい
 - [] -1で無駄に検索されている箇所があるので検索されないようにする
+- [] kanbanのdragulaとtreelistのjqueryを統一する
 
 # Vue, Express, MongoDB full-stack JS Boilerplate
 

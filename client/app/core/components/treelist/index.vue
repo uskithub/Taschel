@@ -159,7 +159,7 @@
                 let isDescendant = this.isDescendant(this.node, _self.node);
                 if (isDescendant) return;
 
-                this.$parent.move({
+                this.$parent.arrange({
                     moving: _self.node
                     , target: this.node
                     , type: "above"});
@@ -179,7 +179,7 @@
 
                 if (_self.node.code == this.node.code) return;
 
-                this.$parent.move({
+                this.$parent.arrange({
                     moving: _self.node
                     , target: this.node
                     , type: "into"});
@@ -188,14 +188,14 @@
                 // - 子孫にはい移動不可
                 console.log(`● below ${ _self.node.name }, ${ this.node.name }`);
                 this.isDraggingToGoDown = false;
-                this.$parent.move({
+                this.$parent.arrange({
                     moving: _self.node
                     , target: this.node
                     , type: "below"});
             }
             // TreeListはVueComponentが再帰的に入れ子になっているので、最終的な読み出し元のindex.vueまで処理を上げていく
-            , move(moveContext) {
-                this.$parent.move(moveContext);
+            , arrange(moveContext) {
+                this.$parent.arrange(moveContext);
             }
         }
         , beforeCreate () {

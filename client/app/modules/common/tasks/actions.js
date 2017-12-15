@@ -120,11 +120,9 @@ export const deleteTask = ({ commit }, row) => {
 	});
 };
 
-export const moveTask = ({ commit }, moveContext) => {
-	console.log("● move", moveContext);
+export const arrangeTask = ({ commit }, { moving, target, type }) => {
+	console.log("● arrange", moving, target, type);
 
-	let moving = moveContext.moving;
-	let target = moveContext.target;
 	let targetParentCode = target.parent.code;
 
 	// 循環参照を断ち切る
@@ -134,7 +132,7 @@ export const moveTask = ({ commit }, moveContext) => {
 
 	console.log("###", moving.code, target, targetParent);
 
-	if (moveContext.type == "above") {
+	if (type == "above") {
         // movingがtargetの兄になる
         // - (moving->parent).cildrenからmovingを削除
 		// - moving.parentにtarget.parentを設定
@@ -171,7 +169,7 @@ export const moveTask = ({ commit }, moveContext) => {
 				toastr.error(response.data.error.message);
 		});
         
-	} else if (moveContext.type == "into") {
+	} else if (type == "into") {
         // movingがtargetの子になる
         // - (moving->parent).cildrenからmovingを削除
         // - moving.parentにtargetを設定

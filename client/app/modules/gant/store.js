@@ -35,12 +35,12 @@ const mutations = {
 	}
 };
 
-import { createTask, readTasks, updateTask, deleteTask, moveTask } from "../common/tasks/actions";
+import { createTask, readTasks, updateTask, deleteTask, arrangeTask } from "../common/tasks/actions";
 
 export default {
 	namespaced : true
 	, state
 	, getters
-	, actions : { createTask, readTasks, updateTask, deleteTask, moveTask }
+	, actions : { createTask, readTasks, updateTask, deleteTask, arrangeTask }
 	, mutations
 };

@@ -132,8 +132,8 @@
             }
 
             // for gant
-            , move(moveContext) {
-                this.$parent.move(moveContext);
+            , arrange(moveContext) {
+                this.$parent.arrange(moveContext);
             }
 		},
 
