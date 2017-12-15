@@ -196,8 +196,10 @@ UserSchema.virtual("avatar").get(function() {
 /**
  * Encode `_id` to `code`
  */
-UserSchema.methods.encodeID = function() {
-	return hashids.encodeHex(this._id);
+UserSchema.methods.encodeID = function(id) {
+	// idEncode向けに引数を取るように修正
+	id = id || this._id;
+	return hashids.encodeHex(id);
 };
 
 /**

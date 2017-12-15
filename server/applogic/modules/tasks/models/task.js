@@ -85,8 +85,8 @@ TaskSchema.plugin(autoIncrement.plugin, {
 	startAt: 1
 });
 
-TaskSchema.methods.encodeID = function(id) 
-{
+TaskSchema.methods.encodeID = function(id) {
+	// idEncode向けに引数を取るように修正
 	id = id || this._id;
 	return hashids.encodeHex(id);
 };

@@ -1,11 +1,11 @@
 <template lang="pug">
 	div.drag-container
 		ul.drag-list
-			li(v-for="board in boards" class="drag-column", :class="{['drag-column-' + board]: true}", :key="board")
+			li(v-for="board in boards" class="drag-column", :class="{['drag-column-' + board.code]: true}", :key="board.code")
 				span.drag-column-header
 					h2 {{ board.name }}
 				div.drag-options
-				ul.drag-inner-list(ref="list", :data-status="board")
+				ul.drag-inner-list(ref="list", :data-status="board.code")
 					li.drag-item(v-for="task in board.children", :data-task-id="task.code", :key="task.code")
 						slot(:name="task.name")
 							strong {{ task.name }}

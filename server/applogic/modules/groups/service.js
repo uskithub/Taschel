@@ -28,14 +28,18 @@ module.exports = {
 			// "root": "tasks"			// 親にchildrenを持たせたので、populateすると循環参照になってpopulateが終わらなくなるので注意
 			// , "parent": "tasks"		//
 			"children": "tasks"
-			// , "author": "persons"	// TODO: 情報量が多くなりすぎるのpopulateを削る
 		}
 		, idEncodes: {
 			"parent": "tasks"
+			, "author": "persons"
 		}
 	},
 	
 	actions: {
+		/**
+		 * ProjectのGroupを取得し、分類されていない"Unclassified"なGroupを先頭にappendして返す。
+		 * 
+		 */
 		find: {
 			cache: true,
 			handler(ctx) {
@@ -59,18 +63,18 @@ module.exports = {
 						let classifiedTasks = json.reduce((arr, g) => {
 							return arr.concat(g.children);
 						}, []);
-
-						let unclassifiedTasks = taskDocs.filter(d => { return !classifiedTasks.includes(d._id)});
-						let unclassifiedGroup = {
-							type: "kanban"
-							, name: "unclassified"
-							, purpose: "for_classify"
-							, parent: (ctx.params.parent_code !== undefined) ? this.taskService.decodeID(ctx.params.parent_code) : -1
-							, children : unclassifiedTasks
-							, author : ctx.user.id
-						};
+						let unclassifiedTasks = taskDocs.filter(d => { return !classifiedTasks.includes(d._id); });
+						
 						return this.populateModels(json)
 						.then((json) => {
+							let unclassifiedGroup = {
+								code: "unclassified"
+								, type: "kanban"
+								, name: "unclassified"
+								, purpose: "for_classify"
+								, parent: ctx.params.parent_code
+								, children : unclassifiedTasks
+							};
 							json.unshift(unclassifiedGroup);
 							return json;
 						});
