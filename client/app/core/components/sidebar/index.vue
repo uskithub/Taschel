@@ -27,36 +27,11 @@
 							i.fa.fa-tasks
 						span.label {{ "Kanban" | i18n }}
 
-				router-link(tag="li", to="/mytasks")
-					a(:title="_('MyTasks')")
-						span.icon
-							i.fa.fa-tasks
-						span.label {{ "MyTasks" | i18n }}
-
 				router-link(tag="li", to="/gant")
 					a(:title="_('Gant')")
 						span.icon
 							i.fa.fa-tasks
 						span.label {{ "Gant" | i18n }}
-
-
-				router-link(tag="li", to="/counter")
-					a(:title="_('Demo')")
-						span.icon
-							i.fa.fa-tasks
-						span.label {{ "Demo" | i18n }}
-
-				router-link(tag="li", to="/devices")
-					a(:title="_('Devices')")
-						span.icon
-							i.fa.fa-tablet
-						span.label {{ "Devices" | i18n }}
-
-				router-link(tag="li", to="/posts")
-					a(:title="_('Posts')")
-						span.icon
-							i.fa.fa-comments
-						span.label {{ "Posts" | i18n }}
 
 			.title {{ "Profile" | i18n }}
 			ul
