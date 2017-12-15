@@ -10,59 +10,18 @@ let _ = Vue.prototype._;
 module.exports = {
 	id : "gant"
 	, title: _("Gant")
-	, projectTable: {
-		multiSelect : true
-		, columns : [
+
+	, projectSelector: {
+		fields: [
 			{
-				title: _("ID"),
-				field: "code",
-				align: "left",
-				formatter(value, model) {
-					return model ? model.code : "";
-				}
-			}
-			, {
-				title: _("Type"),
-				field: "type",
-				formatter(value) {
-					let type = find(taskTypes, (type) => type.id == value);
-					return type ? type.name : value;
-				}
-			}
-			, {
-				title: _("Name"),
-				field: "name"
-			}
-			, {
-				title: _("Purpose"),
-				field: "purpose"
-			}
-			, {
-				title: _("Goal"),
-				field: "goal"
-			}
-			, {
-				title: _("Status"),
-				field: "status",
-				formatter(value, model, col) {
-					return value ? "<i class='fa fa-check'/>" : "<i class='fa fa-ban'/>";
-				},
-				align: "center"
-			}
-			, {
-				title: _("LastCommunication"),
-				field: "lastCommunication",
-				formatter(value) {
-					return moment(value).fromNow();
-				}
-			}
+				type: "select",
+				label: _("Project"),
+				model: "code",
+				values: [] // index.vueにて後から設定している
+			},	
 		]
-		, rowClasses : function (model) {
-			return {
-				inactive: !model.status
-			};
-		}
 	}
+	
 	, form : {
 		fields : [
 			{

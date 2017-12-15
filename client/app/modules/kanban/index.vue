@@ -1,5 +1,5 @@
 <template lang="pug">
-	kanban-page(:schema="schema", :selectedProject="selectedProject", :selectedTasks="selectedTasks", :projects="projects", :groups="groups", :tasks="tasks", :users="users")
+	kanban-page(:schema="schema", :selectedTasks="selectedTasks", :projects="projects", :groups="groups", :tasks="tasks", :users="users")
 </template>
 
 <script>
@@ -9,7 +9,7 @@
 	import toast from "../../core/toastr";
 
 	import { mapGetters, mapMutations, mapActions } from "vuex";
-	import { LOAD, LOAD_PROJECTS, SELECT_PROJECT, DESELECT_PROJECT, SELECT, CLEAR_SELECT, ADD , UPDATE, REMOVE } from "../../common/mutationTypes";
+	import { LOAD, LOAD_PROJECTS, SELECT, CLEAR_SELECT, ADD , UPDATE, REMOVE } from "../../common/mutationTypes";
 
     // @see: https://github.com/vue-generators/vue-form-generator
 	export default {
@@ -23,8 +23,7 @@
 			"projects"
 			, "groups"
 			, "tasks"
-			, "users" 
-			, "selectedProject"
+			, "users"
 			, "selectedTasks"
 		]),
 
@@ -75,9 +74,7 @@
 
 		methods: {
 			...mapMutations("kanbanPage", {
-				_selectProject : SELECT_PROJECT
-				, selectRow : SELECT
-				, _deselectProject : DESELECT_PROJECT
+				selectRow : SELECT
 				, loadTasks : LOAD
 				, updated : UPDATE
 				, clearSelection : CLEAR_SELECT
@@ -92,15 +89,13 @@
 				, deleteModel : "deleteTask"
 				, arrange : "updateGroups"
 			})
-			, selectProject(row) {
-				this._selectProject(row);
+			, selectProject(code) {
 				this.getGroups({
-					options: { parent : row.code }
+					options: { parent : code }
 					, mutation: LOAD
 				});
 			}
 			, deselectProject() {
-				this._deselectProject();
 				this.loadTasks([]);
 			}
 		},

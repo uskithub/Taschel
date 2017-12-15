@@ -2,9 +2,10 @@
 	.container
 		h3.title {{ schema.title }}
 
-		data-table(:schema="schema.projectTable", :rows="projects", :order="order", :search="search", :selected="selectedProject", :select="_selectProject", :select-all="selectAll")
-		br
-		tree-list(:isRoot="true", :node="selectedProject.length > 0 ? selectedProject[0] : null")
+		.form
+			vue-form-generator(:schema="projectSelector", :model="modelProjectSelector", ref="projectSelector")
+
+		tree-list(:isRoot="true", :node="selectedProject")
 
 </template>
 
@@ -28,7 +29,6 @@
 		props: [
 			"schema"
 			, "projects"
-			, "selectedProject"
 		]
 
 		, data() {
@@ -40,15 +40,43 @@
 
 				model: null,
 				isNewModel: false
+
+				// 選択したプロジェクトが格納される
+				, modelProjectSelector: {}
             };
 		}
 
 		, computed: {
 			...mapGetters("session", {
 				search: "searchText"
-			}),
+			})
+			
+			, selectedProject() {
+				if (this.modelProjectSelector.code) {
+					for (let i in this.projects) {
+						let project = this.projects[i];
+						if (project.code == this.modelProjectSelector.code) {
+							return project;
+						}
+					}
+				}
+				return null;
+			}
+			, projectSelector() {
+				this.schema.projectSelector.fields.forEach(f => {
+					if (f.model == "code") {
+						f.values = this.projects.map(project => {
+							return {
+								id : project.code
+								, name : project.name
+							}
+						});
+					}
+				});	
+				return this.schema.projectSelector;
+			}
 
-			options() 		{ return this.schema.options || {};	},
+			, options() 		{ return this.schema.options || {};	},
 
 			enabledNew() 	{ return (this.options.enableNewButton !== false); },
 			enabledSave() 	{ return (this.model && this.options.enabledSaveButton !== false); },
@@ -65,32 +93,10 @@
 		}
 
 		, watch: {
-			// propsで指定した名前に合わせる必要あり
-			// TODO: 値は保持されるのに、画面表示が更新されない不具合あり
-			selectedProject() {
-				if (!this.isNewModel) {
-					if (this.model == null) return;
-					if (this.selectedProject.length > 0) {
-						this.model.root_code = this.selectedProject[0].code;
-					} else {
-						this.model.root_code = null
-					}
-				}
-			}
 		}
 
 		, methods: {
-
-			_selectProject(event, row, add) {
-				this.isNewModel = false;
-
-				if (this.selectedProject.length > 0 && this.selectedProject[0] == row) {
-					this.$parent.deselectProject();
-				} else {
-					this.$parent.selectProject(row);
-				}
-			}
-			, selectAll(event) {
+			selectAll(event) {
 				this.isNewModel = false;
 
 				let filter = Vue.filter("filterBy");

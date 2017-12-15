@@ -3,8 +3,6 @@ import { LOAD_PROJECTS
 	, LOAD_USERS
 	, ADD
 	, SELECT
-	, SELECT_PROJECT
-	, DESELECT_PROJECT
 	, DESELECT
 	, CLEAR_SELECT
 	, UPDATE
@@ -19,7 +17,6 @@ const state = {
 	, groups: []
 	, tasks: []
 	, users: []
-    , selectedProject: []
 	, selectedTasks: []
 };
 
@@ -29,7 +26,6 @@ const getters = {
 	, groups(state) { return state.groups; }
 	, tasks(state) { return state.tasks; }
 	, users(state) { return state.users; }
-	, selectedProject(state) { return state.selectedProject; }
 	, selectedTasks(state) { return state.selectedTasks; }
 };
 
@@ -61,12 +57,6 @@ const mutations = {
 		// }
 		state.groups.push(model);
 	}
-	, [SELECT_PROJECT] (state, row) {
-		state.projects.splice(0);
-		state.projects.push(row);
-		state.selectedProject.splice(0);
-		state.selectedProject.push(row);
-	}
 	, [SELECT] (state, row, multiSelect) {
 		// if (isArray(row)) {
 		// 	state.selectedTasks.splice(0);
@@ -83,11 +73,6 @@ const mutations = {
 		// 		state.selectedTasks.push(row);
 		// 	}
 		// }
-	}
-	, [DESELECT_PROJECT] (state) {
-		state.selectedProject.splice(0);
-		state.projects.splice(0);
-		state.projects.push(...state._projects);
 	}
 	, [DESELECT] (state, row) {
 		state.selectedTasks = state.selectedTasks.filter((item) => {

@@ -11,23 +11,6 @@ module.exports = {
 
 	id: "kanban"
 	, title: _("Kanban")
-	, projectTable: {
-		multiSelect: true,
-		columns: [
-			{
-				title: _("Name")
-				, field: "name"
-				, align: "left"
-            }
-		],
-
-		rowClasses: function(model) {
-			return {
-				inactive: !model.status
-			};
-		}
-
-	}
 	, taskTable: {
 		multiSelect: true
 		, columns: [
@@ -74,9 +57,20 @@ module.exports = {
 			};
 		}
 
-	},
+	}
 
-	form: {
+	, projectSelector: {
+		fields: [
+			{
+				type: "select",
+				label: _("Project"),
+				model: "code",
+				values: [] // index.vueにて後から設定している
+			},	
+		]
+	}
+
+	, form: {
 		fields: [
 			{
 				type: "select",

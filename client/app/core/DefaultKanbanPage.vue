@@ -9,8 +9,9 @@
 					| {{ schema.resources.addCaption || _("Add") }}
 			.right {{ _("SelectedOfAll", { selected: selectedTasks.length, all: tasks.length } ) }}
 		br
-		data-table(:schema="schema.projectTable", :rows="projects", :order="order", :search="search", :selected="selectedProject", :select="didSelectProject", :select-all="selectAll")
-		br
+		.form
+			vue-form-generator(:schema="projectSelector", :model="modelProjectSelector", ref="projectSelector", @model-updated="modelUpdated")
+
 		kanban(:boards="groups", :tasks="tasks",  @update-handler="arrange")
 
 		.form(v-if="model")
@@ -50,14 +51,13 @@
             , Kanban
 		},
 
-        // task-page(:schema="schema", :selectedProject="selectedProject", :selectedTasks="selectedTasks", :projects="projects", :tasks="tasks", :users="users") に対応させる
+        // task-page(:schema="schema", :selectedTasks="selectedTasks", :projects="projects", :tasks="tasks", :users="users") に対応させる
 		props: [
 			"schema"
 			, "projects"
 			, "groups"
 			, "tasks"
 			, "users"
-			, "selectedProject"
 			, "selectedTasks"
         ]
 
@@ -69,15 +69,32 @@
 				},
 				model: null,
 				isNewModel: false
+
+				// 選択したプロジェクトが格納される
+				, modelProjectSelector: {}
             };
         },
 
 		computed: {
 			...mapGetters("session", {
 				search: "searchText"
-			}),
+			})
 
-			options() 		{ return this.schema.options || {};	},
+			, projectSelector() {
+				this.schema.projectSelector.fields.forEach(f => {
+					if (f.model == "code") {
+						f.values = this.projects.map(project => {
+							return {
+								id : project.code
+								, name : project.name
+							}
+						});
+					}
+				});	
+				return this.schema.projectSelector;
+			}
+
+			, options() 		{ return this.schema.options || {};	},
 
 			enabledNew() 	{ return (this.options.enableNewButton !== false); },
 			enabledSave() 	{ return (this.model && this.options.enabledSaveButton !== false); },
@@ -94,20 +111,7 @@
 
 		watch: {
 			// propsで指定した名前に合わせる必要あり
-			// TODO: 値は保持されるのに、画面表示が更新されない不具合あり
-			selectedProject() {
-				if (!this.isNewModel) {
-					if (this.model == null) return;
-					if (this.selectedProject.length > 0) {
-						this.model.root_code = this.selectedProject[0].code;
-					} else {
-						this.model.root_code = null
-					}
-				}
-			}
-
-			// propsで指定した名前に合わせる必要あり
-			, selectedTask() {
+			selectedTask() {
 				console.log("●● selectedTask")
 				// if (!this.isNewModel)
 				// 	this.generateModel();
@@ -124,20 +128,19 @@
 		},
 
 		methods: {
+			modelUpdated(newVal, schema) {
+				console.log(`● ${schema}: ${newVal}`);
+				if (newVal) {
+					this.$parent.selectProject(newVal);
+				} else {
+					this.$parent.deselectProject();
+				}
+			}
 			// TODO: ネーミング気になる。統一感がないのでどうにかする
-            arrange(context) {
+            , arrange(context) {
 				this.$parent.arrange(context);
             }
 
-			, didSelectProject(event, row, add) {
-				this.isNewModel = false;
-
-				if (this.selectedProject.length > 0 && this.selectedProject[0] == row) {
-					this.$parent.deselectProject();
-				} else {
-					this.$parent.selectProject(row);
-				}
-			}
 			, _selectTasks(event, row, add) {
 				this.isNewModel = false;
 
@@ -184,9 +187,8 @@
                 this.isNewModel = true;
                 
                 // projectが設定されている場合、projectを設定
-                if (this.selectedProject.length > 0) {
-                    let root =  this.selectedProject[0];
-					newRow.parent_code = root.code;
+                if (this.modelProjectSelector.code) {
+                    newRow.parent_code = this.modelProjectSelector.code;
                 }
 
 				this.model = newRow;

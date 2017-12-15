@@ -9,7 +9,6 @@
 					| {{ schema.resources.addCaption || _("Add") }}
 			.right {{ _("SelectedOfAll", { selected: selectedTasks.length, all: tasks.length } ) }}
 		br
-
 		.form
 			vue-form-generator(:schema="projectSelector", :model="modelProjectSelector", ref="projectSelector", @model-updated="modelUpdated")
 
@@ -50,7 +49,7 @@
 			DataTable
 		},
 
-        // task-page(:schema="schema", :selectedProject="selectedProject", :selectedTasks="selectedTasks", :projects="projects", :tasks="tasks", :users="users") に対応させる
+        // task-page(:schema="schema", :selectedTasks="selectedTasks", :projects="projects", :tasks="tasks", :users="users") に対応させる
 		props: [
 			"schema"
             , "projects"
@@ -108,7 +107,6 @@
 		},	
 
 		watch: {
-
 			// propsで指定した名前に合わせる必要あり
 			selectedTasks() {
 				console.log("●● selectedTask")
@@ -123,7 +121,6 @@
 		},
 
 		methods: {
-
 			modelUpdated(newVal, schema) {
 				console.log(`● ${schema}: ${newVal}`);
 				if (newVal) {
