@@ -21,3 +21,5 @@ export const REMOVE				= "REMOVE";
 
 // 行などを選択した時
 export const SELECT				= "SELECT";
+
+export const SET_USER			= "SET_SESSION_USER";

@@ -9,7 +9,7 @@
 	import toast from "../../core/toastr";
 
 	import { mapGetters, mapMutations, mapActions } from "vuex";
-	import { LOAD, SELECT, CLEAR_SELECT, ADD , UPDATE, REMOVE } from "../../common/mutationTypes";
+	import { LOAD, SELECT, CLEAR_SELECT, ADD , UPDATE, REMOVE, SET_USER } from "../../common/mutationTypes";
 
 	export default {
 		
@@ -92,17 +92,34 @@
 				, saveRow : "createTask"
 				, removeRow : "deleteTask"
 			})
+			, ...mapActions("session", [
+				"getSessionUser"
+			])
 		}
 
 		/**
 		 * Call if the component is created
+		 * インスタンスが作成された後に同期的に呼ばれる
+		 * データの監視とイベントの初期セットアップが完了した状態
 		 */
 		, created() {
 			// Download rows for the page
-			this.getTasks({ 
-				options: { user : this.me.code }
-				, mutation: LOAD
-			});
+			if (this.me) {
+				this.getTasks({ 
+					options: { user : this.me.code }
+					, mutation: LOAD
+				});
+			} else {
+				// F5リロード時など、meがundefinedの場合があるので、その場合、meの更新を監視してtaskを更新する
+				this.$store.subscribe((mutation, state) => {
+					if (mutation.type == `session/${SET_USER}`) {
+						this.getTasks({ 
+							options: { user : this.me.code }
+							, mutation: LOAD
+						});
+					}
+				});				
+			}
 		}
 	};
 </script>
