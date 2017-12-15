@@ -16,31 +16,31 @@
 		
 		components: {
 			TaskPage: TaskPage
-		},
+		}
 
 		// getters.js に対応
-		computed: mapGetters("tasksPage", [
+		, computed: mapGetters("tasksPage", [
 			"projects"
 			, "tasks"
 			, "users" 
 			, "selectedProject"
 			, "selectedTasks"
-		]),
+		])
 
 		/**
 		 * Set page schema as data property
 		 */
-		data() {
+		, data() {
 			return {
 				// task-pageに当てはめる値を定義したオブジェクト
 				schema
 			};
-		},
+		}
 
 		/**
 		 * Socket handlers. Every property is an event handler
 		 */
-		socket: {
+		, socket: {
 			prefix: "/tasks/",
 			events: {
 				/**

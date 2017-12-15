@@ -74,9 +74,20 @@ module.exports = {
 			};
 		}
 
-	},
+	}
 
-	form: {
+	, projectSelector: {
+		fields: [
+			{
+				type: "select",
+				label: _("Project"),
+				model: "task_code",
+				values: [] // index.vueにて後から設定している
+			},	
+		]
+	}
+
+	, form: {
 		fields: [
 			{
 				type: "text",
@@ -126,8 +137,8 @@ module.exports = {
 			{
 				type: "text",
 				label: _("目的"),
-                model: "purpose",
-                placeholder: _("なぜそのタスクをするのか"),
+				model: "purpose",
+				placeholder: _("なぜそのタスクをするのか"),
 				featured: false,
 				required: true,
 				validator: validators.string
@@ -193,7 +204,7 @@ module.exports = {
 	},
 
 	resources: {
-        addCaption: _("追加／更新／削除"),
+		addCaption: _("追加／更新／削除"),
 		saveCaption: _("Save"),
 		cloneCaption: _("Clone"),
 		deleteCaption: _("Delete")

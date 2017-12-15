@@ -9,12 +9,16 @@
 					| {{ schema.resources.addCaption || _("Add") }}
 			.right {{ _("SelectedOfAll", { selected: selectedTasks.length, all: tasks.length } ) }}
 		br
+
+		.form
+			vue-form-generator(:schema="projectSelector",:model="selectedProject", ref="projectSelector")
+
 		data-table(:schema="schema.projectTable", :rows="projects", :order="order", :search="search", :selected="selectedProject", :select="_selectProject", :select-all="selectAll")
 		br
 		data-table(:schema="schema.taskTable", :rows="tasks", :order="order", :search="search", :selected="selectedTasks", :select="_selectTasks", :select-all="selectAll")
 
 		.form(v-if="model")
-			vue-form-generator(:schema='schema.form', :model='model', :options='options', :multiple="selectedTasks.length > 1", ref="form", :is-new-model="isNewModel")
+			vue-form-generator(:schema="schema.form", :model="model", :options="options", :multiple="selectedTasks.length > 1", ref="form", :is-new-model="isNewModel")
 
 			.errors.text-center
 				div.alert.alert-danger(v-for="(item, index) in validationErrors", :key="index") {{ item.field.label }}: 
@@ -73,9 +77,22 @@
 		computed: {
 			...mapGetters("session", {
 				search: "searchText"
-			}),
+			})
 
-			options() 		{ return this.schema.options || {};	},
+			, projectSelector() {
+				this.schema.projectSelector.fields.forEach(f => {
+					if (f.model == "task_code") {
+						f.values = this.projects.map(project => {
+							return {
+								id : project.code
+								, name : project.name
+							}
+						});
+					}
+				});	
+				return this.schema.projectSelector;
+			}
+			, options() 		{ return this.schema.options || {};	},
 
 			enabledNew() 	{ return (this.options.enableNewButton !== false); },
 			enabledSave() 	{ return (this.model && this.options.enabledSaveButton !== false); },
