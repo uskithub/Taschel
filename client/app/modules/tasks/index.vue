@@ -124,7 +124,7 @@
 			if (this.currentProject) {
 				this.getTasks({
 					options: { root : this.currentProject }
-					, mutation: LOAD
+					, mutation: `tasksPage/${LOAD}`
 				});
 			}
 
