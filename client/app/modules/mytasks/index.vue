@@ -107,7 +107,7 @@
 			if (this.me) {
 				this.getTasks({ 
 					options: { user : this.me.code }
-					, mutation: LOAD
+					, mutation: `mytasksPage/${LOAD}`
 				});
 			} else {
 				// F5リロード時など、meがundefinedの場合があるので、その場合、meの更新を監視してtaskを更新する

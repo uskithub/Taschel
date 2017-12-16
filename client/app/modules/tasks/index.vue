@@ -21,11 +21,11 @@
 		// getters.js に対応
 		, computed: {
 			...mapGetters("shared", [
-				"currentProject"
+				"projects"
+				, "currentProject"
 			])
 			, ...mapGetters("tasksPage", [
-				"projects"
-				, "tasks"
+				"tasks"
 				, "users" 
 				, "selectedTasks"
 			])
@@ -79,7 +79,7 @@
 
 		methods: {
 			...mapMutations("shared", {
-				setCurrentProject : SET_CURRENT_PROJECT
+				setCurrentProject : SET_CURRENT_PROJECT	// `this.setCurrentProject()` を `this.$store.commit(SET_CURRENT_PROJECT)` にマッピングする
 			})
 			, ...mapMutations("tasksPage", {
 				selectTasks : SELECT
@@ -101,7 +101,7 @@
 				this.setCurrentProject(code);
 				this.getTasks({
 					options: { root : code }
-					, mutation: LOAD
+					, mutation: `tasksPage/${LOAD}`
 				});
 			}
 			, deselectProject() {
@@ -114,11 +114,12 @@
 		 * Call if the component is created
 		 */
 		created() {
-			// Download rows for the page
-			this.getTasks({ 
-				options: { taskType : "project" }
-				, mutation: LOAD_PROJECTS
-			});
+			if (this.projects.length == 0) {
+				this.getTasks({ 
+					options: { taskType : "project" }
+					, mutation: `shared/${LOAD_PROJECTS}`
+				});
+			}
 
 			if (this.currentProject) {
 				this.getTasks({
@@ -126,7 +127,7 @@
 					, mutation: LOAD
 				});
 			}
-			
+
 			if (this.users.length == 0) {
 				this.getUsers({ mutation: LOAD_USERS });	
 			}

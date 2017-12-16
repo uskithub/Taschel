@@ -9,7 +9,7 @@
 	import toast from "../../core/toastr";
 
 	import { mapGetters, mapMutations, mapActions } from "vuex";
-	import { LOAD, SELECT, CLEAR_SELECT, ADD , UPDATE, REMOVE } from "../../common/mutationTypes";
+	import { LOAD_PROJECTS, LOAD, SELECT, CLEAR_SELECT, ADD , UPDATE, REMOVE } from "../../common/mutationTypes";
 
 	export default {
 		
@@ -17,15 +17,19 @@
 			ListPage: ListPage
 		},
 
-		computed: mapGetters("projectsPage", [
-			"projects",
-			"selected"
-		]),
+		computed: {
+			...mapGetters("shared", [
+				"projects"
+			])
+			, ...mapGetters("projectsPage", [
+				"selected"
+			])
+		}
 
 		/**
 		 * Set page schema as data property
 		 */
-		data() {
+		, data() {
 			return {
 				schema
 			};
@@ -85,7 +89,7 @@
 				, removed : REMOVE
 			})
 			, ...mapActions("projectsPage", {
-				getTasks : "readTasks"
+				getProjects : "readTasks"
 				, updateRow : "updateTask"
 				, saveRow : "createTask"
 				, removeRow : "deleteTask"
@@ -97,9 +101,9 @@
 		 */
 		, created() {
 			// Download rows for the page
-			this.getTasks({
+			this.getProjects({
 				options: { taskType : "project" }
-				, mutation: LOAD
+				, mutation: `shared/${LOAD_PROJECTS}`
 			});
 		}
 	};

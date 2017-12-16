@@ -1,16 +1,21 @@
-import { SET_CURRENT_PROJECT } from "../../../common/mutationTypes";
+import { LOAD_PROJECTS, SET_CURRENT_PROJECT } from "../../../common/mutationTypes";
 
 const state = {
-    // task.code 
-	currentProject: null
+    projects: []
+	, currentProject: null  // task.code 
 };
 
 const getters = {
-	currentProject(state) { return state.currentProject; }
+    projects(state) { return state.projects; }
+	, currentProject(state) { return state.currentProject; }
 };
 
 const mutations = {
-	[SET_CURRENT_PROJECT] (state, code) {
+    [LOAD_PROJECTS] (state, models) {
+		state.projects.splice(0);
+		state.projects.push(...models);
+	}
+	, [SET_CURRENT_PROJECT] (state, code) {
 		state.currentProject = code;
 	}
 };
@@ -18,6 +23,8 @@ const mutations = {
 export default {
 	namespaced : true
 	, state
-	, getters
+    , getters
+    // sharedにはactionを持たせないこと
+    //, actions
 	, mutations
 };

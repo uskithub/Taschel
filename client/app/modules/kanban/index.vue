@@ -21,11 +21,11 @@
 		// getters.js に対応
 		computed: {
 			...mapGetters("shared", [
-				"currentProject"
+				"projects"
+				, "currentProject"
 			])
 			, ...mapGetters("kanbanPage", [
-				"projects"
-				, "groups"
+				"groups"
 				, "tasks"
 				, "users"
 				, "selectedTasks"
@@ -90,7 +90,7 @@
 				, removed : REMOVE
 			})
 			, ...mapActions("kanbanPage", {
-				getTasks : "readTasks"
+				getProjects : "readTasks"
 				, getGroups : "readGroups"
 				, updateModel : "updateTask"
 				, createModel : "createGroup"
@@ -114,11 +114,12 @@
 		 * Call if the component is created
 		 */
 		created() {
-			// Download rows for the page
-			this.getTasks({
-				options: { taskType : "project" }
-				, mutation: LOAD_PROJECTS
-			});
+			if (this.projects.length == 0) {
+				this.getProjects({ 
+					options: { taskType : "project" }
+					, mutation: `shared/${LOAD_PROJECTS}`
+				});
+			}
 
 			if (this.currentProject) {
 				this.getGroups({

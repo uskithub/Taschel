@@ -2,22 +2,20 @@ import { LOAD_PROJECTS } from "../../common/mutationTypes";
 
 import { each, find, assign, remove, isArray } from "lodash";
 
+// TODO: GantだけProject読み込み時にPopulateさせているのでSharedと分けるかもしれないので残している
 const state = {
-	projects: []
-	, _projects: [] // 見本用
+// 	projects: []
 };
 
 const getters = {
-	projects(state) { return state.projects; }
+// 	projects(state) { return state.projects; }
 };
 
 const mutations = {
-	[LOAD_PROJECTS] (state, models) {
-		state.projects.splice(0);
-		state._projects.splice(0);
-		state.projects.push(...models);
-		state._projects.push(...models);
-	}
+	// [LOAD_PROJECTS] (state, models) {
+	// 	state.projects.splice(0);
+	// 	state.projects.push(...models);
+	// }
 };
 
 import { createTask, readTasks, updateTask, deleteTask, arrangeTask } from "../common/tasks/actions";

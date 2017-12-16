@@ -18,11 +18,13 @@
 		}
 		, computed : {
 			...mapGetters("shared", [
-				"currentProject"
-			])
-			, ...mapGetters("gantPage", [
 				"projects"
+				, "currentProject"
 			])
+			// TODO: GantだけProject読み込み時にPopulateさせているのでSharedと分けるかもしれないので残している
+			// , ...mapGetters("gantPage", [
+			// 	"projects"
+			// ])
 		}
 
 		/**
@@ -74,7 +76,7 @@
 				setCurrentProject : SET_CURRENT_PROJECT
 			})
 			, ...mapActions("gantPage", {
-				getTasks : "readTasks"
+				getProjects : "readTasks"
 				, arrange : "arrangeTask"
 			})
 			, selectProject(code) {
@@ -90,9 +92,9 @@
 		 */
 		, created() {
 			// Download rows for the page
-			this.getTasks({
+			this.getProjects({
 				options: { taskType : "project", populateParent : true }
-				, mutation: LOAD_PROJECTS
+				, mutation: `shared/${LOAD_PROJECTS}`
 			});
 		}
 	};

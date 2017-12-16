@@ -1,5 +1,4 @@
-import { LOAD_PROJECTS
-	, LOAD
+import { LOAD
 	, LOAD_USERS
 	, ADD
 	, SELECT
@@ -12,9 +11,7 @@ import { LOAD_PROJECTS
 import { each, find, assign, remove, isArray } from "lodash";
 
 const state = {
-	projects: []
-	, _projects: [] // 見本用
-	, groups: []
+	groups: []
 	, tasks: []
 	, users: []
 	, selectedTasks: []
@@ -22,8 +19,7 @@ const state = {
 
 // stateから値を取り出すのはgetterを使う
 const getters = {
-	projects(state) { return state.projects; }
-	, groups(state) { return state.groups; }
+	groups(state) { return state.groups; }
 	, tasks(state) { return state.tasks; }
 	, users(state) { return state.users; }
 	, selectedTasks(state) { return state.selectedTasks; }
@@ -35,13 +31,7 @@ const getters = {
 const mutations = {
 	// 定数を関数名として使用できる ES2015 の算出プロパティ名（computed property name）機能を使用することで
 	// Lintできるようになったり、mutationの一覧性ができる
-	[LOAD_PROJECTS] (state, models) {
-		state.projects.splice(0);
-		state._projects.splice(0);
-		state.projects.push(...models);
-		state._projects.push(...models);
-	}
-	, [LOAD] (state, models) {
+	[LOAD] (state, models) {
 		state.groups.splice(0);
 		state.groups.push(...models);
 	}

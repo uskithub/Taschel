@@ -91,7 +91,11 @@ export const readTasks = ({ commit }, { options, mutation }) => {
 	axios.get(url).then((response) => {
 		let res = response.data;
 		if (res.status == 200 && res.data)
-			commit(mutation, (options && options.populateParent) ? res.data.map(d => recursiveSetParentReference(d)) : res.data);
+			// 各Pageにアサインされたactionからsharedのmutationへcommitをかのうにするため、roo:trueとしている
+			commit(mutation
+				, (options && options.populateParent) ? res.data.map(d => recursiveSetParentReference(d)) : res.data
+				, { root : true }
+			);
 		else
 			console.error("Request error!", res.error);
 
