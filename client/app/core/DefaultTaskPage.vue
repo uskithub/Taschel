@@ -56,9 +56,10 @@
 			, "tasks"
 			, "users"
 			, "selectedTasks"
-		],
+			, "selectedProject"
+		]
 
-		data() {
+		, data() {
 			return {
 				order: {
 					field: "id",
@@ -69,7 +70,9 @@
 				isNewModel: false
 
 				// 選択したプロジェクトが格納される
-				, modelProjectSelector: {}
+				, modelProjectSelector: {
+					code : this.selectedProject
+				}
 			};
 		},
 

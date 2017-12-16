@@ -1,5 +1,5 @@
 <template lang="pug">
-	kanban-page(:schema="schema", :selectedTasks="selectedTasks", :projects="projects", :groups="groups", :tasks="tasks", :users="users")
+	kanban-page(:schema="schema", :selectedProject="currentProject", :selectedTasks="selectedTasks", :projects="projects", :groups="groups", :tasks="tasks", :users="users")
 </template>
 
 <script>
@@ -9,7 +9,7 @@
 	import toast from "../../core/toastr";
 
 	import { mapGetters, mapMutations, mapActions } from "vuex";
-	import { LOAD, LOAD_PROJECTS, SELECT, CLEAR_SELECT, ADD , UPDATE, REMOVE } from "../../common/mutationTypes";
+	import { SET_CURRENT_PROJECT, LOAD, LOAD_PROJECTS, SELECT, CLEAR_SELECT, ADD , UPDATE, REMOVE } from "../../common/mutationTypes";
 
     // @see: https://github.com/vue-generators/vue-form-generator
 	export default {
@@ -19,18 +19,23 @@
 		},
 
 		// getters.js に対応
-		computed: mapGetters("kanbanPage", [
-			"projects"
-			, "groups"
-			, "tasks"
-			, "users"
-			, "selectedTasks"
-		]),
+		computed: {
+			...mapGetters("shared", [
+				"currentProject"
+			])
+			, ...mapGetters("kanbanPage", [
+				"projects"
+				, "groups"
+				, "tasks"
+				, "users"
+				, "selectedTasks"
+			])
+		}
 
 		/**
 		 * Set page schema as data property
 		 */
-		data() {
+		, data() {
 			return {
 				// task-pageに当てはめる値を定義したオブジェクト
 				schema
@@ -73,7 +78,10 @@
 		},		
 
 		methods: {
-			...mapMutations("kanbanPage", {
+			...mapMutations("shared", {
+				setCurrentProject : SET_CURRENT_PROJECT
+			})
+			, ...mapMutations("kanbanPage", {
 				selectRow : SELECT
 				, loadTasks : LOAD
 				, updated : UPDATE
@@ -90,12 +98,14 @@
 				, arrange : "updateGroups"
 			})
 			, selectProject(code) {
+				this.setCurrentProject(code);
 				this.getGroups({
 					options: { parent : code }
 					, mutation: LOAD
 				});
 			}
 			, deselectProject() {
+				this.setCurrentProject(code);
 				this.loadTasks([]);
 			}
 		},
@@ -109,6 +119,13 @@
 				options: { taskType : "project" }
 				, mutation: LOAD_PROJECTS
 			});
+
+			if (this.currentProject) {
+				this.getGroups({
+					options: { parent : this.currentProject }
+					, mutation: LOAD
+				});
+			}
 		}
 	};
 </script>

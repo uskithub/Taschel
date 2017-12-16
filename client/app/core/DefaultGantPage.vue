@@ -3,9 +3,9 @@
 		h3.title {{ schema.title }}
 
 		.form
-			vue-form-generator(:schema="projectSelector", :model="modelProjectSelector", ref="projectSelector")
+			vue-form-generator(:schema="projectSelector", :model="modelProjectSelector", ref="projectSelector", @model-updated="modelUpdated")
 
-		tree-list(:isRoot="true", :node="selectedProject")
+		tree-list(:isRoot="true", :node="selectedProjectChildren")
 
 </template>
 
@@ -29,6 +29,7 @@
 		props: [
 			"schema"
 			, "projects"
+			, "selectedProject"
 		]
 
 		, data() {
@@ -42,7 +43,9 @@
 				isNewModel: false
 
 				// 選択したプロジェクトが格納される
-				, modelProjectSelector: {}
+				, modelProjectSelector:  {
+					code : this.selectedProject
+				}
             };
 		}
 
@@ -51,7 +54,7 @@
 				search: "searchText"
 			})
 			
-			, selectedProject() {
+			, selectedProjectChildren() {
 				if (this.modelProjectSelector.code) {
 					for (let i in this.projects) {
 						let project = this.projects[i];
@@ -96,7 +99,15 @@
 		}
 
 		, methods: {
-			selectAll(event) {
+			modelUpdated(newVal, schema) {
+				console.log(`● ${schema}: ${newVal}`);
+				if (newVal) {
+					this.$parent.selectProject(newVal);
+				} else {
+					this.$parent.deselectProject();
+				}
+			}
+			, selectAll(event) {
 				this.isNewModel = false;
 
 				let filter = Vue.filter("filterBy");

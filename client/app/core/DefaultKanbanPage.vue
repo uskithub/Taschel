@@ -59,6 +59,7 @@
 			, "tasks"
 			, "users"
 			, "selectedTasks"
+			, "selectedProject"
         ]
 
 		, data() {
@@ -71,7 +72,9 @@
 				isNewModel: false
 
 				// 選択したプロジェクトが格納される
-				, modelProjectSelector: {}
+				, modelProjectSelector:  {
+					code : this.selectedProject
+				}
             };
         },
 

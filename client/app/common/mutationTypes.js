@@ -5,6 +5,8 @@ export const DESELECT_PROJECT	= "DESELECT_PROJECT";
 export const DESELECT			= "DESELECT";
 export const CLEAR_SELECT		= "CLEAR_SELECT";
 
+// common/store/index.js
+export const SET_CURRENT_PROJECT	= "SET_CURRENT_PROJECT";
 
 
 // APIでgetしてきたmodelsをstateに保存する

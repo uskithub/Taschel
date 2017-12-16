@@ -65,7 +65,7 @@ module.exports = {
 				type: "select",
 				label: _("Project"),
 				model: "code",
-				values: [] // index.vueにて後から設定している
+				values: [] // DefaultTaskPage.vueにて後から設定している
 			},	
 		]
 	}

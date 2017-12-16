@@ -1,5 +1,5 @@
 <template lang="pug">
-	task-page(:schema="schema", :selectedTasks="selectedTasks", :projects="projects", :tasks="tasks", :users="users")
+	task-page(:schema="schema", :selectedProject="currentProject", :selectedTasks="selectedTasks", :projects="projects", :tasks="tasks", :users="users")
 </template>
 
 <script>
@@ -9,7 +9,7 @@
 	import toast from "../../core/toastr";
 
 	import { mapGetters, mapMutations, mapActions } from "vuex";
-	import { LOAD, SELECT, CLEAR_SELECT, ADD , UPDATE, REMOVE, LOAD_PROJECTS, LOAD_USERS, DESELECT } from "../../common/mutationTypes";
+	import { SET_CURRENT_PROJECT, LOAD, SELECT, CLEAR_SELECT, ADD , UPDATE, REMOVE, LOAD_PROJECTS, LOAD_USERS, DESELECT } from "../../common/mutationTypes";
 
     // @see: https://github.com/vue-generators/vue-form-generator
 	export default {
@@ -19,12 +19,17 @@
 		}
 
 		// getters.js に対応
-		, computed: mapGetters("tasksPage", [
-			"projects"
-			, "tasks"
-			, "users" 
-			, "selectedTasks"
-		])
+		, computed: {
+			...mapGetters("shared", [
+				"currentProject"
+			])
+			, ...mapGetters("tasksPage", [
+				"projects"
+				, "tasks"
+				, "users" 
+				, "selectedTasks"
+			])
+		}
 
 		/**
 		 * Set page schema as data property
@@ -73,7 +78,10 @@
 		},		
 
 		methods: {
-			...mapMutations("tasksPage", {
+			...mapMutations("shared", {
+				setCurrentProject : SET_CURRENT_PROJECT
+			})
+			, ...mapMutations("tasksPage", {
 				selectTasks : SELECT
 				, loadTasks : LOAD
 				, deselectTask : DESELECT
@@ -90,12 +98,14 @@
 				, getUsers : "readUsers"
 			})
 			, selectProject(code) {
+				this.setCurrentProject(code);
 				this.getTasks({
 					options: { root : code }
 					, mutation: LOAD
 				});
 			}
 			, deselectProject() {
+				this.setCurrentProject(null);
 				this.loadTasks([]);
 			}
 		},
@@ -109,7 +119,17 @@
 				options: { taskType : "project" }
 				, mutation: LOAD_PROJECTS
 			});
-			this.getUsers({ mutation: LOAD_USERS });
+
+			if (this.currentProject) {
+				this.getTasks({
+					options: { root : this.currentProject }
+					, mutation: LOAD
+				});
+			}
+			
+			if (this.users.length == 0) {
+				this.getUsers({ mutation: LOAD_USERS });	
+			}
 		}
 	};
 </script>

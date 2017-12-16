@@ -1,5 +1,5 @@
 <template lang="pug">
-	gant-page(:schema="schema", :projects="projects")
+	gant-page(:schema="schema", :selectedProject="currentProject", :projects="projects")
 </template>
 
 <script>
@@ -9,7 +9,7 @@
 	import toast from "../../core/toastr";
 
 	import { mapGetters, mapMutations, mapActions } from "vuex";
-	import { LOAD_PROJECTS } from "../../common/mutationTypes";
+	import { SET_CURRENT_PROJECT, LOAD_PROJECTS } from "../../common/mutationTypes";
 
 	export default {
 		
@@ -17,7 +17,10 @@
 			GantPage: GantPage
 		}
 		, computed : {
-			...mapGetters("gantPage", [
+			...mapGetters("shared", [
+				"currentProject"
+			])
+			, ...mapGetters("gantPage", [
 				"projects"
 			])
 		}
@@ -67,18 +70,18 @@
 			}
 		}		
 		, methods : {
-			...mapActions("gantPage", {
+			...mapMutations("shared", {
+				setCurrentProject : SET_CURRENT_PROJECT
+			})
+			, ...mapActions("gantPage", {
 				getTasks : "readTasks"
 				, arrange : "arrangeTask"
 			})
 			, selectProject(code) {
-				this.getTasks({
-					options: { root : code }
-					, mutation: LOAD
-				});
+				this.setCurrentProject(code);
 			}
 			, deselectProject() {
-				this.loadTasks([]);
+				this.setCurrentProject(code);
 			}
 		}
 
