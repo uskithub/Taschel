@@ -115,7 +115,7 @@
 					if (mutation.type == `session/${SET_USER}`) {
 						this.getTasks({ 
 							options: { user : this.me.code }
-							, mutation: LOAD
+							, mutation: `mytasksPage/${LOAD}`
 						});
 					}
 				});				
