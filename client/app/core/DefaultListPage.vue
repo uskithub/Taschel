@@ -4,7 +4,7 @@
 
 		.flex.align-center.justify-space-around
 			.left(v-if="enabledNew")
-				button.button.is-primary(@click="newModel")
+				button.button.is-primary(@click="buttonNewDidPush")
 					i.icon.fa.fa-plus 
 					| {{ schema.resources.addCaption || _("Add") }}
 			.right {{ _("SelectedOfAll", { selected: selected.length, all: rows.length } ) }}
@@ -19,16 +19,16 @@
 					strong {{ item.error }}
 
 			.buttons.flex.justify-space-around
-				button.button.primary(@click="saveModel", :disabled="!enabledSave")
+				button.button.primary(@click="buttonSaveDidPush", :disabled="!enabledSave")
 					i.icon.fa.fa-save 
 					| {{ schema.resources.saveCaption || _("Save") }}
-				button.button.outline(@click="breakdown", :disabled="!enabledBreakdown")
+				button.button.outline(@click="buttonBreakdownDidPush", :disabled="!enabledBreakdown")
 					i.icon.fa.fa-copy 
 					| {{ schema.resources.breakdownCaption || _("Breakdown") }}
-				button.button.outline(@click="cloneModel", :disabled="!enabledClone")
+				button.button.outline(@click="buttonCloneDidPush", :disabled="!enabledClone")
 					i.icon.fa.fa-copy 
 					| {{ schema.resources.cloneCaption || _("Clone") }}
-				button.button.danger(@click="deleteModel", :disabled="!enabledDelete")
+				button.button.danger(@click="buttonDeleteDidPush", :disabled="!enabledDelete")
 					i.icon.fa.fa-trash 
 					| {{ schema.resources.deleteCaption || _("Delete") }}
 
@@ -143,7 +143,7 @@
 					this.model = null;
 			}
 
-			, newModel() {
+			, buttonNewDidPush() {
 				console.log("Create new model...");
 
 				this.$parent.clearSelection();
@@ -157,9 +157,23 @@
 					if (el)
 						el.focus();
 				});
-			},	
+			}
 
-			cloneModel() {
+			, buttonSaveDidPush() {
+				console.log("Save model...", this.model);
+				if (this.options.validateBeforeSave === false ||  this.validate()) {
+
+					if (this.isNewModel)
+						this.$parent.saveRow(this.model);
+					else
+						this.$parent.updateRow(this.model);
+
+				} else {
+					// Validation error
+				}
+			}
+
+			, buttonCloneDidPush() {
 				console.log("Clone model...");
 				let baseModel = this.model;
 				this.$parent.clearSelection();
@@ -171,7 +185,7 @@
 				this.model = newRow;
 			}
 
-			, breakdown() {
+			, buttonBreakdownDidPush() {
 				console.log("Breakdown model...");
 				let baseModel = this.model;
 				this.$parent.clearSelection();
@@ -196,21 +210,7 @@
 				this.model = newRow;
 			}
 
-			, saveModel() {
-				console.log("Save model...", this.model);
-				if (this.options.validateBeforeSave === false ||  this.validate()) {
-
-					if (this.isNewModel)
-						this.$parent.saveRow(this.model);
-					else
-						this.$parent.updateRow(this.model);
-
-				} else {
-					// Validation error
-				}
-			},
-
-			deleteModel() {
+			, buttonDeleteDidPush() {
 				if (this.selected.length > 0) {
 					each(this.selected, (row) => this.$parent.removeRow(row) );
 					this.$parent.clearSelection();
