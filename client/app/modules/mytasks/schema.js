@@ -80,6 +80,12 @@ module.exports = {
 				}
 			}
 			, {
+				type: "select"
+				, label: _("Projects")
+				, model: "root_code"
+				, values: []
+			}
+			, {
 				type: "select",
 				label: _("TaskType"),
 				model: "type",

@@ -24,14 +24,30 @@
 			, ...mapGetters("session", [
 				"me"
 			])
+			, schema2() {
+				// 動的にプロジェクト一覧を設定している
+				schema.form.fields.forEach(f => {
+					if (f.model == "root_code") {
+						f.values = this.projects.map(project => {
+							return {
+								id : project.code
+								, name : usprojecter.name
+							}
+						});
+					}
+				});
+				return schema;
+			}
 		}
 
 		/**
 		 * Set page schema as data property
+		 * インスタンスプロパティのような扱い。複数同じコンポーネントが一つの画面上で利用されていたとしも、
+		 * 表示に関わる値を個別に持てるように、return objとしている。
 		 */
 		, data() {
 			return {
-				schema
+				schema2
 			};
 		}
 		/**
