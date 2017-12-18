@@ -99,7 +99,7 @@ module.exports = {
 				return this.populateModels(json);
 			})
 			.then((json) => {
-				if (ctx.params.parent_code !== undefined) {
+				if (ctx.params.parent_code != undefined) {
 					// breakdownの場合
 					return this.actions.breakdown(ctx, json);
 				} else {

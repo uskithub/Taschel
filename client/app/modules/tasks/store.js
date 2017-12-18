@@ -32,10 +32,9 @@ const mutations = {
 		state.tasks.push(...models);
 	}
 	, [ADD] (state, models) {
-		// models : { parent, cihld }
-		let isNotUpdate = !find(state.selectedTasks, (item) => item.code == models.child.code);
+		let isNotUpdate = !find(state.selectedTasks, (item) => item.code == models.code);
 		if (isNotUpdate) {
-			state.tasks.push(models.child);
+			state.tasks.push(models);
 		}
 	}
 	, [SELECT] (state, row, multiSelect) {
