@@ -59,6 +59,39 @@
 			, "selectedProject"
 		]
 
+		// props: {
+		// 	schema: {
+		// 		type: Object
+		// 		, required: true
+		// 		// , validator(value) { return value >= 0; }
+		// 	}
+		// 	, projects: {
+		// 		type: Array
+		// 		, required: true
+		// 		// , validator(value) { return value >= 0; }
+		// 	}
+		// 	, tasks: {
+		// 		type: Array
+		// 		, required: true
+		// 		// , validator(value) { return value >= 0; }
+		// 	}
+		// 	, selectedTasks: {
+		// 		type: Array
+		// 		, required: true
+		// 		// , validator(value) { return value >= 0; }
+		// 	}
+		// 	, selectedTasks: {
+		// 		type: Array
+		// 		, required: true
+		// 		// , validator(value) { return value >= 0; }
+		// 	}
+		// 	, selectedProject: {
+		// 		type: String
+		// 		, required: true
+		// 		// , validator(value) { return value >= 0; }
+		// 	}
+		// }
+
 		, data() {
 			return {
 				order: {
