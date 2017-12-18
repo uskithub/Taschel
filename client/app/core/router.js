@@ -3,7 +3,7 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 
-
+import Weekly from "../modules/weekly"; 
 import Projects from "../modules/projects"; 
 import Tasks from "../modules/tasks";
 import Kanban from "../modules/kanban"; 
@@ -17,6 +17,7 @@ export default new VueRouter({
 	mode: "hash",
 	routes: [
 		{ path: "/", component: MyTasks }
+		, { path: "/weekly", component: Weekly }
 		, { path: "/projects", component: Projects }
 		, { path: "/tasks", component: Tasks }
 		, { path: "/kanban", component: Kanban }

@@ -1,5 +1,5 @@
 <template lang="pug">
-	kanban-page(:schema="schema", :selectedProject="currentProject", :projects="projects", :groups="groups", :tasks="tasks", :users="users")
+	kanban-page(:schema="schema", :projects="projects", :groups="groups", :tasks="tasks", :users="users")
 </template>
 
 <script>
@@ -9,7 +9,7 @@
 	import toast from "../../core/toastr";
 
 	import { mapGetters, mapMutations, mapActions } from "vuex";
-	import { SET_CURRENT_PROJECT, LOAD, LOAD_PROJECTS, ADD , UPDATE, REMOVE } from "../common/constants/mutationTypes";
+	import { SET_CURRENT_PROJECT, LOAD, LOAD_PROJECTS, SELECT, CLEAR_SELECT, ADD , UPDATE, REMOVE } from "../common/constants/mutationTypes";
 
     // @see: https://github.com/vue-generators/vue-form-generator
 	export default {
@@ -82,7 +82,10 @@
 				setCurrentProject : SET_CURRENT_PROJECT
 			})
 			, ...mapMutations("kanbanPage", {
-				updated : UPDATE
+				selectRow : SELECT
+				, loadTasks : LOAD
+				, updated : UPDATE
+				, clearSelection : CLEAR_SELECT
 				, created : ADD
 				, removed : REMOVE
 			})
@@ -103,6 +106,7 @@
 			}
 			, deselectProject() {
 				this.setCurrentProject(code);
+				this.loadTasks([]);
 			}
 		},
 

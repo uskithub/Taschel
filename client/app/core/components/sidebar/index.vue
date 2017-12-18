@@ -8,6 +8,12 @@
 						span.icon
 							i.fa.fa-home
 						span.label {{ "Home" | i18n }}
+
+				router-link(tag="li", to="/weekly")
+					a(:title="_('Weekly')")
+						span.icon
+							i.fa.fa-tasks
+						span.label {{ "Weekly" | i18n }}
 				
 				router-link(tag="li", to="/projects")
 					a(:title="_('Projects')")

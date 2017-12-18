@@ -7,15 +7,14 @@
 				button.button.is-primary(@click="buttonNewDidPush")
 					i.icon.fa.fa-plus 
 					| {{ schema.resources.addCaption || _("Add") }}
-			.right {{ _("SelectedOfAll", { selected: selectedTasks.length, all: tasks.length } ) }}
 		br
-		.form
+		.form(v-if="projectSelector")
 			vue-form-generator(:schema="projectSelector", :model="modelProjectSelector", ref="projectSelector", @model-updated="modelUpdated")
 
 		kanban(:boards="groups", :tasks="tasks",  @update-handler="arrange")
 
 		.form(v-if="model")
-			vue-form-generator(:schema='schema.form', :model='model', :options='options', :multiple="selectedTasks.length > 1", ref="form", :is-new-model="isNewModel")
+			vue-form-generator(:schema='schema.form', :model='model', :options='options', ref="form", :is-new-model="isNewModel")
 
 			.errors.text-center
 				div.alert.alert-danger(v-for="(item, index) in validationErrors", :key="index") {{ item.field.label }}: 
@@ -58,7 +57,6 @@
 			, "groups"
 			, "tasks"
 			, "users"
-			, "selectedTasks"
 			, "selectedProject"
         ]
 
@@ -84,17 +82,21 @@
 			})
 
 			, projectSelector() {
-				this.schema.projectSelector.fields.forEach(f => {
-					if (f.model == "code") {
-						f.values = this.projects.map(project => {
-							return {
-								id : project.code
-								, name : project.name
-							}
-						});
-					}
-				});	
-				return this.schema.projectSelector;
+				if (this.schema.projectSelector) {
+					this.schema.projectSelector.fields.forEach(f => {
+						if (f.model == "code") {
+							f.values = this.projects.map(project => {
+								return {
+									id : project.code
+									, name : project.name
+								}
+							});
+						}
+					});	
+					return this.schema.projectSelector;
+				} else {
+					return null;
+				}
 			}
 
 			, options() 		{ return this.schema.options || {};	},
@@ -144,45 +146,6 @@
 				this.$parent.arrange(context);
             }
 
-			, _selectTasks(event, row, add) {
-				this.isNewModel = false;
-
-				if (this.selectedTasks.length > 0 && this.selectedTasks.includes(row)) {
-					this.$parent.deselectTask(row);
-				} else {
-					if (this.schema.table.multiSelect === true && (add || (event && event.ctrlKey))) {
-						this.$parent.selectTasks(row, true);
-					} else {
-						this.$parent.selectTasks(row, false);
-					}
-				}
-			}
-			, selectAll(event) {
-				this.isNewModel = false;
-
-				let filter = Vue.filter("filterBy");
-				let filteredRows = filter(this.projects, this.search);
-
-				if (this.selected.length < filteredRows.length) {
-					// Select all
-					this.$parent.selectRow(filteredRows, false);
-				} else {
-					// Unselect all 
-					this.$parent.clearSelection();
-				}
-			}
-
-			, generateModel() {
-				if (this.selected.length == 1) {
-					this.model = cloneDeep(this.selected[0]);
-				}
-				else if (this.selected.length > 1) {
-					this.model = schemaUtils.mergeMultiObjectFields(this.schema.form, this.selected);
-				}
-				else
-					this.model = null;
-			}
-
 			, buttonNewDidPush() {
 				console.log("Create new model...");
 
@@ -216,24 +179,14 @@
 				}
 			}
 			, buttonCloneDidPush() {
-				console.log("Clone model...");
-				let baseModel = this.model;
-				this.$parent.clearSelection();
-
-				let newRow = cloneDeep(baseModel);
-				newRow.id = null;
-				newRow.code = null;
-				this.isNewModel = true;
-				this.model = newRow;
+				console.log("TODO: Clone model...");
+				// TODO
 			}
 			, buttonDeleteDidPush() {
-				if (this.selected.length > 0) {
-					each(this.selected, (row) => this.$parent.deleteModel(row) );
-					this.$parent.clearSelection();
-				}
-			},
-
-			validate()	{
+				console.log("TODO: Delete model...");
+				// TODO
+			}
+			, validate()	{
 				let res = this.$refs.form.validate();
 
 				if (this.schema.events && isFunction(this.schema.events.onValidated)) {

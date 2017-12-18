@@ -19,7 +19,6 @@ export const createGroup = ({ commit }, model) => {
 
 		if (res.status == 200 && res.data) {
 			commit(ADD, res.data);
-			commit(SELECT, res.data, false);
 		}
 	}).catch((response) => {
 		if (response.data.error)

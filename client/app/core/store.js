@@ -10,6 +10,7 @@ import kanbanPage from "../modules/kanban/store";
 import mytasksPage from "../modules/mytasks/store";
 import projectsPage from "../modules/projects/store";
 import tasksPage from "../modules/tasks/store";
+import weeklyPage from "../modules/weekly/store";
 
 Vue.use(Vuex);
 
@@ -22,5 +23,6 @@ export default new Vuex.Store({
 		, mytasksPage
 		, projectsPage
 		, tasksPage
+		, weeklyPage
 	}
 });

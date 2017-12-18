@@ -1,9 +1,6 @@
 import { LOAD
 	, LOAD_USERS
 	, ADD
-	, SELECT
-	, DESELECT
-	, CLEAR_SELECT
 	, UPDATE
 	, REMOVE 
 } from "../common/constants/mutationTypes";
@@ -22,7 +19,6 @@ const getters = {
 	groups(state) { return state.groups; }
 	, tasks(state) { return state.tasks; }
 	, users(state) { return state.users; }
-	, selectedTasks(state) { return state.selectedTasks; }
 };
 
 // mutationにはstateを変更する処理を実装する。
@@ -40,40 +36,10 @@ const mutations = {
 		state.users.push(...models);
 	}
 	, [ADD] (state, model) {
-		// models : { parent, cihld }
-		// let isNotUpdate = !find(state.selectedTasks, (item) => item.code == models.child.code);
-		// if (isNotUpdate) {
-		// 	state.tasks.push(models.child);
-		// }
 		state.groups.push(model);
 	}
-	, [SELECT] (state, row, multiSelect) {
-		// if (isArray(row)) {
-		// 	state.selectedTasks.splice(0);
-		// 	state.selectedTasks.push(...row);
-		// } else {
-		// 	if (multiSelect === true) {
-		// 		if (state.selectedTasks.indexOf(row) != -1)
-		// 			state.selectedTasks = state.selectedTasks.filter(item => item != row);
-		// 		else
-		// 			state.selectedTasks.push(row);
-
-		// 	} else {
-		// 		state.selectedTasks.splice(0);
-		// 		state.selectedTasks.push(row);
-		// 	}
-		// }
-	}
-	, [DESELECT] (state, row) {
-		state.selectedTasks = state.selectedTasks.filter((item) => {
-			return item != row;
-		});
-	}
-	, [CLEAR_SELECT] (state) {
-		state.selectedTasks.splice(0);
-	}
 	, [UPDATE] (state, model) {
-		each(state.selectedTasks, (item) => {
+		each(state.groups, (item) => {
 			if (item.code == model.code)
 				assign(item, model);
 		});
