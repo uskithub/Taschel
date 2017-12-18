@@ -85,10 +85,10 @@ module.exports = {
                 , purpose: ctx.params.purpose
 				, goal: ctx.params.goal
 				, status: ctx.params.status
-				, root: (ctx.params.root_code !== undefined) ? this.taskService.decodeID(ctx.params.root_code) : -1
-				, parent: (ctx.params.parent_code !== undefined) ? this.taskService.decodeID(ctx.params.parent_code) : -1
+				, root: (ctx.params.root_code != undefined) ? this.taskService.decodeID(ctx.params.root_code) : -1
+				, parent: (ctx.params.parent_code != undefined) ? this.taskService.decodeID(ctx.params.parent_code) : -1
 				, author : ctx.user.id
-				, asignee : (ctx.params.asignee_code !== undefined) ? this.personService.decodeID(ctx.params.asignee_code) : -1
+				, asignee : (ctx.params.asignee_code != undefined) ? this.personService.decodeID(ctx.params.asignee_code) : -1
 			});
 
 			return task.save()
