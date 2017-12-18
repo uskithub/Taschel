@@ -45,43 +45,97 @@ module.exports = {
 		find: {
 			cache: true,
 			handler(ctx) {
-				let filter = {};
-				if (ctx.params.parent_code !== undefined) {
-					filter.root = this.taskService.decodeID(ctx.params.parent_code);
-				}
-				let query = Task.find(filter);
-				
-				return ctx.queryPageSort(query).exec().then( (taskDocs) => {
-					let filter = {};
-					if (ctx.params.parent_code !== undefined) {
-						filter.parent = this.taskService.decodeID(ctx.params.parent_code);
-					}
+				// TODO: group -> taskの検索順にし、Groupがない場合は [] を返してdefaultグループを作るように促す
+				if (ctx.params.parent_code != undefined) {
+					let filter = {
+						root : this.taskService.decodeID(ctx.params.parent_code)
+					};
+					let query = Task.find(filter);
+					// 選択されているProjectのTaskを全部持ってくる
+					// TODO: taskはtoJSONしていないがいいのか確認
+					return ctx.queryPageSort(query).exec().then( (taskDocs) => {
+						let filter = {
+							type : "kanban"
+							, parent : this.taskService.decodeID(ctx.params.parent_code)
+						};
+						let query = Group.find(filter);
+						// 選択されているProjectのGroupを全部持ってくる
+						return ctx.queryPageSort(query).exec().then( (docs) => {
+							return this.toJSON(docs);
+						})
+						.then((jsons) => {
+							// 既存Groupに分類されていないTaskを未分類として既存Groupとともに返す
+							let classifiedTasks = jsons.reduce((arr, g) => {
+								return arr.concat(g.children);
+							}, []);
+							let unclassifiedTasks = taskDocs.filter(d => { return !classifiedTasks.includes(d._id); });
+							
+							return this.populateModels(jsons)
+							.then((jsons) => {
+								let unclassifiedGroup = {
+									code: UNCLASSIFIED
+									, type: "kanban"
+									, name: "unclassified"
+									, purpose: "for_classify"
+									, parent: ctx.params.parent_code
+									, children: unclassifiedTasks
+								};
+								jsons.unshift(unclassifiedGroup);
+								return jsons;
+							});
+						});
+					});
+
+				} else if (ctx.params.weekly != undefined) {
+					let filter = {
+						type : `weekly_${ctx.params.weekly}`
+					};
 					let query = Group.find(filter);
 
+					// 該当週のGroupを取得
 					return ctx.queryPageSort(query).exec().then( (docs) => {
 						return this.toJSON(docs);
 					})
-					.then((json) => {
-						let classifiedTasks = json.reduce((arr, g) => {
-							return arr.concat(g.children);
-						}, []);
-						let unclassifiedTasks = taskDocs.filter(d => { return !classifiedTasks.includes(d._id); });
-						
-						return this.populateModels(json)
-						.then((json) => {
-							let unclassifiedGroup = {
-								code: UNCLASSIFIED
-								, type: "kanban"
-								, name: "unclassified"
-								, purpose: "for_classify"
-								, parent: ctx.params.parent_code
-								, children: unclassifiedTasks
+					.then((jsons) => {
+						if (jsons.length == 0) {
+							// 該当週のデータがないならないで返す
+							this.notifyNotSetupYet(ctx);
+							return [];
+						} else {
+							// ある場合は未分類Groupと一緒に返す
+							let filter = {
+								// TODO: Close条件
+								$or : [ { author : ctx.user.id}, {asignee : ctx.user.id } ]
 							};
-							json.unshift(unclassifiedGroup);
-							return json;
-						});
+							let query = Task.find(filter);
+							
+							// myTasksでクローズしていないものを取得
+							return ctx.queryPageSort(query).exec().then( (taskDocs) => {
+								return this.toJSON(taskDocs);
+							})
+							.then((taskJsons) => {
+								// 既存Groupに分類されていないTaskを未分類として既存Groupとともに返す
+								let classifiedTasks = jsons.reduce((arr, g) => {
+									return arr.concat(g.children);
+								}, []);
+								let unclassifiedTasks = taskJsons.filter(d => { return !classifiedTasks.includes(d._id); });
+
+								return this.populateModels(jsons)
+								.then((jsons) => {
+									let unclassifiedGroup = {
+										code: UNCLASSIFIED
+										, type: `weekly_${ctx.params.weekly}`
+										, name: "unclassified"
+										, purpose: "for_classify"
+										, children: unclassifiedTasks
+									};
+									jsons.unshift(unclassifiedGroup);
+									return jsons;
+								});
+							});
+						}
 					});
-				});
+				}
 			}
 		}
 

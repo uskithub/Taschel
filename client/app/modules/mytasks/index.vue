@@ -1,5 +1,5 @@
 <template lang="pug">
-	list-page(:schema="schema", :selected="selected", :rows="tasks")
+	list-page(:schema="schema", :selected="selected", :rows="tasks", :me="me")
 </template>
 
 <script>
@@ -9,7 +9,7 @@
 	import toast from "../../core/toastr";
 
 	import { mapGetters, mapMutations, mapActions } from "vuex";
-	import { LOAD, SELECT, CLEAR_SELECT, ADD , UPDATE, REMOVE, SET_USER } from "../../common/mutationTypes";
+	import { LOAD_PROJECTS, SET_CURRENT_PROJECT, LOAD, SELECT, CLEAR_SELECT, ADD , UPDATE, REMOVE, SET_USER } from "../common/constants/mutationTypes";
 
 	export default {
 		
@@ -17,27 +17,17 @@
 			ListPage: ListPage
 		}
 		, computed : {
-			...mapGetters("mytasksPage", [
+			...mapGetters("shared", [
+				"projects"
+				, "currentProject"
+			])
+			, ...mapGetters("mytasksPage", [
 				"tasks",
 				"selected"
 			])
 			, ...mapGetters("session", [
 				"me"
 			])
-			, schema2() {
-				// 動的にプロジェクト一覧を設定している
-				schema.form.fields.forEach(f => {
-					if (f.model == "root_code") {
-						f.values = this.projects.map(project => {
-							return {
-								id : project.code
-								, name : usprojecter.name
-							}
-						});
-					}
-				});
-				return schema;
-			}
 		}
 
 		/**
@@ -47,7 +37,7 @@
 		 */
 		, data() {
 			return {
-				schema2
+				schema
 			};
 		}
 		/**
@@ -111,6 +101,20 @@
 			, ...mapActions("session", [
 				"getSessionUser"
 			])
+			, setupProjectsField() {
+				// 動的にプロジェクト一覧を設定している
+				this.schema.form.fields.forEach(f => {
+					if (f.model == "root_code") {
+						f.values = this.projects.map(project => {
+							return {
+								id : project.code
+								, name : project.name
+							}
+						});
+						f.default = this.currentProject;
+					}
+				});
+			}
 		}
 
 		/**
@@ -119,7 +123,25 @@
 		 * データの監視とイベントの初期セットアップが完了した状態
 		 */
 		, created() {
-			// Download rows for the page
+			// projectの選択が変わったら、初期値を変える
+			this.$store.subscribe((mutation, state) => {
+				if (mutation.type == `shared/${LOAD_PROJECTS}`
+					|| mutation.type == `shared/${SET_CURRENT_PROJECT}`
+				) {
+					this.setupProjectsField();
+				}
+			});	
+
+			if (this.projects.length > 0) {
+				this.setupProjectsField();
+
+			} else {
+				this.getTasks({ 
+					options: { taskType : "project" }
+					, mutation: `shared/${LOAD_PROJECTS}`
+				});
+			}
+
 			if (this.me) {
 				this.getTasks({ 
 					options: { user : this.me.code }

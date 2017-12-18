@@ -427,7 +427,19 @@ class Service {
 
 		// Clear cached values
 		this.clearCache();
-	}		
+	}
+
+	// Kanban/WeeklyのDefaultBoardがない場合のSocket通知
+	notifyNotSetupYet(ctx) {
+		console.log("● notifyNotSetupYet");
+		// Send notification via socket
+		ctx.notifyChanges("empty", [], this.$settings.role);
+
+		Services.emit(this.name + ":empty", { ctx: ctx, payload: [] });
+
+		// Clear cached values
+		this.clearCache();
+	}
 
 	/**
 	 * Get a service by name of service

@@ -1,4 +1,4 @@
-import { LOAD, SELECT, CLEAR_SELECT, ADD , UPDATE, REMOVE } from "../../common/mutationTypes";
+import { LOAD, SELECT, CLEAR_SELECT, ADD , UPDATE, REMOVE } from "../common/constants/mutationTypes";
 
 import { each, find, assign, remove, isArray } from "lodash";
 
@@ -54,7 +54,7 @@ const mutations = {
 	}
 };
 
-import { createTask, readTasks, updateTask, deleteTask } from "../common/tasks/actions";
+import { createTask, readTasks, updateTask, deleteTask } from "../common/actions/tasks";
 
 export default {
 	namespaced : true

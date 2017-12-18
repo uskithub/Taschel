@@ -45,10 +45,10 @@ module.exports = {
 				if (ctx.params.type !== undefined) {
 					// /tasks?type=project
 					filter.type = ctx.params.type;
-				} else if (ctx.params.root_code !== undefined) {
+				} else if (ctx.params.root_code != undefined) {
 					// /tasks?root_code=${hash}
 					filter.root = this.taskService.decodeID(ctx.params.root_code);
-				} else if (ctx.params.user_code !== undefined) {
+				} else if (ctx.params.user_code != undefined) {
 					// /tasks?user_code=${hash}
 					let user_code = this.personService.decodeID(ctx.params.user_code);
 					filter.$or = [ {author : user_code}, {asignee : user_code} ];
@@ -85,10 +85,10 @@ module.exports = {
                 , purpose: ctx.params.purpose
 				, goal: ctx.params.goal
 				, status: ctx.params.status
-				, root: (ctx.params.root_code !== undefined) ? this.taskService.decodeID(ctx.params.root_code) : -1
-				, parent: (ctx.params.parent_code !== undefined) ? this.taskService.decodeID(ctx.params.parent_code) : -1
+				, root: (ctx.params.root_code != undefined) ? this.taskService.decodeID(ctx.params.root_code) : -1
+				, parent: (ctx.params.parent_code != undefined) ? this.taskService.decodeID(ctx.params.parent_code) : -1
 				, author : ctx.user.id
-				, asignee : (ctx.params.asignee_code !== undefined) ? this.personService.decodeID(ctx.params.asignee_code) : -1
+				, asignee : (ctx.params.asignee_code != undefined) ? this.personService.decodeID(ctx.params.asignee_code) : -1
 			});
 
 			return task.save()
@@ -99,7 +99,7 @@ module.exports = {
 				return this.populateModels(json);
 			})
 			.then((json) => {
-				if (ctx.params.parent_code !== undefined) {
+				if (ctx.params.parent_code != undefined) {
 					// breakdownの場合
 					return this.actions.breakdown(ctx, json);
 				} else {
@@ -122,6 +122,12 @@ module.exports = {
 
 				if (ctx.params.purpose != null)
 					doc.purpose = ctx.params.purpose;
+
+				if (ctx.params.root_code != null) {
+					doc.root = this.taskService.decodeID(ctx.params.root_code);
+					// TODO: parentを取得し、rootがblankの場合、同じrootを指定、blankでなければ親子のreleationを切り離す、を先祖に遡って実施
+					// TODO: 全ての子孫を再帰的に、同じrootを指定する必要あり
+				}
 
 				if (ctx.params.type != null)
 					doc.type = ctx.params.type;

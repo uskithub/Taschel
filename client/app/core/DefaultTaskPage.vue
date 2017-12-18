@@ -12,7 +12,7 @@
 		.form
 			vue-form-generator(:schema="projectSelector", :model="modelProjectSelector", ref="projectSelector", @model-updated="modelUpdated")
 
-		data-table(:schema="schema.taskTable", :rows="tasks", :order="order", :search="search", :selected="selectedTasks", :select="_selectTasks", :select-all="selectAll")
+		data-table(:schema="schema.table", :rows="tasks", :order="order", :search="search", :selected="selectedTasks", :select="_selectTasks", :select-all="selectAll")
 
 		.form(v-if="model")
 			vue-form-generator(:schema="schema.form", :model="model", :options="options", :multiple="selectedTasks.length > 1", ref="form", :is-new-model="isNewModel")
@@ -49,14 +49,14 @@
 			DataTable
 		},
 
-        // task-page(:schema="schema", :selectedTasks="selectedTasks", :projects="projects", :tasks="tasks", :users="users") に対応させる
+        // task-page(:schema="schema", :selectedTasks="selectedTasks", :projects="projects", :tasks="tasks", :me="me") に対応させる
 		props: [
 			"schema"
             , "projects"
 			, "tasks"
-			, "users"
 			, "selectedTasks"
 			, "selectedProject"
+			, "me"
 		]
 
 		// props: {
@@ -159,6 +159,9 @@
 		methods: {
 			modelUpdated(newVal, schema) {
 				console.log(`● ${schema}: ${newVal}`);
+				if (this.model) {
+					this.model.root_code = newVal;
+				}
 				if (newVal) {
 					this.$parent.selectProject(newVal);
 				} else {
@@ -171,7 +174,7 @@
 				if (this.selectedTasks.length > 0 && this.selectedTasks.includes(row)) {
 					this.$parent.deselectTask(row);
 				} else {
-					if (this.schema.taskTable.multiSelect === true && (add || (event && event.ctrlKey))) {
+					if (this.schema.table.multiSelect === true && (add || (event && event.ctrlKey))) {
 						this.$parent.selectTasks(row, true);
 					} else {
 						this.$parent.selectTasks(row, false);
@@ -207,17 +210,6 @@
 			, buttonNewDidPush() {
 				console.log("Create new model...");
 
-				// 動的にユーザー一覧を設定している
-				this.schema.form.fields.forEach(f => {
-					if (f.model == "asignee_code") {
-						f.values = this.users.map(user => {
-							return {
-								id : user.code
-								, name : user.username
-							}
-						});
-					}
-				});	
 				this.$parent.clearSelection();
 
 				let newRow = schemaUtils.createDefaultObject(this.schema.form);
@@ -227,7 +219,8 @@
                 if (this.modelProjectSelector.code) {
 					newRow.root_code = this.modelProjectSelector.code;
 					newRow.parent_code = this.modelProjectSelector.code;
-                }
+				}
+				newRow.asignee_code = this.me.code;
 
 				this.model = newRow;
 

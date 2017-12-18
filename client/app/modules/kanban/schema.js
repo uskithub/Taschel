@@ -1,7 +1,8 @@
 import Vue from "vue";
 import moment from "moment";
-import { groupTypes } from "../../common/types";
+import { groupTypes } from "../common/constants/types";
 import { validators } from "vue-form-generator";
+import { areaTypes, generate } from "../common/schema/field";
 
 import { find } from "lodash";
 
@@ -11,65 +12,10 @@ module.exports = {
 
 	id: "kanban"
 	, title: _("Kanban")
-	, taskTable: {
-		multiSelect: true
-		, columns: [
-			{
-				title: _("Name"),
-				field: "name"
-			}
-			, {
-				title: _("Purpose"),
-				field: "purpose"
-			}
-			, {
-				title: _("Goal"),
-				field: "goal"
-			}
-			, {
-				title: _("Asignee"),
-				field: "asignee",
-				formatter(value, model, col) {
-					return (model.asignee) ? model.asignee.username : "-";
-				},
-				align: "center"
-			}
-			, {
-				title: _("Author"),
-				field: "author",
-				formatter(value, model, col) {
-					return model.author.username;
-				},
-				align: "center"
-			}
-			, {
-				title: _("LastCommunication"),
-				field: "lastCommunication",
-				formatter(value) {
-					return moment(value).fromNow();
-				}
-			}
-		],
-
-		rowClasses: function(model) {
-			return {
-				inactive: !model.status
-			};
-		}
-
-	}
-
-	, projectSelector: {
-		fields: [
-			{
-				type: "select",
-				label: _("Project"),
-				model: "code",
-				values: [] // index.vueにて後から設定している
-			},	
-		]
-	}
-
+	, projectSelector: generate(
+		areaTypes.form
+		, ["project"]
+	)
 	, form: {
 		fields: [
 			{
@@ -81,23 +27,9 @@ module.exports = {
 				values: groupTypes,
 				default: "kanban"
 			}
-			// , {
-			// 	type: "text",
-			// 	label: _("ID"),
-			// 	model: "code",
-			// 	readonly: true,
-			// 	disabled: true,
-			// 	multi: false,
-			// 	get(model) {
-			// 		if (model.code)
-			// 			return model.code;
-			// 		else
-			// 			return _("※自動採番");
-			// 	}
-			// }
 			, {
 				type: "text",
-				label: _("名称"),
+				label: _("Name"),
 				model: "name",
 				featured: true,
 				required: true,
@@ -106,23 +38,16 @@ module.exports = {
 			}
 			, {
 				type: "text",
-				label: _("目的"),
-                model: "purpose",
-                placeholder: _("なぜそのタスクをするのか"),
+				label: _("Purpose"),
+				model: "purpose",
+				placeholder: _("なぜそのタスクをするのか"),
 				featured: false,
 				required: true,
 				validator: validators.string
 			}
-			// , {
-			// 	type: "label",
-			// 	label: _("LastCommunication"),
-			// 	model: "lastCommunication",
-			// 	get(model) { return model && model.lastCommunication ? moment(model.lastCommunication).fromNow() : "-"; }
-			// }
 		]
-	},
-
-	options: {
+	}
+	, options: {
 		searchable: true,
 
 		enableNewButton: true,
@@ -133,9 +58,8 @@ module.exports = {
 		validateAfterLoad: false, // Validate after load a model
 		validateAfterChanged: false, // Validate after every changes on the model
 		validateBeforeSave: true // Validate before save a model
-	},
-
-	events: {
+	}
+	, events: {
 		onSelect: null,
 		onNewItem: null,
 		onCloneItem: null,
@@ -146,10 +70,9 @@ module.exports = {
 			if (errors.length > 0)
 				console.warn("Validation error in page! Errors:", errors, ", Model:", model);
 		}
-	},
-
-	resources: {
-        addCaption: _("追加／更新／削除"),
+	}
+	, resources: {
+		addCaption: _("追加／更新／削除"),
 		saveCaption: _("Save"),
 		cloneCaption: _("Clone"),
 		deleteCaption: _("Delete")

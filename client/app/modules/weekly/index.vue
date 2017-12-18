@@ -1,25 +1,29 @@
 <template lang="pug">
-	kanban-page(:schema="schema", :selectedProject="currentProject", :projects="projects", :groups="groups", :tasks="tasks", :users="users")
+	div
+		kanban-page(:schema="schema", :groups="groups", :tasks="tasks", :users="users")
+		popup
 </template>
 
 <script>
 	import Vue from "vue";
-	import KanbanPage from "../../core/DefaultKanbanPage.vue";
+    import KanbanPage from "../../core/DefaultKanbanPage.vue";
+    import Popup from "../../core/components/popup";
 	import schema from "./schema";
 	import toast from "../../core/toastr";
 
 	import { mapGetters, mapMutations, mapActions } from "vuex";
-	import { SET_CURRENT_PROJECT, LOAD, LOAD_PROJECTS, ADD , UPDATE, REMOVE } from "../common/constants/mutationTypes";
+	import { SET_CURRENT_PROJECT, LOAD, LOAD_PROJECTS, SELECT, CLEAR_SELECT, ADD , UPDATE, REMOVE } from "../common/constants/mutationTypes";
 
     // @see: https://github.com/vue-generators/vue-form-generator
 	export default {
 		
 		components: {
-			KanbanPage: KanbanPage
-		},
+            KanbanPage: KanbanPage
+            , Popup: Popup
+		}
 
 		// getters.js に対応
-		computed: {
+		, computed: {
 			...mapGetters("shared", [
 				"projects"
 				, "currentProject"
@@ -38,7 +42,8 @@
 		, data() {
 			return {
 				// task-pageに当てはめる値を定義したオブジェクト
-				schema
+                schema
+                , isPopupShow : true
 			};
 		},
 
@@ -48,6 +53,12 @@
 		socket: {
 			prefix: "/groups/",
 			events: {
+                empty(res) {
+					// this.created(res.data);
+                    toast.warning(this._("GroupsNotSetupYet", res), this._("追加しました"));
+                    this.isPopupShow = true;
+				},
+
 				/**
 				 * New task added
 				 * @param  {Object} res Task object
@@ -82,7 +93,10 @@
 				setCurrentProject : SET_CURRENT_PROJECT
 			})
 			, ...mapMutations("kanbanPage", {
-				updated : UPDATE
+				selectRow : SELECT
+				, loadTasks : LOAD
+				, updated : UPDATE
+				, clearSelection : CLEAR_SELECT
 				, created : ADD
 				, removed : REMOVE
 			})
@@ -103,26 +117,18 @@
 			}
 			, deselectProject() {
 				this.setCurrentProject(code);
+				this.loadTasks([]);
 			}
-		},
+		}
 
 		/**
 		 * Call if the component is created
 		 */
-		created() {
-			if (this.projects.length == 0) {
-				this.getProjects({ 
-					options: { taskType : "project" }
-					, mutation: `shared/${LOAD_PROJECTS}`
-				});
-			}
-
-			if (this.currentProject) {
-				this.getGroups({
-					options: { parent : this.currentProject }
-					, mutation: LOAD
-				});
-			}
+		, created() {
+            this.getGroups({
+                options: { weekly : "2017-12-18" }
+                , mutation: LOAD
+            });
 		}
 	};
 </script>

@@ -1,5 +1,5 @@
 <template lang="pug">
-	list-page(:schema="schema", :selected="selected", :rows="projects")
+	list-page(:schema="schema", :selected="selected", :rows="projects", :me="me")
 </template>
 
 <script>
@@ -9,7 +9,7 @@
 	import toast from "../../core/toastr";
 
 	import { mapGetters, mapMutations, mapActions } from "vuex";
-	import { LOAD_PROJECTS, LOAD, SELECT, CLEAR_SELECT, ADD , UPDATE, REMOVE } from "../../common/mutationTypes";
+	import { LOAD_PROJECTS, LOAD, SELECT, CLEAR_SELECT, ADD , UPDATE, REMOVE } from "../common/constants/mutationTypes";
 
 	export default {
 		
@@ -23,6 +23,9 @@
 			])
 			, ...mapGetters("projectsPage", [
 				"selected"
+			])
+			, ...mapGetters("session", [
+				"me"
 			])
 		}
 

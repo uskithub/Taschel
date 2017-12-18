@@ -43,10 +43,8 @@ let TaskSchema = new Schema({
 	}
 	// projectのid
 	, root : {
-		// 検索後に実体をもたせたい場合はこちら
+		// おそらくこれでもOK
 		// type: Schema.Types.ObjectId, ref: "Task"
-
-		// 今回はフィルタに使いたいだけなので、数値だけでOK
 		type: Number
 		, ref: "Task"
 	}

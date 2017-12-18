@@ -1,6 +1,6 @@
 import Vue from "vue";
 import moment from "moment";
-import { taskTypes } from "../common/constants/types";
+import { groupTypes } from "../common/constants/types";
 import { validators } from "vue-form-generator";
 import { areaTypes, generate } from "../common/schema/field";
 
@@ -10,32 +10,41 @@ let _ = Vue.prototype._;
 
 module.exports = {
 
-	id: "tasks"
-	, title: _("Tasks (by TaskPage)")
-	, table: {
-		multiSelect: true
-		, columns: generate(
-			areaTypes.table
-			, [ "code", "name", "purpose", "goal", "asignee", "author", "status", "lastCommunication"]
-		)
-		, rowClasses: function(model) {
-			return {
-				inactive: !model.status
-			};
-		}
-
+	id: "weekly"
+	, title: _("Weekly")
+	, form: {
+		fields: [
+			{
+				type: "select",
+				label: _("GroupType"),
+				model: "type",
+				readonly: true,
+				disabled: true,
+				values: groupTypes,
+				default: "kanban"
+			}
+			, {
+				type: "text",
+				label: _("Name"),
+				model: "name",
+				featured: true,
+				required: true,
+				placeholder: _("タスクの名称（何をするかが連想できる様に）"),
+				validator: validators.string
+			}
+			, {
+				type: "text",
+				label: _("Purpose"),
+				model: "purpose",
+				placeholder: _("なぜそのタスクをするのか"),
+				featured: false,
+				required: true,
+				validator: validators.string
+			}
+		]
 	}
-	, projectSelector: generate(
-		areaTypes.form
-		, ["project"]
-	)
-	, form : generate(
-		areaTypes.form
-		, ["code", "root", "type","name", "purpose", "goal", "asignee", "lastCommunication", "status"]
-	)
 	, options: {
 		searchable: true,
-
 
 		enableNewButton: true,
 		enabledSaveButton: true,

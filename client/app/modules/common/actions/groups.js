@@ -1,6 +1,6 @@
 import Vue from "vue";
 import toastr from "../../../core/toastr";
-import { ADD, SELECT, UPDATE } from "../../../common/mutationTypes";
+import { ADD, SELECT, UPDATE } from "../constants/mutationTypes";
 import axios from "axios";
 
 const UNCLASSIFIED = "UNCLASSIFIED";
@@ -19,7 +19,6 @@ export const createGroup = ({ commit }, model) => {
 
 		if (res.status == 200 && res.data) {
 			commit(ADD, res.data);
-			commit(SELECT, res.data, false);
 		}
 	}).catch((response) => {
 		if (response.data.error)
@@ -30,6 +29,7 @@ export const createGroup = ({ commit }, model) => {
 // payload = {
 // 	options : {	
 //		parent : Task.code
+//		, weekly : "yyyy-mm-dd"
 // 	}
 //	, mutation : "LOAD"
 // }
@@ -39,6 +39,8 @@ export const readGroups = ({ commit }, { options, mutation }) => {
 	if (options != undefined) {
 		if (options.parent != undefined) {
 			url = `${url}?parent_code=${options.parent}`;
+		} else if (options.weekly != undefined) {
+			url = `${url}?weekly=${options.weekly}`;
 		}
 	} 
 

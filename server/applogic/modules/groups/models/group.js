@@ -21,10 +21,22 @@ let schemaOptions = {
 };
 
 let GroupSchema = new Schema({
+	/**
+	 * - kanban
+	 * - weekly_yyyy-MM-dd
+	 * - daily_yyyy-MM-dd
+	 */
 	type: {
 		type: String,
 		trim: true
 	}
+	/**
+	 * - kanban
+	 * 	-> 任意の名前（default: TODO/InProgress/Done）
+	 * - weekly
+	 *  -> Important-Urgent/Important-Unurgent/Unimportant-Urgent/Unimportant-Unurgent
+	 * 
+	 */
 	, name: {
 		type: String,
 		trim: true

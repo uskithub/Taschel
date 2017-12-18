@@ -1,4 +1,4 @@
-import { LOAD_PROJECTS } from "../../common/mutationTypes";
+import { LOAD_PROJECTS } from "../common/constants/mutationTypes";
 
 import { each, find, assign, remove, isArray } from "lodash";
 
@@ -18,7 +18,7 @@ const mutations = {
 	// }
 };
 
-import { createTask, readTasks, updateTask, deleteTask, arrangeTask } from "../common/tasks/actions";
+import { createTask, readTasks, updateTask, deleteTask, arrangeTask } from "../common/actions/tasks";
 
 export default {
 	namespaced : true
