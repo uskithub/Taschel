@@ -45,10 +45,10 @@ module.exports = {
 				if (ctx.params.type !== undefined) {
 					// /tasks?type=project
 					filter.type = ctx.params.type;
-				} else if (ctx.params.root_code !== undefined) {
+				} else if (ctx.params.root_code != undefined) {
 					// /tasks?root_code=${hash}
 					filter.root = this.taskService.decodeID(ctx.params.root_code);
-				} else if (ctx.params.user_code !== undefined) {
+				} else if (ctx.params.user_code != undefined) {
 					// /tasks?user_code=${hash}
 					let user_code = this.personService.decodeID(ctx.params.user_code);
 					filter.$or = [ {author : user_code}, {asignee : user_code} ];

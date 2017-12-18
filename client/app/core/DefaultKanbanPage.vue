@@ -48,10 +48,10 @@
 		components: {
 			DataTable
             , Kanban
-		},
+		}
 
         // task-page(:schema="schema", :selectedTasks="selectedTasks", :projects="projects", :tasks="tasks", :users="users") に対応させる
-		props: [
+		, props: [
 			"schema"
 			, "projects"
 			, "groups"
@@ -63,11 +63,11 @@
 		, data() {
 			return {
 				order: {
-					field: "id",
-					direction: 1
-				},
-				model: null,
-				isNewModel: false
+					field: "id"
+					, direction: 1
+				}
+				, model: null
+				, isNewModel: false
 
 				// 選択したプロジェクトが格納される
 				, modelProjectSelector:  {

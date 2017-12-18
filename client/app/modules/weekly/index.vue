@@ -1,5 +1,5 @@
 <template lang="pug">
-	kanban-page(:schema="schema", :projects="projects", :groups="groups", :tasks="tasks", :users="users")
+	kanban-page(:schema="schema", :groups="groups", :tasks="tasks", :users="users")
 </template>
 
 <script>
@@ -108,25 +108,16 @@
 				this.setCurrentProject(code);
 				this.loadTasks([]);
 			}
-		},
+		}
 
 		/**
 		 * Call if the component is created
 		 */
-		created() {
-			if (this.projects.length == 0) {
-				this.getProjects({ 
-					options: { taskType : "project" }
-					, mutation: `shared/${LOAD_PROJECTS}`
-				});
-			}
-
-			if (this.currentProject) {
-				this.getGroups({
-					options: { parent : this.currentProject }
-					, mutation: LOAD
-				});
-			}
+		, created() {
+            this.getGroups({
+                options: { weekly : "2017-12-18" }
+                , mutation: LOAD
+            });
 		}
 	};
 </script>

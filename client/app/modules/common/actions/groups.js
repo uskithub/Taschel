@@ -29,6 +29,7 @@ export const createGroup = ({ commit }, model) => {
 // payload = {
 // 	options : {	
 //		parent : Task.code
+//		, weekly : "yyyy-mm-dd"
 // 	}
 //	, mutation : "LOAD"
 // }
@@ -38,6 +39,8 @@ export const readGroups = ({ commit }, { options, mutation }) => {
 	if (options != undefined) {
 		if (options.parent != undefined) {
 			url = `${url}?parent_code=${options.parent}`;
+		} else if (options.weekly != undefined) {
+			url = `${url}?weekly=${options.weekly}`;
 		}
 	} 
 
