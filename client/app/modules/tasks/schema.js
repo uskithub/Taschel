@@ -2,7 +2,7 @@ import Vue from "vue";
 import moment from "moment";
 import { taskTypes } from "../../common/types";
 import { validators } from "vue-form-generator";
-import fieldGenerator from "../common/schema/form";
+import { areaTypes, generate } from "../common/schema/field";
 
 import { find } from "lodash";
 
@@ -14,43 +14,10 @@ module.exports = {
 	, title: _("Tasks")
 	, table: {
 		multiSelect: true
-		, columns: [
-			{
-				title: _("Name"),
-				field: "name"
-			}
-			, {
-				title: _("Purpose"),
-				field: "purpose"
-			}
-			, {
-				title: _("Goal"),
-				field: "goal"
-			}
-			, {
-				title: _("Asignee"),
-				field: "asignee",
-				formatter(value, model, col) {
-					return (model.asignee) ? model.asignee.username : "-";
-				},
-				align: "center"
-			}
-			, {
-				title: _("Author"),
-				field: "author",
-				formatter(value, model, col) {
-					return model.author.username;
-				},
-				align: "center"
-			}
-			, {
-				title: _("LastCommunication"),
-				field: "lastCommunication",
-				formatter(value) {
-					return moment(value).fromNow();
-				}
-			}
-		]
+		, columns: generate(
+			areaTypes.table
+			, [ "code", "name", "purpose", "goal", "asignee_code", "author", "status", "lastCommunication"]
+		)
 		, rowClasses: function(model) {
 			return {
 				inactive: !model.status
@@ -58,17 +25,14 @@ module.exports = {
 		}
 
 	}
-	, projectSelector: {
-		fields: [
-			{
-				type: "select",
-				label: _("Project"),
-				model: "code",
-				values: [] // DefaultTaskPage.vueにて後から設定している
-			},	
-		]
-	}
-	, form : fieldGenerator(["code", "root_code", "type","name", "purpose", "goal", "asignee_code", "lastCommunication", "status"])
+	, projectSelector: generate(
+		areaTypes.form
+		, ["project"]
+	)
+	, form : generate(
+		areaTypes.form
+		, ["code", "root_code", "type","name", "purpose", "goal", "asignee_code", "lastCommunication", "status"]
+	)
 	, options: {
 		searchable: true,
 

@@ -1,7 +1,7 @@
 import Vue from "vue";
 import moment from "moment";
 import { validators } from "vue-form-generator";
-import fieldGenerator from "../common/schema/form";
+import { areaTypes, generate } from "../common/schema/field";
 
 import { find } from "lodash";
 
@@ -12,50 +12,20 @@ module.exports = {
 	, title: _("Projects")
 	, table: {
 		multiSelect: true
-		, columns: [
-			{
-				title: _("ID"),
-				field: "code",
-				align: "left",
-				formatter(value, model) {
-					return model ? model.code : "";
-				}
-			}
-			, {
-				title: _("Name"),
-				field: "name"
-			}
-			, {
-				title: _("Purpose"),
-				field: "purpose"
-			}
-            , {
-				title: _("Goal"),
-				field: "goal"
-			}
-			, {
-				title: _("Status"),
-				field: "status",
-				formatter(value, model, col) {
-					return value ? "<i class='fa fa-check'/>" : "<i class='fa fa-ban'/>";
-				},
-				align: "center"
-			}
-			, {
-				title: _("LastCommunication"),
-				field: "lastCommunication",
-				formatter(value) {
-					return moment(value).fromNow();
-				}
-			}
-		]
+		, columns: generate(
+			areaTypes.table
+			, [ "code", "name", "purpose", "goal", "status", "lastCommunication"]
+		)
 		, rowClasses: function(model) {
 			return {
 				inactive: !model.status
 			};
 		}
 	}
-	, form: fieldGenerator(["code", "type", "name", "purpose", "goal"])
+	, form: generate(
+		areaTypes.form
+		, ["code", "type", "name", "purpose", "goal"]
+	)
 	, options: {
 		searchable: true,
 
