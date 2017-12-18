@@ -25,3 +25,5 @@ export const REMOVE				= "REMOVE";
 export const SELECT				= "SELECT";
 
 export const SET_USER			= "SET_SESSION_USER";
+
+export const SHOW_POPUP         = "SHOW_POPUP";

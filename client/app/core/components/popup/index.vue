@@ -1,21 +1,43 @@
 <template lang="pug">
-	.messages-dropdown(:class="{ 'visible': visible }")
-		.card
-			.ribbon.right.orange 
-				span -20%
-			img.img(src="http://lorempixel.com/350/150/city")
-			.block 
-				.title Card with image
-				p Lorem ipsum dolor sit amet, consectetur adipisicing elit. Consequuntur dicta cumque assumenda culpa maiores omnis totam obcaecati voluptas eligendi sapiente enim debitis, illo dolore facilis, in, nihil perspiciatis, et perferendis.
+	.popup(:class="{ 'visible': schema.isVisible }")
+		.panel
+			.header {{ schema.title }}
+			.body 
+				p {{ schema.message }}
 			.block
-				button.button.success Checkout
+				button.button.success(@click="schema.buttons[0].action") {{ schema.buttons[0].label }}
 </template>
 
 <script>
-export default {
-  props: ["visible"]
-};
+
+	export default {
+
+		props: [
+			"schema"
+		]
+
+	};
+	
 </script>
 
 <style lang="scss">
+
+	.popup {
+		visibility: hidden;
+		opacity: 0;
+		transition: all .4s ease;
+
+		position: absolute;
+		right: 200px;
+		min-width: 190px;
+		width: 400px;
+
+		font-size: 0.8em;
+
+		&.visible {
+			visibility: visible;
+			opacity: 1;
+		}
+	}
+
 </style>

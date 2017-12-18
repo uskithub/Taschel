@@ -1,18 +1,19 @@
 <template lang="pug">
 	div
 		kanban-page(:schema="schema", :groups="groups", :tasks="tasks", :users="users")
-		popup
+		popup(:schema="popupSchema")
 </template>
 
 <script>
 	import Vue from "vue";
     import KanbanPage from "../../core/DefaultKanbanPage.vue";
-    import Popup from "../../core/components/popup";
+	import Popup from "../../core/components/popup";
+	// import Popup from "../../core/components/header/dropdowns/messages";
 	import schema from "./schema";
 	import toast from "../../core/toastr";
 
 	import { mapGetters, mapMutations, mapActions } from "vuex";
-	import { SET_CURRENT_PROJECT, LOAD, LOAD_PROJECTS, SELECT, CLEAR_SELECT, ADD , UPDATE, REMOVE } from "../common/constants/mutationTypes";
+	import { SET_CURRENT_PROJECT, LOAD, LOAD_PROJECTS, SELECT, CLEAR_SELECT, ADD , UPDATE, REMOVE, SHOW_POPUP, HIDE_POPUP } from "../common/constants/mutationTypes";
 
     // @see: https://github.com/vue-generators/vue-form-generator
 	export default {
@@ -27,6 +28,7 @@
 			...mapGetters("shared", [
 				"projects"
 				, "currentProject"
+				, "popupSchema"
 			])
 			, ...mapGetters("kanbanPage", [
 				"groups"
@@ -43,7 +45,6 @@
 			return {
 				// task-pageに当てはめる値を定義したオブジェクト
                 schema
-                , isPopupShow : true
 			};
 		},
 
@@ -54,16 +55,27 @@
 			prefix: "/groups/",
 			events: {
                 empty(res) {
-					// this.created(res.data);
-                    toast.warning(this._("GroupsNotSetupYet", res), this._("追加しました"));
-                    this.isPopupShow = true;
-				},
+					this.showPopup({
+						title : "タイトルさ"
+						, message : "内容さベイビー"
+						, buttons : [
+							{
+								type: "SUCCESS"
+								, label : "OK"
+								, action: () => {
+									console.log("●", this);
+									this.hidePopup();
+								}
+							}
+						]
+					});
+				}
 
 				/**
 				 * New task added
 				 * @param  {Object} res Task object
 				 */
-				created(res) {
+				, created(res) {
 					this.created(res.data);
 					toast.success(this._("GroupAdded", res), this._("追加しました"));
 				},
@@ -91,6 +103,8 @@
 		methods: {
 			...mapMutations("shared", {
 				setCurrentProject : SET_CURRENT_PROJECT
+				, showPopup : SHOW_POPUP
+				, hidePopup : HIDE_POPUP
 			})
 			, ...mapMutations("kanbanPage", {
 				selectRow : SELECT
