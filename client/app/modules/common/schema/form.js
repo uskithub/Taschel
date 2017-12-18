@@ -25,7 +25,6 @@ const fields = {
 		, label: _("Projects")
 		, model: "root_code"
 		, values: []
-		, default: ""
 	}
 	, type: {
 		type: "select",
@@ -60,6 +59,12 @@ const fields = {
 		model: "goal",
 		placeholder: _("どういった状態になったら嬉しいか"),
 		validator: validators.string
+	}
+	, asignee_code : {
+		type: "select",
+		label: _("Asignee"),
+		model: "asignee_code",
+		values: []
 	}
 	, lastCommunication: {
 		type: "label",

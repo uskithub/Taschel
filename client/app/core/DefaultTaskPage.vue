@@ -126,6 +126,7 @@
 		methods: {
 			modelUpdated(newVal, schema) {
 				console.log(`● ${schema}: ${newVal}`);
+				this.model.root_code = newVal;
 				if (newVal) {
 					this.$parent.selectProject(newVal);
 				} else {

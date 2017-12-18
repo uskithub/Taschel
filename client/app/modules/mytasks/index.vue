@@ -101,7 +101,7 @@
 			, ...mapActions("session", [
 				"getSessionUser"
 			])
-			, setupProjectSelector() {
+			, setupProjectsField() {
 				// 動的にプロジェクト一覧を設定している
 				this.schema.form.fields.forEach(f => {
 					if (f.model == "root_code") {
@@ -128,12 +128,12 @@
 				if (mutation.type == `shared/${LOAD_PROJECTS}`
 					|| mutation.type == `shared/${SET_CURRENT_PROJECT}`
 				) {
-					this.setupProjectSelector();
+					this.setupProjectsField();
 				}
 			});	
 
 			if (this.projects.length > 0) {
-				this.setupProjectSelector();
+				this.setupProjectsField();
 
 			} else {
 				this.getTasks({ 

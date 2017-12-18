@@ -108,13 +108,40 @@
 				this.setCurrentProject(null);
 				this.loadTasks([]);
 			}
+			, setupProjectsField() {
+				console.log("●", this.currentProject);
+				// 動的にプロジェクト一覧を設定している
+				this.schema.form.fields.forEach(f => {
+					if (f.model == "root_code") {
+						f.values = this.projects.map(project => {
+							return {
+								id : project.code
+								, name : project.name
+							}
+						});
+						f.default = this.currentProject;
+					}
+				});
+			}
 		},
 
 		/**
 		 * Call if the component is created
 		 */
 		created() {
-			if (this.projects.length == 0) {
+			// projectの選択が変わったら、初期値を変える
+			this.$store.subscribe((mutation, state) => {
+				if (mutation.type == `shared/${LOAD_PROJECTS}`
+					|| mutation.type == `shared/${SET_CURRENT_PROJECT}`
+				) {
+					this.setupProjectsField();
+				}
+			});	
+			
+			if (this.projects.length > 0) {
+				this.setupProjectsField();
+
+			} else {
 				this.getTasks({ 
 					options: { taskType : "project" }
 					, mutation: `shared/${LOAD_PROJECTS}`
