@@ -6,7 +6,7 @@ import {
 	, CLEAR_SELECT
 	, UPDATE
 	, REMOVE 
-} from "../../common/mutationTypes";
+} from "../common/constants/mutationTypes";
 
 import { each, find, assign, remove, isArray } from "lodash";
 
@@ -73,8 +73,8 @@ const mutations = {
 	}	
 };
 
-import { createTask, readTasks, updateTask, deleteTask } from "../common/tasks/actions";
-import { readUsers } from "../common/persons/actions";
+import { createTask, readTasks, updateTask, deleteTask } from "../common/actions/tasks";
+import { readUsers } from "../common/actions/persons";
 
 export default {
 	namespaced : true

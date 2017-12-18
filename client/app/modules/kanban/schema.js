@@ -1,6 +1,6 @@
 import Vue from "vue";
 import moment from "moment";
-import { groupTypes } from "../../common/types";
+import { groupTypes } from "../common/constants/types";
 import { validators } from "vue-form-generator";
 import { areaTypes, generate } from "../common/schema/field";
 

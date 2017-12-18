@@ -1,4 +1,4 @@
-import { LOAD_PROJECTS, LOAD_USERS, SET_CURRENT_PROJECT } from "../../../common/mutationTypes";
+import { LOAD_PROJECTS, LOAD_USERS, SET_CURRENT_PROJECT } from "./constants/mutationTypes";
 
 const state = {
 	projects: []

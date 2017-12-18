@@ -1,6 +1,6 @@
 import Vue from "vue";
 import toastr from "../../../core/toastr";
-import { UPDATE, ADD, REMOVE, SELECT } from "../../../common/mutationTypes";
+import { UPDATE, ADD, REMOVE, SELECT } from "../constants/mutationTypes";
 import axios from "axios";
 
 export const NAMESPACE = "/api/tasks";

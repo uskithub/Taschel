@@ -9,7 +9,7 @@
 	import toast from "../../core/toastr";
 
 	import { mapGetters, mapMutations, mapActions } from "vuex";
-	import { SET_CURRENT_PROJECT, LOAD_PROJECTS } from "../../common/mutationTypes";
+	import { SET_CURRENT_PROJECT, LOAD_PROJECTS } from "../common/constants/mutationTypes";
 
 	export default {
 		

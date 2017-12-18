@@ -1,6 +1,6 @@
 import Vue from "vue";
 import toastr from "../../../core/toastr";
-import { ADD, SELECT, UPDATE } from "../../../common/mutationTypes";
+import { ADD, SELECT, UPDATE } from "../constants/mutationTypes";
 import axios from "axios";
 
 const UNCLASSIFIED = "UNCLASSIFIED";
