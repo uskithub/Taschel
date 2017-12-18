@@ -123,6 +123,12 @@ module.exports = {
 				if (ctx.params.purpose != null)
 					doc.purpose = ctx.params.purpose;
 
+				if (ctx.params.root_code != null) {
+					doc.root = this.taskService.decodeID(ctx.params.root_code);
+					// TODO: parentを取得し、rootがblankの場合、同じrootを指定、blankでなければ親子のreleationを切り離す、を先祖に遡って実施
+					// TODO: 全ての子孫を再帰的に、同じrootを指定する必要あり
+				}
+
 				if (ctx.params.type != null)
 					doc.type = ctx.params.type;
 

@@ -28,8 +28,9 @@ const fields = {
 			}
 		}
 	}
-	, root_code: {
+	, root: {
 		label: _("Projects") 
+		, model: "root"
 		, table: {}
 		, form: {
 			type: "select"
@@ -57,8 +58,7 @@ const fields = {
 	, name: {
 		label: _("Name")
 		, model: "name"
-		, table: {
-		}
+		, table: {}
 		, form: {
 			type: "text"
 			, featured: true
@@ -89,9 +89,9 @@ const fields = {
 			, validator: validators.string
 		}
 	}
-	, asignee_code : {
+	, asignee : {
 		label: _("Asignee")
-		, model: "asignee_code"
+		, model: "asignee"
 		, table: {
 			formatter(value, model, col) {
 				return (model.asignee) ? model.asignee.username : "-";
@@ -99,7 +99,8 @@ const fields = {
 			, align: "center"
 		}
 		, form: {
-			type: "select"
+			model: "asignee_code"
+			, type: "select"
 			, values: []
 		}
 	}
@@ -109,8 +110,8 @@ const fields = {
 		, table: {
 			formatter(value, model, col) {
 				return model.author.username;
-			},
-			align: "center"
+			}
+			, align: "center"
 		}
 		, form: {}
 	}

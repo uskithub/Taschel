@@ -1,6 +1,6 @@
 # TODO
 
-- [] authorのpopulateを削る
+- [x] authorのpopulateを削る
 - [] タスクのformに開始日／期日を追加（自動的に工数を出す）
   - [] 日付入力のコンポーネントを使えるようにする
 - [x] TasksでのProjectへの子タスク追加時、rootしか指定していないが、parentも同時に指定するようにする（この場合、root=parent）
@@ -13,16 +13,19 @@
   - [x] タスクツリーを表示
   - [x] タスクツリーでタスクをドラッグ＆ドロップでぐりぐり移動
   - [x] 移動後のタスクを更新
-- [] My Tasks でカンバンの Vueコンポーネントを作る
+- [x] My Tasks でカンバンの Vueコンポーネントを作る
   - [x] カンバンを表示
   - [x] カンバン（board）の追加
   - [x] タスクの移動
-  - [] タスクの保存
+  - [x] タスクの保存
 - [] 機能一覧を出したら見積りに使えるようにする
 - [] projectsでBreakdownが成功したあと、stepなのにprojectのdata-tableが増えてしまう
 - [] ジャーニーマップライクに配置できて、プロセス分析できるようにしたい
 - [] -1で無駄に検索されている箇所があるので検索されないようにする
 - [] kanbanのdragulaとtreelistのjqueryを統一する
+- [] Tasksで既存タスクのProjectを変更できるようにする
+  - [] parentを取得し、rootがblankの場合、同じrootを指定、blankでなければ親子のreleationを切り離す、を先祖に遡って実施
+  - [] 全ての子孫を再帰的に、同じrootを指定する必要あり
 
 # Vue, Express, MongoDB full-stack JS Boilerplate
 

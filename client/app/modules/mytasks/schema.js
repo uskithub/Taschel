@@ -15,7 +15,7 @@ module.exports = {
 		multiSelect : true
 		, columns : generate(
 			areaTypes.table
-			, [ "code", "type", "name", "purpose", "goal", "status", "lastCommunication"]
+			, [ "code", "type", "name", "purpose", "goal", "author", "status", "lastCommunication"]
 		)
 		, rowClasses : function (model) {
 			return {
@@ -25,7 +25,7 @@ module.exports = {
 	}
 	, form : generate(
 		areaTypes.form
-		, [ "code", "root_code", "type","name", "purpose", "goal", "lastCommunication", "status"]
+		, [ "code", "root", "type","name", "purpose", "goal", "lastCommunication", "status"]
 	)
 	, options : {
 		searchable: true,
