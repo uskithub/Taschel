@@ -50,9 +50,10 @@
 		},
 
 		props: [
-			"schema",
-			"selected",
-			"rows"
+			"schema"
+			, "me"
+			, "selected"
+			, "rows"
 		],
 
 		data() {
@@ -150,6 +151,7 @@
 
 				let newRow = schemaUtils.createDefaultObject(this.schema.form);
 				this.isNewModel = true;
+				newRow.asignee_code = this.me.code;
 				this.model = newRow;
 
 				this.$nextTick(() => {

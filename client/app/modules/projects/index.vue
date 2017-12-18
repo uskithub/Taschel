@@ -1,5 +1,5 @@
 <template lang="pug">
-	list-page(:schema="schema", :selected="selected", :rows="projects")
+	list-page(:schema="schema", :selected="selected", :rows="projects", :me="me")
 </template>
 
 <script>
@@ -23,6 +23,9 @@
 			])
 			, ...mapGetters("projectsPage", [
 				"selected"
+			])
+			, ...mapGetters("session", [
+				"me"
 			])
 		}
 

@@ -1,5 +1,5 @@
 <template lang="pug">
-	task-page(:schema="schema", :selectedProject="currentProject", :selectedTasks="selectedTasks", :projects="projects", :tasks="tasks", :users="users")
+	task-page(:schema="schema", :selectedProject="currentProject", :selectedTasks="selectedTasks", :projects="projects", :tasks="tasks", :me="me")
 </template>
 
 <script>
@@ -9,7 +9,7 @@
 	import toast from "../../core/toastr";
 
 	import { mapGetters, mapMutations, mapActions } from "vuex";
-	import { SET_CURRENT_PROJECT, LOAD, SELECT, CLEAR_SELECT, ADD , UPDATE, REMOVE, LOAD_PROJECTS, LOAD_USERS, DESELECT } from "../../common/mutationTypes";
+	import { SET_CURRENT_PROJECT, SET_USER, LOAD, SELECT, CLEAR_SELECT, ADD , UPDATE, REMOVE, LOAD_PROJECTS, LOAD_USERS, DESELECT } from "../../common/mutationTypes";
 
     // @see: https://github.com/vue-generators/vue-form-generator
 	export default {
@@ -22,12 +22,15 @@
 		, computed: {
 			...mapGetters("shared", [
 				"projects"
+				, "users"
 				, "currentProject"
 			])
 			, ...mapGetters("tasksPage", [
-				"tasks"
-				, "users" 
+				"tasks" 
 				, "selectedTasks"
+			])
+			, ...mapGetters("session", [
+				"me"
 			])
 		}
 
@@ -97,6 +100,9 @@
 				, deleteModel : "deleteTask"
 				, getUsers : "readUsers"
 			})
+			, ...mapActions("session", [
+				"getSessionUser"
+			])
 			, selectProject(code) {
 				this.setCurrentProject(code);
 				this.getTasks({
@@ -123,6 +129,20 @@
 					}
 				});
 			}
+			, setupAsigneeField() {
+				// 動的にプロジェクト一覧を設定している
+				this.schema.form.fields.forEach(f => {
+					if (f.model == "asignee_code") {
+						f.values = this.users.map(user => {
+							return {
+								id : user.code
+								, name : user.username
+							}
+						});
+						// f.default = this.me.code;
+					}
+				});
+			}
 		},
 
 		/**
@@ -135,6 +155,9 @@
 					|| mutation.type == `shared/${SET_CURRENT_PROJECT}`
 				) {
 					this.setupProjectsField();
+				}
+				if (mutation.type == `shared/${LOAD_USERS}`) {
+					this.setupAsigneeField();
 				}
 			});	
 			
@@ -155,8 +178,10 @@
 				});
 			}
 
-			if (this.users.length == 0) {
-				this.getUsers({ mutation: LOAD_USERS });	
+			if (this.users.length > 0) {
+				this.setupAsigneeField();
+			} else {
+				this.getUsers({ mutation: `shared/${LOAD_USERS}` });	
 			}
 		}
 	};

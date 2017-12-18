@@ -49,14 +49,14 @@
 			DataTable
 		},
 
-        // task-page(:schema="schema", :selectedTasks="selectedTasks", :projects="projects", :tasks="tasks", :users="users") に対応させる
+        // task-page(:schema="schema", :selectedTasks="selectedTasks", :projects="projects", :tasks="tasks", :me="me") に対応させる
 		props: [
 			"schema"
             , "projects"
 			, "tasks"
-			, "users"
 			, "selectedTasks"
 			, "selectedProject"
+			, "me"
 		]
 
 		, data() {
@@ -126,7 +126,9 @@
 		methods: {
 			modelUpdated(newVal, schema) {
 				console.log(`● ${schema}: ${newVal}`);
-				this.model.root_code = newVal;
+				if (this.model) {
+					this.model.root_code = newVal;
+				}
 				if (newVal) {
 					this.$parent.selectProject(newVal);
 				} else {
@@ -175,17 +177,6 @@
 			, buttonNewDidPush() {
 				console.log("Create new model...");
 
-				// 動的にユーザー一覧を設定している
-				this.schema.form.fields.forEach(f => {
-					if (f.model == "asignee_code") {
-						f.values = this.users.map(user => {
-							return {
-								id : user.code
-								, name : user.username
-							}
-						});
-					}
-				});	
 				this.$parent.clearSelection();
 
 				let newRow = schemaUtils.createDefaultObject(this.schema.form);
@@ -195,7 +186,8 @@
                 if (this.modelProjectSelector.code) {
 					newRow.root_code = this.modelProjectSelector.code;
 					newRow.parent_code = this.modelProjectSelector.code;
-                }
+				}
+				newRow.asignee_code = this.me.code;
 
 				this.model = newRow;
 

@@ -1,5 +1,5 @@
 <template lang="pug">
-	list-page(:schema="schema", :selected="selected", :rows="tasks")
+	list-page(:schema="schema", :selected="selected", :rows="tasks", :me="me")
 </template>
 
 <script>

@@ -14,7 +14,11 @@ export const readUsers = ({ commit }, { mutation }) => {
 	axios.get(NAMESPACE).then((response) => {
 		let res = response.data;
 		if (res.status == 200 && res.data)
-			commit(mutation, res.data);
+		// 各Pageにアサインされたactionからsharedのmutationへcommitをかのうにするため、roo:trueとしている
+			commit(mutation
+				, res.data
+				, { root : true }
+			);
 		else
 			console.error("Request error!", res.error);
 

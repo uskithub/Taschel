@@ -1,19 +1,25 @@
-import { LOAD_PROJECTS, SET_CURRENT_PROJECT } from "../../../common/mutationTypes";
+import { LOAD_PROJECTS, LOAD_USERS, SET_CURRENT_PROJECT } from "../../../common/mutationTypes";
 
 const state = {
-    projects: []
+	projects: []
+	, users: []
 	, currentProject: null  // task.code 
 };
 
 const getters = {
-    projects(state) { return state.projects; }
+	projects(state) { return state.projects; }
+	, users(state) { return state.users; }
 	, currentProject(state) { return state.currentProject; }
 };
 
 const mutations = {
-    [LOAD_PROJECTS] (state, models) {
+	[LOAD_PROJECTS] (state, models) {
 		state.projects.splice(0);
 		state.projects.push(...models);
+	}
+	, [LOAD_USERS] (state, models) {
+		state.users.splice(0);
+		state.users.push(...models);
 	}
 	, [SET_CURRENT_PROJECT] (state, code) {
 		state.currentProject = code;
