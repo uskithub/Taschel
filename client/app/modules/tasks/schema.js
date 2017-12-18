@@ -12,7 +12,7 @@ module.exports = {
 
 	id: "tasks"
 	, title: _("Tasks")
-	, taskTable: {
+	, table: {
 		multiSelect: true
 		, columns: [
 			{

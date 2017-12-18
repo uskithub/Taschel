@@ -12,7 +12,7 @@
 		.form
 			vue-form-generator(:schema="projectSelector", :model="modelProjectSelector", ref="projectSelector", @model-updated="modelUpdated")
 
-		data-table(:schema="schema.taskTable", :rows="tasks", :order="order", :search="search", :selected="selectedTasks", :select="_selectTasks", :select-all="selectAll")
+		data-table(:schema="schema.table", :rows="tasks", :order="order", :search="search", :selected="selectedTasks", :select="_selectTasks", :select-all="selectAll")
 
 		.form(v-if="model")
 			vue-form-generator(:schema="schema.form", :model="model", :options="options", :multiple="selectedTasks.length > 1", ref="form", :is-new-model="isNewModel")
@@ -141,7 +141,7 @@
 				if (this.selectedTasks.length > 0 && this.selectedTasks.includes(row)) {
 					this.$parent.deselectTask(row);
 				} else {
-					if (this.schema.taskTable.multiSelect === true && (add || (event && event.ctrlKey))) {
+					if (this.schema.table.multiSelect === true && (add || (event && event.ctrlKey))) {
 						this.$parent.selectTasks(row, true);
 					} else {
 						this.$parent.selectTasks(row, false);

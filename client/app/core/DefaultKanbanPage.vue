@@ -150,7 +150,7 @@
 				if (this.selectedTasks.length > 0 && this.selectedTasks.includes(row)) {
 					this.$parent.deselectTask(row);
 				} else {
-					if (this.schema.taskTable.multiSelect === true && (add || (event && event.ctrlKey))) {
+					if (this.schema.table.multiSelect === true && (add || (event && event.ctrlKey))) {
 						this.$parent.selectTasks(row, true);
 					} else {
 						this.$parent.selectTasks(row, false);

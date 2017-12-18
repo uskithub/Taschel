@@ -11,7 +11,7 @@ module.exports = {
 
 	id: "kanban"
 	, title: _("Kanban")
-	, taskTable: {
+	, table: {
 		multiSelect: true
 		, columns: [
 			{
