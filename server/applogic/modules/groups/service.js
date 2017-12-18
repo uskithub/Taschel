@@ -99,6 +99,7 @@ module.exports = {
 					.then((jsons) => {
 						if (jsons.length == 0) {
 							// 該当週のデータがないならないで返す
+							this.notifyNotSetupYet(ctx);
 							return [];
 						} else {
 							// ある場合は未分類Groupと一緒に返す

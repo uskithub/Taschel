@@ -1,10 +1,13 @@
 <template lang="pug">
-	kanban-page(:schema="schema", :groups="groups", :tasks="tasks", :users="users")
+	div
+		kanban-page(:schema="schema", :groups="groups", :tasks="tasks", :users="users")
+		popup
 </template>
 
 <script>
 	import Vue from "vue";
-	import KanbanPage from "../../core/DefaultKanbanPage.vue";
+    import KanbanPage from "../../core/DefaultKanbanPage.vue";
+    import Popup from "../../core/components/popup";
 	import schema from "./schema";
 	import toast from "../../core/toastr";
 
@@ -15,11 +18,12 @@
 	export default {
 		
 		components: {
-			KanbanPage: KanbanPage
-		},
+            KanbanPage: KanbanPage
+            , Popup: Popup
+		}
 
 		// getters.js に対応
-		computed: {
+		, computed: {
 			...mapGetters("shared", [
 				"projects"
 				, "currentProject"
@@ -38,7 +42,8 @@
 		, data() {
 			return {
 				// task-pageに当てはめる値を定義したオブジェクト
-				schema
+                schema
+                , isPopupShow : true
 			};
 		},
 
@@ -46,8 +51,14 @@
 		 * Socket handlers. Every property is an event handler
 		 */
 		socket: {
-			prefix: "/kanban/",
+			prefix: "/groups/",
 			events: {
+                empty(res) {
+					// this.created(res.data);
+                    toast.warning(this._("GroupsNotSetupYet", res), this._("追加しました"));
+                    this.isPopupShow = true;
+				},
+
 				/**
 				 * New task added
 				 * @param  {Object} res Task object

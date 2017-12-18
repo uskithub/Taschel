@@ -46,7 +46,7 @@
 		 * Socket handlers. Every property is an event handler
 		 */
 		socket: {
-			prefix: "/kanban/",
+			prefix: "/groups/",
 			events: {
 				/**
 				 * New task added
