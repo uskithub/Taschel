@@ -11,7 +11,7 @@ let _ = Vue.prototype._;
 module.exports = {
 
 	id: "tasks"
-	, title: _("Tasks")
+	, title: _("Tasks (by TaskPage)")
 	, table: {
 		multiSelect: true
 		, columns: generate(

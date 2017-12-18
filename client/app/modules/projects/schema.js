@@ -9,7 +9,7 @@ let _ = Vue.prototype._;
 
 module.exports = {
 	id: "projects"
-	, title: _("Projects")
+	, title: _("Projects (by ListPage)")
 	, table: {
 		multiSelect: true
 		, columns: generate(
