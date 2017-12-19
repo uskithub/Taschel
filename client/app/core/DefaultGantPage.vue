@@ -5,7 +5,28 @@
 		.form
 			vue-form-generator(:schema="projectSelector", :model="modelProjectSelector", ref="projectSelector", @model-updated="modelUpdated")
 
-		tree-list(:isRoot="true", :node="selectedProjectChildren")
+		tree-list(:isRoot="true", :node="selectedProjectChildren", :add="addChild")
+
+		.form(v-if="model")
+			vue-form-generator(:schema='schema.form', :model='model', :options='options', ref="form", :is-new-model="isNewModel")
+
+			.errors.text-center
+				div.alert.alert-danger(v-for="(item, index) in validationErrors", :key="index") {{ item.field.label }}: 
+					strong {{ item.error }}
+
+			.buttons.flex.justify-space-around
+				button.button.primary(@click="buttonSaveDidPush", :disabled="!enabledSave")
+					i.icon.fa.fa-save 
+					| {{ schema.resources.saveCaption || _("Save") }}
+				button.button.outline(@click="buttonBreakdownDidPush", :disabled="!enabledBreakdown")
+					i.icon.fa.fa-copy 
+					| {{ schema.resources.breakdownCaption || _("Breakdown") }}
+				button.button.outline(@click="buttonCloneDidPush", :disabled="!enabledClone")
+					i.icon.fa.fa-copy 
+					| {{ schema.resources.cloneCaption || _("Clone") }}
+				button.button.danger(@click="buttonDeleteDidPush", :disabled="!enabledDelete")
+					i.icon.fa.fa-trash 
+					| {{ schema.resources.deleteCaption || _("Delete") }}
 
 </template>
 
@@ -24,10 +45,11 @@
 		components: {
 			DataTable
             , TreeList
-		},
+		}
 
-		props: [
+		, props: [
 			"schema"
+			, "me"
 			, "projects"
 			, "selectedProject"
 		]
@@ -35,12 +57,11 @@
 		, data() {
 			return {
 				order: {
-					field: "id",
-					direction: 1
-				},
-
-				model: null,
-				isNewModel: false
+					field: "id"
+					, direction: 1
+				}
+				, model: null
+				, isNewModel: false
 
 				// 選択したプロジェクトが格納される
 				, modelProjectSelector:  {
@@ -107,21 +128,25 @@
 					this.$parent.deselectProject();
 				}
 			}
-			, selectAll(event) {
-				this.isNewModel = false;
+            , addChild(e, node) {
+                console.log("Create new model...");
 
-				let filter = Vue.filter("filterBy");
-				let filteredRows = filter(this.projects, this.search);
+				let newRow = schemaUtils.createDefaultObject(this.schema.form);
+				this.isNewModel = true;
+				newRow.type = "step";
+				newRow.purpose = `${node.goal} にするため`;
+				newRow.asignee_code = this.me.code;
+				newRow.root = node.root
+				newRow.parent = node.code
+				this.model = newRow;
 
-				if (this.selected.length < filteredRows.length) {
-					// Select all
-					this.$parent.selectRow(filteredRows, false);
-				} else {
-					// Unselect all 
-					this.$parent.clearSelection();
-				}
-			}
-			
+				this.$nextTick(() => {
+					let el = document.querySelector("div.form input:nth-child(1):not([readonly]):not(:disabled)");
+					if (el)
+						el.focus();
+				});
+            }
+
 			, addNode() {
                 var node = new TreeNode('new node', false)
                 if (!this.data.children) this.data.children = []

@@ -1,5 +1,5 @@
 <template lang="pug">
-	gant-page(:schema="schema", :selectedProject="currentProject", :projects="projects")
+	gant-page(:schema="schema", :selectedProject="currentProject", :projects="projects", :me="me")
 </template>
 
 <script>
@@ -25,6 +25,9 @@
 			// , ...mapGetters("gantPage", [
 			// 	"projects"
 			// ])
+			, ...mapGetters("session", [
+				"me"
+			])
 		}
 
 		/**
@@ -79,6 +82,9 @@
 				getProjects : "readTasks"
 				, arrange : "arrangeTask"
 			})
+			, ...mapActions("session", [
+				"getSessionUser"
+			])
 			, selectProject(code) {
 				this.setCurrentProject(code);
 			}

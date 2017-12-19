@@ -36,7 +36,6 @@ module.exports = {
 	, options: {
 		searchable: true,
 
-
 		enableNewButton: true,
 		enabledSaveButton: true,
 		enableDeleteButton: true,

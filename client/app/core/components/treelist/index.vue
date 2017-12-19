@@ -26,9 +26,9 @@
                 div.node-content {{node.name}}
 
                 div.operation(v-show="isHovering")
-                    span(title="add tree node")
-                    slot(name="addTreeNode")
-                        i.vue-tree-icon.icon-folder-plus-e
+                    span(title="add tree node" @click.prevent.stop="add($event, node)")
+                        slot(name="addTreeNode")
+                            i.vue-tree-icon.icon-folder-plus-e
 
             div(class="border bottom", :class="{'active': isDraggingToGoDown}"
                 @drop="dropBelow"
@@ -37,7 +37,7 @@
                 @dragleave="dragleaveBelow")
 
         div(:class="{'tree-margin': true}", v-show="isOpen")
-            tree-list(v-for="child in node.children", :node="child" , :key='child.code')
+            tree-list(v-for="child in node.children", :node="child" , :key='child.code', :add="add")
 
 </template>
 
@@ -65,6 +65,7 @@
         , props: [
             "isRoot"
             , "node"
+            , "add"
         ]
         , computed: {
             itemIconClass () {
@@ -91,7 +92,7 @@
             $(window).off('keyup')
         }
         , methods: {
-            toggle() {
+            toggle(e) {
                 this.isOpen = !this.isOpen;
             }
             , mouseover(e) {

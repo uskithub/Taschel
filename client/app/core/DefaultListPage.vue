@@ -47,33 +47,32 @@
 
 		components: {
 			DataTable
-		},
+		}
 
-		props: [
+		, props: [
 			"schema"
 			, "me"
 			, "selected"
 			, "rows"
-		],
+		]
 
-		data() {
+		, data() {
 			return {
 				order: {
-					field: "id",
-					direction: 1
-				},
-
-				model: null,
-				isNewModel: false
+					field: "id"
+					, direction: 1
+				}
+				, model: null
+				, isNewModel: false
 			};
-		},
+		}
 
-		computed: {
+		, computed: {
 			...mapGetters("session", {
 				search: "searchText"
-			}),
+			})
 
-			options() 		{ return this.schema.options || {};	},
+			, options() 		{ return this.schema.options || {};	},
 
 			enabledNew() 	{ return (this.options.enableNewButton !== false); },
 			enabledSave() 	{ return (this.model && this.options.enabledSaveButton !== false); },
@@ -116,9 +115,9 @@
 				} else {
 					this.$parent.selectRow(row, false);
 				}
-			},
+			}
 
-			selectAll(event) {
+			, selectAll(event) {
 				this.isNewModel = false;
 
 				let filter = Vue.filter("filterBy");
@@ -131,9 +130,9 @@
 					// Unselect all 
 					this.$parent.clearSelection();
 				}
-			},	
+			}
 
-			generateModel() {
+			, generateModel() {
 				if (this.selected.length == 1) {
 					this.model = cloneDeep(this.selected[0]);
 				}

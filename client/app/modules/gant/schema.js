@@ -15,6 +15,10 @@ module.exports = {
 		areaTypes.form
 		, ["project"]
 	)
+	, form : generate(
+		areaTypes.form
+		, ["code", "root", "type","name", "purpose", "goal", "asignee", "lastCommunication", "status"]
+	)
 	, options : {
 		searchable: true,
 
