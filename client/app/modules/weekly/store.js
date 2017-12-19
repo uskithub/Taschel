@@ -1,9 +1,6 @@
 import { 
 	LOAD
 	, ADD
-	, SELECT
-	, DESELECT
-	, CLEAR_SELECT
 	, UPDATE
 	, REMOVE 
 } from "../common/constants/mutationTypes";
@@ -11,14 +8,14 @@ import {
 import { each, find, assign, remove, isArray } from "lodash";
 
 const state = {
-	tasks: []
-	, selectedTasks: []
+	groups: []
+	, tasks: []
 };
 
 // stateから値を取り出すのはgetterを使う
 const getters = {
-	tasks(state) { return state.tasks; }
-	, selectedTasks(state) { return state.selectedTasks; }
+	groups(state) { return state.groups; }
+	, tasks(state) { return state.tasks; }
 };
 
 // mutationにはstateを変更する処理を実装する。
@@ -28,58 +25,27 @@ const mutations = {
 	// 定数を関数名として使用できる ES2015 の算出プロパティ名（computed property name）機能を使用することで
 	// Lintできるようになったり、mutationの一覧性ができる
 	[LOAD] (state, models) {
-		state.tasks.splice(0);
-		state.tasks.push(...models);
+		state.groups.splice(0);
+		state.groups.push(...models);
 	}
-	, [ADD] (state, models) {
-		let isNotUpdate = !find(state.selectedTasks, (item) => item.code == models.code);
-		if (isNotUpdate) {
-			state.tasks.push(models);
-		}
-	}
-	, [SELECT] (state, row, multiSelect) {
-		if (isArray(row)) {
-			state.selectedTasks.splice(0);
-			state.selectedTasks.push(...row);
-		} else {
-			if (multiSelect === true) {
-				if (state.selectedTasks.indexOf(row) != -1)
-					state.selectedTasks = state.selectedTasks.filter(item => item != row);
-				else
-					state.selectedTasks.push(row);
-
-			} else {
-				state.selectedTasks.splice(0);
-				state.selectedTasks.push(row);
-			}
-		}
-	}
-	, [DESELECT] (state, row) {
-		state.selectedTasks = state.selectedTasks.filter((item) => {
-			return item != row;
-		});
-	}
-	, [CLEAR_SELECT] (state) {
-		state.selectedTasks.splice(0);
+	, [ADD] (state, model) {
+		state.groups.push(model);
 	}
 	, [UPDATE] (state, model) {
-		each(state.selectedTasks, (item) => {
+		each(state.groups, (item) => {
 			if (item.code == model.code)
 				assign(item, model);
 		});
 	}
-	, [REMOVE] (state, model) {
-		state.selectedTasks = state.selectedTasks.filter(item => item.code != model.code);
-	}	
 };
 
 import { createTask, readTasks, updateTask, deleteTask } from "../common/actions/tasks";
-import { readUsers } from "../common/actions/persons";
+import { createGroup, readGroups, updateGroups } from "../common/actions/groups";
 
 export default {
 	namespaced : true
 	, state
 	, getters
-	, actions : { createTask, readTasks, updateTask, deleteTask, readUsers }
+	, actions : { createGroup, readGroups, updateGroups, createTask, readTasks, updateTask, deleteTask }
 	, mutations
 };

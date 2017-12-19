@@ -1,6 +1,6 @@
 <template lang="pug">
 	div
-		kanban-page(:schema="schema", :groups="groups", :tasks="tasks", :users="users")
+		kanban-page(:schema="schema", :groups="groups", :tasks="tasks")
 		popup(:schema="popupSchema")
 </template>
 
@@ -30,11 +30,9 @@
 				, "currentProject"
 				, "popupSchema"
 			])
-			, ...mapGetters("kanbanPage", [
+			, ...mapGetters("weeklyPage", [
 				"groups"
 				, "tasks"
-				, "users"
-				, "selectedTasks"
 			])
 		}
 
@@ -46,18 +44,18 @@
 				// task-pageに当てはめる値を定義したオブジェクト
                 schema
 			};
-		},
+		}
 
 		/**
 		 * Socket handlers. Every property is an event handler
 		 */
-		socket: {
-			prefix: "/groups/",
-			events: {
+		, socket: {
+			prefix: "/groups/"
+			, events: {
                 empty(res) {
 					this.showPopup({
-						title : "タイトルさ"
-						, message : "内容さベイビー"
+						title : this._("GroupIsEmpty")
+						, message : this._("GroupIsEmpty")
 						, buttons : [
 							{
 								type: "SUCCESS"
@@ -78,35 +76,35 @@
 				, created(res) {
 					this.created(res.data);
 					toast.success(this._("GroupAdded", res), this._("追加しました"));
-				},
+				}
 
 				/**
 				 * Task updated
 				 * @param  {Object} res Task object
 				 */
-				updated(res) {
+				, updated(res) {
 					this.updated(res.data);
 					toast.success(this._("GroupUpdated", res), this._("更新しました"));
-				},
+				}
 
 				/**
 				 * Task removed
 				 * @param  {Object} res Response object
 				 */
-				removed(res) {
+				, removed(res) {
 					this.removed(res.data);	
 					toast.success(this._("GroupDeleted", res), this._("削除しました"));
 				}
 			}
-		},		
+		}
 
-		methods: {
+		, methods: {
 			...mapMutations("shared", {
 				setCurrentProject : SET_CURRENT_PROJECT
 				, showPopup : SHOW_POPUP
 				, hidePopup : HIDE_POPUP
 			})
-			, ...mapMutations("kanbanPage", {
+			, ...mapMutations("weeklyPage", {
 				selectRow : SELECT
 				, loadTasks : LOAD
 				, updated : UPDATE
@@ -114,7 +112,7 @@
 				, created : ADD
 				, removed : REMOVE
 			})
-			, ...mapActions("kanbanPage", {
+			, ...mapActions("weeklyPage", {
 				getProjects : "readTasks"
 				, getGroups : "readGroups"
 				, updateModel : "updateTask"
@@ -140,7 +138,7 @@
 		 */
 		, created() {
             this.getGroups({
-                options: { weekly : "2017-12-18" }
+                options: { weekly : "2017-12-11" }
                 , mutation: LOAD
             });
 		}

@@ -34,7 +34,7 @@ let GroupSchema = new Schema({
 	 * - kanban
 	 * 	-> 任意の名前（default: TODO/InProgress/Done）
 	 * - weekly
-	 *  -> Important-Urgent/Important-Unurgent/Unimportant-Urgent/Unimportant-Unurgent
+	 *  -> Conducive-Urgent/Conducive-Unurgent/Unconducive-Urgent/Unconducive-Unurgent
 	 * 
 	 */
 	, name: {

@@ -56,7 +56,6 @@
 			, "projects"
 			, "groups"
 			, "tasks"
-			, "users"
 			, "selectedProject"
         ]
 

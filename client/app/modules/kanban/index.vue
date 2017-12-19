@@ -1,5 +1,5 @@
 <template lang="pug">
-	kanban-page(:schema="schema", :selectedProject="currentProject", :projects="projects", :groups="groups", :tasks="tasks", :users="users")
+	kanban-page(:schema="schema", :selectedProject="currentProject", :projects="projects", :groups="groups", :tasks="tasks")
 </template>
 
 <script>
@@ -16,10 +16,10 @@
 		
 		components: {
 			KanbanPage: KanbanPage
-		},
+		}
 
 		// getters.js に対応
-		computed: {
+		, computed: {
 			...mapGetters("shared", [
 				"projects"
 				, "currentProject"
@@ -27,8 +27,6 @@
 			, ...mapGetters("kanbanPage", [
 				"groups"
 				, "tasks"
-				, "users"
-				, "selectedTasks"
 			])
 		}
 
@@ -40,14 +38,14 @@
 				// task-pageに当てはめる値を定義したオブジェクト
 				schema
 			};
-		},
+		}
 
 		/**
 		 * Socket handlers. Every property is an event handler
 		 */
-		socket: {
-			prefix: "/groups/",
-			events: {
+		, socket: {
+			prefix: "/groups/"
+			, events: {
 				/**
 				 * New task added
 				 * @param  {Object} res Task object
@@ -75,9 +73,9 @@
 					toast.success(this._("GroupDeleted", res), this._("削除しました"));
 				}
 			}
-		},		
+		}	
 
-		methods: {
+		, methods: {
 			...mapMutations("shared", {
 				setCurrentProject : SET_CURRENT_PROJECT
 			})
@@ -104,12 +102,12 @@
 			, deselectProject() {
 				this.setCurrentProject(code);
 			}
-		},
+		}
 
 		/**
 		 * Call if the component is created
 		 */
-		created() {
+		, created() {
 			if (this.projects.length == 0) {
 				this.getProjects({ 
 					options: { taskType : "project" }

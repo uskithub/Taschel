@@ -1,5 +1,4 @@
 import { LOAD
-	, LOAD_USERS
 	, ADD
 	, UPDATE
 	, REMOVE 
@@ -10,15 +9,12 @@ import { each, find, assign, remove, isArray } from "lodash";
 const state = {
 	groups: []
 	, tasks: []
-	, users: []
-	, selectedTasks: []
 };
 
 // stateから値を取り出すのはgetterを使う
 const getters = {
 	groups(state) { return state.groups; }
 	, tasks(state) { return state.tasks; }
-	, users(state) { return state.users; }
 };
 
 // mutationにはstateを変更する処理を実装する。
@@ -31,10 +27,6 @@ const mutations = {
 		state.groups.splice(0);
 		state.groups.push(...models);
 	}
-	, [LOAD_USERS] (state, models) {
-		state.users.splice(0);
-		state.users.push(...models);
-	}
 	, [ADD] (state, model) {
 		state.groups.push(model);
 	}
@@ -44,9 +36,6 @@ const mutations = {
 				assign(item, model);
 		});
 	}
-	, [REMOVE] (state, model) {
-		state.selectedTasks = state.selectedTasks.filter(item => item.code != model.code);
-	}	
 };
 
 // import * as getters from "./getters";

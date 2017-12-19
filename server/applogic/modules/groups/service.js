@@ -11,6 +11,25 @@ let Task 		= require("../tasks/models/task");
 
 const UNCLASSIFIED = "UNCLASSIFIED";
 
+const DEFAULT_WEEKLY_GROUPS = [
+	{
+		name: "Conducive-Urgent"
+		, purpose: "for_the_top_priority_tasks"
+	}
+	, {
+		name: "Conducive-Unurgent"
+		, purpose: "for_the_tasks_you_should_give_priority_to"
+	}
+	, {
+		name: "Conducive-Unurgent"
+		, purpose: "for_the_tasks_you_should_give_priority_to"
+	}
+	, {
+		name: "Unconducive-Urgent"
+		, purpose: "for_the_tasks_you_should_doubt_their_priority"
+	}
+];
+
 module.exports = {
 	settings: {
 		name: "groups",
@@ -87,8 +106,9 @@ module.exports = {
 					});
 
 				} else if (ctx.params.weekly != undefined) {
+					let type = `weekly_${ctx.params.weekly}`;
 					let filter = {
-						type : `weekly_${ctx.params.weekly}`
+						type : type
 					};
 					let query = Group.find(filter);
 
@@ -98,9 +118,49 @@ module.exports = {
 					})
 					.then((jsons) => {
 						if (jsons.length == 0) {
-							// 該当週のデータがないならないで返す
-							this.notifyNotSetupYet(ctx);
-							return [];
+							// TODO: 該当週のデータがないならないで返す？
+							// this.notifyNotSetupYet(ctx);
+							let promises = [];
+							
+							DEFAULT_WEEKLY_GROUPS.forEach( g => {
+								g.type = type;
+								g.parent =  -1;
+								g.author = ctx.user.id;
+								let group = new Group(g);
+								promises.push(group.save());
+							});
+
+							return Promise.all(promises).then((docs) => {
+								return this.toJSON(docs);
+							})
+							.then((jsons) => {
+								// 未分類Groupと一緒に返す
+								let filter = {
+									// TODO: Close条件
+									$or : [ { author : ctx.user.id}, {asignee : ctx.user.id } ]
+								};
+								let query = Task.find(filter);
+
+								// myTasksでクローズしていないものを取得
+								return ctx.queryPageSort(query).exec().then( (taskDocs) => {
+									return this.toJSON(taskDocs);
+								})
+								.then((taskJsons) => {
+									// 既存Groupに分類されていないTaskを未分類として既存Groupとともに返す
+									return this.populateModels(jsons)
+									.then((jsons) => {
+										let unclassifiedGroup = {
+											code: UNCLASSIFIED
+											, type: type
+											, name: "unclassified"
+											, purpose: "for_classify"
+											, children: taskJsons
+										};
+										jsons.unshift(unclassifiedGroup);
+										return jsons;
+									});
+								});
+							});
 						} else {
 							// ある場合は未分類Groupと一緒に返す
 							let filter = {
