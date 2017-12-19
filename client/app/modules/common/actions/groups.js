@@ -41,6 +41,8 @@ export const readGroups = ({ commit }, { options, mutation }) => {
 			url = `${url}?parent_code=${options.parent}`;
 		} else if (options.weekly != undefined) {
 			url = `${url}?weekly=${options.weekly}`;
+		} else if (options.daily != undefined) {
+			url = `${url}?daily=${options.daily}`;
 		}
 	} 
 

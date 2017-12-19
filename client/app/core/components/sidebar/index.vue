@@ -14,6 +14,12 @@
 						span.icon
 							i.fa.fa-tasks
 						span.label {{ "Weekly" | i18n }}
+
+				router-link(tag="li", to="/daily")
+					a(:title="_('Daily')")
+						span.icon
+							i.fa.fa-tasks
+						span.label {{ "Daily" | i18n }}
 				
 				router-link(tag="li", to="/projects")
 					a(:title="_('Projects')")

@@ -10,24 +10,21 @@ let Group 		= require("./models/group");
 let Task 		= require("../tasks/models/task");
 
 const UNCLASSIFIED = "UNCLASSIFIED";
+const ASSIGNED_IN_WEEKLY = "ASSIGNED_IN_WEEKLY";
 
 const DEFAULT_WEEKLY_GROUPS = [
-	{
-		name: "Conducive-Urgent"
-		, purpose: "for_the_top_priority_tasks"
-	}
-	, {
-		name: "Conducive-Unurgent"
-		, purpose: "for_the_tasks_you_should_give_priority_to"
-	}
-	, {
-		name: "Conducive-Unurgent"
-		, purpose: "for_the_tasks_you_should_give_priority_to"
-	}
-	, {
-		name: "Unconducive-Urgent"
-		, purpose: "for_the_tasks_you_should_doubt_their_priority"
-	}
+	{ name: "Conducive-Urgent", purpose: "for_the_top_priority_tasks" }
+	, { name: "Conducive-Unurgent", purpose: "for_the_tasks_you_should_give_priority_to" }
+	, { name: "Conducive-Unurgent" , purpose: "for_the_tasks_you_should_give_priority_to" }
+	, { name: "Unconducive-Urgent", purpose: "for_the_tasks_you_should_doubt_their_priority" }
+];
+
+const DEFAULT_DAILY_GROUPS = [
+	{ name: "Monday", purpose: "for_monday" }
+	, { name: "Tuesday", purpose: "for_tuesday" }
+	, { name: "Wednesday" , purpose: "for_wednesday" }
+	, { name: "Thursday", purpose: "for_thursday" }
+	, { name: "Friday", purpose: "for_friday" }
 ];
 
 module.exports = {
@@ -71,7 +68,6 @@ module.exports = {
 					};
 					let query = Task.find(filter);
 					// 選択されているProjectのTaskを全部持ってくる
-					// TODO: taskはtoJSONしていないがいいのか確認
 					return ctx.queryPageSort(query).exec().then( (taskDocs) => {
 						let filter = {
 							type : "kanban"
@@ -87,6 +83,7 @@ module.exports = {
 							let classifiedTasks = jsons.reduce((arr, g) => {
 								return arr.concat(g.children);
 							}, []);
+							// taskはJSONにすると_idでの突き合わせができなくなるのでしない
 							let unclassifiedTasks = taskDocs.filter(d => { return !classifiedTasks.includes(d._id); });
 							
 							return this.populateModels(jsons)
@@ -121,7 +118,7 @@ module.exports = {
 							// TODO: 該当週のデータがないならないで返す？
 							// this.notifyNotSetupYet(ctx);
 							let promises = [];
-							
+
 							DEFAULT_WEEKLY_GROUPS.forEach( g => {
 								g.type = type;
 								g.parent =  -1;
@@ -130,14 +127,25 @@ module.exports = {
 								promises.push(group.save());
 							});
 
+							DEFAULT_DAILY_GROUPS.forEach( g => {
+								g.type = `daily_${ctx.params.weekly}`;
+								g.parent =  -1;
+								g.author = ctx.user.id;
+								let group = new Group(g);
+								promises.push(group.save());
+							});
+
 							return Promise.all(promises).then((docs) => {
+								docs = docs.filter( d => {
+									return d.type.indexOf("weekly_") === 0;
+								});
 								return this.toJSON(docs);
 							})
 							.then((jsons) => {
 								// 未分類Groupと一緒に返す
 								let filter = {
 									// TODO: Close条件
-									$or : [ { author : ctx.user.id}, {asignee : ctx.user.id } ]
+									$or : [ { author : ctx.user.id }, { asignee : ctx.user.id } ]
 								};
 								let query = Task.find(filter);
 
@@ -165,20 +173,18 @@ module.exports = {
 							// ある場合は未分類Groupと一緒に返す
 							let filter = {
 								// TODO: Close条件
-								$or : [ { author : ctx.user.id}, {asignee : ctx.user.id } ]
+								$or : [ { author : ctx.user.id }, { asignee : ctx.user.id } ]
 							};
 							let query = Task.find(filter);
 							
 							// myTasksでクローズしていないものを取得
 							return ctx.queryPageSort(query).exec().then( (taskDocs) => {
-								return this.toJSON(taskDocs);
-							})
-							.then((taskJsons) => {
 								// 既存Groupに分類されていないTaskを未分類として既存Groupとともに返す
 								let classifiedTasks = jsons.reduce((arr, g) => {
 									return arr.concat(g.children);
 								}, []);
-								let unclassifiedTasks = taskJsons.filter(d => { return !classifiedTasks.includes(d._id); });
+								// taskはJSONにすると_idでの突き合わせができなくなるのでしない
+								let unclassifiedTasks = taskDocs.filter(t => { return !classifiedTasks.includes(t._id); });
 
 								return this.populateModels(jsons)
 								.then((jsons) => {
@@ -192,6 +198,101 @@ module.exports = {
 									jsons.unshift(unclassifiedGroup);
 									return jsons;
 								});
+							});
+						}
+					});
+
+				} else if (ctx.params.daily != undefined) {
+					let type = `daily_${ctx.params.daily}`;
+					let filter = {
+						type : type
+					};
+					let query = Group.find(filter);
+
+					// 該当週のGroupを取得
+					return ctx.queryPageSort(query).exec().then( (docs) => {
+						return this.toJSON(docs);
+					})
+					.then((jsons) => {
+						if (jsons.length == 0) {
+							// TODO: 該当週のデータがないならないで返す？
+							// this.notifyNotSetupYet(ctx);
+							let promises = [];
+
+							DEFAULT_WEEKLY_GROUPS.forEach( g => {
+								g.type = `weekly_${ctx.params.daily}`;
+								g.parent =  -1;
+								g.author = ctx.user.id;
+								let group = new Group(g);
+								promises.push(group.save());
+							});
+
+							DEFAULT_DAILY_GROUPS.forEach( g => {
+								g.type = type;
+								g.parent =  -1;
+								g.author = ctx.user.id;
+								let group = new Group(g);
+								promises.push(group.save());
+							});
+
+							return Promise.all(promises).then((docs) => {
+								docs = docs.filter( d => {
+									return d.type.indexOf("daily_") === 0;
+								});
+								return this.toJSON(docs);
+							})
+							.then((jsons) => {
+								// 空の週次Groupとともに返す
+								return this.populateModels(jsons)
+								.then((jsons) => {
+									let assignedInWeeklyGroup = {
+										code: ASSIGNED_IN_WEEKLY
+										, type: type
+										, name: "assignedInWeekly"
+										, purpose: "for_assigning"
+										, children: []
+									};
+									jsons.unshift(assignedInWeeklyGroup);
+									return jsons;
+								});
+							});
+						} else {
+							// ある場合は週見本と一緒に返す
+							let filter = {
+								$and : [ 
+									{ author : ctx.user.id}
+									, { type : { $in : [ `weekly_${ctx.params.daily}`, `daily_${ctx.params.daily}` ] } }
+								]
+							}; 
+							let query = Group.find(filter);
+							
+							// myTasksでクローズしていないものを取得
+							return ctx.queryPageSort(query).exec().then( (docs) => {
+								return this.toJSON(docs);
+							})
+							.then((jsons) => {
+								return this.populateModels(jsons);
+							})
+							.then((jsons) => {
+								let daily = jsons.filter( g => {
+									return g.type.indexOf("daily_") === 0;
+								});
+								let assignedInWeekly = jsons.filter( g => {
+									return g.type.indexOf("weekly_") === 0;
+								}).reduce((arr, g) => {
+									return arr.concat(g.children);
+								}, []);
+
+								let assignedInWeeklyGroup = {
+									code: ASSIGNED_IN_WEEKLY
+									, type: type
+									, name: "assignedInWeekly"
+									, purpose: "for_assigning"
+									, children: assignedInWeekly
+								};
+
+								daily.unshift(assignedInWeeklyGroup);
+								return daily;
 							});
 						}
 					});
