@@ -26,7 +26,7 @@
                 div.node-content {{node.name}}
 
                 div.operation(v-show="isHovering")
-                    span(title="add tree node" @click.prevent.stop="add($event, node, this.app)")
+                    span(title="add tree node" @click.prevent.stop="add($event, node)")
                         slot(name="addTreeNode")
                             i.vue-tree-icon.icon-folder-plus-e
 
@@ -79,18 +79,8 @@
                 return this.node.children && this.node.children.length > 0
             }
         }
-        , mounted () {
-            const vm = this
-            $(window).on('keyup', function (e) {
-                // click enter
-                if (e.keyCode === 13 && vm.editable) {
-                    vm.editable = false
-                }
-            })
-        }
-        , beforeDestroy () {
-            $(window).off('keyup')
-        }
+        , mounted () {}
+        , beforeDestroy () {}
         , methods: {
             toggle(e) {
                 this.isOpen = !this.isOpen;

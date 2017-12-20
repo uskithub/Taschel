@@ -115,7 +115,7 @@
 				this.loadTasks([]);
 			}
 			, setupProjectsField() {
-				console.log("●", this.currentProject);
+				console.log("● tasks", this.currentProject);
 				// 動的にプロジェクト一覧を設定している
 				this.schema.form.fields.forEach(f => {
 					if (f.model == "root_code") {

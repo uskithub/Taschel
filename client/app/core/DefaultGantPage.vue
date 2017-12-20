@@ -128,10 +128,9 @@
 					this.$parent.deselectProject();
 				}
 			}
-            , addChild(e, node, vm) {
+            , addChild(e, node) {
 				console.log("Create new model...");
 				this.$parent.select(node);
-				this.targetTreeListVm = vm;
 
 				let newModel = schemaUtils.createDefaultObject(this.schema.form);
 				this.isNewModel = true;
@@ -230,15 +229,6 @@
 		},
 
 		created() {
-			// projectの選択が変わったら、初期値を変える
-			this.$store.subscribe((mutation, state) => {
-				// if (mutation.type == `shared/${UPDATE}` && this.targetTreeListVm) {
-					// console.log("forceUpdate", this.targetTreeListVm.$parent);
-					// this.targetTreeListVm.$parent.$forceUpdate();
-					// this.targetTreeListVm = null;
-					// this.$parent.select(null);
-				// }
-			});
 		}
 	};
 

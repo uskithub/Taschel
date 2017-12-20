@@ -37,27 +37,24 @@ const mutations = {
 		state.users.push(...models);
 	}
 	, [UPDATE] (state, { parent, child }) {
-		let update = function(model, parent) {
-			console.log("◯ check", model);
+		// stateが変更されたかの判定が凄いシビア
+		// parentの挿げ替えかchildの追加でどちらでも状態を更新できるが、
+		// 前者だとroot以下にタスクを追加した場合、更新がされなかった（root以外では大丈夫だった）
+		let update = function(model) {
 			if (model.code == parent.code) {
-				console.log("● みつけた！", model);
-				return parent;
+				model.children.push(child)
+				return model;
 			}
 			if (model.children == undefined || model.children.length == 0) {
 				return model;
 			} else {
-				for (let i in model.children) {
-					let c = model.children[i];
-					if (c.code == parent.code) {
-						console.log("● みつけた！", c);
-						model.children[i] = parent;
-						break;
-					}
-					model.children[i] = update(c, parent);
-				}
+				model.children = model.children.map( c => {
+					return update(c, parent);
+				});
 				return model;
 			}
 		};
+
 		for (let i in state.projects) {
 			let p = state.projects[i];
 			if (p.code == state.currentProject) {
@@ -65,16 +62,6 @@ const mutations = {
 				break;
 			}
 		}
-		
-		// let updated = state.projects.map(p => {
-		// 	if (p.code == state.currentProject) {
-		// 		return update(p, parent);
-		// 	} else {
-		// 		return p;
-		// 	}
-		// });
-		// state.projects.splice(0);
-		// state.projects = updated;
 	}
 	, [SET_CURRENT_PROJECT] (state, code) {
 		state.currentProject = code;
