@@ -86,9 +86,9 @@
 
 				return [];
 			}
-		},	
+		}
 
-		watch: {
+		, watch: {
 			// propsで指定した名前に合わせる必要あり
 			selected() {
 				if (!this.isNewModel)
@@ -103,9 +103,9 @@
 				},
 				deep: true
 			}*/
-		},
-
-		methods: {
+		}
+		
+		, methods: {
 
 			select(event, row, add) {
 				this.isNewModel = false;
@@ -216,9 +216,9 @@
 					each(this.selected, (row) => this.$parent.removeRow(row) );
 					this.$parent.clearSelection();
 				}
-			},
+			}
 
-			validate()	{
+			, validate() {
 				let res = this.$refs.form.validate();
 
 				if (this.schema.events && isFunction(this.schema.events.onValidated)) {

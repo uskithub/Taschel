@@ -1,29 +1,35 @@
-import { LOAD_PROJECTS } from "../common/constants/mutationTypes";
+import { SELECT, UPDATE, ADD } from "../common/constants/mutationTypes";
 
 import { each, find, assign, remove, isArray } from "lodash";
 
 // TODO: GantだけProject読み込み時にPopulateさせているのでSharedと分けるかもしれないので残している
 const state = {
-// 	projects: []
+	targetNode: null
 };
 
 const getters = {
-// 	projects(state) { return state.projects; }
+	targetNode(state) { return state.targetNode; }
 };
 
 const mutations = {
-	// [LOAD_PROJECTS] (state, models) {
-	// 	state.projects.splice(0);
-	// 	state.projects.push(...models);
-	// }
+	[SELECT] (state, model) {
+		state.targetNode = model;
+	}
+	, [UPDATE] (state, model) {
+		state.targetNode = model;
+	}
+	, [ADD] (state, model) {
+		// noop
+	}
 };
 
 import { createTask, readTasks, updateTask, deleteTask, arrangeTask } from "../common/actions/tasks";
+import { readUsers } from "../common/actions/persons";
 
 export default {
 	namespaced : true
 	, state
 	, getters
-	, actions : { createTask, readTasks, updateTask, deleteTask, arrangeTask }
+	, actions : { createTask, readTasks, updateTask, deleteTask, arrangeTask, readUsers }
 	, mutations
 };

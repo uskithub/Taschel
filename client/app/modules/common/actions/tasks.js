@@ -11,7 +11,7 @@ export const NAMESPACE = "/api/tasks";
 // APIの戻りでは、childrenは実体だが、parentはcodeになっている
 // これを再帰的にparentのObject（参照）にしている
 let recursiveSetParentReference = function(model) {
-	if (model.children == undefined) {
+	if (model.children == undefined || model.children.length == 0) {
 		return model;
 	} else {
 		model.children = model.children.map((c) => {
@@ -27,7 +27,7 @@ let recursiveRevertParentReference = function(model) {
 	if (model.parent != -1) {
 		model.parent = model.parent.code;
 	}
-	if (model.children == undefined) {
+	if (model.children == undefined || model.children.length == 0) {
 		return model;
 	} else {
 		model.children = model.children.map((c) => {
@@ -50,11 +50,16 @@ export const createTask = ({ commit }, model) => {
 		let res = response.data;
 
 		if (res.status == 200 && res.data) {
+			console.log("● created", res.data);
 			if (res.data.child) {
 				// Breakdownした時はこちらに入る
-				commit(UPDATE, res.data.parent);
-				commit(ADD, res.data.child);
-				commit(SELECT, res.data.child, false);
+				// commit(UPDATE, res.data.parent);
+				// commit(ADD, res.data.child);
+				// commit(SELECT, res.data.child, false);
+				commit(`shared/${UPDATE}`
+					, res.data
+					, { root : true }
+				);
 			} else {
 				commit(ADD, res.data);
 				commit(SELECT, res.data, false);

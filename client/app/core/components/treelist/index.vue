@@ -26,7 +26,7 @@
                 div.node-content {{node.name}}
 
                 div.operation(v-show="isHovering")
-                    span(title="add tree node" @click.prevent.stop="add($event, node)")
+                    span(title="add tree node" @click.prevent.stop="add($event, node, this.app)")
                         slot(name="addTreeNode")
                             i.vue-tree-icon.icon-folder-plus-e
 

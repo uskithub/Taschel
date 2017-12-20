@@ -1,5 +1,5 @@
 <template lang="pug">
-	gant-page(:schema="schema", :selectedProject="currentProject", :projects="projects", :me="me")
+	gant-page(:schema="schema", :currentProject="currentProject", :projects="projects", :me="me")
 </template>
 
 <script>
@@ -9,7 +9,7 @@
 	import toast from "../../core/toastr";
 
 	import { mapGetters, mapMutations, mapActions } from "vuex";
-	import { SET_CURRENT_PROJECT, LOAD_PROJECTS } from "../common/constants/mutationTypes";
+	import { SET_CURRENT_PROJECT, LOAD_PROJECTS, LOAD_USERS, SELECT, UPDATE } from "../common/constants/mutationTypes";
 
 	export default {
 		
@@ -19,6 +19,7 @@
 		, computed : {
 			...mapGetters("shared", [
 				"projects"
+				, "users"
 				, "currentProject"
 			])
 			// TODO: GantだけProject読み込み時にPopulateさせているのでSharedと分けるかもしれないので残している
@@ -78,9 +79,15 @@
 			...mapMutations("shared", {
 				setCurrentProject : SET_CURRENT_PROJECT
 			})
+			, ...mapMutations("gantPage", {
+				select : SELECT
+			})
 			, ...mapActions("gantPage", {
-				getProjects : "readTasks"
+				createModel : "createTask"
+				, getProjects : "readTasks"
+				, updateModel : "updateTask"
 				, arrange : "arrangeTask"
+				, getUsers : "readUsers"
 			})
 			, ...mapActions("session", [
 				"getSessionUser"
@@ -91,17 +98,68 @@
 			, deselectProject() {
 				this.setCurrentProject(code);
 			}
+			, setupProjectsField() {
+				console.log("●", this.currentProject);
+				// 動的にプロジェクト一覧を設定している
+				this.schema.form.fields.forEach(f => {
+					if (f.model == "root_code") {
+						f.values = this.projects.map(project => {
+							return {
+								id : project.code
+								, name : project.name
+							}
+						});
+						f.default = this.currentProject;
+					}
+				});
+			}
+			, setupAsigneeField() {
+				// 動的にプロジェクト一覧を設定している
+				this.schema.form.fields.forEach(f => {
+					if (f.model == "asignee_code") {
+						f.values = this.users.map(user => {
+							return {
+								id : user.code
+								, name : user.username
+							}
+						});
+						// f.default = this.me.code;
+					}
+				});
+			}
 		}
 
 		/**
 		 * Call if the component is created
 		 */
 		, created() {
-			// Download rows for the page
+			// projectの選択が変わったら、初期値を変える
+			this.$store.subscribe((mutation, state) => {
+				if (mutation.type == `shared/${LOAD_PROJECTS}`
+					|| mutation.type == `shared/${SET_CURRENT_PROJECT}`
+				) {
+					this.setupProjectsField();
+				}
+				if (mutation.type == `shared/${LOAD_USERS}`) {
+					this.setupAsigneeField();
+				}
+				if (mutation.type == `shared/${UPDATE}`) {
+					this.setCurrentProject(this.currentProject);
+					// console.log("forceUpdate", this);
+					// this.$forceUpdate();
+				}
+			});
+
 			this.getProjects({
 				options: { taskType : "project", populateParent : true }
 				, mutation: `shared/${LOAD_PROJECTS}`
 			});
+
+			if (this.users.length > 0) {
+				this.setupAsigneeField();
+			} else {
+				this.getUsers({ mutation: `shared/${LOAD_USERS}` });	
+			}
 		}
 	};
 </script>
