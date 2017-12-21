@@ -9,9 +9,48 @@ import { find } from "lodash";
 let _ = Vue.prototype._;
 
 module.exports = {
-
 	id: "daily"
-	, title: _("Daily")
+    , title: _("Daily")
+    , fullCalendar : {
+		defaultView: "agendaWeek"
+		, header : {
+			left:   "title"
+			, center: ""
+			, right:  "prev, next"
+		}
+		, businessHours: {
+			// days of week. an array of zero-based day of week integers (0=Sunday)
+			dow: [ 1, 2, 3, 4, 5 ] // Monday - Thursday
+			, start: "9:00"
+			, end: "18:00"
+		}
+		// , dayNames : [_("Sunday"), _("Monday"), _("Tuesday"), _("Wednesday"), _("Thursday"), _("Friday"), _("Saturday")]
+		, weekends: false
+		
+		, views: {
+			basic: {
+				// options apply to basicWeek and basicDay views
+			}
+			, agenda: {
+				// options apply to agendaWeek and agendaDay views
+				
+			}
+			, month: { // name of view
+				titleFormat: "YYYY, MM, DD"
+				// other view-specific options here
+			}
+			, week: {
+				// options apply to basicWeek and agendaWeek views
+				allDaySlot : false
+				, scrollTime : "8:00"
+				, minTime : "6:00"
+				, maxTime : "22:00"
+			}
+			, day: {
+				// options apply to basicDay and agendaDay views
+			}
+		}
+	}
 	, form: {
 		fields: [
 			{

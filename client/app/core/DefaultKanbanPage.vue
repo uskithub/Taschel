@@ -11,7 +11,7 @@
 		.form(v-if="projectSelector")
 			vue-form-generator(:schema="projectSelector", :model="modelProjectSelector", ref="projectSelector", @model-updated="modelUpdated")
 
-		kanban(:boards="groups", :tasks="tasks",  @update-handler="arrange")
+		kanban(:boards="groups", :tasks="tasks", @update-handler="arrange")
 
 		.form(v-if="model")
 			vue-form-generator(:schema='schema.form', :model='model', :options='options', ref="form", :is-new-model="isNewModel")
@@ -36,8 +36,7 @@
 <script>
 	import Vue from "vue";
 	import { schema as schemaUtils } from "vue-form-generator";
-	import DataTable from "./dataTable.vue";
-    import Kanban from "./components/kanban/index";
+    import Kanban from "./components/kanban";
 
 	import { each, find, cloneDeep, isFunction, debounce } from "lodash";
 
@@ -46,8 +45,7 @@
 	export default {
 
 		components: {
-			DataTable
-            , Kanban
+			Kanban
 		}
 
         // task-page(:schema="schema", :selectedTasks="selectedTasks", :projects="projects", :tasks="tasks", :users="users") に対応させる

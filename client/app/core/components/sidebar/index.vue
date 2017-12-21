@@ -20,6 +20,12 @@
 						span.icon
 							i.fa.fa-tasks
 						span.label {{ "Daily" | i18n }}
+
+				router-link(tag="li", to="/fullCalendar")
+					a(:title="_('FullCalendar')")
+						span.icon
+							i.fa.fa-tasks
+						span.label {{ "FullCalendar" | i18n }}
 				
 				router-link(tag="li", to="/projects")
 					a(:title="_('Projects')")
