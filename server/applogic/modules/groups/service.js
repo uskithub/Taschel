@@ -105,7 +105,10 @@ module.exports = {
 				} else if (ctx.params.weekly != undefined) {
 					let type = `weekly_${ctx.params.weekly}`;
 					let filter = {
-						type : type
+						$and : [ 
+							{ author : ctx.user.id}
+							, { type : type }
+						]
 					};
 					let query = Group.find(filter);
 
@@ -127,18 +130,7 @@ module.exports = {
 								promises.push(group.save());
 							});
 
-							DEFAULT_DAILY_GROUPS.forEach( g => {
-								g.type = `daily_${ctx.params.weekly}`;
-								g.parent =  -1;
-								g.author = ctx.user.id;
-								let group = new Group(g);
-								promises.push(group.save());
-							});
-
 							return Promise.all(promises).then((docs) => {
-								docs = docs.filter( d => {
-									return d.type.indexOf("weekly_") === 0;
-								});
 								return this.toJSON(docs);
 							})
 							.then((jsons) => {
@@ -203,9 +195,15 @@ module.exports = {
 					});
 
 				} else if (ctx.params.daily != undefined) {
-					let type = `daily_${ctx.params.daily}`;
+					//
+					// weeklyのgroupにアサインされているtaskをがっちゃんこして返す
+					//
+					let type = `weekly_${ctx.params.daily}`;
 					let filter = {
-						type : type
+						$and : [ 
+							{ author : ctx.user.id}
+							, { type : type }
+						]
 					};
 					let query = Group.find(filter);
 
@@ -220,14 +218,6 @@ module.exports = {
 							let promises = [];
 
 							DEFAULT_WEEKLY_GROUPS.forEach( g => {
-								g.type = `weekly_${ctx.params.daily}`;
-								g.parent =  -1;
-								g.author = ctx.user.id;
-								let group = new Group(g);
-								promises.push(group.save());
-							});
-
-							DEFAULT_DAILY_GROUPS.forEach( g => {
 								g.type = type;
 								g.parent =  -1;
 								g.author = ctx.user.id;
@@ -236,63 +226,31 @@ module.exports = {
 							});
 
 							return Promise.all(promises).then((docs) => {
-								docs = docs.filter( d => {
-									return d.type.indexOf("daily_") === 0;
-								});
-								return this.toJSON(docs);
-							})
-							.then((jsons) => {
-								// 空の週次Groupとともに返す
-								return this.populateModels(jsons)
-								.then((jsons) => {
-									let assignedInWeeklyGroup = {
-										code: ASSIGNED_IN_WEEKLY
-										, type: type
-										, name: "assignedInWeekly"
-										, purpose: "for_assigning"
-										, children: []
-									};
-									jsons.unshift(assignedInWeeklyGroup);
-									return jsons;
-								});
+								const assignedInWeeklyGroup = {
+									code: ASSIGNED_IN_WEEKLY
+									, type: type
+									, name: "assignedInWeekly"
+									, purpose: "for_assigning"
+									, children: []
+								};
+								return [assignedInWeeklyGroup];
 							});
 						} else {
-							// ある場合は週見本と一緒に返す
-							let filter = {
-								$and : [ 
-									{ author : ctx.user.id}
-									, { type : { $in : [ `weekly_${ctx.params.daily}`, `daily_${ctx.params.daily}` ] } }
-								]
-							}; 
-							let query = Group.find(filter);
-							
-							// myTasksでクローズしていないものを取得
-							return ctx.queryPageSort(query).exec().then( (docs) => {
-								return this.toJSON(docs);
-							})
+							return this.populateModels(jsons)
 							.then((jsons) => {
-								return this.populateModels(jsons);
-							})
-							.then((jsons) => {
-								let daily = jsons.filter( g => {
-									return g.type.indexOf("daily_") === 0;
-								});
-								let assignedInWeekly = jsons.filter( g => {
-									return g.type.indexOf("weekly_") === 0;
-								}).reduce((arr, g) => {
+								const assignedInWeekly = jsons.reduce((arr, g) => {
 									return arr.concat(g.children);
 								}, []);
-
-								let assignedInWeeklyGroup = {
+	
+								const assignedInWeeklyGroup = {
 									code: ASSIGNED_IN_WEEKLY
 									, type: type
 									, name: "assignedInWeekly"
 									, purpose: "for_assigning"
 									, children: assignedInWeekly
 								};
-
-								daily.unshift(assignedInWeeklyGroup);
-								return daily;
+	
+								return [assignedInWeeklyGroup];
 							});
 						}
 					});

@@ -27,3 +27,7 @@ export const SELECT				= "SELECT";
 export const SET_USER			= "SET_SESSION_USER";
 
 export const SHOW_POPUP         = "SHOW_POPUP";
+
+export const ADD_WORK           = "ADD_WORK";
+
+export const LOAD_WORKS         = "LOAD_WORKS"; 

@@ -34,9 +34,9 @@ module.exports = {
 			"root": "tasks"
 			, "parent": "tasks"
 		}
-	},
+	}
 	
-	actions: {
+	, actions: {
 		find: {
 			cache: true,
 			handler(ctx) {
@@ -312,9 +312,9 @@ module.exports = {
 				}
 			});			
 		}
-	},
+	}
 	
-	methods: {
+	, methods: {
 		/**
 		 * Validate params of context.
 		 * We will call it in `create` and `update` actions

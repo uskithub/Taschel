@@ -1,24 +1,24 @@
 <template lang="pug">
 	div
-		kanban-page(:schema="schema", :groups="groups", :tasks="tasks")
+		schedule-page(:schema="schema", :tasks="assignedInWeeklyTasks", :works="works")
 		popup(:schema="popupSchema")
 </template>
 
 <script>
 	import Vue from "vue";
-    import KanbanPage from "../../core/DefaultKanbanPage.vue";
+    import SchedulePage from "../../core/DefaultSchedulePage.vue";
 	import Popup from "../../core/components/popup";
 	import schema from "./schema";
 	import toast from "../../core/toastr";
 
 	import { mapGetters, mapMutations, mapActions } from "vuex";
-	import { SET_CURRENT_PROJECT, LOAD, LOAD_PROJECTS, SELECT, CLEAR_SELECT, ADD , UPDATE, REMOVE, SHOW_POPUP, HIDE_POPUP } from "../common/constants/mutationTypes";
+	import { SET_CURRENT_PROJECT, LOAD, LOAD_WORKS, SELECT, CLEAR_SELECT, ADD , UPDATE, REMOVE, SET_USER, SHOW_POPUP, HIDE_POPUP } from "../common/constants/mutationTypes";
 
     // @see: https://github.com/vue-generators/vue-form-generator
 	export default {
 		
 		components: {
-            KanbanPage: KanbanPage
+            SchedulePage: SchedulePage
             , Popup: Popup
 		}
 
@@ -30,8 +30,11 @@
 				, "popupSchema"
 			])
 			, ...mapGetters("dailyPage", [
-				"groups"
-				, "tasks"
+				"assignedInWeeklyTasks"
+                , "works"
+			])
+			, ...mapGetters("session", [
+				"me"
 			])
 		}
 
@@ -103,43 +106,41 @@
 				, showPopup : SHOW_POPUP
 				, hidePopup : HIDE_POPUP
 			})
-			, ...mapMutations("dailyPage", {
-				selectRow : SELECT
-				, loadTasks : LOAD
-				, updated : UPDATE
-				, clearSelection : CLEAR_SELECT
-				, created : ADD
-				, removed : REMOVE
-			})
 			, ...mapActions("dailyPage", {
-				getProjects : "readTasks"
-				, getGroups : "readGroups"
-				, updateModel : "updateTask"
-				, createModel : "createGroup"
-				, deleteModel : "deleteTask"
-				, arrange : "updateGroups"
+				getAssignedInWeeklyTasks : "readGroups"
+				, assign : "createWork"
+				, readWorks : "readWorks"
 			})
-			, selectProject(code) {
-				this.setCurrentProject(code);
-				this.getGroups({
-					options: { parent : code }
-					, mutation: LOAD
-				});
-			}
-			, deselectProject() {
-				this.setCurrentProject(code);
-				this.loadTasks([]);
-			}
+			, ...mapActions("session", [
+				"getSessionUser"
+			])
 		}
 
 		/**
 		 * Call if the component is created
 		 */
 		, created() {
-            this.getGroups({
+            this.getAssignedInWeeklyTasks({
                 options: { daily : "2017-12-11" }
                 , mutation: LOAD
-            });
+			});
+
+			if (this.me) {
+				this.readWorks({
+					options: { user : this.me.code, week : "2017-12-11" }
+					, mutation: `dailyPage/${LOAD_WORKS}`
+				})
+			} else {
+				// F5リロード時など、meがundefinedの場合があるので、その場合、meの更新を監視してtaskを更新する
+				this.$store.subscribe((mutation, state) => {
+					if (mutation.type == `session/${SET_USER}`) {
+						this.readWorks({ 
+							options: { user : this.me.code, week : "2017-12-11" }
+							, mutation: `dailyPage/${LOAD_WORKS}`
+						});
+					}
+				});				
+			}
 		}
 	};
 </script>

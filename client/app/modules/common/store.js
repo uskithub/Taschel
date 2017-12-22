@@ -42,7 +42,7 @@ const mutations = {
 		// 前者だとroot以下にタスクを追加した場合、更新がされなかった（root以外では大丈夫だった）
 		let update = function(model) {
 			if (model.code == parent.code) {
-				model.children.push(child)
+				model.children.push(child);
 				return model;
 			}
 			if (model.children == undefined || model.children.length == 0) {

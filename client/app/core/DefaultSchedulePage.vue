@@ -11,7 +11,7 @@
 							strong {{ task.name }}
 							div {{ task.code }}
 			li(class="drag-column", key="schedule")
-				full-calendar(:events="bullets", :options="schema.fullCalendar")
+				full-calendar(:events="works", :options="schema.fullCalendar")
 </template>
 
 <script>
@@ -38,12 +38,12 @@
         , props: [
             "schema"
 			, "tasks"
-			, "bullets"
+			, "works"
         ]
     
         , data() {
             return {
-				events : this.bullets
+				events : this.works
             };
         }
 
@@ -73,21 +73,25 @@
 			}
 		}
 		, created() {
-			this.schema.fullCalendar.drop = (date) => {
-				this.$parent.created({
-                        id: 4,
-                        title: "event2",
-                       	start: date,
-                    });
+			this.schema.fullCalendar.drop = (date, jqEvent, ui, resourceId) => {
+				const code = $(jqEvent.target).data("code");
+				const task = this.tasks.filter(t => { return t.code == code; })[0];
+				const newEvent = {
+					title : task.name
+					, start : `${date.format()}Z`
+					, end : `${date.add(1, "h").format()}Z`
+					, parent_code : task.code
+					, week : "2017-12-11"
+				}
+				this.$parent.assign(newEvent);
 			}
 		}
 		, updated() {
-			console.log("**", this.bullets);
+			console.log("updated", this.works);
 			this.makeDraggable();
 		}
 
 		, mounted() {
-			console.log("*", this.bullets);
 			this.makeDraggable();
 		}
     };
