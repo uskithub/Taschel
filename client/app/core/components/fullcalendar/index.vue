@@ -18,9 +18,6 @@
 
         , watch: {
             events(newEvents) {
-                // const event = newEvents[newEvents.length-1];
-                // $(this.$el).fullCalendar("refetchEvents", event);
-                
                 const fc = $(this.$el);
                 fc.fullCalendar("removeEventSources");
                 fc.fullCalendar("addEventSource", { events : this.events });
@@ -29,11 +26,6 @@
         }
 
         , methods: {
-            render() {
-                this.options.eventSources = this.events;
-                
-                    
-            }
         }
         
         , mounted() {
