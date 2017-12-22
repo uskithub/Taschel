@@ -4,6 +4,7 @@
 
 <script>
     import "fullcalendar"
+    import "../../../../../node_modules/fullcalendar/dist/gcal"
     import $ from "jquery"
 
     export default {

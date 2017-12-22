@@ -208,7 +208,8 @@
 	}
 </style>
 <style>
-	@import "../../scss/fullcalendar.css";
+	/* http://makotottn.hatenablog.com/entry/2017/08/29/004422 */
+	@import "../../../node_modules/fullcalendar/dist/fullcalendar.css";
 	#app {
 		font-family: "Avenir", Helvetica, Arial, sans-serif;
 		-webkit-font-smoothing: antialiased;

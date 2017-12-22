@@ -12,9 +12,14 @@ module.exports = {
 	id: "daily"
     , title: _("Daily")
     , fullCalendar : {
-		droppable: true
+		googleCalendarApiKey: "AIzaSyBs9rLYkbTc8gf05hOsZ4iOWLBj8Rptn1k"
+		, droppable: true
 		, editable: true
 		, defaultView: "agendaWeek"
+		// , events: {
+		// 	// 公開設定にすればできる
+        //     googleCalendarId: "yusuke.saito@jibunstyle.com"
+        // }
 		, header : {
 			left:   "title"
 			, center: ""
@@ -28,7 +33,7 @@ module.exports = {
 		}
 		// , dayNames : [_("Sunday"), _("Monday"), _("Tuesday"), _("Wednesday"), _("Thursday"), _("Friday"), _("Saturday")]
 		, weekends: false
-		, aspectRatio: 2
+		, aspectRatio: 1.5
 		, views: {
 			basic: {
 				// options apply to basicWeek and basicDay views
