@@ -51,3 +51,17 @@ export const readWorks = ({ commit }, { options, mutation }) => {
 		console.error("Request error!", response.statusText);
 	});
 };
+
+export const updateWork = ({ commit }, model) => {
+	axios.put(NAMESPACE, model).then((response) => {
+		let res = response.data;
+
+		if (res.status == 200 && res.data) {
+			console.log("● updated", res.data);		
+			commit(UPDATE, res.data);
+		}
+	}).catch((response) => {
+		if (response.data.error)
+			toastr.error(response.data.error.message);
+	});
+};

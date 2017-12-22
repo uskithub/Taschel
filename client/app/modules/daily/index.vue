@@ -110,6 +110,7 @@
 				getAssignedInWeeklyTasks : "readGroups"
 				, assign : "createWork"
 				, readWorks : "readWorks"
+				, update : "updateWork"
 			})
 			, ...mapActions("session", [
 				"getSessionUser"

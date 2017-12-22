@@ -13,6 +13,7 @@ module.exports = {
     , title: _("Daily")
     , fullCalendar : {
 		droppable: true
+		, editable: true
 		, defaultView: "agendaWeek"
 		, header : {
 			left:   "title"

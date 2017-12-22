@@ -89,36 +89,17 @@ module.exports = {
 		}
 
 		, update(ctx) {
-			ctx.assertModelIsExist(ctx.t("app:TaskNotFound"));
+			ctx.assertModelIsExist(ctx.t("app:WorkNotFound"));
 			this.validateParams(ctx);
-
-			if (ctx.params.arrange) {
-				return this.actions.arrange(ctx, ctx.params.arrange);
-			}
 
 			return this.collection.findById(ctx.modelID).exec()
 			.then((doc) => {
 
-				if (ctx.params.purpose != null)
-					doc.purpose = ctx.params.purpose;
+				if (ctx.params.start != null)
+					doc.start = ctx.params.start;
 
-				if (ctx.params.root_code != null) {
-					doc.root = this.taskService.decodeID(ctx.params.root_code);
-					// TODO: parentを取得し、rootがblankの場合、同じrootを指定、blankでなければ親子のreleationを切り離す、を先祖に遡って実施
-					// TODO: 全ての子孫を再帰的に、同じrootを指定する必要あり
-				}
-
-				if (ctx.params.type != null)
-					doc.type = ctx.params.type;
-
-				if (ctx.params.name != null)
-					doc.name = ctx.params.name;
-
-				if (ctx.params.goal != null)
-					doc.goal = ctx.params.goal;
-
-				if (ctx.params.status != null)
-					doc.status = ctx.params.status;
+				if (ctx.params.end != null)
+					doc.end = ctx.params.end;
 
 				return doc.save();
 			})

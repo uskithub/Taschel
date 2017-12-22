@@ -41,7 +41,7 @@ const mutations = {
 		state.works.push(model);
 	}
 	, [UPDATE] (state, model) {
-		each(state.groups, (item) => {
+		each(state.works, (item) => {
 			if (item.code == model.code)
 				assign(item, model);
 		});
@@ -51,12 +51,12 @@ const mutations = {
 // import { createTask, readTasks, updateTask, deleteTask } from "../common/actions/tasks";
 
 import { readGroups } from "../common/actions/groups";
-import { createWork, readWorks} from "../common/actions/works";
+import { createWork, readWorks, updateWork } from "../common/actions/works";
 
 export default {
 	namespaced : true
 	, state
 	, getters
-	, actions : { readGroups, createWork, readWorks }
+	, actions : { readGroups, createWork, readWorks, updateWork }
 	, mutations
 };

@@ -21,6 +21,7 @@
 	
 	import $ from "jquery";
 	import "jquery-ui/ui/widgets/draggable";
+	import "jquery-ui/ui/widgets/resizable"; // なくても動くがrequirementなので
 
 	import dragula from "dragula";
 	import moment from "moment";
@@ -76,15 +77,31 @@
 			this.schema.fullCalendar.drop = (date, jqEvent, ui, resourceId) => {
 				const code = $(jqEvent.target).data("code");
 				const task = this.tasks.filter(t => { return t.code == code; })[0];
-				const newEvent = {
+				const newModel = {
 					title : task.name
 					, start : `${date.format()}Z`
 					, end : `${date.add(1, "h").format()}Z`
 					, parent_code : task.code
 					, week : "2017-12-11"
-				}
-				this.$parent.assign(newEvent);
-			}
+				};
+				this.$parent.assign(newModel);
+			};
+
+			this.schema.fullCalendar.eventDrop = (event, delta, revertFunc, jqEvent, ui, view) => {
+				const diff = {
+					code: event.code
+					, start : moment(event.start).format()
+				};
+				this.$parent.update(diff);
+			};
+
+			this.schema.fullCalendar.eventResize = (event, delta, revertFunc, jqEvent, ui, view) => {
+				const diff = {
+					code: event.code
+					, end : moment(event.end).format()
+				};
+				this.$parent.update(diff);
+			};
 		}
 		, updated() {
 			console.log("updated", this.works);
