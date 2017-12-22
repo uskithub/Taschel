@@ -13,7 +13,7 @@
 </template>
 
 <script>
-	import dragula from 'dragula';
+	import dragula from "dragula";
 	let previousBoardCode = null;
 	let drake = null;
 

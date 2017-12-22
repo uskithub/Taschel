@@ -12,7 +12,8 @@ module.exports = {
 	id: "daily"
     , title: _("Daily")
     , fullCalendar : {
-		defaultView: "agendaWeek"
+		droppable: true
+		, defaultView: "agendaWeek"
 		, header : {
 			left:   "title"
 			, center: ""
@@ -26,7 +27,7 @@ module.exports = {
 		}
 		// , dayNames : [_("Sunday"), _("Monday"), _("Tuesday"), _("Wednesday"), _("Thursday"), _("Friday"), _("Saturday")]
 		, weekends: false
-		
+		, aspectRatio: 2
 		, views: {
 			basic: {
 				// options apply to basicWeek and basicDay views
@@ -45,6 +46,7 @@ module.exports = {
 				, scrollTime : "8:00"
 				, minTime : "6:00"
 				, maxTime : "22:00"
+				, timeFormat: "HH:mm"	
 			}
 			, day: {
 				// options apply to basicDay and agendaDay views

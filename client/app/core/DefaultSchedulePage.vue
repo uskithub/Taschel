@@ -1,34 +1,40 @@
 <template lang="pug">
 	div.drag-container
 		ul.drag-list
-			li(class="drag-column drag-column-weekly-tasks", key="tasks")
+			li(class="drag-column drag-column-weekly-tasks", key="weekly")
 				span.drag-column-header
 					h2 {{ "tasks" }}
 				div.drag-options
-				ul.drag-inner-list(ref="tasks")
-					li.drag-item(v-for="task in tasks", :data-code="task.code", :key="task.code")
+				ul.drag-inner-list(data-code="weekly" ref="tasks")
+					li.drag-item(v-for="task in tasks", :data-code="task.code", :key="task.code" ref="items" data-duration="1:00")
 						slot(:name="task.name")
 							strong {{ task.name }}
 							div {{ task.code }}
 			li(class="drag-column", key="schedule")
-				full-calendar(ref="calendar", :event-sources="eventSources", :options="schema.fullCalendar"
-					@event-selected="eventSelected" 
-					@event-created="eventCreated")
+				full-calendar(:events="bullets", :options="schema.fullCalendar")
 </template>
 
 <script>
     import Vue from "vue";
     import Kanban from "./components/kanban";
-    import FullCalendar from "./components/fullcalendar";
+	import FullCalendar from "./components/fullcalendar";
+	
+	import $ from "jquery";
+	import "jquery-ui/ui/widgets/draggable";
 
-    import moment from "moment";
+	import dragula from "dragula";
+	import moment from "moment";
+	
+	let previousBoardCode = null;
+	let drake = null;
 
     export default {
 
         components: {
             Kanban
             , FullCalendar
-        }
+		}
+		
         , props: [
             "schema"
 			, "tasks"
@@ -37,74 +43,53 @@
     
         , data() {
             return {
-                events: [
-                    {
-                        id: 1,
-                        title: 'event1',
-                        start: moment().hours(12).minutes(0),
-                    },
-                    {
-                        id: 2,
-                        title: 'event2',
-                        start: moment().add(-1, 'days'),
-                        end: moment().add(1, 'days'),
-                        allDay: true,
-                    },
-                    {
-                        id: 3,
-                        title: 'event3',
-                        start: moment().add(2, 'days'),
-                        end: moment().add(2, 'days').add(6, 'hours'),
-                        allDay: false,
-                    },
-                ],
-
-                config: {
-                    eventClick: (event) => {
-                        this.selected = event;
-                    }
-                },
-
-                selected: {},
+				events : this.bullets
             };
         }
 
-        , methods: {
-            refreshEvents() {
-                this.$refs.calendar.$emit('refetch-events');
-            }
-
-            , removeEvent() {
-            this.$refs.calendar.$emit('remove-event', this.selected);
-            this.selected = {};
-            }
-
-            , eventSelected(event) {
-                this.selected = event;
-            }
-
-            , eventCreated(...test) {
-                console.log(test);
-            }
-            , arrange(context) {
-				this.$parent.arrange(context);
-            }
-        }
-
         , computed: {
-            eventSources() {
-                const self = this;
-                return [
-                    {
-                        events(start, end, timezone, callback) {
-                            setTimeout(() => {
-                                callback(self.events.filter(() => Math.random() > 0.5));
-                            }, 1000);
-                        }
-                    }       
-                ];
-            }
-        }
+		}
+
+		, methods: {
+			makeDraggable() {
+				if (!this.$refs.items) {
+					return;
+				}
+				this.$refs.items.forEach( t => {
+					$(t).draggable({
+						zIndex: 999
+						, containment: ".drag-container"
+						, revert: true      // immediately snap back to original position
+						, revertDuration: 0  //
+						, start: function() {
+							// $(this).addClass("is-moving");
+						}
+						, drag: function() {}
+						, stop: function() {
+							// $(this).removeClass("is-moving");
+						}
+					});
+				});
+			}
+		}
+		, created() {
+			this.schema.fullCalendar.drop = (date) => {
+				this.$parent.created({
+                        id: 4,
+                        title: "event2",
+                       	start: date,
+                    });
+			}
+		}
+		, updated() {
+			console.log("**", this.bullets);
+			this.makeDraggable();
+		}
+
+		, mounted() {
+			console.log("*", this.bullets);
+			this.makeDraggable();
+		}
     };
 </script>
 
@@ -123,13 +108,15 @@
     body {
     	background: #33363D;
     	color: white;
-    	font-family: 'Lato';
+    	font-family: "Lato";
     	font-weight: 300;
     	line-height: 1.5;
     	-webkit-font-smoothing: antialiased;
     }
 
     .drag-column {
+		overflow: visible;
+		
         &-weekly-tasks {
             .drag-column-header,
             .is-moved,

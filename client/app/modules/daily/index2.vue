@@ -1,6 +1,6 @@
 <template lang="pug">
 	div
-		schedule-page(:schema="schema", :tasks="groups[0].children", :bullets="tasks")
+		schedule-page(:schema="schema", :tasks="(groups.length > 0) ? groups[0].children : []", :bullets="bullets")
 		popup(:schema="popupSchema")
 </template>
 
@@ -32,7 +32,8 @@
 			])
 			, ...mapGetters("dailyPage", [
 				"groups"
-				, "tasks"
+                , "tasks"
+                , "bullets"
 			])
 		}
 

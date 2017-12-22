@@ -9,13 +9,15 @@ import { each, find, assign, remove, isArray } from "lodash";
 
 const state = {
 	groups: []
-	, tasks: []
+    , tasks: []
+    , bullets: []
 };
 
 // stateから値を取り出すのはgetterを使う
 const getters = {
 	groups(state) { return state.groups; }
-	, tasks(state) { return state.tasks; }
+    , tasks(state) { return state.tasks; }
+    , bullets(state) { return state.bullets; }
 };
 
 // mutationにはstateを変更する処理を実装する。
@@ -29,7 +31,7 @@ const mutations = {
 		state.groups.push(...models);
 	}
 	, [ADD] (state, model) {
-		state.groups.push(model);
+		state.bullets.push(model);
 	}
 	, [UPDATE] (state, model) {
 		each(state.groups, (item) => {

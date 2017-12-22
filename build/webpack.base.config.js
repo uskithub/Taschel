@@ -16,6 +16,7 @@ module.exports = {
 			"lodash",
 			"moment",
 			"jquery",
+			"jquery-ui",
 			"axios",
 			"toastr",
 			"vue-form-generator",
