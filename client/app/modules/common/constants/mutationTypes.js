@@ -8,6 +8,7 @@ export const CLEAR_SELECT		= "CLEAR_SELECT";
 // common/store/index.js
 export const SET_CURRENT_PROJECT	= "SET_CURRENT_PROJECT";
 
+export const SET_CURRENT_WEEK   = "SET_CURRENT_WEEK";
 
 // APIでgetしてきたmodelsをstateに保存する
 export const LOAD				= "LAOD";

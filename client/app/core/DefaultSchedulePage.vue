@@ -11,7 +11,7 @@
 							strong {{ task.name }}
 							div {{ task.code }}
 			li(class="drag-column", key="schedule")
-				full-calendar(:events="works", :options="schema.fullCalendar")
+				full-calendar(:events="works", :options="schema.fullCalendar", :currentWeek="currentWeek")
 </template>
 
 <script>
@@ -23,7 +23,6 @@
 	import "jquery-ui/ui/widgets/draggable";
 	import "jquery-ui/ui/widgets/resizable"; // なくても動くがrequirementなので
 
-	import dragula from "dragula";
 	import moment from "moment";
 	
 	let previousBoardCode = null;
@@ -40,6 +39,7 @@
             "schema"
 			, "tasks"
 			, "works"
+			, "currentWeek"
         ]
     
         , data() {
@@ -82,7 +82,7 @@
 					, start : `${date.format()}Z`
 					, end : `${date.add(1, "h").format()}Z`
 					, parent_code : task.code
-					, week : "2017-12-11"
+					, week : this.currentWeek
 				};
 				this.$parent.assign(newModel);
 			};
@@ -102,9 +102,16 @@
 				};
 				this.$parent.update(diff);
 			};
+
+			this.schema.fullCalendar.eventClick = (event, jqEvent, view) => {
+				console.log("●", event);
+			};
+
+			this.schema.fullCalendar.viewRender = (view, elem) => {
+				this.$parent.setCurrentWeek(view.start.format("YYYY-MM-DD"));
+			};
 		}
 		, updated() {
-			console.log("updated", this.works);
 			this.makeDraggable();
 		}
 

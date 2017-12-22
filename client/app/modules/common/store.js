@@ -1,9 +1,10 @@
-import { LOAD_PROJECTS, LOAD_USERS, UPDATE, SET_CURRENT_PROJECT, SHOW_POPUP, HIDE_POPUP } from "./constants/mutationTypes";
+import { LOAD_PROJECTS, LOAD_USERS, UPDATE, SET_CURRENT_PROJECT, SET_CURRENT_WEEK, SHOW_POPUP, HIDE_POPUP } from "./constants/mutationTypes";
 
 const state = {
 	projects: []
 	, users: []
 	, currentProject: null  // task.code 
+	, currentWeek: null // YYYY-MM-DD（moment().day(1).format("YYYY-MM-DD")）
 	, popupSchema: {
 		isVisible : true
 		, title : "まじか"
@@ -24,6 +25,7 @@ const getters = {
 	projects(state) { return state.projects; }
 	, users(state) { return state.users; }
 	, currentProject(state) { return state.currentProject; }
+	, currentWeek(state) { return state.currentWeek; }
 	, popupSchema(state) { return state.popupSchema; }
 };
 
@@ -65,6 +67,9 @@ const mutations = {
 	}
 	, [SET_CURRENT_PROJECT] (state, code) {
 		state.currentProject = code;
+	}
+	, [SET_CURRENT_WEEK] (state, date) {
+		state.currentWeek = date;
 	}
 	, [SHOW_POPUP] (state, { title, message, buttons }) {
 		console.log(buttons);

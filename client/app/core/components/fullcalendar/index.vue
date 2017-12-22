@@ -11,10 +11,10 @@
         props: [
             "events"
             , "options"
+            , "currentWeek"
         ]
 
         , computed: {
-
         }
 
         , watch: {
@@ -23,6 +23,9 @@
                 fc.fullCalendar("removeEventSources");
                 fc.fullCalendar("addEventSource", { events : this.events });
                 fc.fullCalendar("refetchEvents");
+            }
+            , currentWeek(newWeek) {
+                console.log("● newWeek", newWeek);
             }
         }
 
@@ -33,6 +36,7 @@
             const fc = $(this.$el);
             fc.fullCalendar(this.options);
             fc.fullCalendar("addEventSource", { events : this.events });
+            fc.fullCalendar("gotoDate", this.currentWeek);
         }
     }
 </script>

@@ -1,6 +1,6 @@
 <template lang="pug">
 	div
-		schedule-page(:schema="schema", :tasks="assignedInWeeklyTasks", :works="works")
+		schedule-page(:schema="schema", :tasks="assignedInWeeklyTasks", :works="works", :currentWeek="currentWeek")
 		popup(:schema="popupSchema")
 </template>
 
@@ -11,8 +11,10 @@
 	import schema from "./schema";
 	import toast from "../../core/toastr";
 
+	import moment from "moment";
+
 	import { mapGetters, mapMutations, mapActions } from "vuex";
-	import { SET_CURRENT_PROJECT, LOAD, LOAD_WORKS, SELECT, CLEAR_SELECT, ADD , UPDATE, REMOVE, SET_USER, SHOW_POPUP, HIDE_POPUP } from "../common/constants/mutationTypes";
+	import { SET_CURRENT_PROJECT, SET_CURRENT_WEEK, LOAD, LOAD_WORKS, SELECT, CLEAR_SELECT, ADD , UPDATE, REMOVE, SET_USER, SHOW_POPUP, HIDE_POPUP } from "../common/constants/mutationTypes";
 
     // @see: https://github.com/vue-generators/vue-form-generator
 	export default {
@@ -27,6 +29,7 @@
 			...mapGetters("shared", [
 				"projects"
 				, "currentProject"
+				, "currentWeek"
 				, "popupSchema"
 			])
 			, ...mapGetters("dailyPage", [
@@ -103,6 +106,7 @@
 		, methods: {
 			...mapMutations("shared", {
 				setCurrentProject : SET_CURRENT_PROJECT
+				, setCurrentWeek : SET_CURRENT_WEEK
 				, showPopup : SHOW_POPUP
 				, hidePopup : HIDE_POPUP
 			})
@@ -121,14 +125,34 @@
 		 * Call if the component is created
 		 */
 		, created() {
+			if (!this.currentWeek) {
+				this.setCurrentWeek(moment().day(1).format("YYYY-MM-DD"));
+			}
+
+			this.$store.subscribe((mutation, state) => {
+				if (mutation.type == `shared/${SET_CURRENT_WEEK}`) {
+					this.getAssignedInWeeklyTasks({
+						options: { daily : this.currentWeek }
+						, mutation: LOAD
+					});
+
+					if (this.me) {
+						this.readWorks({
+							options: { user : this.me.code, week : this.currentWeek }
+							, mutation: `dailyPage/${LOAD_WORKS}`
+						})
+					}
+				}
+			});
+
             this.getAssignedInWeeklyTasks({
-                options: { daily : "2017-12-11" }
+                options: { daily : this.currentWeek }
                 , mutation: LOAD
 			});
 
 			if (this.me) {
 				this.readWorks({
-					options: { user : this.me.code, week : "2017-12-11" }
+					options: { user : this.me.code, week : this.currentWeek }
 					, mutation: `dailyPage/${LOAD_WORKS}`
 				})
 			} else {
@@ -136,7 +160,7 @@
 				this.$store.subscribe((mutation, state) => {
 					if (mutation.type == `session/${SET_USER}`) {
 						this.readWorks({ 
-							options: { user : this.me.code, week : "2017-12-11" }
+							options: { user : this.me.code, week : this.currentWeek }
 							, mutation: `dailyPage/${LOAD_WORKS}`
 						});
 					}
