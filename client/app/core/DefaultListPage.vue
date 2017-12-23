@@ -72,15 +72,15 @@
 				search: "searchText"
 			})
 
-			, options() 		{ return this.schema.options || {};	},
+			, options() { return this.schema.options || {};	}
 
-			enabledNew() 	{ return (this.options.enableNewButton !== false); },
-			enabledSave() 	{ return (this.model && this.options.enabledSaveButton !== false); },
-			enabledClone() 	{ return (this.model && !this.isNewModel && this.options.enableDeleteButton !== false); },
-			enabledBreakdown() 	{ return (this.model && !this.isNewModel && this.options.enabledBreakdownButton !== false); },
-			enabledDelete() { return (this.model && !this.isNewModel && this.options.enableDeleteButton !== false); },
+			, enabledNew() { return (this.options.enableNewButton !== false); }
+			, enabledSave() { return (this.model && this.options.enabledSaveButton !== false); }
+			, enabledClone() { return (this.model && !this.isNewModel && this.options.enableDeleteButton !== false); }
+			, enabledBreakdown() { return (this.model && !this.isNewModel && this.options.enabledBreakdownButton !== false); }
+			, enabledDelete() { return (this.model && !this.isNewModel && this.options.enableDeleteButton !== false); }
 
-			validationErrors() {
+			, validationErrors() {
 				if (this.$refs.form && this.$refs.form.errors) 
 					return this.$refs.form.errors;
 
@@ -148,10 +148,10 @@
 
 				this.$parent.clearSelection();
 
-				let newRow = schemaUtils.createDefaultObject(this.schema.form);
+				let newModel = schemaUtils.createDefaultObject(this.schema.form);
 				this.isNewModel = true;
-				newRow.asignee_code = this.me.code;
-				this.model = newRow;
+				newModel.asignee_code = this.me.code;
+				this.model = newModel;
 
 				this.$nextTick(() => {
 					let el = document.querySelector("div.form input:nth-child(1):not([readonly]):not(:disabled)");
@@ -212,6 +212,7 @@
 			}
 
 			, buttonDeleteDidPush() {
+				// TODO:
 				if (this.selected.length > 0) {
 					each(this.selected, (row) => this.$parent.removeRow(row) );
 					this.$parent.clearSelection();

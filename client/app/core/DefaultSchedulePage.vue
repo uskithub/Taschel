@@ -1,24 +1,41 @@
 <template lang="pug">
-	div.drag-container
-		ul.drag-list
-			li(class="drag-column drag-column-weekly-tasks", key="weekly")
-				span.drag-column-header
-					h2 {{ "tasks" }}
-				div.drag-options
-				ul.drag-inner-list(data-code="weekly" ref="tasks")
-					li.drag-item(v-for="task in tasks", :data-code="task.code", :key="task.code" ref="items" data-duration="1:00")
-						slot(:name="task.name")
-							strong {{ task.name }}
-							div {{ task.code }}
-			li(class="drag-column", key="schedule")
-				full-calendar(:events="works", :options="schema.fullCalendar", :currentWeek="currentWeek")
+	.container
+		div.drag-container
+			ul.drag-list
+				li(class="drag-column drag-column-weekly-tasks", key="weekly")
+					span.drag-column-header
+						h2 {{ "tasks" }}
+					div.drag-options
+					ul.drag-inner-list(data-code="weekly" ref="tasks")
+						li.drag-item(v-for="task in tasks", :data-code="task.code", :key="task.code" ref="items" data-duration="1:00")
+							slot(:name="task.name")
+								strong {{ task.name }}
+								div {{ task.code }}
+				li(class="drag-column", key="schedule")
+					full-calendar(:events="works", :options="schema.fullCalendar", :currentWeek="currentWeek")
+
+		.form(v-if="model")
+			vue-form-generator(:schema='schema.form', :model='model', :options='options', ref="form", :is-new-model="isNewModel")
+
+			.errors.text-center
+				div.alert.alert-danger(v-for="(item, index) in validationErrors", :key="index") {{ item.field.label }}: 
+					strong {{ item.error }}
+
+			.buttons.flex.justify-space-around
+				button.button.primary(@click="buttonSaveDidPush", :disabled="!enabledSave")
+					i.icon.fa.fa-save 
+					| {{ schema.resources.saveCaption || _("Save") }}
+				button.button.danger(@click="buttonDeleteDidPush", :disabled="!enabledDelete")
+					i.icon.fa.fa-trash 
+					| {{ schema.resources.deleteCaption || _("Delete") }}
 </template>
 
 <script>
     import Vue from "vue";
     import Kanban from "./components/kanban";
 	import FullCalendar from "./components/fullcalendar";
-	
+	import { schema as schemaUtils } from "vue-form-generator";
+
 	import $ from "jquery";
 	import "jquery-ui/ui/widgets/draggable";
 	import "jquery-ui/ui/widgets/resizable"; // なくても動くがrequirementなので
@@ -45,10 +62,21 @@
         , data() {
             return {
 				events : this.works
+				, model: null
+				, isNewModel: false
             };
         }
 
         , computed: {
+			options() 		{ return this.schema.options || {};	}
+			, enabledSave() { return (this.model && this.options.enabledSaveButton !== false); }
+			, enabledDelete() { return (this.model && !this.isNewModel && this.options.enableDeleteButton !== false); }
+			, validationErrors() {
+				if (this.$refs.form && this.$refs.form.errors) 
+					return this.$refs.form.errors;
+
+				return [];
+			}
 		}
 
 		, methods: {
@@ -71,6 +99,26 @@
 						}
 					});
 				});
+			}
+			, buttonSaveDidPush() {
+				console.log("Save model...", this.model);
+				// TODO:
+				if (this.options.validateBeforeSave === false ||  this.validate()) {
+					// if (this.isNewModel)
+					// 	this.$parent.saveRow(this.model);
+					// else
+					// 	this.$parent.updateRow(this.model);
+
+				} else {
+					// Validation error
+				}
+			}
+			, buttonDeleteDidPush() {
+				// TODO:
+				// if (this.selected.length > 0) {
+				// 	each(this.selected, (row) => this.$parent.removeRow(row) );
+				// 	this.$parent.clearSelection();
+				// }
 			}
 		}
 		, created() {
@@ -105,6 +153,16 @@
 
 			this.schema.fullCalendar.eventClick = (event, jqEvent, view) => {
 				console.log("●", event);
+
+				let newModel = schemaUtils.createDefaultObject(this.schema.form);
+				this.isNewModel = true;
+				this.model = newModel;
+
+				this.$nextTick(() => {
+					let el = document.querySelector("div.form input:nth-child(1):not([readonly]):not(:disabled)");
+					if (el)
+						el.focus();
+				});
 			};
 
 			this.schema.fullCalendar.viewRender = (view, elem) => {

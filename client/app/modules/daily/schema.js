@@ -15,6 +15,7 @@ module.exports = {
 		googleCalendarApiKey: "AIzaSyBs9rLYkbTc8gf05hOsZ4iOWLBj8Rptn1k"
 		, droppable: true
 		, editable: true
+		, selectable: true
 		, defaultView: "agendaWeek"
 		// , events: {
 		// 	// 公開設定にすればできる
@@ -62,45 +63,61 @@ module.exports = {
 	, form: {
 		fields: [
 			{
-				type: "select",
-				label: _("GroupType"),
-				model: "type",
-				readonly: true,
-				disabled: true,
-				values: groupTypes,
-				default: "kanban"
-			}
-			, {
 				type: "text",
 				label: _("Name"),
 				model: "name",
 				featured: true,
-				required: true,
-				placeholder: _("タスクの名称（何をするかが連想できる様に）"),
+				placeholder: _("work_name"),
 				validator: validators.string
 			}
 			, {
 				type: "text",
-				label: _("Purpose"),
-				model: "purpose",
-				placeholder: _("なぜそのタスクをするのか"),
+				label: _("Goal"),
+				model: "goal",
+				placeholder: _("work_goal"),
 				featured: false,
 				required: true,
 				validator: validators.string
 			}
+			, { 
+				type: "dateTimePicker",
+				label: _("Start"),
+				model: "Start",
+				placeholder: "Start time", 
+			}
+			, { 
+				type: "dateTimePicker",
+				label: _("End"),
+				model: "End",
+				placeholder: "End time", 
+				format: "HH:mm",
+				dateTimePickerOptions: {
+					format: "HH:mm"
+				}
+			}
+			, { 
+				type: "text",
+				label: _("description"),
+				model: "description",
+				placeholder: _("description"), 
+				format: "HH:mm",
+				dateTimePickerOptions: {
+					format: "HH:mm"
+				}
+			}
 		]
 	}
 	, options: {
-		searchable: true,
+		searchable: true
 
-		enableNewButton: false,
-		enabledSaveButton: true,
-		enableDeleteButton: true,
-		enableCloneButton: false,
+		, enableNewButton: false
+		, enabledSaveButton: true
+		, enableDeleteButton: true
+		, enableCloneButton: false
 
-		validateAfterLoad: false, // Validate after load a model
-		validateAfterChanged: false, // Validate after every changes on the model
-		validateBeforeSave: true // Validate before save a model
+		, validateAfterLoad: false // Validate after load a model
+		, validateAfterChanged: false // Validate after every changes on the model
+		, validateBeforeSave: true // Validate before save a model
 	}
 	, events: {
 		onSelect: null,
