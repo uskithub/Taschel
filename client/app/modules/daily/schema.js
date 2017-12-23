@@ -96,14 +96,14 @@ module.exports = {
 				}
 			}
 			, { 
-				type: "text",
+				type: "textArea",
 				label: _("description"),
 				model: "description",
-				placeholder: _("description"), 
-				format: "HH:mm",
-				dateTimePickerOptions: {
-					format: "HH:mm"
-				}
+				hint: "Max 500 characters",
+				max: 500,
+				placeholder: "User's biography",
+				rows: 4,
+				validator: validators.string
 			}
 		]
 	}
