@@ -12,6 +12,8 @@
 	import schema from "./schema";
 	import toast from "../../core/toastr";
 
+	import moment from "moment";
+
 	import { mapGetters, mapMutations, mapActions } from "vuex";
 	import { SET_CURRENT_PROJECT, LOAD, LOAD_PROJECTS, SELECT, CLEAR_SELECT, ADD , UPDATE, REMOVE, SHOW_POPUP, HIDE_POPUP } from "../common/constants/mutationTypes";
 
@@ -28,6 +30,7 @@
 			...mapGetters("shared", [
 				"projects"
 				, "currentProject"
+				, "currentWeek"
 				, "popupSchema"
 			])
 			, ...mapGetters("weeklyPage", [
@@ -101,6 +104,7 @@
 		, methods: {
 			...mapMutations("shared", {
 				setCurrentProject : SET_CURRENT_PROJECT
+				, setCurrentWeek : SET_CURRENT_WEEK
 				, showPopup : SHOW_POPUP
 				, hidePopup : HIDE_POPUP
 			})
@@ -137,8 +141,12 @@
 		 * Call if the component is created
 		 */
 		, created() {
+			if (!this.currentWeek) {
+				this.setCurrentWeek(moment().day(1).format("YYYY-MM-DD"));
+			}
+
             this.getGroups({
-                options: { weekly : "2017-12-11" }
+                options: { weekly : this.currentWeek }
                 , mutation: LOAD
             });
 		}
