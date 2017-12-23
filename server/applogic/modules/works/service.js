@@ -7,6 +7,7 @@ let C 	 		= require("../../../core/constants");
 let _			= require("lodash");
 
 let Work 		= require("./models/work");
+let Task 		= require("../tasks/models/task");
 
 module.exports = {
 	settings: {
@@ -76,6 +77,20 @@ module.exports = {
 			});
 
 			return work.save()
+			.then((doc) => {
+				// 親のTaskに追加（本来Promiseだが、待つ必要がないので非同期処理）
+				Task.findById(doc.parent).exec()
+				.then((taskDoc) => {
+					if (taskDoc.works == null) {
+						taskDoc.work = [doc.id];
+					} else {
+						taskDoc.works.push(doc.id);
+					}
+					taskDoc.save();
+				});
+				// あくまでworkのdocを返すこと
+				return doc;
+			})
 			.then((doc) => {
 				return this.toJSON(doc);
 			})

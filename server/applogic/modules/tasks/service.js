@@ -20,7 +20,7 @@ module.exports = {
 		role: "user",
 		collection: Task,
 		
-		modelPropFilter: "code type purpose name goal status root parent children author asignee lastCommunication createdAt updatedAt"
+		modelPropFilter: "code type purpose name goal status root parent children works author asignee lastCommunication createdAt updatedAt"
 
 		// TODO: populateModelsを改造すれば、下にのみpopulate、上にのみpopulateもできる
 		, modelPopulates: {
@@ -33,6 +33,7 @@ module.exports = {
 		, idEncodes: {
 			"root": "tasks"
 			, "parent": "tasks"
+			, "works": "works"
 		}
 	}
 	
@@ -336,21 +337,22 @@ module.exports = {
 			if (ctx.hasValidationErrors())
 				throw ctx.errorBadRequest(C.ERR_VALIDATION_ERROR, ctx.validationErrors);			
 		}
-	},	
+	}
 
-	init(ctx) {
+	, init(ctx) {
 		// Fired when start the service
 		this.taskService = ctx.services("tasks");
 		this.personService = ctx.services("persons");
-	},
+		this.workService = ctx.services("works");
+	}
 
-	socket: {
+	, socket: {
 		afterConnection(socket, io) {
 			// Fired when a new client connected via websocket
 		}
-	},
+	}
 
-	graphql: {
+	, graphql: {
 
 		query: `
 			tasks(limit: Int, offset: Int, sort: String): [Task]
