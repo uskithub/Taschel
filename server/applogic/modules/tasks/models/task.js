@@ -37,10 +37,6 @@ let TaskSchema = new Schema({
 		type: String
 		, trim: true
 	}
-	, status: {
-		type: Number
-		, "default": 1
-	}
 	// projectのid
 	, root : {
 		// おそらくこれでもOK
@@ -63,25 +59,30 @@ let TaskSchema = new Schema({
 	}]
 	, status: {
 		// 0: open, -1: close
-		type: Number,
-		"default": 0
+		type: Number
+		, "default": 0
 	}
 	, closingComment : {
 		type: String
 		, trim: true
 	}
 	, author : {
-		type: Number,
-		required: "Please fill in an author ID",
-		ref: "User"
+		type: Number
+		, required: "Please fill in an author ID"
+		, ref: "User"
 	}
 	, asignee : {
-		type: Number,
-		ref: "User"
+		type: Number
+		, ref: "User"
+	}
+	, isDeleted: {
+		// 0: not deleted yet, 1: deleted
+		type: Number
+		, "default": 0
 	}
 	, lastCommunication: {
-		type: Date,	
-		"default": Date.now
+		type: Date
+		, "default": Date.now
 	}
 	, metadata: {}
 

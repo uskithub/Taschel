@@ -11,37 +11,18 @@
 		br
 		data-table(:schema="schema.table", :rows="rows", :order="order", :search="search", :selected="selected", :select="select", :select-all="selectAll")
 
-		.form(v-if="model")
-			vue-form-generator(:schema='schema.form', :model='model', :options='options', :multiple="selected.length > 1", ref="form", :is-new-model="isNewModel")
-
-			.errors.text-center
-				div.alert.alert-danger(v-for="(item, index) in validationErrors", :key="index") {{ item.field.label }}: 
-					strong {{ item.error }}
-
-			.buttons.flex.justify-space-around
-				button.button.primary(@click="buttonSaveDidPush", :disabled="!isSaveButtonEnable")
-					i.icon.fa.fa-save 
-					| {{ schema.resources.saveCaption || _("Save") }}
-				button.button.outline(@click="buttonCloseDidPush", :disabled="!isCloseButtonEnable")
-					i.icon.fa.fa-close
-					| {{ schema.resources.closeCaption || _("Close") }}
-				button.button.outline(@click="buttonBreakdownDidPush", :disabled="!isBreakdownButtonEnable")
-					i.icon.fa.fa-breakdown 
-					| {{ schema.resources.breakdownCaption || _("Breakdown") }}
-				button.button.outline(@click="buttonCloneDidPush", :disabled="!isCloneButtonEnable")
-					i.icon.fa.fa-copy 
-					| {{ schema.resources.cloneCaption || _("Clone") }}
-				button.button.danger(@click="buttonDeleteDidPush", :disabled="!isDeleteButtonEnable")
-					i.icon.fa.fa-trash 
-					| {{ schema.resources.deleteCaption || _("Delete") }}
-		popup(:schema="schema.popup")
+		popup-form(v-if="isEditing", :schema="schema.popupForm", :me="me", :selected="selected"
+			, :save-model="saveModelWrapper"
+			, :update-model="updateModelWrapper"
+			, :delete-model="deleteModelWrapper"
+			, :end-editing="endEditing"
+		)
 </template>
 
 <script>
 	import Vue from "vue";
-	import { schema as schemaUtils } from "vue-form-generator";
 	import DataTable from "./dataTable.vue";
-	import Popup from "./components/popup";
+	import PopupForm from "./components/popupform";
 
 	import { each, find, cloneDeep, isFunction } from "lodash";
 
@@ -51,24 +32,53 @@
 
 		components: {
 			DataTable
-			, Popup
+			, PopupForm
 		}
-
-		, props: [
-			"schema"
-			, "me"
-			, "selected"
-			, "rows"
-		]
-
+		, props: {
+			schema : {
+				type: Object
+				, required: true
+				, validator: function(value) { return true; } // TODO
+			}
+			, me : {
+				type: Object
+				, required: true
+				, validator: function(value) { return true; } // TODO
+			}
+			, selected : {
+				type: Array
+				, required: true
+				, validator: function(value) { return true; } // TODO
+			}
+			, rows : {
+				type: Array
+				, required: true
+				, validator: function(value) { return true; } // TODO
+			}
+			, saveModel : {
+				type: Function
+				, required: true
+			}
+			, updateModel : {
+				type: Function
+				, required: true
+			}
+			, deleteModel : {
+				type: Function
+				, required: true
+			}
+			, clearSelection : {
+				type: Function
+				, required: true
+			}
+		}
 		, data() {
 			return {
 				order: {
 					field: "id"
 					, direction: 1
 				}
-				, model: null
-				, isNewModel: false
+				, isEditingNewModel : false
 			};
 		}
 
@@ -76,55 +86,18 @@
 			...mapGetters("session", {
 				search: "searchText"
 			})
-
-			, options() { return this.schema.options || {};	}
-
+			, options() { return this.schema.options || {}; }
 			, isNewButtonEnable() {
 				return this.options.isNewButtonEnable !== false; 
 			}
-			, isSaveButtonEnable() { 
-				return this.model 
-					&& this.options.isSaveButtonEnable !== false
-					; 
-			}
-			, isCloseButtonEnable() { 
-				return this.model 
-					&& !this.isNewModel 
-					// && this.selected.status > -1 
-					&& this.options.isCloseButtonEnable !== false
-					; 
-			}
-			, isBreakdownButtonEnable() { 
-				return this.model 
-					&& !this.isNewModel 
-					&& this.options.isBreakdownButtonEnable !== false
-					;
-				}
-			, isCloneButtonEnable() { 
-				return this.model 
-					&& !this.isNewModel 
-					&& this.options.isCloneButtonEnable !== false
-					;
-			}
-			, isDeleteButtonEnable() { 
-				return this.model 
-					&& !this.isNewModel 
-					&& this.options.enableDeleteButton !== false
-					;
-			}
-			, validationErrors() {
-				if (this.$refs.form && this.$refs.form.errors) 
-					return this.$refs.form.errors;
-
-				return [];
+			, isEditing() {
+				return this.isEditingNewModel || this.selected.length > 0;
 			}
 		}
 
 		, watch: {
-			// propsで指定した名前に合わせる必要あり
 			selected() {
-				if (!this.isNewModel)
-					this.generateModel();
+				
 			}
 
 			/*
@@ -139,9 +112,23 @@
 		
 		, methods: {
 
-			select(event, row, add) {
-				this.isNewModel = false;
-				
+			saveModelWrapper(model) {
+				this.isEditingNewModel = false;
+				this.clearSelection();
+				this.saveModel(model);
+			}
+
+			, updateModelWrapper(model) {
+				this.clearSelection();
+				this.updateModel(model);
+			}
+
+			, deleteModelWrapper(model) {
+				this.clearSelection();
+				this.deleteModel(model);
+			}
+
+			, select(event, row, add) {
 				if (this.schema.table.multiSelect === true && (add || (event && event.ctrlKey))) {
 					this.$parent.selectRow(row, true);
 				} else {
@@ -150,8 +137,6 @@
 			}
 
 			, selectAll(event) {
-				this.isNewModel = false;
-
 				let filter = Vue.filter("filterBy");
 				let filteredRows = filter(this.rows, this.search);
 
@@ -160,30 +145,15 @@
 					this.$parent.selectRow(filteredRows, false);
 				} else {
 					// Unselect all 
-					this.$parent.clearSelection();
+					this.clearSelection();
 				}
-			}
-
-			, generateModel() {
-				if (this.selected.length == 1) {
-					this.model = cloneDeep(this.selected[0]);
-				}
-				else if (this.selected.length > 1) {
-					this.model = schemaUtils.mergeMultiObjectFields(this.schema.form, this.selected);
-				}
-				else
-					this.model = null;
 			}
 
 			, buttonNewDidPush() {
 				console.log("Create new model...");
 
-				this.$parent.clearSelection();
-
-				let newModel = schemaUtils.createDefaultObject(this.schema.form);
-				this.isNewModel = true;
-				newModel.asignee_code = this.me.code;
-				this.model = newModel;
+				this.clearSelection();
+				this.isEditingNewModel = true;
 
 				this.$nextTick(() => {
 					let el = document.querySelector("div.form input:nth-child(1):not([readonly]):not(:disabled)");
@@ -192,93 +162,14 @@
 				});
 			}
 
-			, buttonSaveDidPush() {
-				console.log("Save model...", this.model);
-				if (this.options.validateBeforeSave === false ||  this.validate()) {
-
-					if (this.isNewModel)
-						this.$parent.saveRow(this.model);
-					else
-						this.$parent.updateRow(this.model);
-
-				} else {
-					// Validation error
-				}
+			, endEditing() {
+				this.isEditingNewModel = false;
+				this.clearSelection();
 			}
+		}
 
-			, buttonCloseDidPush() {
-				// TODO
-				console.log("close button pushed");
-			}
-
-			, buttonCloneDidPush() {
-				console.log("Clone model...");
-				let baseModel = this.model;
-				this.$parent.clearSelection();
-
-				let newRow = cloneDeep(baseModel);
-				newRow.id = null;
-				newRow.code = null;
-				this.isNewModel = true;
-				this.model = newRow;
-			}
-
-			, buttonBreakdownDidPush() {
-				console.log("Breakdown model...");
-				let baseModel = this.model;
-				this.$parent.clearSelection();
-
-				let newRow = cloneDeep(baseModel);
-				newRow.id = null;
-				newRow.code = null;
-				newRow.type = "step";
-				newRow.name = null;
-				newRow.purpose = `${this.model.goal} にするため`;
-				newRow.goal = null;
-				newRow.children = [];
-				// TODO: 今はrootは必ずtype==projectであるとしている
-				if (this.model.root === undefined) {
-					newRow.root_code = (this.model.type == "project") ? this.model.code : null;
-				} else {
-					newRow.root_code = this.model.root.code;
-				}
-				newRow.parent_code = this.model.code;
-				newRow.asignee_code = undefined;
-				this.isNewModel = true;
-				this.model = newRow;
-			}
-
-			, buttonDeleteDidPush() {
-				// TODO:
-				if (this.selected.length > 0) {
-					each(this.selected, (row) => this.$parent.removeRow(row) );
-					this.$parent.clearSelection();
-				}
-			}
-
-			, validate() {
-				let res = this.$refs.form.validate();
-
-				if (this.schema.events && isFunction(this.schema.events.onValidated)) {
-					this.schema.events.onValidated(this.model, this.$refs.form.errors, this.schema);
-				}
-
-				if (!res) {
-					// Set focus to first input with error
-					this.$nextTick(() => {
-						let el = document.querySelector("div.form tr.error input:nth-child(1)");
-						if (el)
-							el.focus();
-					});
-				}
-
-				return res;	
-			}
-
-		},
-
-		created() {
-		}	
+		, created() {
+		}
 				
 	};
 

@@ -1,4 +1,4 @@
-import { LOAD_PROJECTS, LOAD_USERS, UPDATE, SET_CURRENT_PROJECT, SET_CURRENT_WEEK, SHOW_POPUP, HIDE_POPUP } from "./constants/mutationTypes";
+import { LOAD_PROJECTS, ADD_PROJECT, LOAD_USERS, UPDATE, SET_CURRENT_PROJECT, SET_CURRENT_WEEK, SHOW_POPUP, HIDE_POPUP } from "./constants/mutationTypes";
 
 const state = {
 	projects: []
@@ -33,6 +33,11 @@ const mutations = {
 	[LOAD_PROJECTS] (state, models) {
 		state.projects.splice(0);
 		state.projects.push(...models);
+	}
+	, [ADD_PROJECT] (state, model) {
+		let found = find(state.projects, (item) => item.code == model.code);
+		if (!found)
+			state.projects.push(model);
 	}
 	, [LOAD_USERS] (state, models) {
 		state.users.splice(0);

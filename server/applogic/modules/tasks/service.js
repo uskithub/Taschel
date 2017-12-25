@@ -20,7 +20,7 @@ module.exports = {
 		role: "user",
 		collection: Task,
 		
-		modelPropFilter: "code type purpose name goal status root parent children works status closingComment author asignee lastCommunication createdAt updatedAt"
+		modelPropFilter: "code type purpose name goal root parent children works status closingComment author asignee isDeleted lastCommunication createdAt updatedAt"
 
 		// TODO: populateModelsを改造すれば、下にのみpopulate、上にのみpopulateもできる
 		, modelPopulates: {
@@ -46,15 +46,19 @@ module.exports = {
 				if (ctx.params.type !== undefined) {
 					// /tasks?type=project
 					filter.type = ctx.params.type;
+					filter.isDeleted = { $ne: true };
 				} else if (ctx.params.root_code != undefined) {
 					// /tasks?root_code=${hash}
 					filter.root = this.taskService.decodeID(ctx.params.root_code);
+					filter.isDeleted = { $ne: true };
 				} else if (ctx.params.user_code != undefined) {
 					// /tasks?user_code=${hash}
 					let user_code = this.personService.decodeID(ctx.params.user_code);
 					filter.$or = [ {author : user_code}, {asignee : user_code} ];
+					filter.isDeleted = { $ne: true };
 				} else {
 					filter.type = { $ne: "project" };
+					filter.isDeleted = { $ne: true };
 				}
 
 				let query = Task.find(filter);
@@ -158,8 +162,15 @@ module.exports = {
 
 		, remove(ctx) {
 			ctx.assertModelIsExist(ctx.t("app:TaskNotFound"));
-
-			return Task.remove({ _id: ctx.modelID })
+			
+			// 物理削除の場合
+			//return Task.remove({ _id: ctx.modelID })
+			// 論理削除とする
+			return this.collection.findById(ctx.modelID).exec()
+			.then((doc) => {
+				doc.isDeleted = true;
+				return doc.save();
+			})
 			.then(() => {
 				return ctx.model;
 			})

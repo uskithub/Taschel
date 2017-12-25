@@ -23,23 +23,33 @@ module.exports = {
 			};
 		}
 	}
-	, form : generate(
-		areaTypes.form
-		, [ "code", "root", "type","name", "purpose", "goal"]
-	)
-	, options : {
-		searchable: true
-
-		, isNewButtonEnable: true
-		, isSaveButtonEnable: true
-		, isCloseButtonEnable: true
-		, isBreakdownButtonEnable: true
-		, isCloneButtonEnable: true
-		, isDeleteButtonEnable: true
-
-		, validateAfterLoad: false // Validate after load a model
-		, validateAfterChanged: false // Validate after every changes on the model
-		, validateBeforeSave: true // Validate before save a model
+	, popupForm : {
+		form : generate(
+			areaTypes.form
+			, [ "code", "root", "type","name", "purpose", "goal"]
+		)
+		, options : {
+			searchable: true
+	
+			, isNewButtonEnable: true
+			, isSaveButtonEnable: true
+			, isCloseButtonEnable: true
+			, isBreakdownButtonEnable: true
+			, isCloneButtonEnable: true
+			, isDeleteButtonEnable: true
+			, isCancelButtonEnable: true
+	
+			, validateAfterLoad: false // Validate after load a model
+			, validateAfterChanged: false // Validate after every changes on the model
+			, validateBeforeSave: true // Validate before save a model
+		}
+		, resources: {
+			closeCaption: _("Close")
+			, saveCaption: _("Save")
+			, cloneCaption: _("Clone")
+			, breakdownCaption: _("Breakdown")
+			, deleteCaption: _("Delete")
+		}
 	}
 	, events : {
 		onSelect: null,
@@ -54,11 +64,6 @@ module.exports = {
 		}
 	}
 	, resources: {
-		addCaption: _("追加／更新／削除")
-		, closeCaption: _("Close")
-		, saveCaption: _("Save")
-		, cloneCaption: _("Clone")
-		, breakdownCaption: _("Breakdown")
-		, deleteCaption: _("Delete")
+		addCaption: _("Add")
 	}
 };

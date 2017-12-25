@@ -45,25 +45,16 @@ let recursiveRevertParentReference = function(model) {
 
 // { commit } はES2015 の引数分割束縛（argument destructuring）という文法
 
-export const createTask = ({ commit }, model) => {
+export const createTask = ({ commit }, { model, mutation }) => {
 	axios.post(NAMESPACE, model).then((response) => {
 		let res = response.data;
 
 		if (res.status == 200 && res.data) {
 			console.log("● created", res.data);
-			if (res.data.child) {
-				// Breakdownした時はこちらに入る
-				// commit(UPDATE, res.data.parent);
-				// commit(ADD, res.data.child);
-				// commit(SELECT, res.data.child, false);
-				commit(`shared/${UPDATE}`
-					, res.data
-					, { root : true }
-				);
-			} else {
-				commit(ADD, res.data);
-				commit(SELECT, res.data, false);
-			}
+			if (mutation)
+				commit(mutation, res.data, { root : (mutation.indexOf("/") > -1) });
+		} else {
+			toastr.error(`response status is ${res.status}. res.data is ${res.data}`);
 		}
 	}).catch((response) => {
 		if (response.data.error)
@@ -109,20 +100,34 @@ export const readTasks = ({ commit }, { options, mutation }) => {
 	});
 };
 
-export const updateTask = ({ commit }, row) => {
-	axios.put(NAMESPACE + "/" + row.code, row).then((response) => {
+export const updateTask = ({ commit }, { model, mutation }) => {
+	axios.put(NAMESPACE + "/" + model.code, model).then((response) => {
 		let res = response.data;
-		if (res.data)
-			commit(UPDATE, res.data);
+		if (res.status == 200 && res.data) {
+			console.log("● updated", res.data);
+			if (mutation) {
+				commit(mutation, res.data, { root : (mutation.indexOf("/") > -1) });
+			}
+		} else {
+			toastr.error(`response status is ${res.status}. res.data is ${res.data}`);
+		}
 	}).catch((response) => {
 		if (response.data.error)
 			toastr.error(response.data.error.message);
 	});	
 };
 
-export const deleteTask = ({ commit }, row) => {
-	axios.delete(NAMESPACE + "/" + row.code).then((response) => {
-		commit(REMOVE, row);
+export const deleteTask = ({ commit }, { model, mutation }) => {
+	axios.delete(NAMESPACE + "/" + model.code).then((response) => {
+		let res = response.data;
+		if (res.status == 200 && res.data) {
+			console.log("● deleted", res.data);
+			if (mutation) {
+				commit(mutation, res.data, { root : (mutation.indexOf("/") > -1) });
+			}
+		} else {
+			toastr.error(`response status is ${res.status}. res.data is ${res.data}`);
+		}
 	}).catch((response) => {
 		if (response.data.error)
 			toastr.error(response.data.error.message);

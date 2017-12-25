@@ -1,5 +1,10 @@
 <template lang="pug">
-	list-page(:schema="schema", :selected="selected", :rows="projects", :me="me")
+	list-page(v-if="me", :schema="schema", :selected="selected", :rows="projects", :me="me"
+		, :save-model="saveModel"
+		, :update-model="updateModel"
+		, :delete-model="deleteModel"
+		, :clear-selection="clearSelection"
+	)
 </template>
 
 <script>
@@ -9,15 +14,14 @@
 	import toast from "../../core/toastr";
 
 	import { mapGetters, mapMutations, mapActions } from "vuex";
-	import { LOAD_PROJECTS, LOAD, SELECT, CLEAR_SELECT, ADD , UPDATE, REMOVE } from "../common/constants/mutationTypes";
+	import { LOAD_PROJECTS, ADD_PROJCECT, LOAD, SELECT, CLEAR_SELECT, ADD , UPDATE, REMOVE } from "../common/constants/mutationTypes";
 
 	export default {
 		
 		components: {
 			ListPage: ListPage
-		},
-
-		computed: {
+		}
+		, computed: {
 			...mapGetters("shared", [
 				"projects"
 			])
@@ -36,20 +40,20 @@
 			return {
 				schema
 			};
-		},
+		}
 
 		/**
 		 * Socket handlers. Every property is an event handler
 		 */
-		socket: {
-			prefix: "/tasks/",
-			events: {
+		, socket: {
+			prefix: "/tasks/"
+			, events: {
 				/**
 				 * New task added
 				 * @param  {Object} res Task object
 				 */
 				created(res) {
-					this.created(res.data);
+					// this.created(res.data);
 					toast.success(this._("TaskNameAdded", res), this._("追加しました"));
 				}
 
@@ -59,7 +63,7 @@
 					console.log("● brokedown on index.vue", res.data);
 					this.updated(res.data.parent);
 					this.created(res.data.child);
-					this.selectRow(res.data.child, false);
+					// this.selectRow(res.data.child, false);
 					toast.success(this._("TaskNameAdded", res), this._("ブレークダウンしました"));
 				}
 
@@ -88,15 +92,23 @@
 				selectRow : SELECT
 				, updated : UPDATE
 				, clearSelection : CLEAR_SELECT
-				, created : ADD
 				, removed : REMOVE
 			})
 			, ...mapActions("projectsPage", {
 				getProjects : "readTasks"
-				, updateRow : "updateTask"
-				, saveRow : "createTask"
-				, removeRow : "deleteTask"
+				, createProject : "createTask"
+				, updateProject : "updateTask"
+				, deleteProject : "deleteTask"
 			})
+			, saveModel(model) {
+				this.createProject( { model, mutation: `shared/${ADD_PROJCECT}` } );
+			}
+			, updateModel(model) {
+				this.updateProject( { model, mutation: `shared/${UPDATE}` } );
+			}
+			, deleteModel(model) {
+				this.deleteProject( { model, mutation: `shared/${REMOVE}` } );
+			}
 		}
 
 		/**

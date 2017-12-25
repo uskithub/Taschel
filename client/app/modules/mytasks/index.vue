@@ -1,5 +1,10 @@
 <template lang="pug">
-	list-page(:schema="schema", :selected="selected", :rows="tasks", :me="me")
+	list-page(v-if="me", :schema="schema", :selected="selected", :rows="tasks", :me="me"
+		, :save-model="saveModel"
+		, :update-model="updateModel"
+		, :delete-model="deleteModel"
+		, :clear-selection="clearSelection"
+	)
 </template>
 
 <script>
@@ -61,7 +66,8 @@
 					console.log("● brokedown on index.vue", res.data);
 					this.updated(res.data.parent);
 					this.created(res.data.child);
-					this.selectRow(res.data.child, false);
+					// TODO: 連続でブレークダウンできるようにする
+					// this.selectRow(res.data.child, false);
 					toast.success(this._("TaskNameAdded", res), this._("ブレークダウンしました"));
 				}
 
@@ -94,9 +100,9 @@
 			})
 			, ...mapActions("mytasksPage", {
 				getTasks : "readTasks"
-				, updateRow : "updateTask"
-				, saveRow : "createTask"
-				, removeRow : "deleteTask"
+				, updateTask : "updateTask"
+				, createTask : "createTask"
+				, deleteTask : "deleteTask"
 			})
 			, ...mapActions("session", [
 				"getSessionUser"
@@ -114,6 +120,15 @@
 						f.default = this.currentProject;
 					}
 				});
+			}
+			, saveModel(model) {
+				this.createTask( { model, mutation: ADD } );
+			}
+			, updateModel(model) {
+				this.updateTask( { model, mutation: UPDATE } );
+			}
+			, deleteModel(model) {
+				this.deleteTask( { model, mutation: REMOVE } );
 			}
 		}
 
