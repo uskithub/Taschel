@@ -82,7 +82,8 @@
 			// createdより早くmodelが参照されるので、ここで詰めている
 			let _model = null;
 			let _isNewModel = false;
-			let _title = _("CreateNewModel");			
+			let _title = _("CreateNewModel");	
+			let _isProjectSelectable = false;		
 
 			if (this.selected.length == 1) {
 				_model = cloneDeep(this.selected[0]);
@@ -103,17 +104,19 @@
 				_model = schemaUtils.createDefaultObject(this.schema.form);
 				_model.asignee_code = this.me.code;
 				_isNewModel = true;
+				_isProjectSelectable = true;
 			}
 				
 			return {
 				model: _model
 				, isNewModel: _isNewModel
 				, title : _title
+				, isProjectSelectable : _isProjectSelectable
 			};
 		}
 		, computed: {
 			formSchema() {
-				if (this.isNewModel) {
+				if (this.isProjectSelectable) {
 					let fields = cloneDeep(this.schema.form.fields).map(f => {
 						if (f.model == "root_code") {
 							f.readonly = false;
@@ -192,6 +195,7 @@
 				// TODO: projectを選択できるようにする
 				console.log("Clone model...");
 				this.isNewModel = true;
+				this.isProjectSelectable = true;
 				this.title = `${this.model.name} を元に新規作成`;
 
 				let baseModel = this.model;
@@ -219,11 +223,14 @@
 				brokedownModel.goal = null;
 				brokedownModel.children = [];
 				brokedownModel.works = [];
-				// TODO: 今はrootは必ずtype==projectであるとしている
-				if (this.model.root == undefined) {
-					brokedownModel.root_code = (this.model.type == "project") ? this.model.code : null;
+				if (this.model.root != -1) {
+					if (this.model.root.code) {
+						brokedownModel.root_code = this.model.root.code;
+					} else {
+						brokedownModel.root_code = this.model.root;
+					}
 				} else {
-					brokedownModel.root_code = this.model.root.code;
+					// brokedownModel.root_code = this.model.code;
 				}
 				brokedownModel.parent_code = this.model.code;
 				brokedownModel.asignee_code = undefined;
