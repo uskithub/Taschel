@@ -109,7 +109,7 @@
 			])
 			, setupProjectsField() {
 				// 動的にプロジェクト一覧を設定している
-				this.schema.form.fields.forEach(f => {
+				this.schema.popupForm.form.fields.forEach(f => {
 					if (f.model == "root_code") {
 						f.values = this.projects.map(project => {
 							return {

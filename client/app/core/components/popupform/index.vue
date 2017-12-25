@@ -5,7 +5,7 @@
 				.header {{ title }}
 				.body 
 					.form
-						vue-form-generator(:schema="schema.form", :model="model", :options="options", ref="form", :is-new-model="isNewModel")
+						vue-form-generator(:schema="formSchema", :model="model", :options="options", ref="form", :is-new-model="isNewModel")
 
 						.errors.text-center
 							div.alert.alert-danger(v-for="(item, index) in validationErrors", :key="index") {{ item.field.label }}: 
@@ -82,10 +82,17 @@
 			// createdより早くmodelが参照されるので、ここで詰めている
 			let _model = null;
 			let _isNewModel = false;
-			let _title = _("CreateNewModel");
+			let _title = _("CreateNewModel");			
 
 			if (this.selected.length == 1) {
 				_model = cloneDeep(this.selected[0]);
+				if (_model.root != -1) {
+					if (_model.root.code) {
+						_model.root_code = _model.root.code;
+					} else {
+						_model.root_code = _model.root;
+					}
+				}
 				_title = `${_model.name} を更新`;
 			}
 			else if (this.selected.length > 1) {
@@ -105,7 +112,21 @@
 			};
 		}
 		, computed: {
-			options() { return this.schema.options || {}; }
+			formSchema() {
+				if (this.isNewModel) {
+					let fields = cloneDeep(this.schema.form.fields).map(f => {
+						if (f.model == "root_code") {
+							f.readonly = false;
+							f.disabled = false;
+						}
+						return f;
+					});
+					return { fields };
+				} else {
+					return this.schema.form;
+				}
+			}
+			, options() { return this.schema.options || {}; }
 
 			, isSaveButtonEnable() { 
 				return this.options.isSaveButtonEnable !== false

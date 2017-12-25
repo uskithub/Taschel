@@ -14,7 +14,7 @@
 	import toast from "../../core/toastr";
 
 	import { mapGetters, mapMutations, mapActions } from "vuex";
-	import { LOAD_PROJECTS, ADD_PROJCECT, LOAD, SELECT, CLEAR_SELECT, ADD , UPDATE, REMOVE } from "../common/constants/mutationTypes";
+	import { LOAD_PROJECTS, ADD_PROJECT, LOAD, SELECT, CLEAR_SELECT, ADD , UPDATE, REMOVE } from "../common/constants/mutationTypes";
 
 	export default {
 		
@@ -101,7 +101,7 @@
 				, deleteProject : "deleteTask"
 			})
 			, saveModel(model) {
-				this.createProject( { model, mutation: `shared/${ADD_PROJCECT}` } );
+				this.createProject( { model, mutation: `shared/${ADD_PROJECT}` } );
 			}
 			, updateModel(model) {
 				this.updateProject( { model, mutation: `shared/${UPDATE}` } );

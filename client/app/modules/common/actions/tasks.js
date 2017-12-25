@@ -50,7 +50,7 @@ export const createTask = ({ commit }, { model, mutation }) => {
 		let res = response.data;
 
 		if (res.status == 200 && res.data) {
-			console.log("● created", res.data);
+			console.log(`● created mutation: ${ mutation }`, res.data);
 			if (mutation)
 				commit(mutation, res.data, { root : (mutation.indexOf("/") > -1) });
 		} else {

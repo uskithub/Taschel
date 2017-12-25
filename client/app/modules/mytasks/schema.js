@@ -15,7 +15,7 @@ module.exports = {
 		multiSelect : true
 		, columns : generate(
 			areaTypes.table
-			, [ "code", "type", "name", "purpose", "goal", "author", "status", "lastCommunication"]
+			, [ "code", "type", "root", "name", "purpose", "goal", "author", "status", "lastCommunication"]
 		)
 		, rowClasses : function (model) {
 			return {
