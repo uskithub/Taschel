@@ -27,17 +27,18 @@ module.exports = {
 		, ["code", "type", "name", "purpose", "goal"]
 	)
 	, options: {
-		searchable: true,
+		searchable: true
 
+		, isNewButtonEnable: true
+		, isSaveButtonEnable: true
+		, isCloseButtonEnable: true
+		, isBreakdownButtonEnable: true
+		, isCloneButtonEnable: false
+		, isDeleteButtonEnable: true
 
-		enableNewButton: true,
-		enabledSaveButton: true,
-		enableDeleteButton: true,
-		enableCloneButton: false,
-
-		validateAfterLoad: false, // Validate after load a model
-		validateAfterChanged: false, // Validate after every changes on the model
-		validateBeforeSave: true // Validate before save a model
+		, validateAfterLoad: false // Validate after load a model
+		, validateAfterChanged: false // Validate after every changes on the model
+		, validateBeforeSave: true // Validate before save a model
 	}
 	, events: {
 		onSelect: null,

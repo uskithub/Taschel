@@ -3,7 +3,7 @@
 		h3.title {{ schema.title }}
 
 		.flex.align-center.justify-space-around
-			.left(v-if="enabledNew")
+			.left(v-if="isNewButtonEnable")
 				button.button.is-primary(@click="buttonNewDidPush")
 					i.icon.fa.fa-plus 
 					| {{ schema.resources.addCaption || _("Add") }}
@@ -19,25 +19,29 @@
 					strong {{ item.error }}
 
 			.buttons.flex.justify-space-around
-				button.button.primary(@click="buttonSaveDidPush", :disabled="!enabledSave")
+				button.button.primary(@click="buttonSaveDidPush", :disabled="!isSaveButtonEnable")
 					i.icon.fa.fa-save 
 					| {{ schema.resources.saveCaption || _("Save") }}
-				button.button.outline(@click="buttonBreakdownDidPush", :disabled="!enabledBreakdown")
-					i.icon.fa.fa-copy 
+				button.button.outline(@click="buttonCloseDidPush", :disabled="!isCloseButtonEnable")
+					i.icon.fa.fa-close
+					| {{ schema.resources.closeCaption || _("Close") }}
+				button.button.outline(@click="buttonBreakdownDidPush", :disabled="!isBreakdownButtonEnable")
+					i.icon.fa.fa-breakdown 
 					| {{ schema.resources.breakdownCaption || _("Breakdown") }}
-				button.button.outline(@click="buttonCloneDidPush", :disabled="!enabledClone")
+				button.button.outline(@click="buttonCloneDidPush", :disabled="!isCloneButtonEnable")
 					i.icon.fa.fa-copy 
 					| {{ schema.resources.cloneCaption || _("Clone") }}
-				button.button.danger(@click="buttonDeleteDidPush", :disabled="!enabledDelete")
+				button.button.danger(@click="buttonDeleteDidPush", :disabled="!isDeleteButtonEnable")
 					i.icon.fa.fa-trash 
 					| {{ schema.resources.deleteCaption || _("Delete") }}
-
+		popup(:schema="schema.popup")
 </template>
 
 <script>
 	import Vue from "vue";
 	import { schema as schemaUtils } from "vue-form-generator";
 	import DataTable from "./dataTable.vue";
+	import Popup from "./components/popup";
 
 	import { each, find, cloneDeep, isFunction } from "lodash";
 
@@ -47,6 +51,7 @@
 
 		components: {
 			DataTable
+			, Popup
 		}
 
 		, props: [
@@ -74,12 +79,39 @@
 
 			, options() { return this.schema.options || {};	}
 
-			, enabledNew() { return (this.options.enableNewButton !== false); }
-			, enabledSave() { return (this.model && this.options.enabledSaveButton !== false); }
-			, enabledClone() { return (this.model && !this.isNewModel && this.options.enableDeleteButton !== false); }
-			, enabledBreakdown() { return (this.model && !this.isNewModel && this.options.enabledBreakdownButton !== false); }
-			, enabledDelete() { return (this.model && !this.isNewModel && this.options.enableDeleteButton !== false); }
-
+			, isNewButtonEnable() {
+				return this.options.isNewButtonEnable !== false; 
+			}
+			, isSaveButtonEnable() { 
+				return this.model 
+					&& this.options.isSaveButtonEnable !== false
+					; 
+			}
+			, isCloseButtonEnable() { 
+				return this.model 
+					&& !this.isNewModel 
+					// && this.selected.status > -1 
+					&& this.options.isCloseButtonEnable !== false
+					; 
+			}
+			, isBreakdownButtonEnable() { 
+				return this.model 
+					&& !this.isNewModel 
+					&& this.options.isBreakdownButtonEnable !== false
+					;
+				}
+			, isCloneButtonEnable() { 
+				return this.model 
+					&& !this.isNewModel 
+					&& this.options.isCloneButtonEnable !== false
+					;
+			}
+			, isDeleteButtonEnable() { 
+				return this.model 
+					&& !this.isNewModel 
+					&& this.options.enableDeleteButton !== false
+					;
+			}
 			, validationErrors() {
 				if (this.$refs.form && this.$refs.form.errors) 
 					return this.$refs.form.errors;
@@ -172,6 +204,11 @@
 				} else {
 					// Validation error
 				}
+			}
+
+			, buttonCloseDidPush() {
+				// TODO
+				console.log("close button pushed");
 			}
 
 			, buttonCloneDidPush() {

@@ -22,24 +22,24 @@ let schemaOptions = {
 
 let TaskSchema = new Schema({
 	type: {
-		type: String,
-		trim: true
+		type: String
+		, trim: true
 	}
 	, name: {
-		type: String,
-		trim: true
+		type: String
+		, trim: true
 	}
 	, purpose: {
-		type: String,
-		trim: true
+		type: String
+		, trim: true
 	}
 	, goal: {
-		type: String,
-		trim: true
+		type: String
+		, trim: true
 	}
 	, status: {
-		type: Number,
-		"default": 1
+		type: Number
+		, "default": 1
 	}
 	// projectのid
 	, root : {
@@ -61,6 +61,15 @@ let TaskSchema = new Schema({
 		type: Number
 		, ref: "Work"
 	}]
+	, status: {
+		// 0: open, -1: close
+		type: Number,
+		"default": 0
+	}
+	, closingComment : {
+		type: String
+		, trim: true
+	}
 	, author : {
 		type: Number,
 		required: "Please fill in an author ID",

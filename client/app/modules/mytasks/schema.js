@@ -25,20 +25,21 @@ module.exports = {
 	}
 	, form : generate(
 		areaTypes.form
-		, [ "code", "root", "type","name", "purpose", "goal", "lastCommunication", "status"]
+		, [ "code", "root", "type","name", "purpose", "goal"]
 	)
 	, options : {
-		searchable: true,
+		searchable: true
 
-		enableNewButton: true,
-		enabledSaveButton: true,
-		enableDeleteButton: true,
-		enableCloneButton: false,
-		enableBreakdownButton: true,
+		, isNewButtonEnable: true
+		, isSaveButtonEnable: true
+		, isCloseButtonEnable: true
+		, isBreakdownButtonEnable: true
+		, isCloneButtonEnable: true
+		, isDeleteButtonEnable: true
 
-		validateAfterLoad: false, // Validate after load a model
-		validateAfterChanged: false, // Validate after every changes on the model
-		validateBeforeSave: true // Validate before save a model
+		, validateAfterLoad: false // Validate after load a model
+		, validateAfterChanged: false // Validate after every changes on the model
+		, validateBeforeSave: true // Validate before save a model
 	}
 	, events : {
 		onSelect: null,
@@ -53,10 +54,11 @@ module.exports = {
 		}
 	}
 	, resources: {
-		addCaption: _("追加／更新／削除"),
-		saveCaption: _("Save"),
-		cloneCaption: _("Clone"),
-		breakdownCaption: _("Breakdown"),
-		deleteCaption: _("Delete")
+		addCaption: _("追加／更新／削除")
+		, closeCaption: _("Close")
+		, saveCaption: _("Save")
+		, cloneCaption: _("Clone")
+		, breakdownCaption: _("Breakdown")
+		, deleteCaption: _("Delete")
 	}
 };
