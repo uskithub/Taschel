@@ -46,19 +46,30 @@ let recursiveRevertParentReference = function(model) {
 // { commit } はES2015 の引数分割束縛（argument destructuring）という文法
 
 export const createTask = ({ commit }, { model, mutation }) => {
-	axios.post(NAMESPACE, model).then((response) => {
-		let res = response.data;
-
-		if (res.status == 200 && res.data) {
-			console.log(`● created mutation: ${ mutation }`, res.data);
-			if (mutation)
-				commit(mutation, res.data, { root : (mutation.indexOf("/") > -1) });
-		} else {
-			toastr.error(`response status is ${res.status}. res.data is ${res.data}`);
-		}
-	}).catch((response) => {
-		if (response.data.error)
-			toastr.error(response.data.error.message);
+	return new Promise((resolve, reject) => {
+		axios.post(NAMESPACE, model).then((response) => {
+			let res = response.data;
+	
+			if (res.status == 200 && res.data) {
+				resolve(res.data);
+			} else {
+				reject(`response status is ${res.status}. res.data is ${res.data}`);
+			}
+		}).catch((response) => {
+			if (response.data.error) {
+				reject(response.data.error.message);
+			} else {
+				reject(response);
+			}
+		});
+	})
+	.then(data => {
+		console.log(`● created mutation: ${ mutation }`, data);
+		if (mutation)
+			commit(mutation, data, { root : (mutation.indexOf("/") > -1) });
+	})
+	.catch(errMessage => {
+		toastr.error(errMessage);
 	});
 };
 
