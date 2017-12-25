@@ -39,13 +39,13 @@ const mutations = {
 };
 
 // import * as getters from "./getters";
-import { createTask, readTasks, updateTask, deleteTask } from "../common/actions/tasks";
+import { createTask, readTasks, deleteTask } from "../common/actions/tasks";
 import { createGroup, readGroups, updateGroups } from "../common/actions/groups";
 
 export default {
 	namespaced : true
 	, state
 	, getters
-	, actions : { createGroup, readGroups, updateGroups, createTask, readTasks, updateTask, deleteTask }
+	, actions : { createGroup, readGroups, updateGroups, createTask, readTasks, deleteTask }
 	, mutations
 };

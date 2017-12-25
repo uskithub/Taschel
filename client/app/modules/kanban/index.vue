@@ -1,5 +1,7 @@
 <template lang="pug">
-	kanban-page(:schema="schema", :selectedProject="currentProject", :projects="projects", :groups="groups", :tasks="tasks")
+	kanban-page(:schema="schema", :selectedProject="currentProject", :projects="projects", :groups="groups", :tasks="tasks"
+		, :save-model="saveModel"
+	)
 </template>
 
 <script>
@@ -87,8 +89,7 @@
 			, ...mapActions("kanbanPage", {
 				getProjects : "readTasks"
 				, getGroups : "readGroups"
-				, updateModel : "updateTask"
-				, createModel : "createGroup"
+				, createGroup : "createGroup"
 				, deleteModel : "deleteTask"
 				, arrange : "updateGroups"
 			})
@@ -101,6 +102,9 @@
 			}
 			, deselectProject() {
 				this.setCurrentProject(code);
+			}
+			, saveModel(model) {
+				this.createGroup( { model, mutation: ADD } );
 			}
 		}
 

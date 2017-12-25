@@ -53,7 +53,7 @@
 			}
 			, me : {
 				type: Object
-				, required: true
+				// , required: true
 				, validator: function(value) { return true; } // TODO
 			}
 			, selected : {
@@ -67,11 +67,11 @@
 			}
 			, updateModel : {
 				type: Function
-				, required: true
+				// , required: true
 			}
 			, deleteModel : {
 				type: Function
-				, required: true
+				// , required: true
 			}
 			, endEditing : {
 				type: Function

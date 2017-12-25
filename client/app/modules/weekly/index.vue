@@ -1,14 +1,11 @@
 <template lang="pug">
 	div
 		kanban-page(:schema="schema", :groups="groups", :tasks="tasks")
-		popup(:schema="popupSchema")
 </template>
 
 <script>
 	import Vue from "vue";
     import KanbanPage from "../../core/DefaultKanbanPage.vue";
-	import Popup from "../../core/components/popup";
-	// import Popup from "../../core/components/header/dropdowns/messages";
 	import schema from "./schema";
 	import toast from "../../core/toastr";
 
@@ -22,7 +19,6 @@
 		
 		components: {
             KanbanPage: KanbanPage
-            , Popup: Popup
 		}
 
 		// getters.js に対応

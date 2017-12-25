@@ -16,48 +16,58 @@ module.exports = {
 		areaTypes.form
 		, ["project"]
 	)
-	, form: {
-		fields: [
-			{
-				type: "select",
-				label: _("GroupType"),
-				model: "type",
-				readonly: true,
-				disabled: true,
-				values: groupTypes,
-				default: "kanban"
+	, popupForm : {
+		form: {
+			fields: [
+				{
+					type: "select",
+					label: _("GroupType"),
+					model: "type",
+					readonly: true,
+					disabled: true,
+					values: groupTypes,
+					default: "kanban"
+				}
+				, {
+					type: "text",
+					label: _("Name"),
+					model: "name",
+					featured: true,
+					required: true,
+					placeholder: _("タスクの名称（何をするかが連想できる様に）"),
+					validator: validators.string
+				}
+				, {
+					type: "text",
+					label: _("Purpose"),
+					model: "purpose",
+					placeholder: _("なぜそのタスクをするのか"),
+					featured: false,
+					required: true,
+					validator: validators.string
+				}
+			]
+			, options : {
+				searchable: true
+		
+				, isNewButtonEnable: true
+				, isSaveButtonEnable: true
+				, isCloseButtonEnable: true
+				, isBreakdownButtonEnable: true
+				, isCloneButtonEnable: true
+				, isDeleteButtonEnable: true
+				, isCancelButtonEnable: true
+		
+				, validateAfterLoad: false // Validate after load a model
+				, validateAfterChanged: false // Validate after every changes on the model
+				, validateBeforeSave: true // Validate before save a model
 			}
-			, {
-				type: "text",
-				label: _("Name"),
-				model: "name",
-				featured: true,
-				required: true,
-				placeholder: _("タスクの名称（何をするかが連想できる様に）"),
-				validator: validators.string
+			, resources: {
+				saveCaption: _("Save")
+				, cloneCaption: _("Clone")
+				, cancelCaption: _("Cancel")
 			}
-			, {
-				type: "text",
-				label: _("Purpose"),
-				model: "purpose",
-				placeholder: _("なぜそのタスクをするのか"),
-				featured: false,
-				required: true,
-				validator: validators.string
-			}
-		]
-	}
-	, options: {
-		searchable: true,
-
-		enableNewButton: true,
-		enabledSaveButton: true,
-		enableDeleteButton: true,
-		enableCloneButton: false,
-
-		validateAfterLoad: false, // Validate after load a model
-		validateAfterChanged: false, // Validate after every changes on the model
-		validateBeforeSave: true // Validate before save a model
+		}
 	}
 	, events: {
 		onSelect: null,

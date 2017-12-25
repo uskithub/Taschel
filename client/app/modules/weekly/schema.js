@@ -68,7 +68,7 @@ module.exports = {
 		}
 	}
 	, resources: {
-		addCaption: _("追加／更新／削除"),
+		addCaption: _("Add"),
 		saveCaption: _("Save"),
 		cloneCaption: _("Clone"),
 		deleteCaption: _("Delete")

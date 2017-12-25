@@ -86,10 +86,8 @@
 			...mapGetters("session", {
 				search: "searchText"
 			})
-			, options() { return this.schema.options || {}; }
-			, isNewButtonEnable() {
-				return this.options.isNewButtonEnable !== false; 
-			}
+			, options() { return this.schema.popupForm.options || {}; }
+			, isNewButtonEnable() { return this.options.isNewButtonEnable !== false; }
 			, isEditing() {
 				return this.isEditingNewModel || this.selected.length > 0;
 			}

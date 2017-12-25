@@ -44,11 +44,12 @@ module.exports = {
 			, validateBeforeSave: true // Validate before save a model
 		}
 		, resources: {
-			closeCaption: _("Close")
-			, saveCaption: _("Save")
-			, cloneCaption: _("Clone")
+			saveCaption: _("Save")
+			, closeCaption: _("Close")
 			, breakdownCaption: _("Breakdown")
+			, cloneCaption: _("Clone")
 			, deleteCaption: _("Delete")
+			, cancelCaption: _("Cancel")
 		}
 	}
 	, events : {
