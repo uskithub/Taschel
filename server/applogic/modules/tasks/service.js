@@ -163,11 +163,13 @@ module.exports = {
 			});								
 		}
 
+		// TODO: 親からの参照を外す、childrenも再帰的に削除
 		, remove(ctx) {
 			ctx.assertModelIsExist(ctx.t("app:TaskNotFound"));
 			
 			// 物理削除の場合
 			//return Task.remove({ _id: ctx.modelID })
+
 			// 論理削除とする
 			return this.collection.findById(ctx.modelID).exec()
 			.then((doc) => {
@@ -328,6 +330,7 @@ module.exports = {
 			});			
 		}
 
+		// 親子関係、rootの整合性をチェックする
 		, check(ctx) {
 			let recursiveReduceCheck = (children, parent, rootId, result = { entities:[], errors:[] }) => {
 				return children.reduce((data, child) => {
