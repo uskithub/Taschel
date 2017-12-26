@@ -3,8 +3,7 @@ import { SELECT, CLEAR_SELECT, ADD , UPDATE, REMOVE } from "../common/constants/
 import { each, find, assign, remove, isArray } from "lodash";
 
 const state = {
-	projects: []
-	, selected: []
+	selected: []
 };
 
 const getters = {

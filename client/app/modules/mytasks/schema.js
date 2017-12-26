@@ -54,13 +54,13 @@ module.exports = {
 		}
 	}
 	, events : {
-		onSelect: null,
-		onNewItem: null,
-		onCloneItem: null,
-		onSaveItem: null,
-		onDeleteItem: null,
-		onChangeItem: null,
-		onValidated(model, errors, schema) {
+		onSelect: null
+		, onNewItem: null
+		, onCloneItem: null
+		, onSaveItem: null
+		, onDeleteItem: null
+		, onChangeItem: null
+		, onValidated(model, errors, schema) {
 			if (errors.length > 0)
 				console.warn("Validation error in page! Errors:", errors, ", Model:", model);
 		}

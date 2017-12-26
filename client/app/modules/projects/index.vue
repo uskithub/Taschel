@@ -1,9 +1,12 @@
 <template lang="pug">
-	list-page(v-if="me", :schema="schema", :selected="selected", :rows="projects", :me="me"
-		, :save-model="saveModel"
-		, :update-model="updateModel"
-		, :delete-model="deleteModel"
-		, :clear-selection="clearSelection"
+	list-page(:schema="schema", :rows="projects", :selected="selected", :model="model"
+		, @add="generateModel"
+		, @select="select"
+		, @save="save"
+		, @clone="clone"
+		, @breakdown="breakdown"
+		, @remove="remove"
+		, @cancel="cancel"
 	)
 </template>
 
@@ -11,12 +14,13 @@
 	import Vue from "vue";
 	import ListPage from "../../core/DefaultListPage.vue";
 	import schema from "./schema";
+	import { schema as schemaUtils } from "vue-form-generator";
+	import { cloneDeep } from "lodash";
+
 	import toast from "../../core/toastr";
 
 	import { mapGetters, mapMutations, mapActions } from "vuex";
-	import { LOAD_PROJECTS, ADD_PROJECT, LOAD, SELECT, CLEAR_SELECT, ADD , UPDATE, REMOVE } from "../common/constants/mutationTypes";
-
-	console.log("とおってはる");
+	import { LOAD_PROJECTS, ADD_PROJECT, LOAD, SELECT, CLEAR_SELECT, UPDATE_PROJECT } from "../common/constants/mutationTypes";
 
 	export default {
 		
@@ -41,9 +45,33 @@
 		, data() {
 			return {
 				schema
+				, model: null
 			};
 		}
+		, watch: {
+			// clearSelectionを呼ぶと呼ばれる
+			selected(newProjects) {
+				if (newProjects.length == 0) {
+					this.model = null;
+					return;
+				}
+				const baseModel = newProjects[0];
+				this.schema.popupForm.title = `${baseModel.name} を編集`;
+				this.schema.popupForm.form.fields.forEach(f => {
+					// if (f.model == "root_code") {
+					// 	f.readonly = true;
+					// 	f.disabled = true;
+					// }
+					return f;
+				});
 
+				let targetModel = cloneDeep(baseModel);
+				if (targetModel.root && targetModel.root != -1) {
+					targetModel.root_code = (targetModel.root.code) ? targetModel.root.code : targetModel.root;
+				} 
+				this.model = targetModel;
+			}
+		}
 		/**
 		 * Socket handlers. Every property is an event handler
 		 */
@@ -63,8 +91,8 @@
 				// ブレークダウンを表示さないようにする
 				, brokedown(res) {
 					console.log("● brokedown on index.vue", res.data);
-					this.updated(res.data.parent);
-					this.created(res.data.child);
+					// this.updated(res.data.parent);
+					// this.created(res.data.child);
 					// this.selectRow(res.data.child, false);
 					toast.success(this._("TaskNameAdded", res), this._("ブレークダウンしました"));
 				}
@@ -74,7 +102,7 @@
 				 * @param  {Object} res Task object
 				 */
 				, updated(res) {
-					this.updated(res.data);
+					// this.updated(res.data);
 					toast.success(this._("TaskNameUpdated", res), this._("更新しました"));
 				}
 
@@ -83,18 +111,16 @@
 				 * @param  {Object} res Response object
 				 */
 				, removed(res) {
-					this.removed(res.data);	
+					// this.removed(res.data);	
 					toast.success(this._("TaskNameDeleted", res), this._("削除しました"));
 				}
 			}
-		},		
+		}
 
-		methods: {
+		, methods: {
 			...mapMutations("projectsPage", {
-				selectRow : SELECT
-				, updated : UPDATE
+				select : SELECT
 				, clearSelection : CLEAR_SELECT
-				, removed : REMOVE
 			})
 			, ...mapActions("projectsPage", {
 				getProjects : "readTasks"
@@ -102,14 +128,86 @@
 				, updateProject : "updateTask"
 				, deleteProject : "deleteTask"
 			})
-			, saveModel(model) {
-				this.createProject( { model, mutation: `shared/${ADD_PROJECT}` } );
+
+			, generateModel() {
+				this.schema.popupForm.title = _("CreateNewProject");
+				this.schema.popupForm.form.fields.forEach(f => {
+					// if (f.model == "root_code") {
+					// 	f.readonly = false;
+					// 	f.disabled = false;
+					// }
+					return f;
+				});
+
+				let newModel = schemaUtils.createDefaultObject(this.schema.popupForm.form);
+				newModel.asignee_code = this.me.code;
+				this.model = newModel;
 			}
-			, updateModel(model) {
-				this.updateProject( { model, mutation: `shared/${UPDATE}` } );
+
+			, save(model) {
+				this.clearSelection();
+				if (model.code) {
+					this.updateProject( { model, mutation: `shared/${UPDATE_PROJECT}` } );
+				} else {
+					this.createProject( { model, mutation: `shared/${ADD_PROJECT}` } );
+				}
 			}
-			, deleteModel(model) {
-				this.deleteProject( { model, mutation: `shared/${REMOVE}` } );
+			, clone() {
+				const baseModel = this.selected[0]; 
+				this.schema.popupForm.title = `${baseModel.name} を元に新規作成`;
+				this.schema.popupForm.form.fields.forEach(f => {
+					// if (f.model == "root_code") {
+					// 	f.readonly = false;
+					// 	f.disabled = false;
+					// }
+					return f;
+				});
+
+				let clonedModel = cloneDeep(baseModel);
+				clonedModel.id = null;
+				clonedModel.code = null;
+				clonedModel.children = [];
+				clonedModel.works = [];
+				clonedModel.asignee_code = this.me.code;
+				this.model = clonedModel;
+			}
+
+			, breakdown() {
+				const baseModel = this.selected[0]; 
+				this.schema.popupForm.title = `${baseModel.name} をブレークダウン`;
+				this.schema.popupForm.form.fields.forEach(f => {
+					if (f.model == "root_code") {
+						f.readonly = false;
+						f.disabled = false;
+					}
+					return f;
+				});
+
+				let brokedownModel = cloneDeep(baseModel);
+				brokedownModel.id = null;
+				brokedownModel.code = null;
+				brokedownModel.type = "step";
+				brokedownModel.name = null;
+				brokedownModel.purpose = `${this.model.goal} にするため`;
+				brokedownModel.goal = null;
+				brokedownModel.children = [];
+				brokedownModel.works = [];
+				if (baseModel.root != -1) {
+					brokedownModel.root_code = (baseModel.root.code) ? baseModel.root.code : baseModel.root;
+				} else {
+					// brokedownModel.root_code = baseModel.code;
+				}
+				brokedownModel.parent_code = baseModel.code;
+				brokedownModel.asignee_code = this.me.code;
+				this.model = brokedownModel;
+			}
+			, remove(){ 
+				this.deleteProject( { model: this.selected[0], mutation: `shared/${REMOVE}` } );
+				this.clearSelection();
+			}
+			, cancel() {
+				this.clearSelection();
+				this.model = null;
 			}
 		}
 

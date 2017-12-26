@@ -34,3 +34,5 @@ export const ADD_WORK           = "ADD_WORK";
 export const LOAD_WORKS         = "LOAD_WORKS"; 
 
 export const ADD_PROJECT        = "ADD_PROJECT";
+
+export const UPDATE_PROJECT     = "UPDATE_PROJECT";

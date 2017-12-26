@@ -1,4 +1,6 @@
-import { LOAD_PROJECTS, ADD_PROJECT, LOAD_USERS, UPDATE, SET_CURRENT_PROJECT, SET_CURRENT_WEEK, SHOW_POPUP, HIDE_POPUP } from "./constants/mutationTypes";
+import { LOAD_PROJECTS, ADD_PROJECT, LOAD_USERS, UPDATE, UPDATE_PROJECT, SET_CURRENT_PROJECT, SET_CURRENT_WEEK, SHOW_POPUP, HIDE_POPUP } from "./constants/mutationTypes";
+
+import { assign } from "lodash";
 
 const state = {
 	projects: []
@@ -42,6 +44,13 @@ const mutations = {
 	, [LOAD_USERS] (state, models) {
 		state.users.splice(0);
 		state.users.push(...models);
+	}
+	, [UPDATE_PROJECT] (state, model) {
+		state.projects.forEach(p => {
+			if (p.code == model.code) {
+				assign(p, model);
+			}
+		});
 	}
 	, [UPDATE] (state, { parent, child }) {
 		// stateが変更されたかの判定が凄いシビア

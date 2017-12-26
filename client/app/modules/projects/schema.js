@@ -23,28 +23,30 @@ module.exports = {
 		}
 	}
 	, popupForm : {
-		form : (function(){
+		form : (() => {
 			let _form = generate(
 				areaTypes.form
 				, ["code", "type", "name", "purpose", "goal"]
 			);
-			_form.fields.forEach( f => {
-				if (f.model == "type") {
-					f.type = "text";
-					f.default = "project";
-					f.readonly = true;
-					f.disabled = true;
-				}
-			});
-			return _form;
+			return { 
+				fields : _form.fields.map( f => {
+					if (f.model == "type") {
+						f.type = "text";
+						f.default = "project";
+						f.readonly = true;
+						f.disabled = true;
+					}
+					return f;
+				})
+			};
 		})()
 		, options : {
 			searchable: true
 	
-			, isNewButtonEnable: true
+			, isAddButtonEnable: true
 			, isSaveButtonEnable: true
 			, isCloseButtonEnable: true
-			, isBreakdownButtonEnable: true
+			, isBreakdownButtonEnable: false
 			, isCloneButtonEnable: true
 			, isDeleteButtonEnable: true
 			, isCancelButtonEnable: true
@@ -54,11 +56,12 @@ module.exports = {
 			, validateBeforeSave: true // Validate before save a model
 		}
 		, resources: {
-			closeCaption: _("Close")
-			, saveCaption: _("Save")
-			, cloneCaption: _("Clone")
+			saveCaption: _("Save")
+			, closeCaption: _("Close")
 			, breakdownCaption: _("Breakdown")
+			, cloneCaption: _("Clone")
 			, deleteCaption: _("Delete")
+			, cancelCaption: _("Cancel")
 		}
 	}
 	, events: {

@@ -1,6 +1,5 @@
 <template lang="pug">
-	list-page(v-if="me", :schema="schema", :rows="tasks", :selected="selected", :model="model"
-		
+	list-page(:schema="schema", :rows="tasks", :selected="selected", :model="model"
 		, @add="generateModel"
 		, @select="select"
 		, @save="save"
@@ -16,7 +15,7 @@
 	import ListPage from "../../core/DefaultListPage.vue";
 	import schema from "./schema";
 	import { schema as schemaUtils } from "vue-form-generator";
-	import { find, cloneDeep, isFunction } from "lodash";
+	import { cloneDeep } from "lodash";
 
 	import toast from "../../core/toastr";
 
@@ -71,7 +70,9 @@
 				});
 
 				let targetModel = cloneDeep(baseModel);
-				targetModel.root_code = (targetModel.root.code) ? targetModel.root.code : targetModel.root;
+				if (targetModel.root && targetModel.root != -1) {
+					targetModel.root_code = (targetModel.root.code) ? targetModel.root.code : targetModel.root;
+				}
 				this.model = targetModel;
 			}
 		}
@@ -144,10 +145,6 @@
 					if (f.model == "root_code") {
 						f.readonly = false;
 						f.disabled = false;
-					}
-					if (f.model == "type") {
-						const _f = f;
-						console.log("taskType: ", _f);
 					}
 					return f;
 				});
