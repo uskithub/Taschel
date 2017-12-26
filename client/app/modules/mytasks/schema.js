@@ -24,14 +24,15 @@ module.exports = {
 		}
 	}
 	, popupForm : {
-		form : generate(
+		title : ""
+		, form : generate(
 			areaTypes.form
-			, [ "code", "root", "type","name", "purpose", "goal"]
+			, [ "code", "root", "type", "name", "purpose", "goal"]
 		)
 		, options : {
 			searchable: true
 	
-			, isNewButtonEnable: true
+			, isAddButtonEnable: true
 			, isSaveButtonEnable: true
 			, isCloseButtonEnable: true
 			, isBreakdownButtonEnable: true

@@ -14,20 +14,22 @@ export const api = (method, url, model) => {
 			reject(new Error(`Unknown HTTP Method was called: ${ method }`));
 			return;
 		}
-		axios[method] (url, model).then((response) => {
+		axios[method] (url, model).then(response => {
 			let res = response.data;
 			if (res.status == 200 && res.data) {
 				resolve(res.data);
 			} else {
-				reject(new Error(`response status is ${res.status}. res.data is ${res.data}`));
+				reject(new Error(`response status is ${res.status}. ${res.error.message}`));
 			}
-		}).catch((response) => {
-			if (response instanceof Error) {
-				reject(response);
-			} else if (response.data && response.data.error) {
-				reject(new Error(response.data.error));
+		}).catch(error => {
+			if (error instanceof Error) {
+				if (error.response.data && error.response.data.error) {
+					error.message = `${error.message} (type: ${error.response.data.error.type}, message: ${error.response.data.error.message})`;
+				}
+				reject(error);
+
 			} else {
-				reject(new Error(`response: ${response}`));
+				reject(new Error(`error: ${error}`));
 			}
 		});
 	})

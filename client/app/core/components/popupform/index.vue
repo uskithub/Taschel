@@ -2,10 +2,10 @@
 	.popup-container
 		.popup
 			.panel
-				.header {{ title }}
+				.header {{ schema.title }}
 				.body 
 					.form
-						vue-form-generator(:schema="formSchema", :model="model", :options="options", ref="form", :is-new-model="isNewModel")
+						vue-form-generator(:schema="schema.form", :model="model", :options="options", ref="form", :is-new-model="isNewModel")
 
 						.errors.text-center
 							div.alert.alert-danger(v-for="(item, index) in validationErrors", :key="index") {{ item.field.label }}: 
@@ -51,93 +51,26 @@
       			, required: true
 				, validator: function(value) { return true; } // TODO
 			}
-			, me : {
+			, template : {
 				type: Object
-				// , required: true
 				, validator: function(value) { return true; } // TODO
-			}
-			, selected : {
-				type: Array
-				, required: true
-				, validator: function(value) { return true; } // TODO
-			}
-			, saveModel : {
-				type: Function
-				, required: true
-			}
-			, updateModel : {
-				type: Function
-				// , required: true
-			}
-			, deleteModel : {
-				type: Function
-				// , required: true
-			}
-			, endEditing : {
-				type: Function
-				, required: true
 			}
 		}
 		, data() {
 			// createdより早くmodelが参照されるので、ここで詰めている
-			let _model = null;
-			let _isNewModel = false;
-			let _title = _("CreateNewModel");	
-			let _isProjectSelectable = false;		
-
-			if (this.selected.length == 1) {
-				_model = cloneDeep(this.selected[0]);
-				if (_model.root != -1) {
-					if (_model.root.code) {
-						_model.root_code = _model.root.code;
-					} else {
-						_model.root_code = _model.root;
-					}
-				}
-				_title = `${_model.name} を更新`;
-			}
-			else if (this.selected.length > 1) {
-				_model = schemaUtils.mergeMultiObjectFields(this.schema.form, this.selected);
-				// TODO
-				_title = `${_model.name} を更新`;
-			} else {
-				_model = schemaUtils.createDefaultObject(this.schema.form);
-				_model.asignee_code = this.me.code;
-				_isNewModel = true;
-				_isProjectSelectable = true;
-			}
-				
 			return {
-				model: _model
-				, isNewModel: _isNewModel
-				, title : _title
-				, isProjectSelectable : _isProjectSelectable
+				model: this.template
 			};
 		}
 		, computed: {
-			formSchema() {
-				if (this.isProjectSelectable) {
-					let fields = cloneDeep(this.schema.form.fields).map(f => {
-						if (f.model == "root_code") {
-							f.readonly = false;
-							f.disabled = false;
-						}
-						return f;
-					});
-					return { fields };
-				} else {
-					return this.schema.form;
-				}
-			}
+			isNewModel() { return this.model.code == null; }
 			, options() { return this.schema.options || {}; }
-
 			, isSaveButtonEnable() { 
 				return this.options.isSaveButtonEnable !== false
 					; 
 			}
 			, isCloseButtonEnable() { 
-				return !this.isNewModel 
-					// && this.selected.status > -1 
+				return !this.isNewModel
 					&& this.options.isCloseButtonEnable !== false
 					; 
 			}
@@ -167,88 +100,30 @@
 			}
 		}
 		, watch : {
-			selected() {
+			schema(newSchema) {
+				console.log("●", newSchema);
+			}
+			,template(newTemplate) {
+				this.model = newTemplate;
 			}
 		}
 		, methods: {
 
 			buttonSaveDidPush() {
-				console.log("Save model...", this.model);
 				if (this.options.validateBeforeSave === false ||  this.validate()) {
-
-					if (this.isNewModel)
-						this.saveModel(this.model);
-					else
-						this.updateModel(this.model);
-
+					this.$emit("save", this.model);
 				} else {
 					// Validation error
 				}
 			}
-
 			, buttonCloseDidPush() {
 				// TODO
 				console.log("close button pushed");
 			}
-
-			, buttonCloneDidPush() {
-				// TODO: projectを選択できるようにする
-				console.log("Clone model...");
-				this.isNewModel = true;
-				this.isProjectSelectable = true;
-				this.title = `${this.model.name} を元に新規作成`;
-
-				let baseModel = this.model;
-				let clonedModel = cloneDeep(baseModel);
-				clonedModel.id = null;
-				clonedModel.code = null;
-				clonedModel.works = [];
-				this.model = clonedModel;
-			}
-
-			, buttonBreakdownDidPush() {
-				// TODO: projectを選択できるようにする
-				console.log("Breakdown model...");
-				this.isNewModel = true;
-				this.title = `${this.model.name} をブレークダウン`;
-
-				let baseModel = this.model;
-
-				let brokedownModel = cloneDeep(baseModel);
-				brokedownModel.id = null;
-				brokedownModel.code = null;
-				brokedownModel.type = "step";
-				brokedownModel.name = null;
-				brokedownModel.purpose = `${this.model.goal} にするため`;
-				brokedownModel.goal = null;
-				brokedownModel.children = [];
-				brokedownModel.works = [];
-				if (this.model.root != -1) {
-					if (this.model.root.code) {
-						brokedownModel.root_code = this.model.root.code;
-					} else {
-						brokedownModel.root_code = this.model.root;
-					}
-				} else {
-					// brokedownModel.root_code = this.model.code;
-				}
-				brokedownModel.parent_code = this.model.code;
-				brokedownModel.asignee_code = undefined;
-				this.model = brokedownModel;
-			}
-
-			, buttonDeleteDidPush() {
-				// TODO:
-				if (this.selected.length > 0) {
-					this.selected.forEach(row => this.deleteModel(row));
-				}
-			}
-
-			, buttonCancelDidPush() {
-				// TODO
-				console.log("cancel button pushed");
-				this.endEditing();
-			}
+			, buttonCloneDidPush() { this.$emit("clone"); }
+			, buttonBreakdownDidPush() { this.$emit("breakdown"); }
+			, buttonDeleteDidPush() { this.$emit("remove"); }	// deleteは予約語なので怒られる
+			, buttonCancelDidPush() { this.$emit("cancel"); }
 
 			, validate() {
 				let res = this.$refs.form.validate();

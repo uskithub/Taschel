@@ -16,6 +16,8 @@
 	import { mapGetters, mapMutations, mapActions } from "vuex";
 	import { LOAD_PROJECTS, ADD_PROJECT, LOAD, SELECT, CLEAR_SELECT, ADD , UPDATE, REMOVE } from "../common/constants/mutationTypes";
 
+	console.log("とおってはる");
+
 	export default {
 		
 		components: {

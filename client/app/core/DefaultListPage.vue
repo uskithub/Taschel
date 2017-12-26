@@ -3,19 +3,20 @@
 		h3.title {{ schema.title }}
 
 		.flex.align-center.justify-space-around
-			.left(v-if="isNewButtonEnable")
-				button.button.is-primary(@click="buttonNewDidPush")
+			.left(v-if="isAddButtonEnable")
+				button.button.is-primary(@click="buttonAddDidPush")
 					i.icon.fa.fa-plus 
 					| {{ schema.resources.addCaption || _("Add") }}
 			.right {{ _("SelectedOfAll", { selected: selected.length, all: rows.length } ) }}
 		br
 		data-table(:schema="schema.table", :rows="rows", :order="order", :search="search", :selected="selected", :select="select", :select-all="selectAll")
 
-		popup-form(v-if="isEditing", :schema="schema.popupForm", :me="me", :selected="selected"
-			, :save-model="saveModelWrapper"
-			, :update-model="updateModelWrapper"
-			, :delete-model="deleteModelWrapper"
-			, :end-editing="endEditing"
+		popup-form(v-if="isEditing", :schema="schema.popupForm", :template="model"
+			, @save="save"
+			, @clone="clone"
+			, @breakdown="breakdown"
+			, @remove="remove"
+			, @cancel="cancel"
 		)
 </template>
 
@@ -40,8 +41,8 @@
 				, required: true
 				, validator: function(value) { return true; } // TODO
 			}
-			, me : {
-				type: Object
+			, rows : {
+				type: Array
 				, required: true
 				, validator: function(value) { return true; } // TODO
 			}
@@ -50,26 +51,9 @@
 				, required: true
 				, validator: function(value) { return true; } // TODO
 			}
-			, rows : {
-				type: Array
-				, required: true
+			, model : {
+				type: Object
 				, validator: function(value) { return true; } // TODO
-			}
-			, saveModel : {
-				type: Function
-				, required: true
-			}
-			, updateModel : {
-				type: Function
-				, required: true
-			}
-			, deleteModel : {
-				type: Function
-				, required: true
-			}
-			, clearSelection : {
-				type: Function
-				, required: true
 			}
 		}
 		, data() {
@@ -78,7 +62,6 @@
 					field: "id"
 					, direction: 1
 				}
-				, isEditingNewModel : false
 			};
 		}
 
@@ -87,9 +70,9 @@
 				search: "searchText"
 			})
 			, options() { return this.schema.popupForm.options || {}; }
-			, isNewButtonEnable() { return this.options.isNewButtonEnable !== false; }
+			, isAddButtonEnable() { return this.options.isAddButtonEnable !== false; }
 			, isEditing() {
-				return this.isEditingNewModel || this.selected.length > 0;
+				return this.model != null || this.selected.length > 0;
 			}
 		}
 
@@ -109,31 +92,14 @@
 		}
 		
 		, methods: {
-
-			saveModelWrapper(model) {
-				this.isEditingNewModel = false;
-				this.clearSelection();
-				this.saveModel(model);
+			select(event, row, add) {
+				this.$emit("select", row);
+				// if (this.schema.table.multiSelect === true && (add || (event && event.ctrlKey))) {
+				// 	this.$parent.selectRow(row, true);
+				// } else {
+				// 	this.$parent.selectRow(row, false);
+				// }
 			}
-
-			, updateModelWrapper(model) {
-				this.clearSelection();
-				this.updateModel(model);
-			}
-
-			, deleteModelWrapper(model) {
-				this.clearSelection();
-				this.deleteModel(model);
-			}
-
-			, select(event, row, add) {
-				if (this.schema.table.multiSelect === true && (add || (event && event.ctrlKey))) {
-					this.$parent.selectRow(row, true);
-				} else {
-					this.$parent.selectRow(row, false);
-				}
-			}
-
 			, selectAll(event) {
 				let filter = Vue.filter("filterBy");
 				let filteredRows = filter(this.rows, this.search);
@@ -146,12 +112,8 @@
 					this.clearSelection();
 				}
 			}
-
-			, buttonNewDidPush() {
-				console.log("Create new model...");
-
-				this.clearSelection();
-				this.isEditingNewModel = true;
+			, buttonAddDidPush() {
+				this.$emit("add");
 
 				this.$nextTick(() => {
 					let el = document.querySelector("div.form input:nth-child(1):not([readonly]):not(:disabled)");
@@ -159,11 +121,11 @@
 						el.focus();
 				});
 			}
-
-			, endEditing() {
-				this.isEditingNewModel = false;
-				this.clearSelection();
-			}
+			, save(model) { this.$emit("save", this.model); }
+			, clone() { this.$emit("clone"); }
+			, breakdown() { this.$emit("breakdown"); }
+			, remove() { this.$emit("remove"); }		// deleteは予約語なので怒られる
+			, cancel() { this.$emit("cancel"); }
 		}
 
 		, created() {

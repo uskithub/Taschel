@@ -2,6 +2,7 @@ import Vue from "vue";
 import moment from "moment";
 import { taskTypes } from "../../common/constants/types";
 import { validators } from "vue-form-generator";
+import { cloneDeep } from "lodash";
 
 let _ = Vue.prototype._;
 
@@ -168,7 +169,7 @@ export const generate = (areaType, fieldSet) => {
 	if (areaType == areaTypes.form) {
 		return {
 			fields: fieldSet.map(f => { 
-				let field = fields[f];
+				let field = cloneDeep(fields[f]);
 				if (field.form.label == undefined) {
 					field.form.label = field.label;
 				}
@@ -180,7 +181,7 @@ export const generate = (areaType, fieldSet) => {
 		};
 	} else {
 		return  fieldSet.map(f => { 
-			let field = fields[f];
+			let field = cloneDeep(fields[f]);
 			if (field.table.title == undefined) {
 				field.table.title = field.label;
 			}

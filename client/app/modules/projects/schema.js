@@ -23,7 +23,7 @@ module.exports = {
 		}
 	}
 	, popupForm : {
-		form : (() => {
+		form : (function(){
 			let _form = generate(
 				areaTypes.form
 				, ["code", "type", "name", "purpose", "goal"]

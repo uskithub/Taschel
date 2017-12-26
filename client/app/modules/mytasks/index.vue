@@ -1,9 +1,13 @@
 <template lang="pug">
-	list-page(v-if="me", :schema="schema", :selected="selected", :rows="tasks", :me="me"
-		, :save-model="saveModel"
-		, :update-model="updateModel"
-		, :delete-model="deleteModel"
-		, :clear-selection="clearSelection"
+	list-page(v-if="me", :schema="schema", :rows="tasks", :selected="selected", :model="model"
+		
+		, @add="generateModel"
+		, @select="select"
+		, @save="save"
+		, @clone="clone"
+		, @breakdown="breakdown"
+		, @remove="remove"
+		, @cancel="cancel"
 	)
 </template>
 
@@ -11,6 +15,9 @@
 	import Vue from "vue";
 	import ListPage from "../../core/DefaultListPage.vue";
 	import schema from "./schema";
+	import { schema as schemaUtils } from "vue-form-generator";
+	import { find, cloneDeep, isFunction } from "lodash";
+
 	import toast from "../../core/toastr";
 
 	import { mapGetters, mapMutations, mapActions } from "vuex";
@@ -43,7 +50,30 @@
 		, data() {
 			return {
 				schema
+				, model: null
 			};
+		}
+		, watch: {
+			// clearSelectionを呼ぶと呼ばれる
+			selected(newTasks) {
+				if (newTasks.length == 0) {
+					this.model = null;
+					return;
+				}
+				const baseModel = newTasks[0];
+				this.schema.popupForm.title = `${baseModel.name} を編集`;
+				this.schema.popupForm.form.fields.forEach(f => {
+					if (f.model == "root_code") {
+						f.readonly = true;
+						f.disabled = true;
+					}
+					return f;
+				});
+
+				let targetModel = cloneDeep(baseModel);
+				targetModel.root_code = (targetModel.root.code) ? targetModel.root.code : targetModel.root;
+				this.model = targetModel;
+			}
 		}
 		/**
 		 * Socket handlers. Every property is an event handler
@@ -92,7 +122,7 @@
 		}		
 		, methods : {
 			...mapMutations("mytasksPage", {
-				selectRow : SELECT
+				select : SELECT
 				, updated : UPDATE
 				, clearSelection : CLEAR_SELECT
 				, created : ADD
@@ -107,6 +137,93 @@
 			, ...mapActions("session", [
 				"getSessionUser"
 			])
+
+			, generateModel() {
+				this.schema.popupForm.title = _("CreateNewTask");
+				this.schema.popupForm.form.fields.forEach(f => {
+					if (f.model == "root_code") {
+						f.readonly = false;
+						f.disabled = false;
+					}
+					if (f.model == "type") {
+						const _f = f;
+						console.log("taskType: ", _f);
+					}
+					return f;
+				});
+
+				let newModel = schemaUtils.createDefaultObject(this.schema.popupForm.form);
+				newModel.asignee_code = this.me.code;
+				this.model = newModel;
+			}
+
+			, save(model) {
+				this.clearSelection();
+				if (model.code) {
+					this.updateTask( { model, mutation: UPDATE } );
+				} else {
+					this.createTask( { model, mutation: ADD } );
+				}
+			}
+
+			, clone() {
+				const baseModel = this.selected[0]; 
+				this.schema.popupForm.title = `${baseModel.name} を元に新規作成`;
+				this.schema.popupForm.form.fields.forEach(f => {
+					if (f.model == "root_code") {
+						f.readonly = false;
+						f.disabled = false;
+					}
+					return f;
+				});
+
+				let clonedModel = cloneDeep(baseModel);
+				clonedModel.id = null;
+				clonedModel.code = null;
+				clonedModel.children = [];
+				clonedModel.works = [];
+				clonedModel.asignee_code = this.me.code;
+				this.model = clonedModel;
+			}
+
+			, breakdown() {
+				const baseModel = this.selected[0]; 
+				this.schema.popupForm.title = `${baseModel.name} をブレークダウン`;
+				this.schema.popupForm.form.fields.forEach(f => {
+					if (f.model == "root_code") {
+						f.readonly = false;
+						f.disabled = false;
+					}
+					return f;
+				});
+
+				let brokedownModel = cloneDeep(baseModel);
+				brokedownModel.id = null;
+				brokedownModel.code = null;
+				brokedownModel.type = "step";
+				brokedownModel.name = null;
+				brokedownModel.purpose = `${this.model.goal} にするため`;
+				brokedownModel.goal = null;
+				brokedownModel.children = [];
+				brokedownModel.works = [];
+				if (baseModel.root != -1) {
+					brokedownModel.root_code = (baseModel.root.code) ? baseModel.root.code : baseModel.root;
+				} else {
+					// brokedownModel.root_code = baseModel.code;
+				}
+				brokedownModel.parent_code = baseModel.code;
+				brokedownModel.asignee_code = this.me.code;
+				this.model = brokedownModel;
+			}
+			, remove(){ 
+				this.deleteTask( { model: this.selected[0], mutation: REMOVE } );
+				this.clearSelection();
+			}
+			, cancel() {
+				this.clearSelection();
+				this.model = null;
+			}
+
 			, setupProjectsField() {
 				// 動的にプロジェクト一覧を設定している
 				this.schema.popupForm.form.fields.forEach(f => {
@@ -120,15 +237,6 @@
 						f.default = this.currentProject;
 					}
 				});
-			}
-			, saveModel(model) {
-				this.createTask( { model, mutation: ADD } );
-			}
-			, updateModel(model) {
-				this.updateTask( { model, mutation: UPDATE } );
-			}
-			, deleteModel(model) {
-				this.deleteTask( { model, mutation: REMOVE } );
 			}
 		}
 
