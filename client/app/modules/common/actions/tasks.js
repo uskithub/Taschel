@@ -1,10 +1,10 @@
 import Vue from "vue";
+import { METHOD, api } from "../api";
+
 import toastr from "../../../core/toastr";
-import { UPDATE, ADD, REMOVE, SELECT } from "../constants/mutationTypes";
 import axios from "axios";
 
-export const NAMESPACE = "/api/tasks";
-
+const NAMESPACE = "/api/tasks";
 
 /* private */
 
@@ -37,8 +37,6 @@ let recursiveRevertParentReference = function(model) {
 	}
 };
 
-
-
 // actionは非同期処理を実行する際に使う。
 // action自体はstateの変更はしない。
 // stateの変更にはmutationをcommitすることで行うこと。
@@ -46,30 +44,11 @@ let recursiveRevertParentReference = function(model) {
 // { commit } はES2015 の引数分割束縛（argument destructuring）という文法
 
 export const createTask = ({ commit }, { model, mutation }) => {
-	return new Promise((resolve, reject) => {
-		axios.post(NAMESPACE, model).then((response) => {
-			let res = response.data;
-	
-			if (res.status == 200 && res.data) {
-				resolve(res.data);
-			} else {
-				reject(`response status is ${res.status}. res.data is ${res.data}`);
-			}
-		}).catch((response) => {
-			if (response.data.error) {
-				reject(response.data.error.message);
-			} else {
-				reject(response);
-			}
-		});
-	})
+	return api(METHOD.post, NAMESPACE, model)
 	.then(data => {
-		console.log(`● created mutation: ${ mutation }`, data);
+		console.log(`● !!created mutation: ${ mutation }`, data);
 		if (mutation)
 			commit(mutation, data, { root : (mutation.indexOf("/") > -1) });
-	})
-	.catch(errMessage => {
-		toastr.error(errMessage);
 	});
 };
 
@@ -93,55 +72,35 @@ export const readTasks = ({ commit }, { options, mutation }) => {
 		} else if (options.root != undefined) {
 			url = `${url}?root_code=${options.root}`;
 		}
-	} 
-	
-	axios.get(url).then((response) => {
-		let res = response.data;
-		if (res.status == 200 && res.data)
+	}
+
+	return api(METHOD.get, url)
+	.then(data => {
+		console.log(`● !!read mutation: ${ mutation }`, data);
+		if (mutation)
 			// 各Pageにアサインされたactionからsharedのmutationへcommitをかのうにするため、roo:trueとしている
 			commit(mutation
-				, (options && options.populateParent) ? res.data.map(d => recursiveSetParentReference(d)) : res.data
-				, { root : true }
+				, (options && options.populateParent) ? data.map(d => recursiveSetParentReference(d)) : data
+				, { root : (mutation.indexOf("/") > -1) }
 			);
-		else
-			console.error("Request error!", res.error);
-
-	}).catch((response) => {
-		console.error("Request error!", response.statusText);
 	});
 };
 
 export const updateTask = ({ commit }, { model, mutation }) => {
-	axios.put(NAMESPACE + "/" + model.code, model).then((response) => {
-		let res = response.data;
-		if (res.status == 200 && res.data) {
-			console.log("● updated", res.data);
-			if (mutation) {
-				commit(mutation, res.data, { root : (mutation.indexOf("/") > -1) });
-			}
-		} else {
-			toastr.error(`response status is ${res.status}. res.data is ${res.data}`);
-		}
-	}).catch((response) => {
-		if (response.data.error)
-			toastr.error(response.data.error.message);
-	});	
+	return api(METHOD.put, NAMESPACE + "/" + model.code, model)
+	.then(data => {
+		console.log(`● !!updated mutation: ${ mutation }`, data);
+		if (mutation)
+			commit(mutation, data, { root : (mutation.indexOf("/") > -1) });
+	});
 };
 
 export const deleteTask = ({ commit }, { model, mutation }) => {
-	axios.delete(NAMESPACE + "/" + model.code).then((response) => {
-		let res = response.data;
-		if (res.status == 200 && res.data) {
-			console.log("● deleted", res.data);
-			if (mutation) {
-				commit(mutation, res.data, { root : (mutation.indexOf("/") > -1) });
-			}
-		} else {
-			toastr.error(`response status is ${res.status}. res.data is ${res.data}`);
-		}
-	}).catch((response) => {
-		if (response.data.error)
-			toastr.error(response.data.error.message);
+	return api(METHOD.delete, NAMESPACE + "/" + model.code)
+	.then(data => {
+		console.log(`● !!deleted mutation: ${ mutation }`, data);
+		if (mutation)
+			commit(mutation, data, { root : (mutation.indexOf("/") > -1) });
 	});
 };
 
