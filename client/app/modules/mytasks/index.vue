@@ -73,6 +73,9 @@
 				if (targetModel.root && targetModel.root != -1) {
 					targetModel.root_code = (targetModel.root.code) ? targetModel.root.code : targetModel.root;
 				}
+				if (targetModel.asignee && targetModel.asignee != -1) {
+					targetModel.asignee_code = (targetModel.asignee.code) ? targetModel.asignee.code : targetModel.asignee;
+				}
 				this.model = targetModel;
 			}
 		}
@@ -178,6 +181,12 @@
 				let clonedModel = cloneDeep(baseModel);
 				clonedModel.id = null;
 				clonedModel.code = null;
+				if (clonedModel.root && clonedModel.root != -1) {
+					clonedModel.root_code = (clonedModel.root.code) ? clonedModel.root.code : clonedModel.root;
+				}
+				if (clonedModel.parent && clonedModel.parent != -1) {
+					clonedModel.parent_code = (clonedModel.parent.code) ? clonedModel.parent.code : clonedModel.parent;
+				}
 				clonedModel.children = [];
 				clonedModel.works = [];
 				clonedModel.asignee_code = this.me.code;
@@ -204,7 +213,7 @@
 				brokedownModel.goal = null;
 				brokedownModel.children = [];
 				brokedownModel.works = [];
-				if (baseModel.root != -1) {
+				if (baseModel.root && baseModel.root != -1) {
 					brokedownModel.root_code = (baseModel.root.code) ? baseModel.root.code : baseModel.root;
 				} else {
 					// brokedownModel.root_code = baseModel.code;

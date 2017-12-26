@@ -3,41 +3,31 @@
 		h3.title {{ schema.title }}
 
 		.flex.align-center.justify-space-around
-			.left(v-if="enabledNew")
-				button.button.is-primary(@click="buttonNewDidPush")
+			.left(v-if="isAddButtonEnable")
+				button.button.is-primary(@click="buttonAddDidPush")
 					i.icon.fa.fa-plus 
 					| {{ schema.resources.addCaption || _("Add") }}
 			.right {{ _("SelectedOfAll", { selected: selectedTasks.length, all: tasks.length } ) }}
 		br
 		.form
-			vue-form-generator(:schema="projectSelector", :model="modelProjectSelector", ref="projectSelector", @model-updated="modelUpdated")
+			vue-form-generator(:schema="projectSelector", :model="modelProjectSelector", ref="projectSelector", @model-updated="selectProject")
 
-		data-table(:schema="schema.table", :rows="tasks", :order="order", :search="search", :selected="selectedTasks", :select="_selectTasks", :select-all="selectAll")
+		data-table(v-if="selectedProject", :schema="schema.table", :rows="tasks", :order="order", :search="search", :selected="selectedTasks", :select="select", :select-all="selectAll")
 
-		.form(v-if="model")
-			vue-form-generator(:schema="schema.form", :model="model", :options="options", :multiple="selectedTasks.length > 1", ref="form", :is-new-model="isNewModel")
-
-			.errors.text-center
-				div.alert.alert-danger(v-for="(item, index) in validationErrors", :key="index") {{ item.field.label }}: 
-					strong {{ item.error }}
-
-			.buttons.flex.justify-space-around
-				button.button.primary(@click="buttonSaveDidPush", :disabled="!enabledSave")
-					i.icon.fa.fa-save 
-					| {{ schema.resources.saveCaption || _("Save") }}
-				button.button.outline(@click="buttonCloneDidPush", :disabled="!enabledClone")
-					i.icon.fa.fa-copy 
-					| {{ schema.resources.cloneCaption || _("Clone") }}
-				button.button.danger(@click="buttonDeleteDidPush", :disabled="!enabledDelete")
-					i.icon.fa.fa-trash 
-					| {{ schema.resources.deleteCaption || _("Delete") }}
-
+		popup-form(v-if="isEditing", :schema="schema.popupForm", :template="model"
+			, @save="save"
+			, @clone="clone"
+			, @breakdown="breakdown"
+			, @remove="remove"
+			, @cancel="cancel"
+		)
 </template>
 
 <script>
 	import Vue from "vue";
 	import { schema as schemaUtils } from "vue-form-generator";
 	import DataTable from "./dataTable.vue";
+	import PopupForm from "./components/popupform";
 
 	import { each, find, cloneDeep, isFunction } from "lodash";
 
@@ -47,108 +37,72 @@
 
 		components: {
 			DataTable
-		},
+			, PopupForm
+		}
 
         // task-page(:schema="schema", :selectedTasks="selectedTasks", :projects="projects", :tasks="tasks", :me="me") に対応させる
-		props: [
-			"schema"
-            , "projects"
-			, "tasks"
-			, "selectedTasks"
-			, "selectedProject"
-			, "me"
-		]
-
-		// props: {
-		// 	schema: {
-		// 		type: Object
-		// 		, required: true
-		// 		// , validator(value) { return value >= 0; }
-		// 	}
-		// 	, projects: {
-		// 		type: Array
-		// 		, required: true
-		// 		// , validator(value) { return value >= 0; }
-		// 	}
-		// 	, tasks: {
-		// 		type: Array
-		// 		, required: true
-		// 		// , validator(value) { return value >= 0; }
-		// 	}
-		// 	, selectedTasks: {
-		// 		type: Array
-		// 		, required: true
-		// 		// , validator(value) { return value >= 0; }
-		// 	}
-		// 	, selectedTasks: {
-		// 		type: Array
-		// 		, required: true
-		// 		// , validator(value) { return value >= 0; }
-		// 	}
-		// 	, selectedProject: {
-		// 		type: String
-		// 		, required: true
-		// 		// , validator(value) { return value >= 0; }
-		// 	}
-		// }
+		, props: {
+			schema: {
+				type: Object
+				, required: true
+				, validator: function(value) { return true; } // TODO
+			}
+			, projects: {
+				type: Array
+				, required: true
+				, validator: function(value) { return true; } // TODO
+			}
+			, tasks: {
+				type: Array
+				, validator: function(value) { return true; } // TODO
+			}
+			, selectedTasks: {
+				type: Array
+				, validator: function(value) { return true; } // TODO
+			}
+			, selectedProject: {
+				type: String
+				, validator: function(value) { return true; } // TODO
+			}
+			, model : {
+				type: Object
+				, validator: function(value) { return true; } // TODO
+			}
+		}
 
 		, data() {
 			return {
 				order: {
 					field: "id",
 					direction: 1
-				},
-
-				model: null,
-				isNewModel: false
-
+				}
+				, projectSelector: this.schema.projectSelector
 				// 選択したプロジェクトが格納される
 				, modelProjectSelector: {
 					code : this.selectedProject
 				}
 			};
-		},
-
-		computed: {
+		}
+		, computed: {
 			...mapGetters("session", {
 				search: "searchText"
 			})
-
-			, projectSelector() {
-				this.schema.projectSelector.fields.forEach(f => {
+			, options() { return this.schema.popupForm.options || {}; }
+			, isAddButtonEnable() { return this.options.isAddButtonEnable !== false; }
+			, isEditing() {
+				return this.model != null || this.selectedTasks.length > 0;
+			}
+		}
+		, watch: {
+			projects(newProjects) {
+				this.projectSelector.fields.forEach(f => {
 					if (f.model == "code") {
-						f.values = this.projects.map(project => {
-							return {
-								id : project.code
-								, name : project.name
-							}
+						f.values = newProjects.map(p => {
+							return { id : p.code, name : p.name }
 						});
 					}
 				});	
-				return this.schema.projectSelector;
-			}
-			, options() 		{ return this.schema.options || {};	},
-
-			enabledNew() 	{ return (this.options.enableNewButton !== false); },
-			enabledSave() 	{ return (this.model && this.options.enabledSaveButton !== false); },
-			enabledClone() 	{ return (this.model && !this.isNewModel && this.options.enableDeleteButton !== false); },
-			enabledDelete() { return (this.model && !this.isNewModel && this.options.enableDeleteButton !== false); },
-
-			validationErrors() {
-				if (this.$refs.form && this.$refs.form.errors) 
-					return this.$refs.form.errors;
-
-				return [];
-			}
-		},	
-
-		watch: {
-			// propsで指定した名前に合わせる必要あり
-			selectedTasks() {
-				console.log("●● selectedTask")
-				if (!this.isNewModel)
-					this.generateModel();
-			}
+			} 
 
 			// 呼ばれるけど、初めしか値が変わらない
 			// , modelProjectSelector(model) {
@@ -157,29 +111,12 @@
 		},
 
 		methods: {
-			modelUpdated(newVal, schema) {
+			selectProject(newVal, schema) {
 				console.log(`● ${schema}: ${newVal}`);
-				if (this.model) {
-					this.model.root_code = newVal;
-				}
-				if (newVal) {
-					this.$parent.selectProject(newVal);
-				} else {
-					this.$parent.deselectProject();
-				}
+				this.$emit("select-project", newVal);
 			}
-			, _selectTasks(event, row, add) {
-				this.isNewModel = false;
-
-				if (this.selectedTasks.length > 0 && this.selectedTasks.includes(row)) {
-					this.$parent.deselectTask(row);
-				} else {
-					if (this.schema.table.multiSelect === true && (add || (event && event.ctrlKey))) {
-						this.$parent.selectTasks(row, true);
-					} else {
-						this.$parent.selectTasks(row, false);
-					}
-				}
+			, select(event, row, add) {
+				this.$emit("select", row);
 			}
 			, selectAll(event) {
 				this.isNewModel = false;
@@ -196,40 +133,21 @@
 				}
 			}
 
-			, generateModel() {
-				if (this.selectedTasks.length == 1) {
-					this.model = cloneDeep(this.selectedTasks[0]);
-				}
-				else if (this.selectedTasks.length > 1) {
-					this.model = schemaUtils.mergeMultiObjectFields(this.schema.form, this.selectedTasks);
-				}
-				else
-					this.model = null;
-			}
-
-			, buttonNewDidPush() {
-				console.log("Create new model...");
-
-				this.$parent.clearSelection();
-
-				let newRow = schemaUtils.createDefaultObject(this.schema.form);
-                this.isNewModel = true;
-                
-                // projectが設定されている場合、projectを設定
-                if (this.modelProjectSelector.code) {
-					newRow.root_code = this.modelProjectSelector.code;
-					newRow.parent_code = this.modelProjectSelector.code;
-				}
-				newRow.asignee_code = this.me.code;
-
-				this.model = newRow;
+			, buttonAddDidPush() {
+				this.$emit("add");
 
 				this.$nextTick(() => {
 					let el = document.querySelector("div.form input:nth-child(1):not([readonly]):not(:disabled)");
 					if (el)
 						el.focus();
 				});
-			}	
+			}
+			, save(model) { this.$emit("save", this.model); }
+			, clone() { this.$emit("clone"); }
+			, breakdown() { this.$emit("breakdown"); }
+			, remove() { this.$emit("remove"); }		// deleteは予約語なので怒られる
+			, cancel() { this.$emit("cancel"); }
+
 
 			, buttonSaveDidPush() {
 				console.log("Save model...");
@@ -262,30 +180,10 @@
 					each(this.selected, (row) => this.$parent.deleteModel(row) );
 					this.$parent.clearSelection();
 				}
-			},
-
-			validate()	{
-				let res = this.$refs.form.validate();
-
-				if (this.schema.events && isFunction(this.schema.events.onValidated)) {
-					this.schema.events.onValidated(this.model, this.$refs.form.errors, this.schema);
-				}
-
-				if (!res) {
-					// Set focus to first input with error
-					this.$nextTick(() => {
-						let el = document.querySelector("div.form tr.error input:nth-child(1)");
-						if (el)
-							el.focus();
-					});
-				}
-
-				return res;	
 			}
+		}
 
-		},
-
-		created() {
+		, created() {
 		}	
 				
 	};

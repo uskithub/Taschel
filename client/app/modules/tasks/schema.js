@@ -9,7 +9,6 @@ import { find } from "lodash";
 let _ = Vue.prototype._;
 
 module.exports = {
-
 	id: "tasks"
 	, title: _("Tasks (by TaskPage)")
 	, table: {
@@ -25,43 +24,50 @@ module.exports = {
 		}
 
 	}
-	, projectSelector: generate(
-		areaTypes.form
-		, ["project"]
-	)
-	, form : generate(
-		areaTypes.form
-		, ["code", "root", "type","name", "purpose", "goal", "asignee", "lastCommunication", "status"]
-	)
-	, options: {
-		searchable: true,
+	, projectSelector: generate(areaTypes.form, ["project"])
+	, popupForm : {
+		title : ""
+		, form : generate(
+			areaTypes.form
+			, ["code", "root", "type","name", "purpose", "goal", "asignee", "lastCommunication", "status"]
+		)
+		, options: {
+			searchable: true
 
-		enableNewButton: true,
-		enabledSaveButton: true,
-		enableDeleteButton: true,
-		enableCloneButton: false,
-
-		validateAfterLoad: false, // Validate after load a model
-		validateAfterChanged: false, // Validate after every changes on the model
-		validateBeforeSave: true // Validate before save a model
+			, isAddButtonEnable: true
+			, isSaveButtonEnable: true
+			, isCloseButtonEnable: true
+			, isBreakdownButtonEnable: true
+			, isCloneButtonEnable: true
+			, isDeleteButtonEnable: true
+			, isCancelButtonEnable: true
+	
+			, validateAfterLoad: false // Validate after load a model
+			, validateAfterChanged: false // Validate after every changes on the model
+			, validateBeforeSave: true // Validate before save a model
+		}
+		, resources: {
+			saveCaption: _("Save")
+			, closeCaption: _("Close")
+			, breakdownCaption: _("Breakdown")
+			, cloneCaption: _("Clone")
+			, deleteCaption: _("Delete")
+			, cancelCaption: _("Cancel")
+		}
 	}
 	, events: {
-		onSelect: null,
-		onNewItem: null,
-		onCloneItem: null,
-		onSaveItem: null,
-		onDeleteItem: null,
-		onChangeItem: null,
-		onValidated(model, errors, schema) {
+		onSelect: null
+		, onNewItem: null
+		, onCloneItem: null
+		, onSaveItem: null
+		, onDeleteItem: null
+		, onChangeItem: null
+		, onValidated(model, errors, schema) {
 			if (errors.length > 0)
 				console.warn("Validation error in page! Errors:", errors, ", Model:", model);
 		}
 	}
 	, resources: {
-		addCaption: _("追加／更新／削除"),
-		saveCaption: _("Save"),
-		cloneCaption: _("Clone"),
-		deleteCaption: _("Delete")
+		addCaption: _("Add")
 	}
-
 };

@@ -69,6 +69,9 @@
 				if (targetModel.root && targetModel.root != -1) {
 					targetModel.root_code = (targetModel.root.code) ? targetModel.root.code : targetModel.root;
 				} 
+				if (targetModel.asignee && targetModel.asignee != -1) {
+					targetModel.asignee_code = (targetModel.asignee.code) ? targetModel.asignee.code : targetModel.asignee;
+				}
 				this.model = targetModel;
 			}
 		}

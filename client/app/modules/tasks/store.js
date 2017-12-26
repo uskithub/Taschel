@@ -32,9 +32,22 @@ const mutations = {
 		state.tasks.push(...models);
 	}
 	, [ADD] (state, models) {
-		let isNotUpdate = !find(state.selectedTasks, (item) => item.code == models.code);
-		if (isNotUpdate) {
-			state.tasks.push(models);
+
+		if (models.parent) {
+			// { parent, child}の形で来た場合
+			each(state.tasks, (item) => {
+				if (item.code == models.parent.code)
+					assign(item, models.parent);
+			});
+			let isNotUpdate = !find(state.tasks, (item) => item.code == models.child.code);
+			if (isNotUpdate) {
+				state.tasks.push(models.child);
+			}
+		} else {
+			let isNotUpdate = !find(state.tasks, (item) => item.code == models.code);
+			if (isNotUpdate) {
+				state.tasks.push(models);
+			}
 		}
 	}
 	, [SELECT] (state, row, multiSelect) {
@@ -63,7 +76,7 @@ const mutations = {
 		state.selectedTasks.splice(0);
 	}
 	, [UPDATE] (state, model) {
-		each(state.selectedTasks, (item) => {
+		each(state.tasks, (item) => {
 			if (item.code == model.code)
 				assign(item, model);
 		});

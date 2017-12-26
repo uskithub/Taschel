@@ -149,6 +149,10 @@ module.exports = {
 				if (ctx.params.status != null)
 					doc.status = ctx.params.status;
 
+				if (ctx.params.asignee_code != null) {
+					doc.asignee = this.personService.decodeID(ctx.params.asignee_code);
+				}
+
 				return doc.save();
 			})
 			.then((doc) => {
