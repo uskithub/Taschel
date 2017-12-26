@@ -134,6 +134,7 @@
 				, updateTask : "updateTask"
 				, createTask : "createTask"
 				, deleteTask : "deleteTask"
+				, checkTask : "checkTask"
 			})
 			, ...mapActions("session", [
 				"getSessionUser"

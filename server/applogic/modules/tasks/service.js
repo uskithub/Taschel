@@ -41,6 +41,9 @@ module.exports = {
 		find: {
 			cache: true,
 			handler(ctx) {
+				// DEBUG
+				if (ctx.params.check) { return this.actions.check(ctx); }
+
 				let filter = {};
 
 				if (ctx.params.type !== undefined) {
@@ -323,6 +326,51 @@ module.exports = {
 					};
 				}
 			});			
+		}
+
+		, check(ctx) {
+			let recursiveReduceCheck = (children, parent, rootId, result = { entities:[], errors:[] }) => {
+				return children.reduce((data, child) => {
+					const cid = this.taskService.decodeID(child.code);
+					const cpid = (child.parent == -1) ? -1 : this.taskService.decodeID(child.parent);
+					const crid = (child.root == -1) ? -1 : this.taskService.decodeID(child.root);
+					const pid = this.taskService.decodeID(parent.code);
+					if (parent.type == "project") {
+						if (parent.parent && parent.parent != -1) {
+							const ppid = this.taskService.decodeID(parent.parent);
+							data.errors.push(`project[${pid}] must not have any parent(parent[${ppid}])`);
+						}
+					}
+					if (cpid != pid) {
+						data.errors.push(`child[${cid}].parent[${cpid}] != parent[${pid}].code`);
+					}
+					if (crid != rootId) {
+						data.errors.push(`child[${cid}].root[${crid}] != root[${rootId}].code`);
+					}
+					
+					data.entities.push(cid);
+
+					if (child.children == null || child.children.length == 0) {
+						return data;
+					} else {
+						return recursiveReduceCheck(child.children, child, rootId, data);
+					}
+				}, result);
+			};
+
+			return this.collection.find({ root : -1 }).exec()
+			.then(docs => {
+				return this.toJSON(docs);
+			})
+			.then(jsons => {
+				return this.populateModels(jsons);
+			})
+			.then(jsons => {
+				return jsons.reduce((obj, project) => {
+					const rootId = this.taskService.decodeID(project.code);
+					return recursiveReduceCheck(project.children, project, rootId, obj);
+				}, { entities:[], errors:[] })
+			});
 		}
 	}
 	

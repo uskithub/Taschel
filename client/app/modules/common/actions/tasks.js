@@ -43,6 +43,15 @@ let recursiveRevertParentReference = function(model) {
 
 // { commit } はES2015 の引数分割束縛（argument destructuring）という文法
 
+export const checkTask = ({ commit }) => {
+	return api(METHOD.get, `${NAMESPACE}?check=true`)
+	.then(data => {
+		console.log(`● !!checked`, data);
+		// if (mutation)
+		// 	commit(mutation, data, { root : (mutation.indexOf("/") > -1) });
+	});
+};
+
 export const createTask = ({ commit }, { model, mutation }) => {
 	return api(METHOD.post, NAMESPACE, model)
 	.then(data => {
