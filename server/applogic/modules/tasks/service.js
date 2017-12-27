@@ -7,6 +7,13 @@ let C 	 		= require("../../../core/constants");
 let _			= require("lodash");
 
 let Task 		= require("./models/task");
+let Group 		= require("../groups/models/group");
+
+const DEFAULT_KANBAN_GROUPS = [
+	{ name: "TODO", purpose: "for_the_tasks_to_do_from_now" }
+	, { name: "IN_PROGRESS", purpose: "for_the_tasks_now_people_doing" }
+	, { name: "DONE" , purpose: "for_the_tasks_finished_already" }
+];
 
 module.exports = {
 	settings: {
@@ -101,6 +108,29 @@ module.exports = {
 
 			return task.save()
 			.then((doc) => {
+
+				if (ctx.params.type == "project") {
+					// kanbanを作る
+					// 配列の順番になるように、reduceで作っている
+					DEFAULT_KANBAN_GROUPS.reduce((promise, g) => {
+						return promise.then(()=> {
+							g.type = "kanban";
+							g.parent =  doc.id;
+							g.author = doc.author;
+							let group = new Group(g);
+							return group.save();
+						});
+					}, Promise.resolve());
+
+					return Promise.all(promises).then((docs) => {
+						return this.toJSON(docs);
+					})
+
+				} else {
+
+				}
+
+
 				return this.toJSON(doc);
 			})
 			.then((json) => {

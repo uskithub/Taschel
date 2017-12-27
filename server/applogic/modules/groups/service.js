@@ -120,17 +120,18 @@ module.exports = {
 						if (jsons.length == 0) {
 							// TODO: 該当週のデータがないならないで返す？
 							// this.notifyNotSetupYet(ctx);
-							let promises = [];
-
-							DEFAULT_WEEKLY_GROUPS.forEach( g => {
-								g.type = type;
-								g.parent =  -1;
-								g.author = ctx.user.id;
-								let group = new Group(g);
-								promises.push(group.save());
-							});
-
-							return Promise.all(promises).then((docs) => {
+							
+							// 配列の順番になるように、reduceで作っている
+							return DEFAULT_WEEKLY_GROUPS.reduce((promise, g) => {
+								return promise.then(()=> {
+									g.type = type;
+									g.parent =  -1;
+									g.author = ctx.user.id;
+									let group = new Group(g);
+									return group.save();
+								});
+							}, Promise.resolve())
+							.then((docs) => {
 								return this.toJSON(docs);
 							})
 							.then((jsons) => {
