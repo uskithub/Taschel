@@ -135,33 +135,26 @@ export const arrangeTask = ({ commit }, { moving, target, type }) => {
         // 更新対象：
         //    - movingのparent（children）
         //    - moving（parent）
-        //    - targetのparent（children）
-		axios.put(`${NAMESPACE}/${moving.code}?arrange=above&target=${target.code}&targetParent=${targetParentCode}`, moving).then((response) => {
-			let res = response.data;
-	
-			if (res.data) {
-				// ClientはClientで入れ替えをしている
-				movingParent.children = movingParent.children.filter(c => c.code != moving.code);
-				moving.parent = target.parent;
-				recursiveSetParentReference(moving);
-				let index = 0;
-				for (let i in target.parent.children) {
-					let c = target.parent.children[i];
-					if (c.code == target.code) {
-						break;
-					}
-					index++;
-				}
-				target.parent.children.splice(index, 0, moving);
-				
-				//console.log("above: after ", index,  target.parent.children.map(c => c.name));
-			}
-		}).catch((response) => {
-			console.log("● err", response);
-			moving.parent = movingParent;
+		//    - targetのparent（children）
+		api(METHOD.put
+			, `${NAMESPACE}/${moving.code}?arrange=above&target=${target.code}&targetParent=${targetParentCode}`
+			, moving)
+		.then(data => {
+			// ClientはClientで入れ替えをしている
+			movingParent.children = movingParent.children.filter(c => c.code != moving.code);
+			moving.parent = target.parent;
 			recursiveSetParentReference(moving);
-			if (response.data.error)
-				toastr.error(response.data.error.message);
+			let index = 0;
+			for (let i in target.parent.children) {
+				let c = target.parent.children[i];
+				if (c.code == target.code) {
+					break;
+				}
+				index++;
+			}
+			target.parent.children.splice(index, 0, moving);
+			
+			//console.log("above: after ", index,  target.parent.children.map(c => c.name));
 		});
         
 	} else if (type == "into") {
@@ -173,24 +166,17 @@ export const arrangeTask = ({ commit }, { moving, target, type }) => {
         //    - movingのparent（children）
         //    - moving（parent）
 		//    - target（children）
-		axios.put(`${NAMESPACE}/${moving.code}?arrange=into&target=${target.code}`, moving).then((response) => {
-			let res = response.data;
-
-			if (res.data) {
-				// ClientはClientで入れ替えをしている
-				movingParent.children = movingParent.children.filter(c => c.code != moving.code);
-				moving.parent = target;
-				recursiveSetParentReference(moving);
-				target.children.unshift(moving);
-				
-				// console.log("into: after ", target.children.map(c => c.name));
-			}
-		}).catch((response) => {
-			console.log("● err", response);
-			moving.parent = movingParent;
+		api(METHOD.put
+			, `${NAMESPACE}/${moving.code}?arrange=into&target=${target.code}`
+			, moving)
+		.then(data => {
+			// ClientはClientで入れ替えをしている
+			movingParent.children = movingParent.children.filter(c => c.code != moving.code);
+			moving.parent = target;
 			recursiveSetParentReference(moving);
-			if (response.data.error)
-				toastr.error(response.data.error.message);
+			target.children.unshift(moving);
+			
+			// console.log("into: after ", target.children.map(c => c.name));	
 		});
 		
 	} else {
@@ -202,32 +188,25 @@ export const arrangeTask = ({ commit }, { moving, target, type }) => {
         //    - movingのparent（children）
         //    - moving（parent）
 		//    - targetのparent（children）
-		axios.put(`${NAMESPACE}/${moving.code}?arrange=below&target=${target.code}&targetParent=${targetParentCode}`, moving).then((response) => {
-			let res = response.data;
-
-			if (res.data) {
-				// ClientはClientで入れ替えをしている
-				movingParent.children = movingParent.children.filter(c => c.code != moving.code);
-				moving.parent = target.parent;
-				recursiveSetParentReference(moving);
-				let index = 0;
-				for (let i in target.parent.children) {
-					let c = target.parent.children[i];
-					if (c.code == target.code) {
-						break;
-					}
-					index++;
-				}
-				target.parent.children.splice(index+1, 0, moving);
-				
-				//console.log("below: after ", index,  target.parent.children.map(c => c.name));
-			}
-		}).catch((response) => {
-			console.log("● err", response);
-			moving.parent = movingParent;
+		api(METHOD.put
+			, `${NAMESPACE}/${moving.code}?arrange=below&target=${target.code}&targetParent=${targetParentCode}`
+			, moving)
+		.then(data => {
+			// ClientはClientで入れ替えをしている
+			movingParent.children = movingParent.children.filter(c => c.code != moving.code);
+			moving.parent = target.parent;
 			recursiveSetParentReference(moving);
-			if (response.data.error)
-				toastr.error(response.data.error.message);
+			let index = 0;
+			for (let i in target.parent.children) {
+				let c = target.parent.children[i];
+				if (c.code == target.code) {
+					break;
+				}
+				index++;
+			}
+			target.parent.children.splice(index+1, 0, moving);
+			
+			//console.log("below: after ", index,  target.parent.children.map(c => c.name));
 		});
 	}
 };

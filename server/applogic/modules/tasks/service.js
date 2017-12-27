@@ -270,7 +270,7 @@ module.exports = {
 			// above/into/below共通
 			// 1. (moving->parent).cildrenからmovingを削除
 			promises.push(this.collection.findById(parentId).exec()
-				.then((parentDoc) => {
+				.then(parentDoc => {
 					parentDoc.children = parentDoc.children.filter(c => c != movingId);
 					parentDoc.save();
 
@@ -294,7 +294,7 @@ module.exports = {
 						} else {
 							return this.collection.findById(targetParentId).exec();
 						}
-					}).then((targetParentDoc) => {
+					}).then(targetParentDoc => {
 						let index = 0;
 						for (let i in targetParentDoc.children) {
 							let c = targetParentDoc.children[i];
@@ -314,7 +314,7 @@ module.exports = {
 			);
 			
 			promises.push(this.collection.findById(movingId).exec()
-				.then((movingDoc) => {
+				.then(movingDoc => {
 					if (type == "into") {
 						// into 2. moving.parentにtargetを設定
 						movingDoc.parent = targetId;
@@ -329,18 +329,18 @@ module.exports = {
 			);
 
 			return Promise.all(promises)
-			.then((docs) => {
+			.then(docs => {
 				// flatten
 				return [docs[1], docs[0][0], docs[0][1]];
 			})
-			.then((docs) => {
+			.then(docs => {
 				console.log("●", docs);
 				return this.toJSON(docs);
 			})
-			.then((jsons) => {
+			.then(jsons => {
 				return this.populateModels(jsons);
 			})
-			.then((jsons) => {
+			.then(jsons => {
 				this.notifyModelChanges(ctx, "arranged", jsons);
 				if (type == "into") {
 					return {
