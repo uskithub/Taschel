@@ -94,23 +94,13 @@
 			}
 		}
 		, watch: {
-			projects(newProjects) {
-				this.projectSelector.fields.forEach(f => {
-					if (f.model == "code") {
-						f.values = newProjects.map(p => {
-							return { id : p.code, name : p.name }
-						});
-					}
-				});	
-			} 
 
 			// 呼ばれるけど、初めしか値が変わらない
 			// , modelProjectSelector(model) {
 			// 	console.log("●", model);	
 			// }
-		},
-
-		methods: {
+		}
+		, methods: {
 			selectProject(newVal, schema) {
 				console.log(`● ${schema}: ${newVal}`);
 				this.$emit("select-project", newVal);

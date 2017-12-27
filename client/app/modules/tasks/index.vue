@@ -257,8 +257,14 @@
 				this.model = null;
 			}
 			, setupProjectsField() {
-				console.log("● tasks", this.currentProject);
 				// 動的にプロジェクト一覧を設定している
+				this.schema.projectSelector.fields.forEach(f => {
+					if (f.model == "code") {
+						f.values = this.projects.map(p => {
+							return { id : p.code, name : p.name }
+						});
+					}
+				});	
 				this.schema.popupForm.form.fields.forEach(f => {
 					if (f.model == "root_code") {
 						f.values = this.projects.map(project => {
@@ -292,12 +298,16 @@
 		 */
 		created() {
 			// projectの選択が変わったら、初期値を変える
+			// watchでやると初回時などに呼ばれないのでsubscribeしている
 			this.$store.subscribe((mutation, state) => {
-				if (mutation.type == `shared/${LOAD_PROJECTS}`
-					|| mutation.type == `shared/${SET_CURRENT_PROJECT}`
-				) {
+				if (mutation.type == `shared/${LOAD_PROJECTS}`) {
 					this.setupProjectsField();
 				}
+
+				if (mutation.type == `shared/${SET_CURRENT_PROJECT}`) {
+					this.setupProjectsField();
+				}
+				
 				if (mutation.type == `shared/${LOAD_USERS}`) {
 					this.setupAsigneeField();
 				}
