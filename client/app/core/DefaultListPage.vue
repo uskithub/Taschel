@@ -149,7 +149,6 @@
 		border-radius: 8px;
 
 		.buttons {
-			max-width: 400px;
 			padding: 0.5em;
 		}
 

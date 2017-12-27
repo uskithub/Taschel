@@ -9,15 +9,12 @@ import { find } from "lodash";
 let _ = Vue.prototype._;
 
 module.exports = {
-
 	id: "kanban"
 	, title: _("Kanban")
-	, projectSelector: generate(
-		areaTypes.form
-		, ["project"]
-	)
+	, projectSelector: generate(areaTypes.form, ["project"])
 	, popupForm : {
-		form: {
+		title : ""
+		, form: {
 			fields: [
 				{
 					type: "select",
@@ -47,45 +44,42 @@ module.exports = {
 					validator: validators.string
 				}
 			]
-			, options : {
-				searchable: true
-		
-				, isNewButtonEnable: true
-				, isSaveButtonEnable: true
-				, isCloseButtonEnable: true
-				, isBreakdownButtonEnable: true
-				, isCloneButtonEnable: true
-				, isDeleteButtonEnable: true
-				, isCancelButtonEnable: true
-		
-				, validateAfterLoad: false // Validate after load a model
-				, validateAfterChanged: false // Validate after every changes on the model
-				, validateBeforeSave: true // Validate before save a model
-			}
-			, resources: {
-				saveCaption: _("Save")
-				, cloneCaption: _("Clone")
-				, cancelCaption: _("Cancel")
-			}
+		}
+		, options : {
+			searchable: true
+	
+			, isAddButtonEnable: true
+			, isSaveButtonEnable: true
+			, isCloseButtonEnable: false
+			, isBreakdownButtonEnable: false
+			, isCloneButtonEnable: false
+			, isDeleteButtonEnable: true
+			, isCancelButtonEnable: true
+	
+			, validateAfterLoad: false // Validate after load a model
+			, validateAfterChanged: false // Validate after every changes on the model
+			, validateBeforeSave: true // Validate before save a model
+		}
+		, resources: {
+			saveCaption: _("Save")
+			, deleteCaption: _("Delete")
+			, cancelCaption: _("Cancel")
 		}
 	}
 	, events: {
-		onSelect: null,
-		onNewItem: null,
-		onCloneItem: null,
-		onSaveItem: null,
-		onDeleteItem: null,
-		onChangeItem: null,
-		onValidated(model, errors, schema) {
+		onSelect: null
+		, onNewItem: null
+		, onCloneItem: null
+		, onSaveItem: null
+		, onDeleteItem: null
+		, onChangeItem: null
+		, onValidated(model, errors, schema) {
 			if (errors.length > 0)
 				console.warn("Validation error in page! Errors:", errors, ", Model:", model);
 		}
 	}
 	, resources: {
-		addCaption: _("追加／更新／削除"),
-		saveCaption: _("Save"),
-		cloneCaption: _("Clone"),
-		deleteCaption: _("Delete")
+		addCaption: _("Add")
 	}
 
 };

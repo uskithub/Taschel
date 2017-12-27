@@ -10,7 +10,7 @@
 			.right {{ _("SelectedOfAll", { selected: selectedTasks.length, all: tasks.length } ) }}
 		br
 		.form
-			vue-form-generator(:schema="projectSelector", :model="modelProjectSelector", ref="projectSelector", @model-updated="selectProject")
+			vue-form-generator(:schema="schema.projectSelector", :model="modelProjectSelector", ref="projectSelector", @model-updated="selectProject")
 
 		data-table(v-if="selectedProject", :schema="schema.table", :rows="tasks", :order="order", :search="search", :selected="selectedTasks", :select="select", :select-all="selectAll")
 
@@ -76,7 +76,6 @@
 					field: "id",
 					direction: 1
 				}
-				, projectSelector: this.schema.projectSelector
 				// 選択したプロジェクトが格納される
 				, modelProjectSelector: {
 					code : this.selectedProject
@@ -137,42 +136,7 @@
 			, breakdown() { this.$emit("breakdown"); }
 			, remove() { this.$emit("remove"); }		// deleteは予約語なので怒られる
 			, cancel() { this.$emit("cancel"); }
-
-
-			, buttonSaveDidPush() {
-				console.log("Save model...");
-				if (this.options.validateBeforeSave === false ||  this.validate()) {
-
-					if (this.isNewModel)
-						this.$parent.createModel(this.model);
-					else
-						this.$parent.updateModel(this.model);
-
-				} else {
-					// Validation error
-				}
-			}
-
-			, buttonCloneDidPush() {
-				console.log("Clone model...");
-				let baseModel = this.model;
-				this.$parent.clearSelection();
-
-				let newRow = cloneDeep(baseModel);
-				newRow.id = null;
-				newRow.code = null;
-				this.isNewModel = true;
-				this.model = newRow;
-			}
-
-			, buttonDeleteDidPush() {
-				if (this.selected.length > 0) {
-					each(this.selected, (row) => this.$parent.deleteModel(row) );
-					this.$parent.clearSelection();
-				}
-			}
 		}
-
 		, created() {
 		}	
 				
@@ -194,7 +158,6 @@
 		border-radius: 8px;
 
 		.buttons {
-			max-width: 400px;
 			padding: 0.5em;
 		}
 

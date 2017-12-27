@@ -152,7 +152,6 @@
 				} else {
 					this.loadTasks([]);
 				}
-				
 			}
 			, generateModel() {
 				this.schema.popupForm.title = _("CreateNewTask");
@@ -175,7 +174,6 @@
 				newModel.asignee_code = this.me.code;
 				this.model = newModel;
 			}
-
 			, save(model) {
 				this.clearSelection();
 				if (model.code) {
@@ -326,7 +324,7 @@
 			if (this.currentProject) {
 				this.getTasks({
 					options: { root : this.currentProject }
-					, mutation: `tasksPage/${LOAD}`
+					, mutation: LOAD
 				});
 			}
 

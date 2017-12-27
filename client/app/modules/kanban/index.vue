@@ -1,6 +1,10 @@
 <template lang="pug">
-	kanban-page(:schema="schema", :selectedProject="currentProject", :projects="projects", :groups="groups", :tasks="tasks"
-		, :save-model="saveModel"
+	kanban-page(:schema="schema", :selectedProject="currentProject", :projects="projects", :groups="groups", :tasks="tasks", :model="model"
+		, @add="generateModel"
+		, @select-project="selectProject"
+		, @save="save"
+		, @remove="remove"
+		, @cancel="cancel"
 	)
 </template>
 
@@ -8,6 +12,9 @@
 	import Vue from "vue";
 	import KanbanPage from "../../core/DefaultKanbanPage.vue";
 	import schema from "./schema";
+	import { schema as schemaUtils } from "vue-form-generator";
+	import { cloneDeep } from "lodash";
+
 	import toast from "../../core/toastr";
 
 	import { mapGetters, mapMutations, mapActions } from "vuex";
@@ -39,6 +46,7 @@
 			return {
 				// task-pageに当てはめる値を定義したオブジェクト
 				schema
+				, model: null
 			};
 		}
 
@@ -53,7 +61,7 @@
 				 * @param  {Object} res Task object
 				 */
 				created(res) {
-					this.created(res.data);
+					// this.created(res.data);
 					toast.success(this._("GroupAdded", res), this._("追加しました"));
 				},
 
@@ -62,7 +70,7 @@
 				 * @param  {Object} res Task object
 				 */
 				updated(res) {
-					this.updated(res.data);
+					// this.updated(res.data);
 					toast.success(this._("GroupUpdated", res), this._("更新しました"));
 				},
 
@@ -71,7 +79,7 @@
 				 * @param  {Object} res Response object
 				 */
 				removed(res) {
-					this.removed(res.data);	
+					// this.removed(res.data);	
 					toast.success(this._("GroupDeleted", res), this._("削除しました"));
 				}
 			}
@@ -82,29 +90,64 @@
 				setCurrentProject : SET_CURRENT_PROJECT
 			})
 			, ...mapMutations("kanbanPage", {
-				updated : UPDATE
-				, created : ADD
+				created : ADD
+				, loadGroups : LOAD
+				, updated : UPDATE
 				, removed : REMOVE
 			})
 			, ...mapActions("kanbanPage", {
 				getProjects : "readTasks"
 				, getGroups : "readGroups"
 				, createGroup : "createGroup"
-				, deleteModel : "deleteTask"
 				, arrange : "updateGroups"
 			})
 			, selectProject(code) {
 				this.setCurrentProject(code);
-				this.getGroups({
-					options: { parent : code }
-					, mutation: LOAD
-				});
+				if (code) {
+					this.getGroups({
+						options: { parent : code }
+						, mutation: LOAD
+					});
+				} else {
+					this.loadGroups([]);
+				}
 			}
-			, deselectProject() {
-				this.setCurrentProject(code);
+			, generateModel() {
+				this.schema.popupForm.title = _("CreateNewGroup");
+
+				let newModel = schemaUtils.createDefaultObject(this.schema.popupForm.form);
+				if (this.currentProject) {
+					newModel.parent_code = this.currentProject;
+				}
+				this.model = newModel;
 			}
 			, saveModel(model) {
 				this.createGroup( { model, mutation: ADD } );
+			}
+			, save(model) {
+				if (model.code) {
+					// TODO: 更新処理
+					Console.log("TODO: update selected group.");
+				} else {
+					this.createGroup( { model, mutation: ADD } );
+				}
+			}
+			, remove(){ 
+				// TODO
+				Console.log("TODO: delete selected group.");
+			}
+			, cancel() {
+				this.model = null;
+			}
+			, setupProjectsField() {
+				// 動的にプロジェクト一覧を設定している
+				this.schema.projectSelector.fields.forEach(f => {
+					if (f.model == "code") {
+						f.values = this.projects.map(p => {
+							return { id : p.code, name : p.name }
+						});
+					}
+				});
 			}
 		}
 
@@ -112,7 +155,17 @@
 		 * Call if the component is created
 		 */
 		, created() {
-			if (this.projects.length == 0) {
+			// projectがロードされたらprojectSelectorを作る
+			// watchでやると初回時などに呼ばれないのでsubscribeしている
+			this.$store.subscribe((mutation, state) => {
+				if (mutation.type == `shared/${LOAD_PROJECTS}`) {
+					this.setupProjectsField();
+				}
+			});	
+
+			if (this.projects.length > 0) {
+				this.setupProjectsField();
+			} else {
 				this.getProjects({ 
 					options: { taskType : "project" }
 					, mutation: `shared/${LOAD_PROJECTS}`

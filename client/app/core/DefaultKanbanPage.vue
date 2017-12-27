@@ -3,19 +3,20 @@
 		h3.title {{ schema.title }}
 
 		.flex.align-center.justify-space-around
-			.left(v-if="isNewButtonEnable")
-				button.button.is-primary(@click="buttonNewDidPush")
+			.left(v-if="isAddButtonEnable")
+				button.button.is-primary(@click="buttonAddDidPush")
 					i.icon.fa.fa-plus 
 					| {{ schema.resources.addCaption || _("Add") }}
 		br
-		.form(v-if="projectSelector")
-			vue-form-generator(:schema="projectSelector", :model="modelProjectSelector", ref="projectSelector", @model-updated="modelUpdated")
+		.form
+			vue-form-generator(:schema="schema.projectSelector", :model="modelProjectSelector", ref="projectSelector", @model-updated="selectProject")
 
 		kanban(:boards="groups", :tasks="tasks", @update-handler="arrange")
 
-		popup-form(v-if="isEditing", :schema="schema.popupForm", :me="me", :selected="selected"
-			, :save-model="saveModelWrapper"
-			, :end-editing="endEditing"
+		popup-form(v-if="isEditing", :schema="schema.popupForm", :template="model"
+			, @save="save"
+			, @remove="remove"
+			, @cancel="cancel"
 		)
 </template>
 
@@ -37,13 +38,6 @@
 		}
 
         // task-page(:schema="schema", :selectedTasks="selectedTasks", :projects="projects", :tasks="tasks", :users="users") に対応させる
-		, props: [
-			"schema"
-			, "projects"
-			, "groups"
-			, "tasks"
-			, "selectedProject"
-		]
 		, props: {
 			schema : {
 				type: Object
@@ -67,14 +61,9 @@
 			, selectedProject : {
 				type: String 
 			}
-			, saveModel : {
-				type: Function
-			}
-			, updateModel : {
-				type: Function
-			}
-			, deleteModel : {
-				type: Function
+			, model : {
+				type: Object
+				, validator: function(value) { return true; } // TODO
 			}
 		}
 
@@ -84,12 +73,10 @@
 					field: "id"
 					, direction: 1
 				}
-
 				// 選択したプロジェクトが格納される
-				, modelProjectSelector:  {
+				, modelProjectSelector: {
 					code : this.selectedProject
 				}
-				, isEditingNewModel : false
             };
         }
 
@@ -98,36 +85,12 @@
 				search: "searchText"
 			})
 
-			, projectSelector() {
-				if (this.schema.projectSelector) {
-					this.schema.projectSelector.fields.forEach(f => {
-						if (f.model == "code") {
-							f.values = this.projects.map(project => {
-								return {
-									id : project.code
-									, name : project.name
-								}
-							});
-						}
-					});	
-					return this.schema.projectSelector;
-				} else {
-					return null;
-				}
-			}
-
 			, options() { return this.schema.popupForm.options || {}; }
-			, isNewButtonEnable() { return (this.options.isNewButtonEnable !== false); }
-			, isEditing() { return this.isEditingNewModel; }
+			, isAddButtonEnable() { return this.options.isAddButtonEnable !== false; }
+			, isEditing() { return this.model != null; }
 		}	
 
 		, watch: {
-			// propsで指定した名前に合わせる必要あり
-			selectedTask() {
-				console.log("●● selectedTask")
-				// if (!this.isNewModel)
-				// 	this.generateModel();
-			}
 
 			/*
 			model: {
@@ -140,28 +103,17 @@
 		},
 
 		methods: {
-
-			saveModelWrapper(model) {
-				this.isEditingNewModel = false;
-				this.saveModel(model);
-			}
-			, modelUpdated(newVal, schema) {
+			selectProject(newVal, schema) {
 				console.log(`● ${schema}: ${newVal}`);
-				if (newVal) {
-					this.$parent.selectProject(newVal);
-				} else {
-					this.$parent.deselectProject();
-				}
+				this.$emit("select-project", newVal);
 			}
 			// TODO: ネーミング気になる。統一感がないのでどうにかする
             , arrange(context) {
 				this.$parent.arrange(context);
             }
 
-			, buttonNewDidPush() {
-				console.log("Create new model...");
-
-				this.isEditingNewModel = true;
+			, buttonAddDidPush() {
+				this.$emit("add");
 
 				this.$nextTick(() => {
 					let el = document.querySelector("div.form input:nth-child(1):not([readonly]):not(:disabled)");
@@ -169,11 +121,10 @@
 						el.focus();
 				});
 			}
-			, endEditing() {
-				this.isEditingNewModel = false;
-			}
+			, save(model) { this.$emit("save", this.model); }
+			, remove() { this.$emit("remove"); }		// deleteは予約語なので怒られる
+			, cancel() { this.$emit("cancel"); }
 		}
-
 		, created() {
 		}	
 				
@@ -266,7 +217,6 @@
 		border-radius: 8px;
 
 		.buttons {
-			max-width: 400px;
 			padding: 0.5em;
 		}
 

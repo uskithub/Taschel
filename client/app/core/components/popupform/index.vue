@@ -86,11 +86,11 @@
 			}
 			, isDeleteButtonEnable() { 
 				return !this.isNewModel 
-					&& this.options.enableDeleteButton !== false
+					&& this.options.isDeleteButtonEnable !== false
 					;
 			}
 			, isCancelButtonEnable() { 
-				return this.options.enableCancelButton !== false;
+				return this.options.isCancelButtonEnable !== false;
 			}
 			, validationErrors() {
 				if (this.$refs.form && this.$refs.form.errors) 
