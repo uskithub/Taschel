@@ -63,7 +63,7 @@
 				}
 				// 選択したプロジェクトが格納される
 				, modelProjectSelector:  {
-					code : this.currentProject
+					code : this.selectedProject
 				}
             };
 		}
