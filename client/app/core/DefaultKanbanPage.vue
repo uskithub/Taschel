@@ -85,7 +85,13 @@
 				search: "searchText"
 			})
 
-			, options() { return this.schema.popupForm.options || {}; }
+			, options() { 
+				if (this.schema.popupForm) {
+					return this.schema.popupForm.options || {}; 
+				} else {
+					return {};
+				}
+			}
 			, isAddButtonEnable() { return this.options.isAddButtonEnable !== false; }
 			, isEditing() { return this.model != null; }
 		}	

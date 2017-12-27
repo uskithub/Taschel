@@ -273,6 +273,7 @@
 				});
 			}
 
+			// TODO: sessionから取るようにすればparamでuserを渡さなくてもできるはず
 			if (this.me) {
 				this.getTasks({ 
 					options: { user : this.me.code }

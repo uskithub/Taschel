@@ -28,8 +28,20 @@ const mutations = {
 		state.groups.splice(0);
 		state.groups.push(...models);
 	}
-	, [ADD] (state, model) {
-		state.groups.push(model);
+	, [ADD] (state, models) {
+		if (models.child) {
+			// { parent, child }の形で来た場合
+			// parentはrootのprojectなので無視
+			let isNotUpdate = !find(state.groups[0].children, (item) => item.code == models.child.code);
+			if (isNotUpdate) {
+				state.groups[0].children.push(models.child);
+			}
+		} else {
+			let isNotUpdate = !find(state.groups[0].children, (item) => item.code == models.code);
+			if (isNotUpdate) {
+				state.groups[0].children.unshift(models);
+			}
+		}	
 	}
 	, [UPDATE] (state, model) {
 		each(state.groups, (item) => {

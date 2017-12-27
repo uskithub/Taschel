@@ -10,7 +10,7 @@ let _ = Vue.prototype._;
 
 module.exports = {
 	id: "kanban"
-	, title: _("Kanban")
+	, title: _("Kanban (by KanbanPage)")
 	, projectSelector: generate(areaTypes.form, ["project"])
 	, popupForm : {
 		title : ""

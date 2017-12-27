@@ -9,39 +9,34 @@ import { find } from "lodash";
 let _ = Vue.prototype._;
 
 module.exports = {
-
 	id: "weekly"
-	, title: _("Weekly")
-	, form: {
-		fields: [
-			{
-				type: "select",
-				label: _("GroupType"),
-				model: "type",
-				readonly: true,
-				disabled: true,
-				values: groupTypes,
-				default: "kanban"
-			}
-			, {
-				type: "text",
-				label: _("Name"),
-				model: "name",
-				featured: true,
-				required: true,
-				placeholder: _("タスクの名称（何をするかが連想できる様に）"),
-				validator: validators.string
-			}
-			, {
-				type: "text",
-				label: _("Purpose"),
-				model: "purpose",
-				placeholder: _("なぜそのタスクをするのか"),
-				featured: false,
-				required: true,
-				validator: validators.string
-			}
-		]
+	, title: _("Weekly (by KanbanPage)")
+	, popupForm : {
+		title : ""
+		, form : generate(
+			areaTypes.form
+			, [ "code", "root", "type", "name", "purpose", "goal"]
+		)
+		, options : {
+			searchable: true
+	
+			, isAddButtonEnable: true
+			, isSaveButtonEnable: true
+			, isCloseButtonEnable: true
+			, isBreakdownButtonEnable: true
+			, isCloneButtonEnable: true
+			, isDeleteButtonEnable: true
+			, isCancelButtonEnable: true
+	
+			, validateAfterLoad: false // Validate after load a model
+			, validateAfterChanged: false // Validate after every changes on the model
+			, validateBeforeSave: true // Validate before save a model
+		}
+		, resources: {
+			saveCaption: _("Save")
+			, deleteCaption: _("Delete")
+			, cancelCaption: _("Cancel")
+		}
 	}
 	, options: {
 		searchable: true,
@@ -56,22 +51,19 @@ module.exports = {
 		validateBeforeSave: true // Validate before save a model
 	}
 	, events: {
-		onSelect: null,
-		onNewItem: null,
-		onCloneItem: null,
-		onSaveItem: null,
-		onDeleteItem: null,
-		onChangeItem: null,
-		onValidated(model, errors, schema) {
+		onSelect: null
+		, onNewItem: null
+		, onCloneItem: null
+		, onSaveItem: null
+		, onDeleteItem: null
+		, onChangeItem: null
+		, onValidated(model, errors, schema) {
 			if (errors.length > 0)
 				console.warn("Validation error in page! Errors:", errors, ", Model:", model);
 		}
 	}
 	, resources: {
-		addCaption: _("Add"),
-		saveCaption: _("Save"),
-		cloneCaption: _("Clone"),
-		deleteCaption: _("Delete")
+		addCaption: _("Add")
 	}
 
 };

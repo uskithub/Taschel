@@ -32,7 +32,6 @@ const mutations = {
 		state.tasks.push(...models);
 	}
 	, [ADD] (state, models) {
-
 		if (models.child) {
 			// { parent, child }の形で来た場合
 			each(state.tasks, (item) => {

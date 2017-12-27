@@ -38,8 +38,8 @@ const mutations = {
 		state.selected.splice(0);
 	}
 	, [ADD] (state, model) {
-		let found = find(state.tasks, (item) => item.code == model.code);
-		if (!found)
+		let isNotUpdate = !find(state.tasks, (item) => item.code == model.code);
+		if (isNotUpdate)
 			state.tasks.push(model);
 	}
 	, [UPDATE] (state, model) {
