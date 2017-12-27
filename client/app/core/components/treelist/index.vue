@@ -45,6 +45,9 @@
     // TODO: この方法はどうも上手くいかない
     // import TreeList from "./treeList.vue";
     
+
+    import toast from "../../toastr";
+
     import $ from 'jquery';
     let _self = null;
 
@@ -146,6 +149,10 @@
             }
             // obj1がobj2の子の場合、trueを返す
             , isParent(obj1, obj2) {
+                if (obj1.parent == -1) {
+                    toast.error(this._("Data不整合"), this._("parentが-1です"));
+                    return true;
+                }
                 return (obj1.parent != undefined && obj1.parent.code == obj2.code);
             }
 
