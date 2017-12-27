@@ -11,7 +11,7 @@
 		.form
 			vue-form-generator(:schema="schema.projectSelector", :model="modelProjectSelector", ref="projectSelector", @model-updated="selectProject")
 
-		kanban(:boards="groups", :tasks="tasks", @update-handler="arrange")
+		kanban(:boards="groups", :tasks="tasks", @arrange="arrange")
 
 		popup-form(v-if="isEditing", :schema="schema.popupForm", :template="model"
 			, @save="save"
@@ -107,10 +107,8 @@
 				console.log(`● ${schema}: ${newVal}`);
 				this.$emit("select-project", newVal);
 			}
-			// TODO: ネーミング気になる。統一感がないのでどうにかする
-            , arrange(context) {
-				this.$parent.arrange(context);
-            }
+
+			, arrange(context) { this.$emit("arrange", context); }
 
 			, buttonAddDidPush() {
 				this.$emit("add");

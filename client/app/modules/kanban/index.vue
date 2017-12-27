@@ -1,5 +1,6 @@
 <template lang="pug">
 	kanban-page(:schema="schema", :selectedProject="currentProject", :projects="projects", :groups="groups", :tasks="tasks", :model="model"
+		, @arrange="arrange" 
 		, @add="generateModel"
 		, @select-project="selectProject"
 		, @save="save"
@@ -99,7 +100,7 @@
 				getProjects : "readTasks"
 				, getGroups : "readGroups"
 				, createGroup : "createGroup"
-				, arrange : "updateGroups"
+				, updateGroups : "updateGroups"
 			})
 			, selectProject(code) {
 				this.setCurrentProject(code);
@@ -112,6 +113,10 @@
 					this.loadGroups([]);
 				}
 			}
+			, arrange(context) {
+				context.mutation = UPDATE;
+				this.updateGroups(context);
+			}
 			, generateModel() {
 				this.schema.popupForm.title = _("CreateNewGroup");
 
@@ -121,15 +126,13 @@
 				}
 				this.model = newModel;
 			}
-			, saveModel(model) {
-				this.createGroup( { model, mutation: ADD } );
-			}
 			, save(model) {
 				if (model.code) {
 					// TODO: 更新処理
 					Console.log("TODO: update selected group.");
 				} else {
 					this.createGroup( { model, mutation: ADD } );
+					this.model = null; // if didn't set null here, otherwise popupForm doesn't disapper.
 				}
 			}
 			, remove(){ 

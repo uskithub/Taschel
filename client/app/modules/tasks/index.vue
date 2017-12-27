@@ -189,6 +189,7 @@
 						}
 					}
 					this.createTask( { model, mutation: ADD } );
+					this.model = null;
 				}
 			}
 

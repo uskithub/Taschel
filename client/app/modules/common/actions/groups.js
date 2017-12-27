@@ -1,4 +1,6 @@
 import Vue from "vue";
+import { METHOD, api } from "../api";
+
 import toastr from "../../../core/toastr";
 import { ADD, SELECT, UPDATE } from "../constants/mutationTypes";
 import axios from "axios";
@@ -13,16 +15,12 @@ export const NAMESPACE = "/api/groups";
 
 // { commit } はES2015 の引数分割束縛（argument destructuring）という文法
 
-export const createGroup = ({ commit }, model) => {
-	axios.post(NAMESPACE, model).then((response) => {
-		let res = response.data;
-
-		if (res.status == 200 && res.data) {
-			commit(ADD, res.data);
-		}
-	}).catch((response) => {
-		if (response.data.error)
-			toastr.error(response.data.error.message);
+export const createGroup = ({ commit }, { model, mutation }) => {
+	return api(METHOD.post, NAMESPACE, model)
+	.then(data => {
+		console.log(`● !!created mutation: ${ mutation }`, data);
+		if (mutation)
+			commit(mutation, data, { root : (mutation.indexOf("/") > -1) });
 	});
 };
 
@@ -46,21 +44,16 @@ export const readGroups = ({ commit }, { options, mutation }) => {
 		}
 	} 
 
-	axios.get(url).then((response) => {
-		let res = response.data;
-		if (res.status == 200 && res.data)
-			commit(mutation, res.data);
-		else
-			console.error("Request error!", res.error);
-
-	}).catch((response) => {
-		console.error("Request error!", response.statusText);
+	return api(METHOD.get, url)
+	.then(data => {
+		console.log(`● !!read mutation: ${ mutation }`, data);
+		if (mutation)
+			// 各Pageにアサインされたactionからsharedのmutationへcommitを可能にするため、roo:trueとしている
+			commit(mutation, data, { root : (mutation.indexOf("/") > -1) });
 	});
-
 };
 
-export const updateGroups = ({ commit }, { moving, from, to, index }) => {
-
+export const updateGroups = ({ commit }, { moving, from, to, index, mutation }) => {
 	console.log("● do update", { moving, from, to, index });
 
 	// ① from, to => UNCLASSIFIED, xxx
@@ -77,15 +70,10 @@ export const updateGroups = ({ commit }, { moving, from, to, index }) => {
 		? `${NAMESPACE}/${from}?task=${moving}&index=${index}&to=${UNCLASSIFIED}`
 		: `${NAMESPACE}/${to}?task=${moving}&index=${index}&from=${from}`;
 
-	axios.put(url).then((response) => {
-		let res = response.data;
-
-		console.log("●response", res);
-
-		if (res.data)
-			commit(UPDATE, res.data);
-	}).catch((response) => {
-		if (response.data.error)
-			toastr.error(response.data.error.message);
-	});	
+	return api(METHOD.put, url)
+	.then(data => {
+		console.log(`● !!updated mutation: ${ mutation }`, data);
+		if (mutation)
+			commit(mutation, data, { root : (mutation.indexOf("/") > -1) });
+	});
 };

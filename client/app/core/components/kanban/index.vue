@@ -50,7 +50,7 @@
 							if (ul.children[index].classList.contains("is-moving")) 
 								break;
 						}
-						this.$emit("update-handler", { moving: li.dataset.code
+						this.$emit("arrange", { moving: li.dataset.code
 							, from: previousBoardCode
 							, to: ul.dataset.code
 							, index: index 

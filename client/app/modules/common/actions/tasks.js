@@ -87,7 +87,7 @@ export const readTasks = ({ commit }, { options, mutation }) => {
 	.then(data => {
 		console.log(`● !!read mutation: ${ mutation }`, data);
 		if (mutation)
-			// 各Pageにアサインされたactionからsharedのmutationへcommitをかのうにするため、roo:trueとしている
+			// 各Pageにアサインされたactionからsharedのmutationへcommitを可能にするため、roo:trueとしている
 			commit(mutation
 				, (options && options.populateParent) ? data.map(d => recursiveSetParentReference(d)) : data
 				, { root : (mutation.indexOf("/") > -1) }
