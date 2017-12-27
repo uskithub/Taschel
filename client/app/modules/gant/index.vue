@@ -1,13 +1,13 @@
 <template lang="pug">
 	gant-page(:schema="schema", :selectedProject="currentProject", :projects="projects", :model="model"
-		, @add="generateModel"
-		, @select-project="selectProject"
-		, @arrange="arrangeTask"
-		, @save="save"
-		, @clone="clone"
-		, @breakdown="breakdown"
-		, @remove="remove"
-		, @cancel="cancel"
+		@add="generateModel"
+		@select-project="selectProject"
+		@arrange="arrangeTask"
+		@save="save"
+		@clone="clone"
+		@breakdown="breakdown"
+		@remove="remove"
+		@cancel="cancel"
 	)
 </template>
 

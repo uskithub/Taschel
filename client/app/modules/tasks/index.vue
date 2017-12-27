@@ -1,13 +1,13 @@
 <template lang="pug">
 	task-page(:schema="schema", :selectedProject="currentProject", :selectedTasks="selectedTasks", :projects="projects", :tasks="tasks", :model="model"
-		, @add="generateModel"
-		, @select-project="selectProject"
-		, @select="select"
-		, @save="save"
-		, @clone="clone"
-		, @breakdown="breakdown"
-		, @remove="remove"
-		, @cancel="cancel"
+		@add="generateModel"
+		@select-project="selectProject"
+		@select="select"
+		@save="save"
+		@clone="clone"
+		@breakdown="breakdown"
+		@remove="remove"
+		@cancel="cancel"
 	)
 </template>
 

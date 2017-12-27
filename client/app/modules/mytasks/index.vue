@@ -1,12 +1,12 @@
 <template lang="pug">
 	list-page(:schema="schema", :rows="tasks", :selected="selected", :model="model"
-		, @add="generateModel"
-		, @select="select"
-		, @save="save"
-		, @clone="clone"
-		, @breakdown="breakdown"
-		, @remove="remove"
-		, @cancel="cancel"
+		@add="generateModel"
+		@select="select"
+		@save="save"
+		@clone="clone"
+		@breakdown="breakdown"
+		@remove="remove"
+		@cancel="cancel"
 	)
 </template>
 

@@ -1,5 +1,13 @@
 <template lang="pug">
-	schedule-page(:schema="schema", :tasks="assignedInWeeklyTasks", :works="works", :currentWeek="currentWeek")
+	schedule-page(:schema="schema", :selected="selected", :tasks="assignedInWeeklyTasks", :works="works", :currentWeek="currentWeek", :model="model"
+		@assign="assign"
+		@select="select"
+		@update="updateWork"
+		@set-current-week="setCurrentWeek"
+		@save="save"
+		@remove="remove"
+		@cancel="cancel"
+	)
 </template>
 
 <script>
@@ -7,8 +15,10 @@
     import SchedulePage from "../../core/DefaultSchedulePage.vue";
 	import Popup from "../../core/components/popup";
 	import schema from "./schema";
-	import toast from "../../core/toastr";
+	import { schema as schemaUtils } from "vue-form-generator";
+	import { cloneDeep } from "lodash";
 
+	import toast from "../../core/toastr";
 	import moment from "moment";
 
 	import { mapGetters, mapMutations, mapActions } from "vuex";
@@ -32,7 +42,8 @@
 			])
 			, ...mapGetters("dailyPage", [
 				"assignedInWeeklyTasks"
-                , "works"
+				, "works"
+				, "selected"
 			])
 			, ...mapGetters("session", [
 				"me"
@@ -45,10 +56,37 @@
 		, data() {
 			return {
 				// task-pageに当てはめる値を定義したオブジェクト
-                schema
+				schema
+				, model: null
 			};
 		}
+		, watch: {
+			// clearSelectionを呼ぶと呼ばれる
+			selected(newWorks) {
+				if (newWorks.length == 0) {
+					this.model = null;
+					return;
+				}
+				const baseModel = newWorks[0];
+				this.schema.popupForm.title = `${baseModel.name} を編集`;
+				this.schema.popupForm.form.fields.forEach(f => {
+					if (f.model == "root_code") {
+						f.readonly = true;
+						f.disabled = true;
+					}
+					return f;
+				});
 
+				let targetModel = cloneDeep(baseModel);
+				if (targetModel.root && targetModel.root != -1) {
+					targetModel.root_code = (targetModel.root.code) ? targetModel.root.code : targetModel.root;
+				}
+				if (targetModel.asignee && targetModel.asignee != -1) {
+					targetModel.asignee_code = (targetModel.asignee.code) ? targetModel.asignee.code : targetModel.asignee;
+				}
+				this.model = targetModel;
+			}
+		}
 		/**
 		 * Socket handlers. Every property is an event handler
 		 */
@@ -77,7 +115,7 @@
 				 * @param  {Object} res Task object
 				 */
 				, created(res) {
-					this.created(res.data);
+					// this.created(res.data);
 					toast.success(this._("GroupAdded", res), this._("追加しました"));
 				}
 
@@ -86,7 +124,7 @@
 				 * @param  {Object} res Task object
 				 */
 				, updated(res) {
-					this.updated(res.data);
+					// this.updated(res.data);
 					toast.success(this._("GroupUpdated", res), this._("更新しました"));
 				}
 
@@ -95,7 +133,7 @@
 				 * @param  {Object} res Response object
 				 */
 				, removed(res) {
-					this.removed(res.data);	
+					// this.removed(res.data);	
 					toast.success(this._("GroupDeleted", res), this._("削除しました"));
 				}
 			}
@@ -108,15 +146,32 @@
 				, showPopup : SHOW_POPUP
 				, hidePopup : HIDE_POPUP
 			})
+			, ...mapMutations("dailyPage", {
+				select : SELECT
+				, clearSelection : CLEAR_SELECT
+			})
 			, ...mapActions("dailyPage", {
 				getAssignedInWeeklyTasks : "readGroups"
 				, assign : "createWork"
 				, readWorks : "readWorks"
-				, update : "updateWork"
+				, updateWork : "updateWork"
 			})
 			, ...mapActions("session", [
 				"getSessionUser"
 			])
+			, save(model) {
+				this.clearSelection();
+				this.updateWork( { model, mutation: UPDATE } );
+			}
+			, remove(){ 
+				// TODO:
+				// this.deleteWork( { model: this.selected[0], mutation: REMOVE } );
+				this.clearSelection();
+			}
+			, cancel() {
+				this.clearSelection();
+				this.model = null;
+			}
 		}
 
 		/**

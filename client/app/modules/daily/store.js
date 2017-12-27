@@ -3,7 +3,9 @@ import {
 	, LOAD_WORKS
 	, ADD_WORK
 	, UPDATE
-	, REMOVE 
+	, REMOVE
+	, SELECT
+	, CLEAR_SELECT 
 } from "../common/constants/mutationTypes";
 
 import { each, find, assign, remove, isArray } from "lodash";
@@ -11,12 +13,14 @@ import { each, find, assign, remove, isArray } from "lodash";
 const state = {
 	assignedInWeeklyTasks: []
 	, works: []
+	, selected: []
 };
 
 // stateから値を取り出すのはgetterを使う
 const getters = {
 	assignedInWeeklyTasks(state) { return state.assignedInWeeklyTasks; }
 	, works(state) { return state.works; }
+	, selected(state) { return state.selected; }
 };
 
 // mutationにはstateを変更する処理を実装する。
@@ -45,6 +49,26 @@ const mutations = {
 			if (item.code == model.code)
 				assign(item, model);
 		});
+	}
+	, [SELECT] (state, model, multiSelect) {
+		if (isArray(model)) {
+			state.selected.splice(0);
+			state.selected.push(...model);
+		} else {
+			if (multiSelect === true) {
+				if (state.selected.indexOf(model) != -1)
+					state.selected = state.selected.filter(item => item != model);
+				else
+					state.selected.push(model);
+
+			} else {
+				state.selected.splice(0);
+				state.selected.push(model);
+			}
+		}
+	}
+	, [CLEAR_SELECT] (state) {
+		state.selected.splice(0);
 	}
 };
 

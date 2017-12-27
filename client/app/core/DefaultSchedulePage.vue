@@ -14,27 +14,17 @@
 				li(class="drag-column", key="schedule")
 					full-calendar(:events="works", :options="schema.fullCalendar", :currentWeek="currentWeek")
 
-		.form(v-if="model")
-			vue-form-generator(:schema='schema.form', :model='model', :options='options', ref="form", :is-new-model="isNewModel")
-
-			.errors.text-center
-				div.alert.alert-danger(v-for="(item, index) in validationErrors", :key="index") {{ item.field.label }}: 
-					strong {{ item.error }}
-
-			.buttons.flex.justify-space-around
-				button.button.primary(@click="buttonSaveDidPush", :disabled="!enabledSave")
-					i.icon.fa.fa-save 
-					| {{ schema.resources.saveCaption || _("Save") }}
-				button.button.danger(@click="buttonDeleteDidPush", :disabled="!enabledDelete")
-					i.icon.fa.fa-trash 
-					| {{ schema.resources.deleteCaption || _("Delete") }}
+		popup-form(v-if="isEditing", :schema="schema.popupForm", :template="model"
+			, @save="save"
+			, @remove="remove"
+			, @cancel="cancel"
+		)
 </template>
 
 <script>
     import Vue from "vue";
-    import Kanban from "./components/kanban";
 	import FullCalendar from "./components/fullcalendar";
-	import { schema as schemaUtils } from "vue-form-generator";
+	import PopupForm from "./components/popupform";
 
 	import $ from "jquery";
 	import "jquery-ui/ui/widgets/draggable";
@@ -48,37 +38,57 @@
     export default {
 
         components: {
-            Kanban
-            , FullCalendar
+            FullCalendar
+			, PopupForm
 		}
-		
-        , props: [
-            "schema"
-			, "tasks"
-			, "works"
-			, "currentWeek"
-        ]
-    
+		, props: {
+			schema : {
+				type: Object
+				, required: true
+				, validator: function(value) { return true; } // TODO
+			}
+			, tasks : {
+				type: Array
+				, required: true
+				, validator: function(value) { return true; } // TODO
+			}
+			, works : {
+				type: Array
+				, required: true
+				, validator: function(value) { return true; } // TODO
+			}
+			, selected : {
+				type: Array
+				, required: true
+				, validator: function(value) { return true; } // TODO
+			}
+			, currentWeek : {
+				type: String
+				, required: true
+				, validator: function(value) { return true; } // TODO
+			}
+			, model : {
+				type: Object
+				, validator: function(value) { return true; } // TODO
+			}
+		}
         , data() {
             return {
 				events : this.works
-				, model: null
-				, isNewModel: false
             };
         }
 
         , computed: {
-			options() 		{ return this.schema.options || {};	}
-			, enabledSave() { return (this.model && this.options.enabledSaveButton !== false); }
-			, enabledDelete() { return (this.model && !this.isNewModel && this.options.enableDeleteButton !== false); }
-			, validationErrors() {
-				if (this.$refs.form && this.$refs.form.errors) 
-					return this.$refs.form.errors;
-
-				return [];
+			options() { 
+				if (this.schema.popupForm) {
+					return this.schema.popupForm.options || {}; 
+				} else {
+					return {};
+				}
 			}
+			, isAddButtonEnable() { return this.options.isAddButtonEnable !== false; }
+			, isEditing() { return this.model != null || this.selected.length > 0; }
 		}
-
 		, methods: {
 			makeDraggable() {
 				if (!this.$refs.items) {
@@ -100,26 +110,9 @@
 					});
 				});
 			}
-			, buttonSaveDidPush() {
-				console.log("Save model...", this.model);
-				// TODO:
-				if (this.options.validateBeforeSave === false ||  this.validate()) {
-					// if (this.isNewModel)
-					// 	this.$parent.saveRow(this.model);
-					// else
-					// 	this.$parent.updateRow(this.model);
-
-				} else {
-					// Validation error
-				}
-			}
-			, buttonDeleteDidPush() {
-				// TODO:
-				// if (this.selected.length > 0) {
-				// 	each(this.selected, (row) => this.$parent.removeRow(row) );
-				// 	this.$parent.clearSelection();
-				// }
-			}
+			, save(model) { this.$emit("save", this.model); }
+			, remove() { this.$emit("remove"); }		// deleteは予約語なので怒られる
+			, cancel() { this.$emit("cancel"); }
 		}
 		, created() {
 			this.schema.fullCalendar.drop = (date, jqEvent, ui, resourceId) => {
@@ -132,7 +125,7 @@
 					, parent_code : task.code
 					, week : this.currentWeek
 				};
-				this.$parent.assign(newModel);
+				this.$emit("assign", newModel);
 			};
 
 			this.schema.fullCalendar.eventDrop = (event, delta, revertFunc, jqEvent, ui, view) => {
@@ -140,7 +133,7 @@
 					code: event.code
 					, start : moment(event.start).format()
 				};
-				this.$parent.update(diff);
+				this.$emit("update", diff);
 			};
 
 			this.schema.fullCalendar.eventResize = (event, delta, revertFunc, jqEvent, ui, view) => {
@@ -148,15 +141,13 @@
 					code: event.code
 					, end : moment(event.end).format()
 				};
-				this.$parent.update(diff);
+				this.$emit("update", diff);
 			};
 
 			this.schema.fullCalendar.eventClick = (event, jqEvent, view) => {
 				console.log("●", event);
 
-				let newModel = schemaUtils.createDefaultObject(this.schema.form);
-				this.isNewModel = true;
-				this.model = newModel;
+				this.$emit("select", event);
 
 				this.$nextTick(() => {
 					let el = document.querySelector("div.form input:nth-child(1):not([readonly]):not(:disabled)");
@@ -166,13 +157,12 @@
 			};
 
 			this.schema.fullCalendar.viewRender = (view, elem) => {
-				this.$parent.setCurrentWeek(view.start.format("YYYY-MM-DD"));
+				this.$emit("set-current-week", view.start.format("YYYY-MM-DD"));
 			};
 		}
 		, updated() {
 			this.makeDraggable();
 		}
-
 		, mounted() {
 			this.makeDraggable();
 		}
@@ -266,7 +256,6 @@
 		border-radius: 8px;
 
 		.buttons {
-			max-width: 400px;
 			padding: 0.5em;
 		}
 
