@@ -4,11 +4,11 @@
 - [] タスクのformに開始日／期日を追加（自動的に工数を出す）
   - [] 日付入力のコンポーネントを使えるようにする
 - [x] TasksでのProjectへの子タスク追加時、rootしか指定していないが、parentも同時に指定するようにする（この場合、root=parent）
-- [] ProjectsにはBreakdownを出さないようにする（Adminコンポーネントにスイッチを仕込むか）
-- [] Tasksで、form入力時にはProjectの名前を表示するようにする
+- [x] ProjectsにはBreakdownを出さないようにする（Adminコンポーネントにスイッチを仕込むか）
+- [x] Tasksで、form入力時にはProjectの名前を表示するようにする
 - [] My Tasksも、選択の解除を可能にする
 - [x] My Tasksのformに、parent／root表示する
-- [] Tasks／MyTasksで、Cloneをしたとき、デフォルトのparent及びrootはコピー元と同じとするが、その後selectで選べるようにする（Cloneのときだけ場合分け？）
+- [x] Tasks／MyTasksで、Cloneをしたとき、デフォルトのparent及びrootはコピー元と同じとするが、その後selectで選べるようにする（Cloneのときだけ場合分け？）
 - [x] My Tasks でタスクツリーの Vueコンポーネントを作る
   - [x] タスクツリーを表示
   - [x] タスクツリーでタスクをドラッグ＆ドロップでぐりぐり移動
@@ -18,6 +18,7 @@
   - [x] カンバン（board）の追加
   - [x] タスクの移動
   - [x] タスクの保存
+  - [] カンバンの順序を変えられるようにする
 - [] 機能一覧を出したら見積りに使えるようにする
 - [] projectsでBreakdownが成功したあと、stepなのにprojectのdata-tableが増えてしまう
 - [] ジャーニーマップライクに配置できて、プロセス分析できるようにしたい

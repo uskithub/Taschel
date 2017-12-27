@@ -61,12 +61,24 @@
         // TODO: この方法はどうも上手くいかない
         // , components: {
 		// 	TreeList
-		// }
-        , props: [
-            "isRoot"
-            , "node"
-            , "add"
-        ]
+        // }
+        , props: {
+			isRoot: {
+				type: Boolean
+				, validator: function(value) { return true; } // TODO
+			}
+			, node: {
+				type: Object
+				, required: true
+				, validator: function(value) { return true; } // TODO
+            }
+            // this will be handed to child nodes recursively. So this is props not using $emit.
+			, add: {
+                type: Function
+                , required: true
+				, validator: function(value) { return true; } // TODO
+			}
+		}
         , computed: {
             itemIconClass () {
                 //return this.model.isLeaf ? 'icon-file' : 'icon-folder'

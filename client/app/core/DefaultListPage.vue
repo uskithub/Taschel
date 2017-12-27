@@ -121,7 +121,7 @@
 						el.focus();
 				});
 			}
-			, save(model) { this.$emit("save", this.model); }
+			, save(model) { this.$emit("save", model); }
 			, clone() { this.$emit("clone"); }
 			, breakdown() { this.$emit("breakdown"); }
 			, remove() { this.$emit("remove"); }		// deleteは予約語なので怒られる

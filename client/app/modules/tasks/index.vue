@@ -192,7 +192,6 @@
 					this.model = null;
 				}
 			}
-
 			, clone() {
 				const baseModel = this.selectedTasks[0]; 
 				this.schema.popupForm.title = `${baseModel.name} を元に新規作成`;
@@ -299,11 +298,9 @@
 			// projectの選択が変わったら、初期値を変える
 			// watchでやると初回時などに呼ばれないのでsubscribeしている
 			this.$store.subscribe((mutation, state) => {
-				if (mutation.type == `shared/${LOAD_PROJECTS}`) {
-					this.setupProjectsField();
-				}
-
-				if (mutation.type == `shared/${SET_CURRENT_PROJECT}`) {
+				if (mutation.type == `shared/${LOAD_PROJECTS}`
+					|| mutation.type == `shared/${SET_CURRENT_PROJECT}`
+				) {
 					this.setupProjectsField();
 				}
 				
