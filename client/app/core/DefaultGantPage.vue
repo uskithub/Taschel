@@ -94,6 +94,9 @@
 				console.log(`● ${schema}: ${newVal}`);
 				this.$emit("select-project", newVal);
 			}
+            , arrange(context) {
+                this.$emit("arrange", context);
+			}
             , buttonAddDidPush(e, node) {
 				this.$emit("add", node);
 
@@ -109,63 +112,31 @@
 			, remove() { this.$emit("remove"); }		// deleteは予約語なので怒られる
 			, cancel() { this.$emit("cancel"); }
 
-
-			, buttonSaveDidPush() {
-				console.log("Save model...", this.model);
-				if (this.options.validateBeforeSave === false ||  this.validate()) {
-
-					if (this.isNewModel)
-						this.$parent.createModel(this.model);
-					else
-						this.$parent.updateModel(this.model);
-
-				} else {
-					// Validation error
-				}
-			}
-
-			, buttonCloneDidPush() {
-				console.log("Clone model...");
-				let baseModel = this.model;
-				this.$parent.clearSelection();
-
-				let newRow = cloneDeep(baseModel);
-				newRow.id = null;
-				newRow.code = null;
-				this.isNewModel = true;
-				this.model = newRow;
-			}
-
 			, addNode() {
-                var node = new TreeNode('new node', false)
-                if (!this.data.children) this.data.children = []
-                this.data.addChildren(node)
+                let node = new TreeNode("new node", false);
+                if (!this.data.children) this.data.children = [];
+                this.data.addChildren(node);
             }
             , getNewTree() {
-                const vm = this
+                const vm = this;
                 function _dfs (oldNode) {
-                    let newNode = {}
+                    let newNode = {};
 
-                    newNode.name = oldNode.name
-                    newNode.pid = oldNode.pid
-                    newNode.isLeaf = oldNode.isLeaf
-                    newNode.id = oldNode.id
+                    newNode.name = oldNode.name;
+                    newNode.pid = oldNode.pid;
+                    newNode.isLeaf = oldNode.isLeaf;
+                    newNode.id = oldNode.id;
 
                     if (oldNode.children && oldNode.children.length > 0) {
-                        newNode.children = []
+                        newNode.children = [];
                         for (let i = 0, len = oldNode.children.length; i < len; i++) {
-                            newNode.children.push(_dfs(oldNode.children[i]))
+                            newNode.children.push(_dfs(oldNode.children[i]));
                         }
                     }
-                    return newNode
+                    return newNode;
                 }
-                vm.newTree = _dfs(vm.data)
+                vm.newTree = _dfs(vm.data);
             }
-
-            // for gant
-            , arrange(context) {
-                this.$parent.arrange(context);
-			}
 		}
 		, created() {
 		}

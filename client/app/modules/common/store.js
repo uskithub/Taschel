@@ -1,4 +1,4 @@
-import { LOAD_PROJECTS, ADD_PROJECT, LOAD_USERS, UPDATE, UPDATE_PROJECT, SET_CURRENT_PROJECT, SET_CURRENT_WEEK, SHOW_POPUP, HIDE_POPUP } from "./constants/mutationTypes";
+import { ARRANGE_AVOBE, ARRANGE_INTO, ARRANGE_BELOW, LOAD_PROJECTS, ADD_PROJECT, LOAD_USERS, UPDATE, UPDATE_PROJECT, SET_CURRENT_PROJECT, SET_CURRENT_WEEK, SHOW_POPUP, HIDE_POPUP } from "./constants/mutationTypes";
 
 import { assign } from "lodash";
 
@@ -32,7 +32,82 @@ const getters = {
 };
 
 const mutations = {
-	[LOAD_PROJECTS] (state, models) {
+	// movingがtargetの兄になる
+	// - (moving->parent).cildrenからmovingを削除
+	// - moving.parentにtarget.parentを設定
+	// - (target->parent).childrenにmovingを追加（targetの前に）
+	// 更新対象：
+	//    - movingのparent（children）
+	//    - moving（parent）
+	//    - targetのparent（children）
+	[ARRANGE_AVOBE] (state, [{ exMoving, exMovingParent, exTarget, exTargetParent }, { moving, movingParent, targetParent } ]) {
+		// 操作前の各オブジェクトの更新対象に、操作後のオブジェクトをpopulateしつつ当てはめている
+		exMovingParent.children = exMovingParent.children.filter(c => {
+			return c.code != exMoving.code;
+		});
+		exMoving.parent = exTargetParent;
+
+		let index = 0;
+		for (let i in exTargetParent.children) {
+			let c = exTargetParent.children[i];
+			if (c.code == exTarget.code) {
+				break;
+			}
+			index++;
+		}
+
+		exTargetParent.children.splice(index, 0, exMoving);
+
+		exTargetParent.children.forEach( (c, i) => {
+			console.log(i, c);
+		});
+
+		console.log(`● target[${exTarget.name}(${exTarget.code})]はobj: ${(exTarget.parent instanceof Object)}`, exTarget.parent);
+	}
+	// movingがtargetの子になる
+	// - (moving->parent).cildrenからmovingを削除
+	// - moving.parentにtargetを設定
+	// - target.childrenにmovingを追加（先頭）
+	// 更新対象：
+	//    - movingのparent（children）
+	//    - moving（parent）
+	//    - target（children）
+	, [ARRANGE_INTO] (state, [{ exMoving, exMovingParent, exTarget }, { moving, movingParent, target } ]) {
+		// 操作前の各オブジェクトの更新対象に、操作後のオブジェクトをpopulateしつつ当てはめている
+		exMovingParent.children = exMovingParent.children.filter(c => {
+			return c.code != exMoving.code;
+		});
+		exMoving.parent = exTarget;
+		exTarget.children.unshift(exMoving);
+	}
+	// movingがtargetの弟になる
+	// - (moving->parent).cildrenからmovingを削除
+	// - moving.parentにtarget.parentを設定
+	// - (target->parent).childrenにmovingを追加（targetの後に）
+	// 更新対象：
+	//    - movingのparent（children）
+	//    - moving（parent）
+	//    - targetのparent（children）
+	, [ARRANGE_BELOW] (state, [{ exMoving, exMovingParent, exTarget, exTargetParent }, { moving, movingParent, targetParent } ]) {
+		// 操作前の各オブジェクトの更新対象に、操作後のオブジェクトをpopulateしつつ当てはめている
+		exMovingParent.children = exMovingParent.children.map(c => {
+			c.parent = exMovingParent;
+			return c;
+		});
+		exMoving.parent = exTargetParent;
+
+		let index = 0;
+		for (let i in exTargetParent.children) {
+			let c = exTargetParent.children[i];
+			if (c.code == exTarget.code) {
+				break;
+			}
+			index++;
+		}
+		exTargetParent.children.splice(index+1, 0, exMoving);
+	}
+
+	, [LOAD_PROJECTS] (state, models) {
 		state.projects.splice(0);
 		state.projects.push(...models);
 	}
@@ -58,6 +133,7 @@ const mutations = {
 		// 前者だとroot以下にタスクを追加した場合、更新がされなかった（root以外では大丈夫だった）
 		let update = function(model) {
 			if (model.code == parent.code) {
+				child.parent = model; // populate
 				model.children.push(child);
 				return model;
 			}

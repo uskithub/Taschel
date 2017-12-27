@@ -4,6 +4,10 @@ import { METHOD, api } from "../api";
 import toastr from "../../../core/toastr";
 import axios from "axios";
 
+import { assign, cloneDeep } from "lodash";
+
+import { ARRANGE_AVOBE, ARRANGE_INTO, ARRANGE_BELOW } from "../constants/mutationTypes";
+
 const NAMESPACE = "/api/tasks";
 
 /* private */
@@ -35,6 +39,16 @@ let recursiveRevertParentReference = function(model) {
 		});
 		return model;
 	}
+};
+
+let createUnpopulatedClone = function(model) {
+	let _model = cloneDeep(model);
+	if (_model.root && _model.root != -1 && _model.root.code) _model.root = _model.root.code;
+	if (_model.parent && _model.parent != -1 && _model.parent.code) _model.parent = _model.parent.code;
+	_model.children = _model.children.map( c => {
+		return (c.code) ? c.code : c;
+	});
+	return _model;
 };
 
 // actionは非同期処理を実行する際に使う。
@@ -113,19 +127,16 @@ export const deleteTask = ({ commit }, { model, mutation }) => {
 	});
 };
 
-// TODO: state（に保存されているtask）の更新を直に行ってしまっているので、その部分はmutationでやるべき
 export const arrangeTask = ({ commit }, { moving, target, type }) => {
 	console.log("● arrange", moving, target, type);
 
 	let targetParentCode = target.parent.code;
 
-	// 循環参照を断ち切る
-	// TODO: cloneするべきか
-	let movingParent = moving.parent;
-	let targetParent = target.parent;
-	moving = recursiveRevertParentReference(moving);
+	const movingParent = moving.parent;
+	const targetParent = target.parent;
+	const _moving = createUnpopulatedClone(moving);
 
-	console.log("###", moving.code, target, targetParent);
+	console.log("###", _moving, target, targetParent);
 
 	if (type == "above") {
         // movingがtargetの兄になる
@@ -137,24 +148,13 @@ export const arrangeTask = ({ commit }, { moving, target, type }) => {
         //    - moving（parent）
 		//    - targetのparent（children）
 		api(METHOD.put
-			, `${NAMESPACE}/${moving.code}?arrange=above&target=${target.code}&targetParent=${targetParentCode}`
-			, moving)
+			, `${NAMESPACE}/${_moving.code}?arrange=above&target=${target.code}&targetParent=${targetParentCode}`
+			, _moving)
 		.then(data => {
-			// ClientはClientで入れ替えをしている
-			movingParent.children = movingParent.children.filter(c => c.code != moving.code);
-			moving.parent = target.parent;
-			recursiveSetParentReference(moving);
-			let index = 0;
-			for (let i in target.parent.children) {
-				let c = target.parent.children[i];
-				if (c.code == target.code) {
-					break;
-				}
-				index++;
-			}
-			target.parent.children.splice(index, 0, moving);
-			
-			//console.log("above: after ", index,  target.parent.children.map(c => c.name));
+			commit(`shared/${ARRANGE_AVOBE}`
+				, [{ exMoving: moving, exMovingParent: movingParent, exTarget: target, exTargetParent: targetParent }, data]
+				, { root : true }
+			);
 		});
         
 	} else if (type == "into") {
@@ -167,16 +167,13 @@ export const arrangeTask = ({ commit }, { moving, target, type }) => {
         //    - moving（parent）
 		//    - target（children）
 		api(METHOD.put
-			, `${NAMESPACE}/${moving.code}?arrange=into&target=${target.code}`
-			, moving)
+			, `${NAMESPACE}/${_moving.code}?arrange=into&target=${target.code}`
+			, _moving)
 		.then(data => {
-			// ClientはClientで入れ替えをしている
-			movingParent.children = movingParent.children.filter(c => c.code != moving.code);
-			moving.parent = target;
-			recursiveSetParentReference(moving);
-			target.children.unshift(moving);
-			
-			// console.log("into: after ", target.children.map(c => c.name));	
+			commit(`shared/${ARRANGE_INTO}`
+				, [{ exMoving: moving, exMovingParent: movingParent, exTarget: target }, data]
+				, { root : true }
+			);	
 		});
 		
 	} else {
@@ -189,24 +186,13 @@ export const arrangeTask = ({ commit }, { moving, target, type }) => {
         //    - moving（parent）
 		//    - targetのparent（children）
 		api(METHOD.put
-			, `${NAMESPACE}/${moving.code}?arrange=below&target=${target.code}&targetParent=${targetParentCode}`
-			, moving)
+			, `${NAMESPACE}/${_moving.code}?arrange=below&target=${target.code}&targetParent=${targetParentCode}`
+			, _moving)
 		.then(data => {
-			// ClientはClientで入れ替えをしている
-			movingParent.children = movingParent.children.filter(c => c.code != moving.code);
-			moving.parent = target.parent;
-			recursiveSetParentReference(moving);
-			let index = 0;
-			for (let i in target.parent.children) {
-				let c = target.parent.children[i];
-				if (c.code == target.code) {
-					break;
-				}
-				index++;
-			}
-			target.parent.children.splice(index+1, 0, moving);
-			
-			//console.log("below: after ", index,  target.parent.children.map(c => c.name));
+			commit(`shared/${ARRANGE_BELOW}`
+				, [{ exMoving: moving, exMovingParent: movingParent, exTarget: target, exTargetParent: targetParent }, data]
+				, { root : true }
+			);
 		});
 	}
 };

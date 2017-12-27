@@ -23,7 +23,7 @@
                 slot(name="treeNodeIcon")
                     i.vue-tree-icon.item-icon.icon-folder
 
-                div.node-content {{node.name}}
+                div.node-content {{ `${node.name}(${node.code}) parent=${(node.parent instanceof Object) ? "obj" : node.parent}, children=[${node.children.reduce((str, c) => { str += c.code + ", "; return str; }, "")}]`}}
 
                 div.operation(v-show="isHovering")
                     span(title="add tree node" @click.prevent.stop="add($event, node)")

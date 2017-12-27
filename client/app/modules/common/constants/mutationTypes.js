@@ -36,3 +36,10 @@ export const LOAD_WORKS         = "LOAD_WORKS";
 export const ADD_PROJECT        = "ADD_PROJECT";
 
 export const UPDATE_PROJECT     = "UPDATE_PROJECT";
+
+export const ARRANGE_AVOBE     = "ARRANGE_AVOBE";
+
+export const ARRANGE_INTO     = "ARRANGE_INTO";
+
+export const ARRANGE_BELOW     = "ARRANGE_BELOW";
+

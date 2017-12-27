@@ -272,8 +272,9 @@ module.exports = {
 			promises.push(this.collection.findById(parentId).exec()
 				.then(parentDoc => {
 					parentDoc.children = parentDoc.children.filter(c => c != movingId);
-					parentDoc.save();
-
+					return parentDoc.save();
+				
+				}).then(parentDoc => {
 					// into 3. target.childrenにmovingを追加（先頭）
 					if (type == "into") {
 						return this.collection.findById(targetId).exec()
@@ -334,7 +335,6 @@ module.exports = {
 				return [docs[1], docs[0][0], docs[0][1]];
 			})
 			.then(docs => {
-				console.log("●", docs);
 				return this.toJSON(docs);
 			})
 			.then(jsons => {
@@ -347,7 +347,7 @@ module.exports = {
 						// ここでのkeyは入れ替え前の「movingParent」
 						moving : jsons[0]
 						, movingParent : jsons[1]
-						, target : jsons[0]
+						, target : jsons[2]
 						
 					};
 				} else {

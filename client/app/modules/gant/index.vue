@@ -2,6 +2,7 @@
 	gant-page(:schema="schema", :selectedProject="currentProject", :projects="projects", :model="model"
 		, @add="generateModel"
 		, @select-project="selectProject"
+		, @arrange="arrangeTask"
 		, @save="save"
 		, @clone="clone"
 		, @breakdown="breakdown"
@@ -91,7 +92,7 @@
 				createTask : "createTask"
 				, getProjects : "readTasks"
 				, updateModel : "updateTask"
-				, arrange : "arrangeTask"
+				, arrangeTask : "arrangeTask"
 				, getUsers : "readUsers"
 			})
 			, ...mapActions("session", [
