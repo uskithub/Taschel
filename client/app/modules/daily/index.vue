@@ -1,7 +1,5 @@
 <template lang="pug">
-	div
-		schedule-page(:schema="schema", :tasks="assignedInWeeklyTasks", :works="works", :currentWeek="currentWeek")
-		popup(:schema="popupSchema")
+	schedule-page(:schema="schema", :tasks="assignedInWeeklyTasks", :works="works", :currentWeek="currentWeek")
 </template>
 
 <script>

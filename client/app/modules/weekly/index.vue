@@ -1,13 +1,12 @@
 <template lang="pug">
-	div
-		kanban-page(:schema="schema", :selectedTasks="selected", :groups="groups", :tasks="tasks", :model="model"
-			, @arrange="arrange" 
-			, @add="generateModel"
-			, @select-kanban="selectKanban"
-			, @save="save"
-			, @remove="remove"
-			, @cancel="cancel"
-		)
+	kanban-page(:schema="schema", :selectedTasks="selected", :groups="groups", :tasks="tasks", :model="model"
+		, @arrange="arrange" 
+		, @add="generateModel"
+		, @select-kanban="selectKanban"
+		, @save="save"
+		, @remove="remove"
+		, @cancel="cancel"
+	)
 </template>
 
 <script>
