@@ -33,8 +33,8 @@ const mutations = {
 	}
 	, [ADD] (state, models) {
 
-		if (models.parent) {
-			// { parent, child}の形で来た場合
+		if (models.child) {
+			// { parent, child }の形で来た場合
 			each(state.tasks, (item) => {
 				if (item.code == models.parent.code)
 					assign(item, models.parent);
