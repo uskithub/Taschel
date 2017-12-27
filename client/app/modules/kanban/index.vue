@@ -1,8 +1,9 @@
 <template lang="pug">
-	kanban-page(:schema="schema", :selectedProject="currentProject", :projects="projects", :groups="groups", :tasks="tasks", :model="model"
+	kanban-page(:schema="schema", :selectedProject="currentProject", :selectedTasks="selected", :projects="projects", :groups="groups", :tasks="tasks", :model="model"
 		, @arrange="arrange" 
 		, @add="generateModel"
 		, @select-project="selectProject"
+		, @select-kanban="selectKanban"
 		, @save="save"
 		, @remove="remove"
 		, @cancel="cancel"
@@ -19,7 +20,7 @@
 	import toast from "../../core/toastr";
 
 	import { mapGetters, mapMutations, mapActions } from "vuex";
-	import { SET_CURRENT_PROJECT, LOAD, LOAD_PROJECTS, ADD , UPDATE, REMOVE } from "../common/constants/mutationTypes";
+	import { SET_CURRENT_PROJECT, LOAD, LOAD_PROJECTS, ADD , UPDATE, REMOVE, SELECT, CLEAR_SELECT } from "../common/constants/mutationTypes";
 
     // @see: https://github.com/vue-generators/vue-form-generator
 	export default {
@@ -37,6 +38,7 @@
 			, ...mapGetters("kanbanPage", [
 				"groups"
 				, "tasks"
+				, "selected"
 			])
 		}
 
@@ -50,7 +52,33 @@
 				, model: null
 			};
 		}
+		, watch: {
+			// clearSelectionを呼ぶと呼ばれる
+			selected(newTasks) {
+				if (newTasks.length == 0) {
+					this.model = null;
+					return;
+				}
+				const baseModel = newTasks[0];
+				this.schema.popupForm.title = `${baseModel.name} を編集`;
+				this.schema.popupForm.form.fields.forEach(f => {
+					if (f.model == "root_code") {
+						f.readonly = true;
+						f.disabled = true;
+					}
+					return f;
+				});
 
+				let targetModel = cloneDeep(baseModel);
+				if (targetModel.root && targetModel.root != -1) {
+					targetModel.root_code = (targetModel.root.code) ? targetModel.root.code : targetModel.root;
+				}
+				if (targetModel.asignee && targetModel.asignee != -1) {
+					targetModel.asignee_code = (targetModel.asignee.code) ? targetModel.asignee.code : targetModel.asignee;
+				}
+				this.model = targetModel;
+			}
+		}
 		/**
 		 * Socket handlers. Every property is an event handler
 		 */
@@ -64,22 +92,22 @@
 				created(res) {
 					// this.created(res.data);
 					toast.success(this._("GroupAdded", res), this._("追加しました"));
-				},
+				}
 
 				/**
 				 * Task updated
 				 * @param  {Object} res Task object
 				 */
-				updated(res) {
+				, updated(res) {
 					// this.updated(res.data);
 					toast.success(this._("GroupUpdated", res), this._("更新しました"));
-				},
+				}
 
 				/**
 				 * Task removed
 				 * @param  {Object} res Response object
 				 */
-				removed(res) {
+				, removed(res) {
 					// this.removed(res.data);	
 					toast.success(this._("GroupDeleted", res), this._("削除しました"));
 				}
@@ -95,6 +123,8 @@
 				, loadGroups : LOAD
 				, updated : UPDATE
 				, removed : REMOVE
+				, selectKanban : SELECT
+				, clearSelection : CLEAR_SELECT
 			})
 			, ...mapActions("kanbanPage", {
 				getProjects : "readTasks"
@@ -127,6 +157,7 @@
 				this.model = newModel;
 			}
 			, save(model) {
+				this.clearSelection();
 				if (model.code) {
 					// TODO: 更新処理
 					Console.log("TODO: update selected group.");
@@ -138,8 +169,10 @@
 			, remove(){ 
 				// TODO
 				Console.log("TODO: delete selected group.");
+				this.clearSelection();
 			}
 			, cancel() {
+				this.clearSelection();
 				this.model = null;
 			}
 			, setupProjectsField() {

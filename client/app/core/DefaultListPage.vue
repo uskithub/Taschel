@@ -71,9 +71,7 @@
 			})
 			, options() { return this.schema.popupForm.options || {}; }
 			, isAddButtonEnable() { return this.options.isAddButtonEnable !== false; }
-			, isEditing() {
-				return this.model != null || this.selected.length > 0;
-			}
+			, isEditing() { return this.model != null || this.selected.length > 0; }
 		}
 
 		, watch: {

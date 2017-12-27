@@ -1,8 +1,9 @@
 <template lang="pug">
 	div
-		kanban-page(:schema="schema", :groups="groups", :tasks="tasks", :model="model"
+		kanban-page(:schema="schema", :selectedTasks="selected", :groups="groups", :tasks="tasks", :model="model"
 			, @arrange="arrange" 
 			, @add="generateModel"
+			, @select-kanban="selectKanban"
 			, @save="save"
 			, @remove="remove"
 			, @cancel="cancel"
@@ -40,6 +41,7 @@
 			, ...mapGetters("weeklyPage", [
 				"groups"
 				, "tasks"
+				, "selected"
 			])
 			, ...mapGetters("session", [
 				"me"
@@ -56,7 +58,33 @@
 				, model: null
 			};
 		}
+		, watch: {
+			// clearSelectionを呼ぶと呼ばれる
+			selected(newTasks) {
+				if (newTasks.length == 0) {
+					this.model = null;
+					return;
+				}
+				const baseModel = newTasks[0];
+				this.schema.popupForm.title = `${baseModel.name} を編集`;
+				this.schema.popupForm.form.fields.forEach(f => {
+					if (f.model == "root_code") {
+						f.readonly = true;
+						f.disabled = true;
+					}
+					return f;
+				});
 
+				let targetModel = cloneDeep(baseModel);
+				if (targetModel.root && targetModel.root != -1) {
+					targetModel.root_code = (targetModel.root.code) ? targetModel.root.code : targetModel.root;
+				}
+				if (targetModel.asignee && targetModel.asignee != -1) {
+					targetModel.asignee_code = (targetModel.asignee.code) ? targetModel.asignee.code : targetModel.asignee;
+				}
+				this.model = targetModel;
+			}
+		}
 		/**
 		 * Socket handlers. Every property is an event handler
 		 */
@@ -117,7 +145,7 @@
 				, hidePopup : HIDE_POPUP
 			})
 			, ...mapMutations("weeklyPage", {
-				selectRow : SELECT
+				selectKanban : SELECT
 				, loadTasks : LOAD
 				, updated : UPDATE
 				, clearSelection : CLEAR_SELECT
@@ -146,6 +174,7 @@
 				this.model = newModel;
 			}
 			, save(model) {
+				this.clearSelection();
 				if (model.code) {
 					this.updateTask( { model, mutation: UPDATE } );
 				} else {
@@ -220,6 +249,7 @@
 				this.clearSelection();
 			}
 			, cancel() {
+				this.clearSelection();
 				this.model = null;
 			}
 			, setupProjectsField() {

@@ -6,7 +6,7 @@
 					h2 {{ board.name }}
 				div.drag-options
 				ul.drag-inner-list(ref="boards", :data-code="board.code")
-					li.drag-item(v-for="task in board.children", :data-code="task.code", :key="task.code")
+					li.drag-item(v-for="task in board.children", :data-code="task.code", :key="task.code" @click="select($event, task)")
 						slot(:name="task.name")
 							strong {{ task.name }}
 							div {{ task.code }}
@@ -66,6 +66,9 @@
 							}, 600);
 						}, 100);
 					});
+			}
+			, select(e, task) {
+				this.$emit("select", task);
 			}
 		}
 	};

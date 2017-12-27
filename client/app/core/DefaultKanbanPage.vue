@@ -11,7 +11,7 @@
 		.form
 			vue-form-generator(:schema="schema.projectSelector", :model="modelProjectSelector", ref="projectSelector", @model-updated="selectProject")
 
-		kanban(:boards="groups", :tasks="tasks", @arrange="arrange")
+		kanban(:boards="groups", :tasks="tasks", @arrange="arrange" @select="select")
 
 		popup-form(v-if="isEditing", :schema="schema.popupForm", :template="model"
 			, @save="save"
@@ -61,12 +61,16 @@
 			, selectedProject : {
 				type: String 
 			}
+			, selectedTasks : {
+				type: Array
+				, required: true
+				, validator: function(value) { return true; } // TODO
+			}
 			, model : {
 				type: Object
 				, validator: function(value) { return true; } // TODO
 			}
 		}
-
 		, data() {
 			return {
 				order: {
@@ -79,12 +83,10 @@
 				}
             };
         }
-
 		, computed: {
 			...mapGetters("session", {
 				search: "searchText"
 			})
-
 			, options() { 
 				if (this.schema.popupForm) {
 					return this.schema.popupForm.options || {}; 
@@ -93,11 +95,9 @@
 				}
 			}
 			, isAddButtonEnable() { return this.options.isAddButtonEnable !== false; }
-			, isEditing() { return this.model != null; }
+			, isEditing() { return this.model != null || this.selectedTasks.length > 0; }
 		}	
-
 		, watch: {
-
 			/*
 			model: {
 				handler: function(newVal, oldVal) {
@@ -106,16 +106,10 @@
 				},
 				deep: true
 			}*/
-		},
-
-		methods: {
-			selectProject(newVal, schema) {
-				console.log(`● ${schema}: ${newVal}`);
-				this.$emit("select-project", newVal);
-			}
-
+		}
+		, methods: {
+			selectProject(newVal, schema) { this.$emit("select-project", newVal); }
 			, arrange(context) { this.$emit("arrange", context); }
-
 			, buttonAddDidPush() {
 				this.$emit("add");
 
@@ -125,13 +119,13 @@
 						el.focus();
 				});
 			}
+			, select(task) { this.$emit("select-kanban", task); }
 			, save(model) { this.$emit("save", this.model); }
 			, remove() { this.$emit("remove"); }		// deleteは予約語なので怒られる
 			, cancel() { this.$emit("cancel"); }
 		}
 		, created() {
-		}	
-				
+		}
 	};
 
 </script>
