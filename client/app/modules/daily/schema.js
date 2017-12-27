@@ -65,47 +65,53 @@ module.exports = {
 		, form: {
 			fields: [
 				{
-					type: "text",
-					label: _("Name"),
-					model: "name",
-					featured: true,
-					placeholder: _("work_name"),
-					validator: validators.string
+					type: "text"
+					, label: _("Name")
+					, model: "name"
+					, featured: true
+					, placeholder: _("work_name")
+					, validator: validators.string
 				}
 				, {
-					type: "text",
-					label: _("Goal"),
-					model: "goal",
-					placeholder: _("work_goal"),
-					featured: false,
-					required: true,
-					validator: validators.string
+					type: "text"
+					, label: _("Goal")
+					, model: "goal"
+					, placeholder: _("work_goal")
+					, featured: false
+					, required: true
+					, validator: validators.string
 				}
 				, { 
-					type: "dateTimePicker",
-					label: _("Start"),
-					model: "Start",
-					placeholder: "Start time", 
-				}
-				, { 
-					type: "dateTimePicker",
-					label: _("End"),
-					model: "End",
-					placeholder: "End time", 
-					format: "HH:mm",
-					dateTimePickerOptions: {
+					type: "dateTimePicker"
+					, label: _("Start")
+					, model: "Start"
+					, placeholder: "Start time"
+					, format: "HH:mm"
+					, dateTimePickerOptions: {
 						format: "HH:mm"
+						, stepping: 15
 					}
 				}
 				, { 
-					type: "textArea",
-					label: _("description"),
-					model: "description",
-					hint: "Max 500 characters",
-					max: 500,
-					placeholder: "User's biography",
-					rows: 4,
-					validator: validators.string
+					type: "dateTimePicker"
+					, label: _("End")
+					, model: "End"
+					, placeholder: "End time"
+					, format: "HH:mm"
+					, dateTimePickerOptions: {
+						format: "HH:mm"
+						, stepping: 15
+					}
+				}
+				, { 
+					type: "textArea"
+					, label: _("description")
+					, model: "description"
+					, hint: "Max 500 characters"
+					, max: 500
+					, placeholder: "User's biography"
+					, rows: 4
+					, validator: validators.string
 				}
 			]
 		}

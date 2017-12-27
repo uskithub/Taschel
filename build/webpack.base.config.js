@@ -17,6 +17,8 @@ module.exports = {
 			"moment",
 			"jquery",
 			"jquery-ui",
+			"bootstrap",
+			"eonasdan-bootstrap-datetimepicker",
 			"axios",
 			"toastr",
 			"vue-form-generator",
@@ -104,5 +106,9 @@ module.exports = {
 	},
 
 	plugins: [
+		new webpack.ProvidePlugin({
+			$: "jquery"
+			, jQuery: "jquery"
+		})
 	]
 };

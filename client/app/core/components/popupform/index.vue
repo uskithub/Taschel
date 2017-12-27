@@ -37,8 +37,16 @@
 
 <script>
 	import Vue from "vue";
+	
+	import "jquery";	
+	import "bootstrap";
+	import "bootstrap/dist/css/bootstrap.css";
+	import "eonasdan-bootstrap-datetimepicker";
+	import "eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.css";
+	
 	import { schema as schemaUtils } from "vue-form-generator";
 	import { find, cloneDeep, isFunction } from "lodash";
+
 
 	export default {
 
@@ -175,7 +183,19 @@
 
 		.panel {
 			background-color: rgba(16, 67, 87, 0.8);
+
+			.body {
+				overflow: visible;
+
+				.bootstrap-datetimepicker-widget {
+					&.dropdown-menu {
+						visibility: visible;
+						opacity: 1;
+					}
+				}
+			}
 		}
 	}
 
+	
 </style>
