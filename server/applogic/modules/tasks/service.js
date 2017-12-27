@@ -112,7 +112,7 @@ module.exports = {
 				if (ctx.params.type == "project") {
 					// kanbanを作る
 					// 配列の順番になるように、reduceで作っている
-					DEFAULT_KANBAN_GROUPS.reduce((promise, g) => {
+					return DEFAULT_KANBAN_GROUPS.reduce((promise, g) => {
 						return promise.then(()=> {
 							g.type = "kanban";
 							g.parent =  doc.id;
@@ -120,18 +120,14 @@ module.exports = {
 							let group = new Group(g);
 							return group.save();
 						});
-					}, Promise.resolve());
-
-					return Promise.all(promises).then((docs) => {
-						return this.toJSON(docs);
-					})
+					}, Promise.resolve())
+					.then(() => {
+						return this.toJSON(doc);
+					});
 
 				} else {
-
-				}
-
-
-				return this.toJSON(doc);
+					return this.toJSON(doc);
+				}				
 			})
 			.then((json) => {
 				return this.populateModels(json);
