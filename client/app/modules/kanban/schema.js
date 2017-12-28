@@ -17,31 +17,33 @@ module.exports = {
 		, form: {
 			fields: [
 				{
-					type: "select",
-					label: _("GroupType"),
-					model: "type",
-					readonly: true,
-					disabled: true,
-					values: groupTypes,
-					default: "kanban"
+					type: "select"
+					, label: _("GroupType")
+					, model: "type"
+					, readonly: true
+					, disabled: true
+					, values: groupTypes
+					, default: "kanban"
 				}
 				, {
-					type: "text",
-					label: _("Name"),
-					model: "name",
-					featured: true,
-					required: true,
-					placeholder: _("タスクの名称（何をするかが連想できる様に）"),
-					validator: validators.string
+					type: "input"
+					, inputType: "text"
+					, label: _("Name")
+					, model: "name"
+					, featured: true
+					, required: true
+					, placeholder: _("タスクの名称（何をするかが連想できる様に）")
+					, validator: validators.string
 				}
 				, {
-					type: "text",
-					label: _("Purpose"),
-					model: "purpose",
-					placeholder: _("なぜそのタスクをするのか"),
-					featured: false,
-					required: true,
-					validator: validators.string
+					type: "input"
+					, inputType: "text"
+					, label: _("Purpose")
+					, model: "purpose"
+					, placeholder: _("なぜそのタスクをするのか")
+					, featured: false
+					, required: true
+					, validator: validators.string
 				}
 			]
 		}

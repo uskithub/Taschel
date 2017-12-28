@@ -31,7 +31,8 @@ module.exports = {
 			return { 
 				fields : _form.fields.map( f => {
 					if (f.model == "type") {
-						f.type = "text";
+						f.type = "input";
+						f.inputType = "text";
 						f.default = "project";
 						f.readonly = true;
 						f.disabled = true;

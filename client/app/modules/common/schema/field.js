@@ -17,7 +17,8 @@ const fields = {
 			}
 		}
 		, form: {
-			type: "text"
+			type: "input"
+			, inputType: "text"
 			, readonly: true
 			, disabled: true
 			, multi: false
@@ -61,7 +62,8 @@ const fields = {
 		, model: "name"
 		, table: {}
 		, form: {
-			type: "text"
+			type: "input"
+			, inputType: "text"
 			, featured: true
 			, required: true
 			, placeholder: _("タスクの名称（何をするかが連想できる様に）")
@@ -73,7 +75,8 @@ const fields = {
 		, model: "purpose"
 		, table: {}
 		, form: {
-			type: "text"
+			type: "input"
+			, inputType: "text"
 			, placeholder: _("なぜそのタスクをするのか")
 			, featured: false
 			, required: true
@@ -85,7 +88,8 @@ const fields = {
 		, model: "goal"
 		, table: {}
 		, form: {
-			type: "text"
+			type: "input"
+			, inputType: "text"
 			, placeholder: _("どういった状態になったら嬉しいか")
 			, validator: validators.string
 		}
