@@ -131,7 +131,7 @@ module.exports = {
 					doc.actualEnd = ctx.params.actualEnd;
 
 				if (ctx.params.description != null)
-					doc.end = ctx.params.description;
+					doc.description = ctx.params.description;
 
 				return doc.save();
 			})
