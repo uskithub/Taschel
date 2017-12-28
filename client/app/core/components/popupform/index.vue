@@ -45,7 +45,7 @@
 	import "eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.css";
 	
 	import { schema as schemaUtils } from "vue-form-generator";
-	import { find, cloneDeep, isFunction } from "lodash";
+	import { get as objGet, find, cloneDeep, isArray, isFunction } from "lodash";
 
 
 	export default {
@@ -135,6 +135,7 @@
 			, buttonCloseDidPush() {
 				// TODO
 				console.log("close button pushed");
+				this.closeVlidate(this.$refs.form);
 			}
 			, buttonCloneDidPush() { this.$emit("clone"); }
 			, buttonBreakdownDidPush() { this.$emit("breakdown"); }
@@ -157,6 +158,59 @@
 					});
 				}
 				return res;	
+			}
+			// @see https://github.com/vue-generators/vue-form-generator/blob/master/src/formGenerator.vue#L316
+			, closeVlidate(form, isAsync = null) {
+				form.$children.forEach(child => {
+					// notice: the required option not work without the validator option.
+					if (child.schema.closeRequired) {
+						child.schema._required = child.schema.required;
+						child.schema.required = true;
+					}
+				});
+
+				if(isAsync === null) {
+					isAsync = objGet(form.options, "validateAsync", false);
+				}
+				form.clearValidationErrors();
+				let fields = [];
+				let results = [];
+				form.$children.forEach(child => {
+					if (isFunction(child.validate)) {
+						fields.push(child); // keep track of validated children
+						results.push(child.validate(true));
+					}
+				});
+				let handleErrors = (errors) => {
+					let formErrors = [];
+					errors.forEach((err, i) => {
+						if(isArray(err) && err.length > 0) {
+							err.forEach(error => {
+								formErrors.push({
+									field: fields[i].schema,
+									error: error,
+								});
+							});
+						}
+					});
+					form.errors = formErrors;
+					let isValid = formErrors.length == 0;
+					form.$emit("validated", isValid, formErrors);
+
+					form.$children.forEach(child => {
+						if (child.schema.closeRequired) {
+							child.schema.required = child.schema._required;
+						}
+					});
+
+					return isAsync ? formErrors : isValid;
+				};
+
+				if(!isAsync) {
+					return handleErrors(results);
+				}
+
+				return Promise.all(results).then(handleErrors);
 			}
 			, finalize(model) {
 				let _model = cloneDeep(model);

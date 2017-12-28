@@ -81,7 +81,6 @@ module.exports = {
 					, model: "goal"
 					, placeholder: _("work_goal")
 					, featured: false
-					, required: true
 					, validator: validators.string
 				}
 				, { 
@@ -90,14 +89,21 @@ module.exports = {
 					, model: "actual_start"
 					, placeholder: _("Start_time")
 					, format: "HH:mm"
+					, required: true
+					, closeRequired: true
 					, dateTimePickerOptions: {
 						format: "HH:mm"
 						, stepping: 15
 					}
 					, finalize: (model, value, field) => {
-						const hhmm = value.split(":");
-						return model.start.hour(hhmm[0]).minute(hhmm[1]);
+						if (value) {
+							const hhmm = value.split(":");
+							return model.start.hour(hhmm[0]).minute(hhmm[1]);
+						} else {
+							return value;
+						}
 					}
+					, validator: validators.date
 				}
 				, { 
 					type: "dateTimePicker"
@@ -105,14 +111,20 @@ module.exports = {
 					, model: "actual_end"
 					, placeholder: _("End time")
 					, format: "HH:mm"
+					, closeRequired: true
 					, dateTimePickerOptions: {
 						format: "HH:mm"
 						, stepping: 15
 					}
 					, finalize: (model, value, field) => {
-						const hhmm = value.split(":");
-						return model.start.hour(hhmm[0]).minute(hhmm[1]);
+						if (value) {
+							const hhmm = value.split(":");
+							return model.start.hour(hhmm[0]).minute(hhmm[1]);
+						} else {
+							return value;
+						}
 					}
+					, validator: validators.date
 				}
 				, { 
 					type: "textArea"
@@ -122,6 +134,7 @@ module.exports = {
 					, max: 500
 					, placeholder: "User's biography"
 					, rows: 4
+					, closeRequired: true
 					, validator: validators.string
 				}
 			]
