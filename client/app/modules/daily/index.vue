@@ -61,7 +61,9 @@
 			};
 		}
 		, watch: {
-			// clearSelectionを呼ぶと呼ばれる
+			// This func is called when user select any work.
+			// you should manage comtents of popupForm you want to show.
+			// notice: when you call clearSelection, this func also will be called
 			selected(newWorks) {
 				if (newWorks.length == 0) {
 					this.model = null;
@@ -70,9 +72,17 @@
 				const baseModel = newWorks[0];
 				this.schema.popupForm.title = `${baseModel.name} を編集`;
 				this.schema.popupForm.form.fields.forEach(f => {
-					if (f.model == "root_code") {
-						f.readonly = true;
-						f.disabled = true;
+					if (f.model == "actual_start") {
+						if (!f._label) { f._label = f.label; } // save for next select.
+						const _start = baseModel.start.format(f.format);
+						f.label = `${f._label}（予定：${_start}）`;
+						// I don't know why but default value will be cleared when user input any other field like goal...
+						// f.dateTimePickerOptions.defaultDate = baseModel.start;
+					} else if (f.model == "actual_end") {
+						if (!f._label) { f._label = f.label; } // save for next select.
+						const _end = baseModel.end.format(f.format);
+						f.label = `${f._label}（予定：${_end}）`;
+						// f.dateTimePickerOptions.defaultDate = baseModel.end;
 					}
 					return f;
 				});

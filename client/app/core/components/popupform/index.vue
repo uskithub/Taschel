@@ -57,11 +57,19 @@
 			schema : {
 				type: Object
       			, required: true
-				, validator: function(value) { return true; } // TODO
+				, validator: function(value) { 
+					// TODO
+					console.log("schema.popupForm", value);
+					return true; 
+				} 
 			}
 			, template : {
 				type: Object
-				, validator: function(value) { return true; } // TODO
+				, validator: function(value) { 
+					 // TODO
+					console.log("model.template", value);
+					return true; 
+				}
 			}
 		}
 		, data() {
@@ -119,7 +127,7 @@
 
 			buttonSaveDidPush() {
 				if (this.options.validateBeforeSave === false ||  this.validate()) {
-					this.$emit("save", this.model);
+					this.$emit("save", this.finalize(this.model));
 				} else {
 					// Validation error
 				}
@@ -148,10 +156,17 @@
 							el.focus();
 					});
 				}
-
 				return res;	
 			}
-
+			, finalize(model) {
+				let _model = cloneDeep(model);
+				this.schema.form.fields.forEach(f => {
+					if (f.finalize) {
+						_model[f.model] = f.finalize(_model, _model[f.model], f);
+					}
+				});
+				return _model;	
+			}
 		}
 		, created() {
 		}

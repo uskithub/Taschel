@@ -110,7 +110,7 @@
 					});
 				});
 			}
-			, save(model) { this.$emit("save", this.model); }
+			, save(model) { this.$emit("save", model); }
 			, remove() { this.$emit("remove"); }		// deleteは予約語なので怒られる
 			, cancel() { this.$emit("cancel"); }
 		}

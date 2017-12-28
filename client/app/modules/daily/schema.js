@@ -65,7 +65,8 @@ module.exports = {
 		, form: {
 			fields: [
 				{
-					type: "text"
+					type: "input"
+					, inputType: "text"
 					, label: _("Name")
 					, model: "name"
 					, featured: true
@@ -73,7 +74,8 @@ module.exports = {
 					, validator: validators.string
 				}
 				, {
-					type: "text"
+					type: "input"
+					, inputType: "text"
 					, label: _("Goal")
 					, model: "goal"
 					, placeholder: _("work_goal")
@@ -84,23 +86,31 @@ module.exports = {
 				, { 
 					type: "dateTimePicker"
 					, label: _("Start")
-					, model: "Start"
-					, placeholder: "Start time"
+					, model: "actual_start"
+					, placeholder: _("Start_time")
 					, format: "HH:mm"
 					, dateTimePickerOptions: {
 						format: "HH:mm"
 						, stepping: 15
 					}
+					, finalize: (model, value, field) => {
+						const hhmm = value.split(":");
+						return model.start.hour(hhmm[0]).minute(hhmm[1]);
+					}
 				}
 				, { 
 					type: "dateTimePicker"
 					, label: _("End")
-					, model: "End"
-					, placeholder: "End time"
+					, model: "actual_end"
+					, placeholder: _("End time")
 					, format: "HH:mm"
 					, dateTimePickerOptions: {
 						format: "HH:mm"
 						, stepping: 15
+					}
+					, finalize: (model, value, field) => {
+						const hhmm = value.split(":");
+						return model.start.hour(hhmm[0]).minute(hhmm[1]);
 					}
 				}
 				, { 
