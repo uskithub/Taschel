@@ -13,6 +13,12 @@ module.exports = {
     , title: _("Daily")
     , fullCalendar : {
 		timezone : "local"
+		, eventColor: "#FF895D"
+		, eventTextColor: "#6C567B"
+		, closedEventColor : {
+			color: "#C5F0A4"
+			, textColor: "#226B80"
+		}
 		, googleCalendarApiKey: "AIzaSyBs9rLYkbTc8gf05hOsZ4iOWLBj8Rptn1k"
 		, droppable: true
 		, editable: true

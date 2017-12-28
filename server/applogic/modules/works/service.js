@@ -133,6 +133,9 @@ module.exports = {
 				if (ctx.params.description != null)
 					doc.description = ctx.params.description;
 
+				if (ctx.params.status != null)
+					doc.status = ctx.params.status;
+
 				return doc.save();
 			})
 			.then((doc) => {

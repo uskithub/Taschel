@@ -5,6 +5,7 @@
 		@update="update"
 		@set-current-week="setCurrentWeek"
 		@save="save"
+		@close="close"
 		@remove="remove"
 		@cancel="cancel"
 	)
@@ -187,8 +188,12 @@
 				this.updateWork({ model, mutation: UPDATE } );
 			}
 			, save(model) {
-				console.log("before send:", model)
 				this.clearSelection();
+				this.updateWork( { model, mutation: UPDATE } );
+			}
+			, close(model) {
+				this.clearSelection();
+				model.status = -1;
 				this.updateWork( { model, mutation: UPDATE } );
 			}
 			, remove(){ 

@@ -47,7 +47,6 @@
 	import { schema as schemaUtils } from "vue-form-generator";
 	import { get as objGet, find, cloneDeep, isArray, isFunction } from "lodash";
 
-
 	export default {
 
 		// properties set by it's parent component.
@@ -75,7 +74,7 @@
 		, data() {
 			// createdより早くmodelが参照されるので、ここで詰めている
 			return {
-				model: this.template
+				model: cloneDeep(this.template)
 			};
 		}
 		, computed: {
@@ -133,9 +132,11 @@
 				}
 			}
 			, buttonCloseDidPush() {
-				// TODO
-				console.log("close button pushed");
-				this.closeVlidate(this.$refs.form);
+				if (this.options.validateBeforeSave === false ||  this.closeVlidate(this.$refs.form)) {
+					this.$emit("close", this.finalize(this.model));
+				} else {
+					// Validation error
+				}
 			}
 			, buttonCloneDidPush() { this.$emit("clone"); }
 			, buttonBreakdownDidPush() { this.$emit("breakdown"); }

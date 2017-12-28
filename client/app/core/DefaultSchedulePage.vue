@@ -12,10 +12,11 @@
 								strong {{ task.name }}
 								div {{ task.code }}
 				li(class="drag-column", key="schedule")
-					full-calendar(:events="works", :options="schema.fullCalendar", :currentWeek="currentWeek")
+					full-calendar(:events="events", :options="schema.fullCalendar", :currentWeek="currentWeek")
 
 		popup-form(v-if="isEditing", :schema="schema.popupForm", :template="model"
 			, @save="save"
+			, @close="close"
 			, @remove="remove"
 			, @cancel="cancel"
 		)
@@ -30,6 +31,7 @@
 	import "jquery-ui/ui/widgets/draggable";
 	import "jquery-ui/ui/widgets/resizable"; // なくても動くがrequirementなので
 
+	import { cloneDeep } from "lodash";
 	import moment from "moment";
 	
 	let previousBoardCode = null;
@@ -73,9 +75,7 @@
 			}
 		}
         , data() {
-            return {
-				events : this.works
-            };
+            return {};
         }
 
         , computed: {
@@ -88,6 +88,17 @@
 			}
 			, isAddButtonEnable() { return this.options.isAddButtonEnable !== false; }
 			, isEditing() { return this.model != null || this.selected.length > 0; }
+			, events() {
+				const closedEventColor = this.schema.fullCalendar.closedEventColor;
+				let _works = cloneDeep(this.works);
+				_works.forEach( work => {
+					if (work.status < 0) {
+						work.color = closedEventColor.color;
+						work.textColor = closedEventColor.textColor;
+					}
+				});
+				return _works;
+			}
 		}
 		, methods: {
 			makeDraggable() {
@@ -111,6 +122,7 @@
 				});
 			}
 			, save(model) { this.$emit("save", model); }
+			, close(model) { this.$emit("close", model); }
 			, remove() { this.$emit("remove"); }		// deleteは予約語なので怒られる
 			, cancel() { this.$emit("cancel"); }
 		}
