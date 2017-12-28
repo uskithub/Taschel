@@ -1,7 +1,7 @@
 import { 
 	LOAD
 	, LOAD_WORKS
-	, ADD_WORK
+	, ADD
 	, UPDATE
 	, REMOVE
 	, SELECT
@@ -40,8 +40,7 @@ const mutations = {
 		state.works.push(...models);
 	}
 	
-	, [ADD_WORK] (state, model) {
-		console.log("●きてうｒね", model);
+	, [ADD] (state, model) {
 		state.works.push(model);
 	}
 	, [UPDATE] (state, model) {

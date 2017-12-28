@@ -145,8 +145,6 @@
 			};
 
 			this.schema.fullCalendar.eventClick = (event, jqEvent, view) => {
-				console.log("●", event);
-
 				this.$emit("select", event);
 
 				this.$nextTick(() => {

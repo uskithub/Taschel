@@ -2,7 +2,6 @@ import Vue from "vue";
 import { METHOD, api } from "../api";
 
 import toastr from "../../../core/toastr";
-import axios from "axios";
 
 import { assign, cloneDeep } from "lodash";
 

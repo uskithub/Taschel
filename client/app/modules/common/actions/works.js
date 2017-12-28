@@ -1,7 +1,7 @@
 import Vue from "vue";
+import { METHOD, api } from "../api";
+
 import toastr from "../../../core/toastr";
-import { UPDATE, ADD_WORK, REMOVE, SELECT } from "../constants/mutationTypes";
-import axios from "axios";
 
 export const NAMESPACE = "/api/works";
 
@@ -11,17 +11,12 @@ export const NAMESPACE = "/api/works";
 
 // { commit } はES2015 の引数分割束縛（argument destructuring）という文法
 
-export const createWork = ({ commit }, model) => {
-	axios.post(NAMESPACE, model).then((response) => {
-		let res = response.data;
-
-		if (res.status == 200 && res.data) {
-			console.log("● created", res.data);		
-			commit(ADD_WORK, res.data);
-		}
-	}).catch((response) => {
-		if (response.data.error)
-			toastr.error(response.data.error.message);
+export const createWork = ({ commit }, { model, mutation }) => {
+	return api(METHOD.post, NAMESPACE, model)
+	.then(data => {
+		console.log(`● !!created mutation: ${ mutation }`, data);
+		if (mutation)
+			commit(mutation, data, { root : (mutation.indexOf("/") > -1) });
 	});
 };
 
@@ -38,30 +33,28 @@ export const readWorks = ({ commit }, { options, mutation }) => {
 	if (options != undefined && options.user != undefined && options.week != undefined) {
 		url = `${url}?user=${options.user}&week=${options.week}`;
 	} 
-	
-	axios.get(url).then((response) => {
-		let res = response.data;
-		if (res.status == 200 && res.data)
-			// 各Pageにアサインされたactionからsharedのmutationへcommitをかのうにするため、roo:trueとしている
-			commit(mutation, res.data, { root : true });
-		else
-			console.error("Request error!", res.error);
 
-	}).catch((response) => {
-		console.error("Request error!", response.statusText);
+	return api(METHOD.get, url)
+	.then(data => {
+		console.log(`● !!read mutation: ${ mutation }`, data);
+		if (mutation)
+			commit(mutation, data, { root : (mutation.indexOf("/") > -1) });
 	});
 };
 
-export const updateWork = ({ commit }, model) => {
-	axios.put(NAMESPACE, model).then((response) => {
-		let res = response.data;
-
-		if (res.status == 200 && res.data) {
-			console.log("● updated", res.data);		
-			commit(UPDATE, res.data);
-		}
-	}).catch((response) => {
-		if (response.data.error)
-			toastr.error(response.data.error.message);
+// payload = {
+// 	diff : {	
+//    	code : People.code
+//    	, start : "2017-12-25T11:00:00.000Z"
+//    	, end : "2017-12-25T11:00:00.000Z"
+// 	}
+//	, mutation : "UPDATE"
+// }
+export const updateWork = ({ commit }, { diff, mutation }) => {
+	return api(METHOD.put, NAMESPACE, diff)
+	.then(data => {
+		console.log(`● !!updated mutation: ${ mutation }`, data);
+		if (mutation)
+			commit(mutation, data, { root : (mutation.indexOf("/") > -1) });
 	});
 };

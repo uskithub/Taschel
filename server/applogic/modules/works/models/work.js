@@ -31,6 +31,16 @@ let WorkSchema = new Schema({
 	, end: {
 		type: Date
 	}
+    , actualStart: {
+		type: Date
+	}
+	, actialEnd: {
+		type: Date
+	}
+	, description: {
+		type: String
+		, trim: true
+	}
 	// rootはないタスクもあるので、使わない方がいいと判断した
 	// , root : {
 	// 	// おそらくこれでもOK
@@ -47,11 +57,15 @@ let WorkSchema = new Schema({
 		type: Number
 		, ref: "Task"
 	}
-	
 	, author : {
 		type: Number,
 		required: "Please fill in an author ID",
 		ref: "User"
+	}
+	, status: {
+		// 0: open, -1: close
+		type: Number
+		, "default": 0
 	}
 	, asignee : {
 		type: Number,

@@ -2,7 +2,7 @@
 	schedule-page(:schema="schema", :selected="selected", :tasks="assignedInWeeklyTasks", :works="works", :currentWeek="currentWeek", :model="model"
 		@assign="assign"
 		@select="select"
-		@update="updateWork"
+		@update="update"
 		@set-current-week="setCurrentWeek"
 		@save="save"
 		@remove="remove"
@@ -162,14 +162,21 @@
 			})
 			, ...mapActions("dailyPage", {
 				getAssignedInWeeklyTasks : "readGroups"
-				, assign : "createWork"
+				, createWork : "createWork"
 				, readWorks : "readWorks"
 				, updateWork : "updateWork"
 			})
 			, ...mapActions("session", [
 				"getSessionUser"
 			])
+			, assign(model) {
+				this.createWork({ model, mutation: ADD });
+			}
+			, update(diff) {
+				this.updateWork({ diff, mutation: UPDATE } );
+			}
 			, save(model) {
+				console.log("before send:", model)
 				this.clearSelection();
 				this.updateWork( { model, mutation: UPDATE } );
 			}
@@ -202,7 +209,7 @@
 					if (this.me) {
 						this.readWorks({
 							options: { user : this.me.code, week : this.currentWeek }
-							, mutation: `dailyPage/${LOAD_WORKS}`
+							, mutation: LOAD_WORKS
 						})
 					}
 				}
