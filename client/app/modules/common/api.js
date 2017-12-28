@@ -22,7 +22,9 @@ export const api = (method, url, model) => {
 				reject(new Error(`response status is ${res.status}. ${res.error.message}`));
 			}
 		}).catch(error => {
-			if (error instanceof Error) {
+			if (error instanceof TypeError) {	
+				reject(error);
+			} else if (error instanceof Error) {
 				// TODO サーバ側でエラーのスローの仕方が違うので統一する
 				if (error.status == 400 && error.response.data && error.response.data.error) {
 					error.message = `${error.message} (type: ${error.response.data.error.type}, message: ${error.response.data.error.message})`;

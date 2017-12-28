@@ -21,7 +21,7 @@ module.exports = {
 		role: "user",
 		collection: Work,
 		
-		modelPropFilter: "code title start end week parent author asignee lastCommunication createdAt updatedAt"
+		modelPropFilter: "code title start end actualStart actualEnd description week parent author status asignee lastCommunication createdAt updatedAt"
 
 		// TODO: populateModelsを改造すれば、下にのみpopulate、上にのみpopulateもできる
 		, modelPopulates: {
@@ -110,11 +110,28 @@ module.exports = {
 			return this.collection.findById(ctx.modelID).exec()
 			.then((doc) => {
 
+				console.log(ctx.params);
+
+				if (ctx.params.name != null)
+					doc.name = ctx.params.name;
+
+				if (ctx.params.goal != null)
+					doc.goal = ctx.params.goal;
+
 				if (ctx.params.start != null)
 					doc.start = ctx.params.start;
 
 				if (ctx.params.end != null)
 					doc.end = ctx.params.end;
+
+				if (ctx.params.actualStart != null)
+					doc.actualStart = ctx.params.actualStart;
+
+				if (ctx.params.actualEnd != null)
+					doc.actualEnd = ctx.params.actualEnd;
+
+				if (ctx.params.description != null)
+					doc.end = ctx.params.description;
 
 				return doc.save();
 			})

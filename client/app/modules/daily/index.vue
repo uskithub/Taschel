@@ -71,16 +71,21 @@
 				}
 				const baseModel = newWorks[0];
 				this.schema.popupForm.title = `${baseModel.name} を編集`;
+
+				let actualStartFormat, actualEndFormat;
 				this.schema.popupForm.form.fields.forEach(f => {
-					if (f.model == "actual_start") {
+					if (f.model == "actualStart") {
 						if (!f._label) { f._label = f.label; } // save for next select.
-						const _start = baseModel.start.format(f.format);
+						console.log(baseModel.start);
+						actualStartFormat = f.format;
+						const _start = moment(baseModel.start).format(actualStartFormat);
 						f.label = `${f._label}（予定：${_start}）`;
 						// I don't know why but default value will be cleared when user input any other field like goal...
 						// f.dateTimePickerOptions.defaultDate = baseModel.start;
-					} else if (f.model == "actual_end") {
+					} else if (f.model == "actualEnd") {
 						if (!f._label) { f._label = f.label; } // save for next select.
-						const _end = baseModel.end.format(f.format);
+						actualEndFormat = f.format;
+						const _end = moment(baseModel.end).format(actualEndFormat);
 						f.label = `${f._label}（予定：${_end}）`;
 						// f.dateTimePickerOptions.defaultDate = baseModel.end;
 					}
@@ -88,6 +93,12 @@
 				});
 
 				let targetModel = cloneDeep(baseModel);
+				if (targetModel.actualStart) {
+					targetModel.actualStart = moment(targetModel.actualStart).format(actualStartFormat);
+				}
+				if (targetModel.actualEnd) {
+					targetModel.actualEnd = moment(targetModel.actualEnd).format(actualEndFormat);
+				}
 				if (targetModel.root && targetModel.root != -1) {
 					targetModel.root_code = (targetModel.root.code) ? targetModel.root.code : targetModel.root;
 				}
@@ -172,8 +183,8 @@
 			, assign(model) {
 				this.createWork({ model, mutation: ADD });
 			}
-			, update(diff) {
-				this.updateWork({ diff, mutation: UPDATE } );
+			, update(model) {
+				this.updateWork({ model, mutation: UPDATE } );
 			}
 			, save(model) {
 				console.log("before send:", model)

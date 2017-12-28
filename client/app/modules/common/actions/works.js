@@ -43,15 +43,11 @@ export const readWorks = ({ commit }, { options, mutation }) => {
 };
 
 // payload = {
-// 	diff : {	
-//    	code : People.code
-//    	, start : "2017-12-25T11:00:00.000Z"
-//    	, end : "2017-12-25T11:00:00.000Z"
-// 	}
+// 	model : work
 //	, mutation : "UPDATE"
 // }
-export const updateWork = ({ commit }, { diff, mutation }) => {
-	return api(METHOD.put, NAMESPACE, diff)
+export const updateWork = ({ commit }, { model, mutation }) => {
+	return api(METHOD.put, NAMESPACE, model)
 	.then(data => {
 		console.log(`● !!updated mutation: ${ mutation }`, data);
 		if (mutation)

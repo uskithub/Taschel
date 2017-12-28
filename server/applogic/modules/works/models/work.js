@@ -34,7 +34,7 @@ let WorkSchema = new Schema({
     , actualStart: {
 		type: Date
 	}
-	, actialEnd: {
+	, actualEnd: {
 		type: Date
 	}
 	, description: {

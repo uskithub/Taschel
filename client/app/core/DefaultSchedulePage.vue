@@ -115,37 +115,55 @@
 			, cancel() { this.$emit("cancel"); }
 		}
 		, created() {
+			// TODO: closeされているworkは色を変える
+			// TODO: closeされているworkは動かせなくする
 			this.schema.fullCalendar.drop = (date, jqEvent, ui, resourceId) => {
 				const code = $(jqEvent.target).data("code");
 				const task = this.tasks.filter(t => { return t.code == code; })[0];
 				const newModel = {
 					title : task.name
-					, start : `${date.format()}Z`
-					, end : `${date.add(1, "h").format()}Z`
+					, start : date.utc().format()
+					, end : date.add(1, "h").utc().format()
 					, parent_code : task.code
 					, week : this.currentWeek
 				};
 				this.$emit("assign", newModel);
 			};
 
+			// for user's dragging and dropping events
 			this.schema.fullCalendar.eventDrop = (event, delta, revertFunc, jqEvent, ui, view) => {
-				const diff = {
-					code: event.code
-					, start : moment(event.start).format()
-				};
-				this.$emit("update", diff);
+				for (let i in this.works) {
+					let work = this.works[i];
+					if (work.code == event.code) {
+						work.start = moment(event.start).format();
+						work.end = moment(event.end).format();
+						this.$emit("update", work);
+						return;
+					}
+				}
 			};
 
+			// for user's expanding events.
 			this.schema.fullCalendar.eventResize = (event, delta, revertFunc, jqEvent, ui, view) => {
-				const diff = {
-					code: event.code
-					, end : moment(event.end).format()
-				};
-				this.$emit("update", diff);
+				for (let i in this.works) {
+					let work = this.works[i];
+					if (work.code == event.code) {
+						work.end = moment(event.end).format();
+						this.$emit("update", work);
+						return;
+					}
+				}
 			};
 
+			// for user's editing with popupForm
 			this.schema.fullCalendar.eventClick = (event, jqEvent, view) => {
-				this.$emit("select", event);
+				for (let i in this.works) {
+					let work = this.works[i];
+					if (work.code == event.code) {
+						this.$emit("select", work);
+						return;
+					}
+				}
 
 				this.$nextTick(() => {
 					let el = document.querySelector("div.form input:nth-child(1):not([readonly]):not(:disabled)");

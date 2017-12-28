@@ -12,7 +12,8 @@ module.exports = {
 	id: "daily"
     , title: _("Daily")
     , fullCalendar : {
-		googleCalendarApiKey: "AIzaSyBs9rLYkbTc8gf05hOsZ4iOWLBj8Rptn1k"
+		timezone : "local"
+		, googleCalendarApiKey: "AIzaSyBs9rLYkbTc8gf05hOsZ4iOWLBj8Rptn1k"
 		, droppable: true
 		, editable: true
 		, selectable: true
@@ -86,10 +87,9 @@ module.exports = {
 				, { 
 					type: "dateTimePicker"
 					, label: _("Start")
-					, model: "actual_start"
+					, model: "actualStart"
 					, placeholder: _("Start_time")
 					, format: "HH:mm"
-					, required: true
 					, closeRequired: true
 					, dateTimePickerOptions: {
 						format: "HH:mm"
@@ -98,7 +98,7 @@ module.exports = {
 					, finalize: (model, value, field) => {
 						if (value) {
 							const hhmm = value.split(":");
-							return model.start.hour(hhmm[0]).minute(hhmm[1]);
+							return moment(model.start).hour(hhmm[0]).minute(hhmm[1]);
 						} else {
 							return value;
 						}
@@ -108,7 +108,7 @@ module.exports = {
 				, { 
 					type: "dateTimePicker"
 					, label: _("End")
-					, model: "actual_end"
+					, model: "actualEnd"
 					, placeholder: _("End time")
 					, format: "HH:mm"
 					, closeRequired: true
@@ -119,7 +119,7 @@ module.exports = {
 					, finalize: (model, value, field) => {
 						if (value) {
 							const hhmm = value.split(":");
-							return model.start.hour(hhmm[0]).minute(hhmm[1]);
+							return moment(model.start).hour(hhmm[0]).minute(hhmm[1]);
 						} else {
 							return value;
 						}
