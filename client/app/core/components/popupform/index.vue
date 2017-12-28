@@ -30,6 +30,9 @@
 							button.button.outline(@click="buttonCancelDidPush", :disabled="!isCancelButtonEnable")
 								i.icon.fa.fa-close
 								| {{ schema.resources.cancelCaption || _("Cancel") }}
+					div
+						tree-list(v-for="child in orderedChildren", :isReverse="true", :node="child", :key='child.code')
+
 				.block
 					//- button.button.success(@click="schema.buttons[0].action") {{ schema.buttons[0].label }}
 				
@@ -37,7 +40,8 @@
 
 <script>
 	import Vue from "vue";
-	
+	import TreeList from "../treelist/index";
+
 	import "jquery";	
 	import "bootstrap";
 	import "bootstrap/dist/css/bootstrap.css";
@@ -49,10 +53,13 @@
 
 	export default {
 
+		components: {
+			TreeList
+		}
 		// properties set by it's parent component.
 		// somtimes, parent components set their methods as props.
 		// it looks like cocoa's delegating.
-		props: {
+		, props: {
 			schema : {
 				type: Object
       			, required: true
@@ -112,6 +119,9 @@
 					return this.$refs.form.errors;
 
 				return [];
+			}
+			, orderedChildren() {
+				return this.template.children.reverse();
 			}
 		}
 		, watch : {

@@ -1,5 +1,5 @@
 <template lang="pug">
-    div(v-if="node != null")
+    div(v-if="node != null && !isReverse")
         div
             div.border.up(:class="{'active': isDraggingToGoUp}"
                 @drop="dropAbove"
@@ -26,7 +26,7 @@
                 div.node-content {{ `${node.name}(${node.code}) parent=${(node.parent instanceof Object) ? "obj" : node.parent}, children=[${node.children.reduce((str, c) => { str += c.code + ", "; return str; }, "")}]`}}
 
                 div.operation(v-show="isHovering")
-                    span(title="add tree node" @click.prevent.stop="add($event, node)")
+                    span(v-if="add != undefined" title="add tree node" @click.prevent.stop="add($event, node)")
                         slot(name="addTreeNode")
                             i.vue-tree-icon.icon-folder-plus-e
 
@@ -37,7 +37,49 @@
                 @dragleave="dragleaveBelow")
 
         div(:class="{'tree-margin': true}", v-show="isOpen")
-            tree-list(v-for="child in node.children", :node="child" , :key='child.code', :add="add")
+            tree-list(v-for="child in filteredOrderedNodes", :node="child", :key='child.code', :add="add")
+
+    div(v-else-if="node != null")
+        div(:class="{'tree-margin': true}", v-show="isOpen")
+            tree-list(v-for="child in filteredOrderedNodes", :isReverse="true", :node="child", :key='child.code', :add="add")
+
+        div
+            div.border.up(:class="{'active': isDraggingToGoUp}"
+                @drop="dropAbove"
+                @dragenter="dragenterAbove"
+                @dragover="dragover"
+                @dragleave="dragleaveAbove")
+
+            div.tree-node(:id="node.code", :class="{'active': isDraggingIntoChild}" draggable="true"
+                @click=""
+                @dragstart="dragstart"
+                @dragover="dragover"
+                @dragenter="dragenter"
+                @dragleave="dragleave"
+                @drop="drop"
+                @dragend="dragend"
+                @mouseover="mouseover"
+                @mouseout="mouseout")
+                span.caret.icon.is-small(v-if="node.children && node.children.length > 0")
+                    i.vue-tree-icon(:class="caretClass" @click.prevent.stop="toggle")
+                
+                slot(name="treeNodeIcon")
+                    i.vue-tree-icon.item-icon.icon-folder
+
+                div.node-content {{ `${node.name}(${node.code}) parent=${(node.parent instanceof Object) ? "obj" : node.parent}, children=[${node.children.reduce((str, c) => { str += c.code + ", "; return str; }, "")}]`}}
+
+                div.operation(v-show="isHovering")
+                    span(v-if="add != undefined" title="add tree node" @click.prevent.stop="add($event, node)")
+                        slot(name="addTreeNode")
+                            i.vue-tree-icon.icon-folder-plus-e
+
+            div.work {{ "hgehogeho" }}
+
+            div(class="border bottom", :class="{'active': isDraggingToGoDown}"
+                @drop="dropBelow"
+                @dragenter="dragenterBelow"
+                @dragover="dragover"
+                @dragleave="dragleaveBelow")
 
 </template>
 
@@ -69,6 +111,11 @@
 			isRoot: {
 				type: Boolean
 				, validator: function(value) { return true; } // TODO
+            }
+            , isReverse: {
+                type: Boolean
+                , default: false
+				, validator: function(value) { return true; } // TODO
 			}
 			, node: {
 				type: Object
@@ -78,21 +125,31 @@
             // this will be handed to child nodes recursively. So this is props not using $emit.
 			, add: {
                 type: Function
-                , required: true
 				, validator: function(value) { return true; } // TODO
 			}
 		}
         , computed: {
             itemIconClass () {
                 //return this.model.isLeaf ? 'icon-file' : 'icon-folder'
-                return 'icon-folder';
+                return "icon-folder";
             }
             , caretClass () {
-                return this.isOpen ? 'icon-caret-down' : 'icon-caret-right';
+                return this.isOpen ? "icon-caret-down" : "icon-caret-right";
             }
             , isFolder() {
                 return this.node.children && this.node.children.length > 0
             }
+            , filteredOrderedNodes() {
+				let items = this.node.children;
+				// if (this.search) {
+				// 	let search = this.search.toLowerCase();
+				// 	items = this.rows.filter(function (row) {
+				// 		return searchInObject(row, search)
+				// 	});
+                // }
+                
+                return (this.isReverse) ? items.reverse() : items;
+			}
         }
         , mounted () {}
         , beforeDestroy () {}
@@ -281,7 +338,7 @@
             background-color: transparent;
         }
         &.bottom {
-            background-color: #c00;
+            // background-color: #c00;
         }
         &.active {
             border-bottom: 3px dashed blue;
@@ -316,5 +373,11 @@
     }
     .tree-margin {
         margin-left: 2em;
+    }
+
+    .work {
+        background-color: rgba(0,0,0,0.5);
+        border-radius: 2px;
+        text-align: right;
     }
 </style>
