@@ -53,7 +53,8 @@ module.exports = {
 				, scrollTime : "8:00"
 				, minTime : "6:00"
 				, maxTime : "22:00"
-				, timeFormat: "HH:mm"	
+				, timeFormat: "HH:mm"
+				, snapDuration: "00:15:00"
 			}
 			, day: {
 				// options apply to basicDay and agendaDay views
