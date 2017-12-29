@@ -147,6 +147,9 @@ module.exports = {
 								return this.toJSON(docs);
 							})
 							.then(jsons => {
+								return this.populateModels(jsons);
+							})
+							.then(jsons => {
 								// 未分類Groupと一緒に返す
 								let filter = {
 									// TODO: Close条件
@@ -164,18 +167,15 @@ module.exports = {
 								})
 								.then(taskJsons => {
 									// 既存Groupに分類されていないTaskを未分類として既存Groupとともに返す
-									return this.populateModels(jsons)
-									.then(jsons => {
-										let unclassifiedGroup = {
-											code: UNCLASSIFIED
-											, type: type
-											, name: "unclassified"
-											, purpose: "for_classify"
-											, children: taskJsons
-										};
-										jsons.unshift(unclassifiedGroup);
-										return jsons;
-									});
+									let unclassifiedGroup = {
+										code: UNCLASSIFIED
+										, type: type
+										, name: "unclassified"
+										, purpose: "for_classify"
+										, children: taskJsons
+									};
+									jsons.unshift(unclassifiedGroup);
+									return jsons;
 								});
 							});
 						} else {
@@ -203,7 +203,7 @@ module.exports = {
 								})
 								.then(unclassifiedTaskJsons => {
 									return this.populateModels(jsons)
-									.then((jsons) => {
+									.then(jsons => {
 										let unclassifiedGroup = {
 											code: UNCLASSIFIED
 											, type: `weekly_${ctx.params.weekly}`
