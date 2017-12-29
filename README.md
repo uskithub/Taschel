@@ -1,4 +1,5 @@
 # TODO
+- [] kanbanは、closeされていないmilstoneがある場合は、それを未分類のGroup扱いする
 - [] weeklyにProjectも表示されているので、しぼる
 - [x] gantのaddで、親のタスクタイプによって、子のタスクタイプの初期値を変える
 - [] gantのpopupFomrは親の情報見れるようにしたい

@@ -40,7 +40,7 @@
 
 <script>
 	import Vue from "vue";
-	import TreeList from "../treelist/index";
+	import TreeList from "../treebasedtimeline/index";
 
 	import "jquery";	
 	import "bootstrap";
@@ -253,8 +253,8 @@
 
 	.popup {
 		position: absolute;
-		top: 200px;
-		left: 280px;
+		top: 150px;
+		left: 100px;
 		right: 100px;
 		bottom: 0;
 		margin: auto;

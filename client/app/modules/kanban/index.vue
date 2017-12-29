@@ -144,6 +144,11 @@
 				}
 			}
 			, arrange(context) {
+				// validation
+				if (context.from == context.to && context.to == "UNCLASSIFIED") {
+					// TODO: milestone板同士では移動ができてしまう
+					return;
+				}
 				context.mutation = UPDATE;
 				this.updateGroups(context);
 			}
