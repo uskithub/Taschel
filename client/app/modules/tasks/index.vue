@@ -183,10 +183,10 @@
 					// この時、root=parent=-1で、type="step"などとなってしまう
 					if (model.root_code != this.currentProject) {
 						this.selectProject(model.root_code);
-						if (model.parent_code == null) {
-							// cloneでもbreakdownでもない新規の場合、parentもrootと同じにする
-							model.parent_code = model.root_code;
-						}
+					}
+					if (model.parent_code == null) {
+						// cloneでもbreakdownでもない新規の場合、parentもrootと同じにする
+						model.parent_code = model.root_code;
 					}
 					this.createTask( { model, mutation: ADD } );
 					this.model = null;

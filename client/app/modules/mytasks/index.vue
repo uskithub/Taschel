@@ -163,6 +163,10 @@
 				if (model.code) {
 					this.updateTask( { model, mutation: UPDATE } );
 				} else {
+					if (model.parent_code == null) {
+						// cloneでもbreakdownでもない新規の場合、parentもrootと同じにする
+						model.parent_code = model.root_code;
+					}
 					this.createTask( { model, mutation: ADD } );
 					this.model = null;
 				}
