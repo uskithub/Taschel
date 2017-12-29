@@ -103,7 +103,7 @@
 				// populateしているchildrenを辿って表示するので、getTasks的なことは不要
 			}
 			, generateModel(parent) {
-				this.schema.popupForm.title = _("CreateNewTask");
+				this.schema.popupForm.title = `${parent.name} に子タスクを追加`;
 				this.schema.popupForm.form.fields.forEach(f => {
 					if (f.model == "root_code") {
 						f.readonly = true;
@@ -113,7 +113,20 @@
 				});
 
 				let newModel = schemaUtils.createDefaultObject(this.schema.popupForm.form);
-				newModel.type = "step";
+				switch (parent.type) {
+					case "project":
+						newModel.type = "milestone";
+						break;
+					case "milestone":
+						newModel.type = "requirement";
+						break;
+					case "requirement":
+						newModel.type = "way";
+						break;
+					default:
+						newModel.type = "step";
+						break;
+				}
 				newModel.purpose = `${parent.goal} にするため`;
 				newModel.root_code = this.currentProject;
 				newModel.parent_code = parent.code;

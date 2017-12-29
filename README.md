@@ -1,8 +1,8 @@
 # TODO
 - [] weeklyにProjectも表示されているので、しぼる
-- [] gantのaddで、親のタスクタイプによって、子のタスクタイプの初期値を変える
+- [x] gantのaddで、親のタスクタイプによって、子のタスクタイプの初期値を変える
 - [] gantのpopupFomrは親の情報見れるようにしたい
-- [] gantのCreateNewTaskも、親に子を追加にする
+- [x] gantのCreateNewTaskも、親に子を追加にする
 - [x] authorのpopulateを削る
 - [] タスクのformに開始日／期日を追加（自動的に工数を出す）
   - [] 日付入力のコンポーネントを使えるようにする
