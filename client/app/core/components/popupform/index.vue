@@ -121,7 +121,7 @@
 				return [];
 			}
 			, orderedChildren() {
-				return this.template.children.reverse();
+				return (this.template.children) ? this.template.children.reverse() : [];
 			}
 		}
 		, watch : {

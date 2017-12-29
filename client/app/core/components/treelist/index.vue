@@ -23,7 +23,7 @@
                 slot(name="treeNodeIcon")
                     i.vue-tree-icon.item-icon.icon-folder
 
-                div.node-content {{ `${node.name}(${node.code}) parent=${(node.parent instanceof Object) ? "obj" : node.parent}, children=[${node.children.reduce((str, c) => { str += c.code + ", "; return str; }, "")}]`}}
+                div.node-content {{ `${node.name}(${node.code}) parent=${(node.parent instanceof Object) ? "obj" : node.parent}, children=[${(node.children) ? node.children.reduce((str, c) => { str += c.code + ", "; return str; }, "") : ""}]`}}
 
                 div.operation(v-show="isHovering")
                     span(v-if="add != undefined" title="add tree node" @click.prevent.stop="add($event, node)")
@@ -66,7 +66,7 @@
                 slot(name="treeNodeIcon")
                     i.vue-tree-icon.item-icon.icon-folder
 
-                div.node-content {{ `${node.name}(${node.code}) parent=${(node.parent instanceof Object) ? "obj" : node.parent}, children=[${node.children.reduce((str, c) => { str += c.code + ", "; return str; }, "")}]`}}
+                div.node-content {{ `${node.name}(${node.code}) parent=${(node.parent instanceof Object) ? "obj" : node.parent}, children=[${ (node.children) ? node.children.reduce((str, c) => { str += c.code + ", "; return str; }, "") : ""}]`}}
 
                 div.operation(v-show="isHovering")
                     span(v-if="add != undefined" title="add tree node" @click.prevent.stop="add($event, node)")
@@ -134,7 +134,7 @@
                 return "icon-folder";
             }
             , caretClass () {
-                return this.isOpen ? "icon-caret-down" : "icon-caret-right";
+                return this.isOpen ? ( this.isReverse ? "icon-caret-up" : "icon-caret-down" ) : "icon-caret-right";
             }
             , isFolder() {
                 return this.node.children && this.node.children.length > 0
@@ -148,7 +148,7 @@
 				// 	});
                 // }
                 
-                return (this.isReverse) ? items.reverse() : items;
+                return (items && this.isReverse) ? items.reverse() : items;
 			}
         }
         , mounted () {}
@@ -315,6 +315,9 @@
     }
     .icon-caret-down:before {
         content: "\e900";
+    }
+    .icon-caret-up:before {
+        content: "▲";
     }
     .icon-caret-right:before {
         content: "\e901";

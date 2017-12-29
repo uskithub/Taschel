@@ -123,14 +123,18 @@ module.exports = {
 							
 							// 配列の順番になるように、reduceで作っている
 							return DEFAULT_WEEKLY_GROUPS.reduce((promise, g) => {
-								return promise.then(()=> {
+								return promise.then(docs => {
 									g.type = type;
 									g.parent =  -1;
 									g.author = ctx.user.id;
 									let group = new Group(g);
-									return group.save();
+									return group.save()
+									.then(doc => {
+										docs.push(doc);
+										return docs;
+									});
 								});
-							}, Promise.resolve())
+							}, Promise.resolve([]))
 							.then((docs) => {
 								return this.toJSON(docs);
 							})
