@@ -34,13 +34,13 @@ module.exports = {
 			// "root": "tasks"			// 親にchildrenを持たせたので、populateすると循環参照になってpopulateが終わらなくなるので注意
 			// , "parent": "tasks"		//
 			"children": "tasks"
+			, "works": "works"
 			, "author": "persons"	// TODO: 情報量が多くなりすぎるのpopulateを削る
 			, "asignee": "persons"
 		}
 		, idEncodes: {
 			"root": "tasks"
 			, "parent": "tasks"
-			, "works": "works"
 		}
 	}
 	

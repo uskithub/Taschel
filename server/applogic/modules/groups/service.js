@@ -68,36 +68,44 @@ module.exports = {
 					};
 					let query = Task.find(filter);
 					// 選択されているProjectのTaskを全部持ってくる
-					return ctx.queryPageSort(query).exec().then( (taskDocs) => {
+					return ctx.queryPageSort(query).exec()
+					.then(taskDocs => {
 						let filter = {
 							type : "kanban"
 							, parent : this.taskService.decodeID(ctx.params.parent_code)
 						};
 						let query = Group.find(filter);
 						// 選択されているProjectのGroupを全部持ってくる
-						return ctx.queryPageSort(query).exec().then( (docs) => {
+						return ctx.queryPageSort(query).exec().then(docs => {
 							return this.toJSON(docs);
 						})
-						.then((jsons) => {
+						.then(jsons => {
 							// 既存Groupに分類されていないTaskを未分類として既存Groupとともに返す
 							let classifiedTasks = jsons.reduce((arr, g) => {
 								return arr.concat(g.children);
 							}, []);
 							// taskはJSONにすると_idでの突き合わせができなくなるのでしない
-							let unclassifiedTasks = taskDocs.filter(d => { return !classifiedTasks.includes(d._id); });
+							let unclassifiedTaskDocs = taskDocs.filter(d => { return !classifiedTasks.includes(d._id); });
 							
-							return this.populateModels(jsons)
-							.then((jsons) => {
-								let unclassifiedGroup = {
-									code: UNCLASSIFIED
-									, type: "kanban"
-									, name: "unclassified"
-									, purpose: "for_classify"
-									, parent: ctx.params.parent_code
-									, children: unclassifiedTasks
-								};
-								jsons.unshift(unclassifiedGroup);
-								return jsons;
+							return Promise.resolve().then(() => {
+								return this.toJSON(unclassifiedTaskDocs);
+							}).then(unclassifiedTaskJsons => {
+								return this.populateModels(unclassifiedTaskJsons);
+							})
+							.then(unclassifiedTaskJsons => {
+								return this.populateModels(jsons)
+								.then(jsons => {
+									let unclassifiedGroup = {
+										code: UNCLASSIFIED
+										, type: "kanban"
+										, name: "unclassified"
+										, purpose: "for_classify"
+										, parent: ctx.params.parent_code
+										, children: unclassifiedTaskJsons
+									};
+									jsons.unshift(unclassifiedGroup);
+									return jsons;
+								});
 							});
 						});
 					});
@@ -113,10 +121,10 @@ module.exports = {
 					let query = Group.find(filter);
 
 					// 該当週のGroupを取得
-					return ctx.queryPageSort(query).exec().then( (docs) => {
+					return ctx.queryPageSort(query).exec().then(docs => {
 						return this.toJSON(docs);
 					})
-					.then((jsons) => {
+					.then(jsons => {
 						if (jsons.length == 0) {
 							// TODO: 該当週のデータがないならないで返す？
 							// this.notifyNotSetupYet(ctx);
@@ -135,10 +143,10 @@ module.exports = {
 									});
 								});
 							}, Promise.resolve([]))
-							.then((docs) => {
+							.then(docs => {
 								return this.toJSON(docs);
 							})
-							.then((jsons) => {
+							.then(jsons => {
 								// 未分類Groupと一緒に返す
 								let filter = {
 									// TODO: Close条件
@@ -147,13 +155,17 @@ module.exports = {
 								let query = Task.find(filter);
 
 								// myTasksでクローズしていないものを取得
-								return ctx.queryPageSort(query).exec().then( (taskDocs) => {
+								return ctx.queryPageSort(query).exec()
+								.then(taskDocs => {
 									return this.toJSON(taskDocs);
 								})
-								.then((taskJsons) => {
+								.then(taskJsons => {
+									return this.populateModels(taskJsons);
+								})
+								.then(taskJsons => {
 									// 既存Groupに分類されていないTaskを未分類として既存Groupとともに返す
 									return this.populateModels(jsons)
-									.then((jsons) => {
+									.then(jsons => {
 										let unclassifiedGroup = {
 											code: UNCLASSIFIED
 											, type: type
@@ -175,25 +187,33 @@ module.exports = {
 							let query = Task.find(filter);
 							
 							// myTasksでクローズしていないものを取得
-							return ctx.queryPageSort(query).exec().then( (taskDocs) => {
+							return ctx.queryPageSort(query).exec()
+							.then(taskDocs => {
 								// 既存Groupに分類されていないTaskを未分類として既存Groupとともに返す
 								let classifiedTasks = jsons.reduce((arr, g) => {
 									return arr.concat(g.children);
 								}, []);
 								// taskはJSONにすると_idでの突き合わせができなくなるのでしない
-								let unclassifiedTasks = taskDocs.filter(t => { return !classifiedTasks.includes(t._id); });
+								let unclassifiedTaskDocs = taskDocs.filter(t => { return !classifiedTasks.includes(t._id); });
 
-								return this.populateModels(jsons)
-								.then((jsons) => {
-									let unclassifiedGroup = {
-										code: UNCLASSIFIED
-										, type: `weekly_${ctx.params.weekly}`
-										, name: "unclassified"
-										, purpose: "for_classify"
-										, children: unclassifiedTasks
-									};
-									jsons.unshift(unclassifiedGroup);
-									return jsons;
+								return Promise.resolve().then(() => {
+									return this.toJSON(unclassifiedTaskDocs);
+								}).then(unclassifiedTaskJsons => {
+									return this.populateModels(unclassifiedTaskJsons);
+								})
+								.then(unclassifiedTaskJsons => {
+									return this.populateModels(jsons)
+									.then((jsons) => {
+										let unclassifiedGroup = {
+											code: UNCLASSIFIED
+											, type: `weekly_${ctx.params.weekly}`
+											, name: "unclassified"
+											, purpose: "for_classify"
+											, children: unclassifiedTaskJsons
+										};
+										jsons.unshift(unclassifiedGroup);
+										return jsons;
+									});
 								});
 							});
 						}

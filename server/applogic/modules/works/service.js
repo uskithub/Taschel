@@ -26,10 +26,10 @@ module.exports = {
 		// TODO: populateModelsを改造すれば、下にのみpopulate、上にのみpopulateもできる
 		, modelPopulates: {
 			// "root": "tasks"			// 親にchildrenを持たせたので、populateすると循環参照になってpopulateが終わらなくなるので注意
-			"parent": "tasks"		//
 		}
 		, idEncodes: {
-			"author": "persons"
+			"parent": "tasks"
+			, "author": "persons"
 			, "asignee": "persons"
 		}
 	}
