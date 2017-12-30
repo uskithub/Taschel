@@ -72,7 +72,7 @@ module.exports = {
 						, children : { $size: 0 }
 					};
 					let query = Task.find(filter);
-					// 選択されているProjectのTaskを全部持ってくる
+					// 選択されているProjectのTaskを取得
 					return ctx.queryPageSort(query).exec()
 					.then(taskDocs => {
 						let filter = {
@@ -80,7 +80,7 @@ module.exports = {
 							, parent : this.taskService.decodeID(ctx.params.parent_code)
 						};
 						let query = Group.find(filter);
-						// 選択されているProjectのGroupを全部持ってくる
+						// 選択されているProjectのGroupを取得
 						return ctx.queryPageSort(query).exec().then(docs => {
 							return this.toJSON(docs);
 						})
@@ -94,9 +94,9 @@ module.exports = {
 
 							return Promise.resolve()
 							.then(() => {
-								return this.toJSON(unclassifiedTaskDocs);
+								return this.taskService.toJSON(unclassifiedTaskDocs);
 							}).then(unclassifiedTaskJsons => {
-								return this.populateModels(unclassifiedTaskJsons);
+								return this.taskService.populateModels(unclassifiedTaskJsons);
 							})
 							.then(unclassifiedTaskJsons => {
 								// 選択されているProjectのopenのmilestoneを持ってくる
@@ -109,10 +109,10 @@ module.exports = {
 								
 								return ctx.queryPageSort(query).exec()
 								.then(milestoneDocs => {
-									return this.toJSON(milestoneDocs);
+									return this.taskService.toJSON(milestoneDocs);
 								})
 								.then(milestoneJsons => {
-									return this.populateModels(milestoneJsons);
+									return this.taskService.populateModels(milestoneJsons);
 								})
 								.then(milestoneJsons => {
 									// 子孫を全部一つのchildrenに集約
@@ -164,7 +164,7 @@ module.exports = {
 									}]);
 
 									return this.populateModels(jsons)
-									.then(json => {
+									.then(jsons => {
 										return classifiedDummyGroupJsons.filter(json => { return json.children.length > 0; }).concat(jsons);
 									})
 								});
@@ -259,9 +259,10 @@ module.exports = {
 								let unclassifiedTaskDocs = taskDocs.filter(t => { return !classifiedTasks.includes(t._id); });
 
 								return Promise.resolve().then(() => {
-									return this.toJSON(unclassifiedTaskDocs);
-								}).then(unclassifiedTaskJsons => {
-									return this.populateModels(unclassifiedTaskJsons);
+									return this.taskService.toJSON(unclassifiedTaskDocs);
+								})
+								.then(unclassifiedTaskJsons => {
+									return this.taskService.populateModels(unclassifiedTaskJsons);
 								})
 								.then(unclassifiedTaskJsons => {
 									return this.populateModels(jsons)
@@ -294,16 +295,16 @@ module.exports = {
 					let query = Group.find(filter);
 
 					// 該当週のGroupを取得
-					return ctx.queryPageSort(query).exec().then( (docs) => {
+					return ctx.queryPageSort(query).exec().then(docs => {
 						return this.toJSON(docs);
 					})
-					.then((jsons) => {
+					.then(jsons => {
 						if (jsons.length == 0) {
 							// TODO: 該当週のデータがないならないで返す？
 							// this.notifyNotSetupYet(ctx);
 							let promises = [];
 
-							DEFAULT_WEEKLY_GROUPS.forEach( g => {
+							DEFAULT_WEEKLY_GROUPS.forEach(g => {
 								g.type = type;
 								g.parent =  -1;
 								g.author = ctx.user.id;
@@ -311,7 +312,7 @@ module.exports = {
 								promises.push(group.save());
 							});
 
-							return Promise.all(promises).then((docs) => {
+							return Promise.all(promises).then(docs => {
 								const assignedInWeeklyGroup = {
 									code: ASSIGNED_IN_WEEKLY
 									, type: type
@@ -323,7 +324,7 @@ module.exports = {
 							});
 						} else {
 							return this.populateModels(jsons)
-							.then((jsons) => {
+							.then(jsons => {
 								const assignedInWeekly = jsons.reduce((arr, g) => {
 									return arr.concat(g.children);
 								}, []);
