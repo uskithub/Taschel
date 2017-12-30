@@ -16,7 +16,7 @@
 		.form
 			vue-form-generator(:schema="schema.projectSelector", :model="modelProjectSelector", ref="projectSelector", @model-updated="selectProject")
 
-		tree-list(v-if="selectedProject", :isRoot="true", :node="rootNode", :add="buttonAddDidPush")
+		tree-list(v-if="selectedProject", :node="rootNode", :isRoot="true", :add="buttonAddDidPush")
 
 		popup-form(v-if="isEditing", :schema="schema.popupForm", :template="model"
 			, @save="save"

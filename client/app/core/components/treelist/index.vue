@@ -1,13 +1,13 @@
 <template lang="pug">
-    div
+    div(v-if="node != null")
         div.border.up(:class="{'active': isDraggingToGoUp}"
             @drop="dropAbove"
             @dragenter="dragenterAbove"
             @dragover="dragover"
             @dragleave="dragleaveAbove")
 
-        div.media(v-if="node != null", :class="{'media': node.type=='milestone', 'active': isDraggingIntoChild}")
-            div.tree-node(:id="node.code" draggable="true"
+        div.media.gantt(:class="{'active': isDraggingIntoChild, 'primary': node.type=='milestone', 'danger': node.type=='requirement', 'warning': node.type=='way', 'success': node.type=='step'}")
+            div.tree-node(:id="node.code" draggable="!isRoot"
                 @click=""
                 @dragstart="dragstart"
                 @dragover="dragover"
@@ -245,9 +245,12 @@
         font-style: normal;
     }
     .media {
-        display: block;
-        padding: 0.5em 0 0.5em 1em;
-
+        &.gantt {
+            display: block;
+            box-shadow: none;
+            padding: 0.5em 0 0.5em 1em;
+        }
+        
         &.active {
             outline: 2px dashed yellow;
         }

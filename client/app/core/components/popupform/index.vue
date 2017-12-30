@@ -31,7 +31,8 @@
 								i.icon.fa.fa-close
 								| {{ schema.resources.cancelCaption || _("Cancel") }}
 					div
-						tree-list(v-for="child in orderedChildren", :isReverse="true", :node="child", :key='child.code')
+						//- tree-list(v-for="child in orderedChildren", :isReverse="true", :node="child", :key='child.code')
+						tree-list(:node="model", :isRoot="true", :isReverse="true")
 
 				.block
 					//- button.button.success(@click="schema.buttons[0].action") {{ schema.buttons[0].label }}
@@ -44,7 +45,7 @@
 
 	import "jquery";	
 	import "bootstrap";
-	import "bootstrap/dist/css/bootstrap.css";
+	// import "bootstrap/dist/css/bo	otstrap.css";
 	import "eonasdan-bootstrap-datetimepicker";
 	import "eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.css";
 	

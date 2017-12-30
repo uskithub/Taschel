@@ -1,13 +1,16 @@
 <template lang="pug">
-    div(v-if="node != null && !isReverse")
-        div
-            div.border.up(:class="{'active': isDraggingToGoUp}"
-                @drop="dropAbove"
-                @dragenter="dragenterAbove"
-                @dragover="dragover"
-                @dragleave="dragleaveAbove")
+    div(v-if="node != null")
+        div(class="border bottom", :class="{'active': isDraggingToGoDown}"
+            @drop="dropBelow"
+            @dragenter="dragenterBelow"
+            @dragover="dragover"
+            @dragleave="dragleaveBelow")
 
-            div.tree-node(:id="node.code", :class="{'active': isDraggingIntoChild}" draggable="true"
+        div.media.gantt(:class="{'active': isDraggingIntoChild, 'primary': node.type=='milestone', 'danger': node.type=='requirement', 'warning': node.type=='way', 'success': node.type=='step'}")
+            div(:class="{'tree-margin': true}", v-show="isOpen")
+                tree-list(v-for="child in filteredOrderedNodes", :isReverse="true", :node="child", :key='child.code', :add="add")
+
+            div.tree-node(:id="node.code" draggable="!isRoot"
                 @click=""
                 @dragstart="dragstart"
                 @dragover="dragover"
@@ -23,64 +26,35 @@
                 slot(name="treeNodeIcon")
                     i.vue-tree-icon.item-icon.icon-folder
 
-                div.node-content {{ `${node.name}(${node.code}) parent=${(node.parent instanceof Object) ? "obj" : node.parent}, children=[${(node.children) ? node.children.reduce((str, c) => { str += c.code + ", "; return str; }, "") : ""}]`}}
+                //- div.node-content {{ `${node.name}(${node.code}) parent=${(node.parent instanceof Object) ? "obj" : node.parent}, children=[${(node.children) ? node.children.reduce((str, c) => { str += c.code + ", "; return str; }, "") : ""}]`}}
+                div.node-content {{ node.name }}
 
                 div.operation(v-show="isHovering")
                     span(v-if="add != undefined" title="add tree node" @click.prevent.stop="add($event, node)")
                         slot(name="addTreeNode")
                             i.vue-tree-icon.icon-folder-plus-e
 
-            div(class="border bottom", :class="{'active': isDraggingToGoDown}"
-                @drop="dropBelow"
-                @dragenter="dragenterBelow"
-                @dragover="dragover"
-                @dragleave="dragleaveBelow")
+            .content.list
+                .media(v-for="work in node.works", :key="work.code")
+                    .media-left
+                        img.avatar(src="https://s3.amazonaws.com/uifaces/faces/twitter/kolage/73.jpg")
+                    .media-content
+                        strong {{ work.asignee }}
+                        small.text-muted {{ work.actualEnd }}
+                        p {{ work.description }}
+                        .functions
+                            a(href="#")
+                                i.fa.fa-reply
+                            a(href="#")
+                                i.fa.fa-heart
+                            a(href="#")
+                                i.fa.fa-trash
 
-        div(:class="{'tree-margin': true}", v-show="isOpen")
-            tree-list(v-for="child in filteredOrderedNodes", :node="child", :key='child.code', :add="add")
-
-    div(v-else-if="node != null")
-        div(:class="{'tree-margin': true}", v-show="isOpen")
-            tree-list(v-for="child in filteredOrderedNodes", :isReverse="true", :node="child", :key='child.code', :add="add")
-
-        div
-            div.border.up(:class="{'active': isDraggingToGoUp}"
-                @drop="dropAbove"
-                @dragenter="dragenterAbove"
-                @dragover="dragover"
-                @dragleave="dragleaveAbove")
-
-            div.tree-node(:id="node.code", :class="{'active': isDraggingIntoChild}" draggable="true"
-                @click=""
-                @dragstart="dragstart"
-                @dragover="dragover"
-                @dragenter="dragenter"
-                @dragleave="dragleave"
-                @drop="drop"
-                @dragend="dragend"
-                @mouseover="mouseover"
-                @mouseout="mouseout")
-                span.caret.icon.is-small(v-if="node.children && node.children.length > 0")
-                    i.vue-tree-icon(:class="caretClass" @click.prevent.stop="toggle")
-                
-                slot(name="treeNodeIcon")
-                    i.vue-tree-icon.item-icon.icon-folder
-
-                div.node-content {{ `${node.name}(${node.code}) parent=${(node.parent instanceof Object) ? "obj" : node.parent}, children=[${ (node.children) ? node.children.reduce((str, c) => { str += c.code + ", "; return str; }, "") : ""}]`}}
-
-                div.operation(v-show="isHovering")
-                    span(v-if="add != undefined" title="add tree node" @click.prevent.stop="add($event, node)")
-                        slot(name="addTreeNode")
-                            i.vue-tree-icon.icon-folder-plus-e
-
-            div.work {{ "fghjk" }}
-
-            div(class="border bottom", :class="{'active': isDraggingToGoDown}"
-                @drop="dropBelow"
-                @dragenter="dragenterBelow"
-                @dragover="dragover"
-                @dragleave="dragleaveBelow")
-
+        div.border.up(:class="{'active': isDraggingToGoUp}"
+            @drop="dropAbove"
+            @dragenter="dragenterAbove"
+            @dragover="dragover"
+            @dragleave="dragleaveAbove")
 </template>
 
 <script>
@@ -134,7 +108,7 @@
                 return "icon-folder";
             }
             , caretClass () {
-                return this.isOpen ? ( this.isReverse ? "icon-caret-up" : "icon-caret-down" ) : "icon-caret-right";
+                return this.isOpen ? (this.isReverse ? "icon-caret-up" : "icon-caret-down") : "icon-caret-right";
             }
             , isFolder() {
                 return this.node.children && this.node.children.length > 0
@@ -285,6 +259,17 @@
         font-weight: normal;
         font-style: normal;
     }
+    .media {
+        &.gantt {
+            display: block;
+            box-shadow: none;
+            padding: 0.5em 0 0.5em 1em;
+        }
+
+        &.active {
+            outline: 2px dashed yellow;
+        }
+    }
     .vue-tree-icon {
         /* use !important to prevent issues with browser extensions that change fonts */
         font-family: 'icomoon' !important;
@@ -375,7 +360,7 @@
         cursor: pointer;
     }
     .tree-margin {
-        margin-left: 2em;
+        margin-left: 0.5em;
     }
 
     .work {
