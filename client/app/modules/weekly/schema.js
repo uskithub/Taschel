@@ -65,5 +65,9 @@ module.exports = {
 	, resources: {
 		addCaption: _("Add")
 	}
-
+	, descriptions : [
+		"今週行うタスクを「貢献度✕緊急度」のマトリクスで分類します"
+		, "マトリクスに配置されたタスクは今週行うものとして、dailyページに表示されるようになります"
+		, "authorまたはasigneeが自分で、typeが (requirement|way|step)でかつchildrenを持たないタスクのみ表示されます"
+	]
 };

@@ -63,4 +63,8 @@ module.exports = {
 				console.warn("Validation error in page! Errors:", errors, ", Model:", model);
 		}
 	}
+	, descriptions : [
+		"選択したプロジェクトの子タスクをツリー表示します"
+		, "各タスクはdrag&dropで順序を入れ替えることができます"
+	]
 };

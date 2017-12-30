@@ -70,4 +70,7 @@ module.exports = {
 	, resources: {
 		addCaption: _("Add")
 	}
+	, descriptions : [
+		"選択したプロジェクトの子タスクを一覧表示します"
+	]
 };

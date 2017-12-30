@@ -83,5 +83,10 @@ module.exports = {
 	, resources: {
 		addCaption: _("Add")
 	}
-
+	, descriptions : [
+		"project毎のカンバンを表示します"
+		, "デフォルトのカバン（TODO/In Progress/Done）はProjectPageにてProjectを新規作成した際に作成されます"
+		, "openされているmilestoneは未分類のタスクとして自動でカンバンに表示されます"
+		, "unclassifiedグループやmilestone間でタスクを移動してもサーバに保存はされず、次回の表示時に変更は"
+	]
 };

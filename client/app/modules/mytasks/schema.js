@@ -68,4 +68,10 @@ module.exports = {
 	, resources: {
 		addCaption: _("Add")
 	}
+	, descriptions : [
+		"自分に関連する（自分がauthorあるいはasigneeの）タスクが表示されます"
+		, "statusがclose（status < 0）のタスクは表示されません"
+		, "typeがprojectのタスクは表示されません"
+		, "Add/Updateで、asigneeを自分以外にすることはできません"
+	]
 };

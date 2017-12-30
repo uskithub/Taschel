@@ -1,6 +1,17 @@
 <template lang="pug">
 	.container
 		h3.title {{ schema.title }}
+		
+		.content(v-if="isShowTips && schema.descriptions && schema.descriptions.length > 0")
+			.media.primary
+				.media-content
+					strong このページの概要
+					p
+						ul
+							li(v-for="line in schema.descriptions") {{ line }}
+				.media-right
+					a.close(title="Close" @click="off")
+			br
 
 		.flex.align-center.justify-space-around
 			.left(v-if="isAddButtonEnable")
@@ -62,6 +73,7 @@
 					field: "id"
 					, direction: 1
 				}
+				, isShowTips : true
 			};
 		}
 
@@ -90,7 +102,8 @@
 		}
 		
 		, methods: {
-			select(event, row, add) {
+			off() { this.isShowTips = false; }
+			, select(event, row, add) {
 				this.$emit("select", row);
 				// if (this.schema.table.multiSelect === true && (add || (event && event.ctrlKey))) {
 				// 	this.$parent.selectRow(row, true);

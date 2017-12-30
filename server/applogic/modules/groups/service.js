@@ -65,6 +65,7 @@ module.exports = {
 				if (ctx.params.parent_code != undefined) {
 					// root is the project
 					// type is "requirement", "way" or "step"
+					// has no children
 					let filter = {
 						root : this.taskService.decodeID(ctx.params.parent_code)
 						, type : { $in: ["requirement", "way", "step"] }
@@ -188,10 +189,12 @@ module.exports = {
 					.then(jsons => {
 						// status is open ( > -1)
 						// type is "requirement", "way" or "step"
+						// has no children
 						// author or asignee is user
 						let filter = {
 							status : { $gt : -1 }
 							, type : { $in: ["requirement", "way", "step"] }
+							, children : { $size: 0 }
 							, $or : [ { author : ctx.user.id }, { asignee : ctx.user.id } ]
 						};
 						let query = Task.find(filter);

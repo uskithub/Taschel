@@ -2,6 +2,17 @@
 	.container
 		h3.title {{ schema.title }}
 
+		.content(v-if="isShowTips && schema.descriptions && schema.descriptions.length > 0")
+			.media.primary
+				.media-content
+					strong このページの概要
+					p
+						ul
+							li(v-for="line in schema.descriptions") {{ line }}
+				.media-right
+					a.close(title="Close" @click="off")
+			br
+
 		.flex.align-center.justify-space-around
 			.left(v-if="isAddButtonEnable")
 				button.button.is-primary(@click="buttonAddDidPush")
@@ -81,6 +92,7 @@
 				, modelProjectSelector: {
 					code : this.selectedProject
 				}
+				, isShowTips : true
             };
         }
 		, computed: {
@@ -108,7 +120,8 @@
 			}*/
 		}
 		, methods: {
-			selectProject(newVal, schema) { this.$emit("select-project", newVal); }
+			off() { this.isShowTips = false; }
+			, selectProject(newVal, schema) { this.$emit("select-project", newVal); }
 			, arrange(context) { this.$emit("arrange", context); }
 			, buttonAddDidPush() {
 				this.$emit("add");
