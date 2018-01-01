@@ -9,7 +9,7 @@ import Projects from "../modules/projects";
 import Tasks from "../modules/tasks";
 import Kanban from "../modules/kanban"; 
 import MyTasks from "../modules/mytasks";
-import Gant from "../modules/gant";
+import Gantt from "../modules/gantt";
 import Profile from "../modules/profile";
 import Debug from "../modules/debug";
 
@@ -24,7 +24,7 @@ export default new VueRouter({
 		, { path: "/projects", component: Projects }
 		, { path: "/tasks", component: Tasks }
 		, { path: "/kanban", component: Kanban }
-		, { path: "/gant", component: Gant }
+		, { path: "/gantt", component: Gantt }
 		, { path: "/profile", component: Profile }
 		, { path: "/debug", component: Debug }
 		

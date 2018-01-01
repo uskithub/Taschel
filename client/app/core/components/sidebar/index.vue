@@ -39,11 +39,11 @@
 							i.fa.fa-tasks
 						span.label {{ "Kanban" | i18n }}
 
-				router-link(tag="li", to="/gant")
-					a(:title="_('Gant')")
+				router-link(tag="li", to="/gantt")
+					a(:title="_('Gantt')")
 						span.icon
 							i.fa.fa-tasks
-						span.label {{ "Gant" | i18n }}
+						span.label {{ "Gantt" | i18n }}
 
 			.title {{ "Profile" | i18n }}
 			ul

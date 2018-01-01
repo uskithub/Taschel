@@ -5,7 +5,7 @@ import session from "../modules/session/store";
 
 import shared from "../modules/common/store";
 
-import gantPage from "../modules/gant/store";
+import ganttPage from "../modules/gantt/store";
 import kanbanPage from "../modules/kanban/store";
 import mytasksPage from "../modules/mytasks/store";
 import projectsPage from "../modules/projects/store";
@@ -20,7 +20,7 @@ export default new Vuex.Store({
 	modules: {
 		session
 		, shared
-		, gantPage
+		, ganttPage
 		, kanbanPage
 		, mytasksPage
 		, projectsPage

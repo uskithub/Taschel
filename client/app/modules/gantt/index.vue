@@ -1,5 +1,5 @@
 <template lang="pug">
-	gant-page(:schema="schema", :selectedProject="currentProject", :projects="projects", :model="model"
+	gantt-page(:schema="schema", :selectedProject="currentProject", :projects="projects", :model="model"
 		@add="generateModel"
 		@select-project="selectProject"
 		@arrange="arrangeTask"
@@ -13,7 +13,7 @@
 
 <script>
 	import Vue from "vue";
-	import GantPage from "../../core/DefaultGantPage.vue";
+	import GanttPage from "../../core/DefaultGanttPage.vue";
 	import schema from "./schema";
 	import { schema as schemaUtils } from "vue-form-generator";
 	import { cloneDeep } from "lodash";
@@ -26,7 +26,7 @@
 	export default {
 		
 		components : {
-			GantPage: GantPage
+			GanttPage: GanttPage
 		}
 		, computed : {
 			...mapGetters("shared", [

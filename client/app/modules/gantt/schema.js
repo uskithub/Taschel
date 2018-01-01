@@ -9,8 +9,8 @@ import { find } from "lodash";
 let _ = Vue.prototype._;
 
 module.exports = {
-	id : "gant"
-	, title: _("Gant")
+	id : "gantt"
+	, title: _("Gantt")
 	, projectSelector: generate(areaTypes.form, ["project"])
 	, popupForm : {
 		title : ""
