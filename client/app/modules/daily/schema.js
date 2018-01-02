@@ -56,7 +56,8 @@ module.exports = {
 			}
 			, week: {
 				// options apply to basicWeek and agendaWeek views
-				allDaySlot : false
+				allDaySlot : true
+				, allDayText: _("振り返り")
 				, scrollTime : "8:00"
 				, minTime : "6:00"
 				, maxTime : "22:00"
@@ -160,6 +161,7 @@ module.exports = {
 			
 			, isSaveButtonEnable: true
 			, isCloseButtonEnable: true
+			, isPostponeButtonEnable: true
 			, isDeleteButtonEnable: true
 			, isCancelButtonEnable: true
 	

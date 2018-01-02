@@ -44,6 +44,7 @@
 			, ...mapGetters("dailyPage", [
 				"assignedInWeeklyTasks"
 				, "works"
+				, "reviews"
 				, "selected"
 			])
 			, ...mapGetters("session", [

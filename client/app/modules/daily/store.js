@@ -13,6 +13,7 @@ import { each, find, assign, remove, isArray } from "lodash";
 const state = {
 	assignedInWeeklyTasks: []
 	, works: []
+	, reviews: []
 	, selected: []
 };
 
@@ -20,6 +21,7 @@ const state = {
 const getters = {
 	assignedInWeeklyTasks(state) { return state.assignedInWeeklyTasks; }
 	, works(state) { return state.works; }
+	, reviews(state) { return state.reviews; }
 	, selected(state) { return state.selected; }
 };
 

@@ -146,6 +146,9 @@
 			// TODO: closeされているworkは色を変える
 			// TODO: closeされているworkは動かせなくする
 			this.schema.fullCalendar.drop = (date, jqEvent, ui, resourceId) => {
+				// ignore dropped at all-day slot.
+				if (!date.hasTime()) { return; }
+
 				const code = $(jqEvent.target).data("code");
 				const task = this.tasks.filter(t => { return t.code == code; })[0];
 				const newModel = {
@@ -185,11 +188,16 @@
 
 			// for user's editing with popupForm
 			this.schema.fullCalendar.eventClick = (event, jqEvent, view) => {
-				for (let i in this.works) {
-					let work = this.works[i];
-					if (work.code == event.code) {
-						this.$emit("select", work);
-						return;
+
+				if (event.allDay) {
+					// TODO
+				} else {
+					for (let i in this.works) {
+						let work = this.works[i];
+						if (work.code == event.code) {
+							this.$emit("select", work);
+							return;
+						}
 					}
 				}
 
