@@ -45,7 +45,7 @@
 
 	import "jquery";	
 	import "bootstrap";
-	// import "bootstrap/dist/css/bootstrap.css";
+	import "bootstrap/dist/css/bootstrap.css";
 	import "eonasdan-bootstrap-datetimepicker";
 	import "eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.css";
 	import "ion-rangeslider";
@@ -133,7 +133,7 @@
 			schema(newSchema) {
 				console.log("●", newSchema);
 			}
-			,template(newTemplate) {
+			, template(newTemplate) {
 				this.model = newTemplate;
 			}
 		}
@@ -230,11 +230,22 @@
 			}
 			, finalize(model) {
 				let _model = cloneDeep(model);
-				this.schema.form.fields.forEach(f => {
-					if (f.finalize) {
-						_model[f.model] = f.finalize(_model, _model[f.model], f);
-					}
-				});
+				if (this.schema.form.groups) {
+					this.schema.form.groups.forEach(g => {
+						g.fields.forEach(f => {
+							if (f.finalize) {
+								_model[f.model] = f.finalize(_model, _model[f.model], f);
+							}
+						});
+					});
+				} else {
+					this.schema.form.fields.forEach(f => {
+						if (f.finalize) {
+							_model[f.model] = f.finalize(_model, _model[f.model], f);
+						}
+					});
+				}
+				
 				return _model;	
 			}
 		}

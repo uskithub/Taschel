@@ -81,10 +81,7 @@
 		}
 
 		, computed: {
-			...mapGetters("gantPage", [
-				"targetNode"
-			])
-			, rootNode() {
+			rootNode() {
 				if (this.selectedProject) {
 					for (let i in this.projects) {
 						let p = this.projects[i];

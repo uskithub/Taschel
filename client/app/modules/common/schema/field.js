@@ -2,7 +2,7 @@ import Vue from "vue";
 import moment from "moment";
 import { taskTypes } from "../../common/constants/types";
 import { validators } from "vue-form-generator";
-import { cloneDeep } from "lodash";
+import { cloneDeep, isNil, isMap } from "lodash";
 
 let _ = Vue.prototype._;
 
@@ -90,6 +90,7 @@ const fields = {
 		, form: {
 			type: "input"
 			, inputType: "text"
+			, required: true
 			, placeholder: _("どういった状態になったら嬉しいか")
 			, validator: validators.string
 		}
@@ -101,10 +102,19 @@ const fields = {
 		, form: {
 			type: "dateTimePicker"
 			, placeholder: _("Deadline")
-			, format: "YYYY-MM-dd"
+			, format: "YYYY-MM-DD"
 			, dateTimePickerOptions: {
-				format: "YYYY-MM-dd"
+				format: "YYYY-MM-DD"
 			}
+			, validator: [
+				validators.date
+				, (value, field, model) => {
+					if (model.type == "milestone" && (isNil(value) || value === "")) {
+						return ["milestoneにはdeadlieは必須です"];
+					}
+					return [];
+				}
+			]
 		}
 	}
 	, timeframe: {
@@ -113,7 +123,7 @@ const fields = {
 		, table: {}
 		, form: {
 			type: "rangeSlider"
-			, min: 1
+			, min: 0
 			, max: 90
 			, validator: validators.integer
 		}
@@ -195,18 +205,38 @@ export const areaTypes = {
 
 export const generate = (areaType, fieldSet) => {
 	if (areaType == areaTypes.form) {
-		return {
-			fields: fieldSet.map(f => { 
-				let field = cloneDeep(fields[f]);
-				if (field.form.label == undefined) {
-					field.form.label = field.label;
-				}
-				if (field.form.model == undefined) {
-					field.form.model = field.model;
-				}
-				return field.form; 
-			})
-		};
+		if (isMap(fieldSet)) {
+			return {
+				groups : fieldSet.keys.map(key => {
+					return {
+						legend : key
+						, fields: fieldSet[key].map(f => { 
+							let field = cloneDeep(fields[f]);
+							if (field.form.label == undefined) {
+								field.form.label = field.label;
+							}
+							if (field.form.model == undefined) {
+								field.form.model = field.model;
+							}
+							return field.form; 
+						})
+					}
+				})
+			};
+		} else {
+			return {
+				fields: fieldSet.map(f => { 
+					let field = cloneDeep(fields[f]);
+					if (field.form.label == undefined) {
+						field.form.label = field.label;
+					}
+					if (field.form.model == undefined) {
+						field.form.model = field.model;
+					}
+					return field.form; 
+				})
+			};
+		}
 	} else {
 		return  fieldSet.map(f => { 
 			let field = cloneDeep(fields[f]);

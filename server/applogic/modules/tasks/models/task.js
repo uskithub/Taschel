@@ -42,6 +42,7 @@ let TaskSchema = new Schema({
 	}
 	, timeframe: {
 		type: Number
+		, "default": -1 // this means "not set yet"
 	}
 	// projectのid
 	, root : {

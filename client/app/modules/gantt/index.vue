@@ -88,7 +88,7 @@
 			...mapMutations("shared", {
 				setCurrentProject : SET_CURRENT_PROJECT
 			})
-			, ...mapActions("gantPage", {
+			, ...mapActions("ganttPage", {
 				createTask : "createTask"
 				, getProjects : "readTasks"
 				, updateModel : "updateTask"

@@ -74,7 +74,7 @@
 				this.schema.popupForm.title = `${baseModel.name} を編集`;
 
 				let actualStartFormat, actualEndFormat;
-				this.schema.popupForm.form.fields.forEach(f => {
+				this.schema.popupForm.form.groups[1].fields.forEach(f => {
 					if (f.model == "actualStart") {
 						if (!f._label) { f._label = f.label; } // save for next select.
 						console.log(baseModel.start);

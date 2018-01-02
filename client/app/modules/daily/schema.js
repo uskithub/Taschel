@@ -71,78 +71,88 @@ module.exports = {
 	, popupForm : {
 		title : ""
 		, form: {
-			fields: [
+			groups: [
 				{
-					type: "input"
-					, inputType: "text"
-					, label: _("Name")
-					, model: "name"
-					, featured: true
-					, placeholder: _("work_name")
-					, validator: validators.string
-				}
+					legend: _("work_detail")
+					, fields: [
+						{
+							type: "input"
+							, inputType: "text"
+							, label: _("Name")
+							, model: "name"
+							, featured: true
+							, placeholder: _("work_name")
+							, validator: validators.string
+						}
+						, {
+							type: "input"
+							, inputType: "text"
+							, label: _("Goal")
+							, model: "goal"
+							, placeholder: _("work_goal")
+							, featured: false
+							, validator: validators.string
+						}
+					]
+				} 
 				, {
-					type: "input"
-					, inputType: "text"
-					, label: _("Goal")
-					, model: "goal"
-					, placeholder: _("work_goal")
-					, featured: false
-					, validator: validators.string
-				}
-				, { 
-					type: "dateTimePicker"
-					, label: _("Start")
-					, model: "actualStart"
-					, placeholder: _("Start_time")
-					, format: "HH:mm"
-					, closeRequired: true
-					, dateTimePickerOptions: {
-						format: "HH:mm"
-						, stepping: 15
-					}
-					, finalize: (model, value, field) => {
-						if (value) {
-							const hhmm = value.split(":");
-							return moment(model.start).hour(hhmm[0]).minute(hhmm[1]);
-						} else {
-							return value;
+					legend: _("closing")
+					, fields: [
+						{ 
+							type: "dateTimePicker"
+							, label: _("Start")
+							, model: "actualStart"
+							, placeholder: _("Start_time")
+							, format: "HH:mm"
+							, closeRequired: true
+							, dateTimePickerOptions: {
+								format: "HH:mm"
+								, stepping: 15
+							}
+							, finalize: (model, value, field) => {
+								if (value) {
+									const hhmm = value.split(":");
+									return moment(model.start).hour(hhmm[0]).minute(hhmm[1]);
+								} else {
+									return value;
+								}
+							}
+							, validator: validators.date
 						}
-					}
-					, validator: validators.date
-				}
-				, { 
-					type: "dateTimePicker"
-					, label: _("End")
-					, model: "actualEnd"
-					, placeholder: _("End time")
-					, format: "HH:mm"
-					, closeRequired: true
-					, dateTimePickerOptions: {
-						format: "HH:mm"
-						, stepping: 15
-					}
-					, finalize: (model, value, field) => {
-						if (value) {
-							const hhmm = value.split(":");
-							return moment(model.start).hour(hhmm[0]).minute(hhmm[1]);
-						} else {
-							return value;
+						, { 
+							type: "dateTimePicker"
+							, label: _("End")
+							, model: "actualEnd"
+							, placeholder: _("End time")
+							, format: "HH:mm"
+							, closeRequired: true
+							, dateTimePickerOptions: {
+								format: "HH:mm"
+								, stepping: 15
+							}
+							, finalize: (model, value, field) => {
+								if (value) {
+									const hhmm = value.split(":");
+									return moment(model.start).hour(hhmm[0]).minute(hhmm[1]);
+								} else {
+									return value;
+								}
+							}
+							, validator: validators.date
 						}
-					}
-					, validator: validators.date
-				}
-				, { 
-					type: "textArea"
-					, label: _("description")
-					, model: "description"
-					, hint: "Max 500 characters"
-					, max: 500
-					, placeholder: "User's biography"
-					, rows: 4
-					, closeRequired: true
-					, validator: validators.string
-				}
+						, { 
+							type: "textArea"
+							, label: _("description")
+							, model: "description"
+							, hint: "Max 500 characters"
+							, max: 500
+							, placeholder: "User's biography"
+							, rows: 4
+							, closeRequired: true
+							, validator: validators.string
+						}
+					]
+				} 
 			]
 		}
 		, options: {
