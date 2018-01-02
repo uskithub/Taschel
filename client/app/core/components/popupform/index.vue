@@ -15,16 +15,19 @@
 							button.button.primary(@click="buttonSaveDidPush", :disabled="!isSaveButtonEnable")
 								i.icon.fa.fa-save 
 								| {{ schema.resources.saveCaption || _("Save") }}
-							button.button.outline(@click="buttonCloseDidPush", :disabled="!isCloseButtonEnable")
+							button.button.outline(v-if="options.isCloseButtonEnable" @click="buttonCloseDidPush", :disabled="!isCloseButtonEnable")
 								i.icon.fa.fa-save
 								| {{ schema.resources.closeCaption || _("Close") }}
-							button.button.outline(@click="buttonBreakdownDidPush", :disabled="!isBreakdownButtonEnable")
+							button.button.outline(v-if="options.isPostponeButtonEnable" @click="buttonPostponeDidPush", :disabled="!isPostponeButtonEnable")
+								i.icon.fa.fa-save
+								| {{ schema.resources.postponeCaption || _("Postpone") }}
+							button.button.outline(v-if="options.isBreakdownButtonEnable" @click="buttonBreakdownDidPush", :disabled="!isBreakdownButtonEnable")
 								i.icon.fa.fa-code-fork 
 								| {{ schema.resources.breakdownCaption || _("Breakdown") }}
-							button.button.outline(@click="buttonCloneDidPush", :disabled="!isCloneButtonEnable")
+							button.button.outline(v-if="options.isCloneButtonEnable" @click="buttonCloneDidPush", :disabled="!isCloneButtonEnable")
 								i.icon.fa.fa-clone
 								| {{ schema.resources.cloneCaption || _("Clone") }}
-							button.button.danger(@click="buttonDeleteDidPush", :disabled="!isDeleteButtonEnable")
+							button.button.danger(v-if="options.isDeleteButtonEnable" @click="buttonDeleteDidPush", :disabled="!isDeleteButtonEnable")
 								i.icon.fa.fa-trash 
 								| {{ schema.resources.deleteCaption || _("Delete") }}
 							button.button.outline(@click="buttonCancelDidPush", :disabled="!isCancelButtonEnable")
@@ -101,11 +104,16 @@
 					&& this.options.isCloseButtonEnable !== false
 					; 
 			}
+			, isPostponeButtonEnable() { 
+				return !this.isNewModel
+					&& this.options.isPostponeButtonEnable !== false
+					; 
+			}
 			, isBreakdownButtonEnable() { 
 				return !this.isNewModel 
 					&& this.options.isBreakdownButtonEnable !== false
 					;
-				}
+			}
 			, isCloneButtonEnable() { 
 				return !this.isNewModel 
 					&& this.options.isCloneButtonEnable !== false
@@ -154,6 +162,7 @@
 				}
 			}
 			, buttonCloneDidPush() { this.$emit("clone"); }
+			, buttonPostponeDidPush() { this.$emit("postpone"); }
 			, buttonBreakdownDidPush() { this.$emit("breakdown"); }
 			, buttonDeleteDidPush() { this.$emit("remove"); }	// deleteは予約語なので怒られる
 			, buttonCancelDidPush() { this.$emit("cancel"); }

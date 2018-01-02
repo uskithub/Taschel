@@ -66,5 +66,6 @@ module.exports = {
 	, descriptions : [
 		"選択したプロジェクトの子タスクをツリー表示します"
 		, "各タスクはdrag&dropで順序を入れ替えることができます"
+		, "taskTypeがmilestoneの場合、deadlineの入力は必須です"
 	]
 };

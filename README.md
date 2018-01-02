@@ -1,4 +1,7 @@
 # TODO
+- [] dailyPageで差し込みタスクを表現できるようにする
+- [] dailyPageで実施しなかったタスクを表現できるようにする
+- [] dailyPageでタスクをDropしたらgoalを入力させる窓を開く
 - [] kanbanは、closeされていないmilstoneがある場合は、それを未分類のGroup扱いする
 - [] weeklyにProjectも表示されているので、しぼる
 - [x] gantのaddで、親のタスクタイプによって、子のタスクタイプの初期値を変える
