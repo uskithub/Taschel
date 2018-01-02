@@ -17,7 +17,7 @@ module.exports = {
 		, form : (() => {
 			let _form = generate(
 				areaTypes.form
-				, ["code", "root", "type","name", "purpose", "goal", "asignee", "lastCommunication", "status"]
+				, ["code", "root", "type", "name", "purpose", "goal", "deadline", "timeframe", "asignee", "lastCommunication", "status"]
 			);
 			return { 
 				fields : _form.fields.map(f => {

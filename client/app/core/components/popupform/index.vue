@@ -45,9 +45,13 @@
 
 	import "jquery";	
 	import "bootstrap";
-	// import "bootstrap/dist/css/bo	otstrap.css";
+	// import "bootstrap/dist/css/bootstrap.css";
 	import "eonasdan-bootstrap-datetimepicker";
 	import "eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.css";
+	import "ion-rangeslider";
+	import "ion-rangeslider/css/ion.rangeSlider.css"
+	import "ion-rangeslider/css/ion.rangeSlider.skinFlat.css"
+	
 	
 	import { schema as schemaUtils } from "vue-form-generator";
 	import { get as objGet, find, cloneDeep, isArray, isFunction } from "lodash";

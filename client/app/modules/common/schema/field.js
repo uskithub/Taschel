@@ -94,6 +94,30 @@ const fields = {
 			, validator: validators.string
 		}
 	}
+	, deadline: {
+		label: _("Deadline")
+		, model: "deadline"
+		, table: {}
+		, form: {
+			type: "dateTimePicker"
+			, placeholder: _("Deadline")
+			, format: "YYYY-MM-dd"
+			, dateTimePickerOptions: {
+				format: "YYYY-MM-dd"
+			}
+		}
+	}
+	, timeframe: {
+		label: _("Timeframe")
+		, model: "timeframe"
+		, table: {}
+		, form: {
+			type: "rangeSlider"
+			, min: 1
+			, max: 90
+			, validator: validators.integer
+		}
+	}
 	, asignee : {
 		label: _("Asignee")
 		, model: "asignee"

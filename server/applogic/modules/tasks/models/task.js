@@ -37,6 +37,12 @@ let TaskSchema = new Schema({
 		type: String
 		, trim: true
 	}
+	, deadline: {
+		type: Date
+	}
+	, timeframe: {
+		type: Number
+	}
 	// projectのid
 	, root : {
 		// おそらくこれでもOK

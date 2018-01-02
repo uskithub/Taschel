@@ -27,7 +27,7 @@ module.exports = {
 		role: "user",
 		collection: Task,
 		
-		modelPropFilter: "code type purpose name goal root parent children works status closingComment author asignee isDeleted lastCommunication createdAt updatedAt"
+		modelPropFilter: "code type purpose name goal deadline timeframe root parent children works status closingComment author asignee isDeleted lastCommunication createdAt updatedAt"
 
 		// TODO: populateModelsを改造すれば、下にのみpopulate、上にのみpopulateもできる
 		, modelPopulates: {
