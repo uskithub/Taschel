@@ -290,7 +290,7 @@
 <style lang="scss">	
 	.drag-item {
 		height: inherit;
-
+		
 		&.active {
 			border: 2px solid yellow;
 		}
@@ -303,5 +303,40 @@
 			}
 		}
 	}
-	
+
+	.popup-container {
+		position: absolute;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		background-color: rgba(0, 0, 0, 0.6);
+		z-index: 9999;
+	}
+
+	.popup {
+		position: absolute;
+		top: 150px;
+		left: 100px;
+		right: 100px;
+		bottom: 0;
+		margin: auto;
+		transition: all 0.4s ease;
+		font-size: 0.8em;
+
+		.panel {
+			background-color: rgba(16, 67, 87, 0.8);
+
+			.body {
+				overflow: visible;
+
+				.bootstrap-datetimepicker-widget {
+					&.dropdown-menu {
+						visibility: visible;
+						opacity: 1;
+					}
+				}
+			}
+		}
+	}
 </style>
