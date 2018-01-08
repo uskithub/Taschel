@@ -150,7 +150,6 @@
 				// closeしたworkが件の場合にはeditableをfalseにする
 				let _reviews = days.map(d => {
 					const r = this.reviews.filter(r => { 
-						console.log("●", r)
 						return r.date == d; });
 					if (r.length > 0) {
 						return {
@@ -288,7 +287,7 @@
 			};
 
 			this.schema.fullCalendar.viewRender = (view, elem) => {
-				this.$emit("set-current-week", view.start.format("YYYY-MM-DD"));
+				this.$emit("setCurrentWeek", view.start.format("YYYY-MM-DD"));
 			};
 		}
 		, updated() {

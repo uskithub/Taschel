@@ -3,7 +3,7 @@
 		@assign="assign"
 		@select="select"
 		@update="update"
-		@set-current-week="setCurrentWeek"
+		@setCurrentWeek="setCurrentWeek"
 		@save="save"
 		@close="close"
 		@remove="remove"
@@ -314,6 +314,11 @@
 					options: { user : this.me.code, week : this.currentWeek }
 					, mutation: `dailyPage/${LOAD_WORKS}`
 				})
+
+				this.readReviews({
+					options: { user : this.me.code, week : this.currentWeek }
+					, mutation: LOAD_REVIEWS
+				});
 			} else {
 				// F5リロード時など、meがundefinedの場合があるので、その場合、meの更新を監視してtaskを更新する
 				this.$store.subscribe((mutation, state) => {
@@ -321,6 +326,11 @@
 						this.readWorks({ 
 							options: { user : this.me.code, week : this.currentWeek }
 							, mutation: `dailyPage/${LOAD_WORKS}`
+						});
+
+						this.readReviews({
+							options: { user : this.me.code, week : this.currentWeek }
+							, mutation: LOAD_REVIEWS
 						});
 					}
 				});				

@@ -1,11 +1,12 @@
 <template lang="pug">
-	kanban-page(:schema="schema", :selectedTasks="selected", :boardGroups="boardGroups", :tasks="tasks", :model="model"
-		, @arrange="arrange" 
-		, @add="generateModel"
-		, @select-kanban="selectKanban"
-		, @save="save"
-		, @remove="remove"
-		, @cancel="cancel"
+	kanban-page(:schema="schema", :currentWeek="currentWeek", :selectedTasks="selected", :boardGroups="boardGroups", :tasks="tasks", :model="model"
+		@arrange="arrange" 
+		@add="generateModel"
+		@changeWeek="changeWeek"
+		@select-kanban="selectKanban"
+		@save="save"
+		@remove="remove"
+		@cancel="cancel"
 	)
 </template>
 
@@ -169,6 +170,15 @@
 				, deleteTask : "deleteTask"
 				, arrange : "updateGroups"
 			})
+			, changeWeek(direction) {
+				if (direction == "prev") {
+					const newCurrent = moment(this.currentWeek).subtract(7, "d").format("YYYY-MM-DD");
+					this.setCurrentWeek(newCurrent);
+				} else {
+					const newCurrent = moment(this.currentWeek).add(7, "d").format("YYYY-MM-DD");
+					this.setCurrentWeek(newCurrent);
+				}
+			}
 			, generateModel() {
 				this.schema.popupForm.title = _("CreateNewTask");
 				this.schema.popupForm.form.fields.forEach(f => {
@@ -286,6 +296,13 @@
 				) {
 					this.setupProjectsField();
 				}
+
+				if (mutation.type == `shared/${SET_CURRENT_WEEK}`) {
+					this.getGroups({
+						options: { weekly : this.currentWeek }
+						, mutation: LOAD
+					});
+				}
 			});	
 
 			if (this.projects.length > 0) {
@@ -302,10 +319,10 @@
 				this.setCurrentWeek(moment().day(1).format("YYYY-MM-DD"));
 			}
 
-            this.getGroups({
-                options: { weekly : this.currentWeek }
-                , mutation: LOAD
-            });
+			this.getGroups({
+				options: { weekly : this.currentWeek }
+				, mutation: LOAD
+			});			
 		}
 	};
 </script>

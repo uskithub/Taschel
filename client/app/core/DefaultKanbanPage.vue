@@ -18,6 +18,12 @@
 				button.button.is-primary(@click="buttonAddDidPush")
 					i.icon.fa.fa-plus 
 					| {{ schema.resources.addCaption || _("Add") }}
+			.center(v-if="currentWeek") {{ currentWeek }}
+			.right(v-if="currentWeek")
+				button.button.is-primary(@click="buttonPrevDidPush")
+					i.icon.fa.fa-arrow-left
+				button.button.is-primary(@click="buttonNextDidPush")
+					i.icon.fa.fa-arrow-right
 		br
 		.form
 			vue-form-generator(:schema="schema.projectSelector", :model="modelProjectSelector", ref="projectSelector", @model-updated="selectProject")
@@ -53,6 +59,10 @@
 			schema : {
 				type: Object
 				, required: true
+				, validator: function(value) { return true; } // TODO
+			}
+			, currentWeek : {
+				type: String
 				, validator: function(value) { return true; } // TODO
 			}
 			, projects : {
@@ -132,6 +142,8 @@
 						el.focus();
 				});
 			}
+			, buttonPrevDidPush() { this.$emit("changeWeek", "prev"); }
+			, buttonNextDidPush() { this.$emit("changeWeek", "next"); }
 			, select(task) { this.$emit("select-kanban", task); }
 			, save(model) { this.$emit("save", this.model); }
 			, remove() { this.$emit("remove"); }		// deleteは予約語なので怒られる
