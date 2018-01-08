@@ -14,11 +14,11 @@ module.exports = {
 		multiSelect: true
 		, columns: generate(
 			areaTypes.table
-			, [ "code", "name", "purpose", "goal", "status", "lastCommunication"]
+			, [ "name", "purpose", "goal"]
 		)
 		, rowClasses: function(model) {
 			return {
-				inactive: !model.status
+				// inactive: !model.status
 			};
 		}
 	}
@@ -26,7 +26,7 @@ module.exports = {
 		form : (() => {
 			let _form = generate(
 				areaTypes.form
-				, ["code", "type", "name", "purpose", "goal"]
+				, ["name", "purpose", "goal"]
 			);
 			return { 
 				fields : _form.fields.map( f => {

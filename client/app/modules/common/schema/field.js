@@ -33,7 +33,11 @@ const fields = {
 	, root: {
 		label: _("Projects") 
 		, model: "root"
-		, table: {}
+		, table: {
+			formatter(value, model, col) {
+				return (model.root.name) ? model.root.name : "-";
+			}
+		}
 		, form: {
 			type: "select"
 			, model: "root_code"

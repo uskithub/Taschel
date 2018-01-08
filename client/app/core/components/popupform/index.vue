@@ -33,9 +33,9 @@
 							button.button.outline(@click="buttonCancelDidPush", :disabled="!isCancelButtonEnable")
 								i.icon.fa.fa-close
 								| {{ schema.resources.cancelCaption || _("Cancel") }}
-					div
+					div(v-if="!isNewModel")
 						//- tree-list(v-for="child in orderedChildren", :isReverse="true", :node="child", :key='child.code')
-						tree-list(:node="model", :isRoot="true", :isReverse="true")
+						tree-list(:node="model", :isRoot="true", :isReverse="true", :isDraggable="false")
 
 				.block
 					//- button.button.success(@click="schema.buttons[0].action") {{ schema.buttons[0].label }}
@@ -46,9 +46,9 @@
 	import Vue from "vue";
 	import TreeList from "../treebasedtimeline/index";
 
-	import "jquery";	
+	import "jquery";
 	import "bootstrap";
-	import "bootstrap/dist/css/bootstrap.css";
+	// import "bootstrap/dist/css/bootstrap.css";
 	import "eonasdan-bootstrap-datetimepicker";
 	import "eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.css";
 	import "ion-rangeslider";
@@ -94,7 +94,17 @@
 		}
 		, computed: {
 			isNewModel() { return this.model.code == null; }
-			, options() { return this.schema.options || {}; }
+			, options() { 
+				let options = this.schema.options ? cloneDeep(this.schema.options) : {};
+				if (this.isNewModel) {
+					options.isCloseButtonEnable = null;
+					options.isPostponeButtonEnable = null;
+					options.isBreakdownButtonEnable = null;
+					options.isCloneButtonEnable = null;
+					options.isDeleteButtonEnable = null;
+				}
+				return options; 
+			}
 			, isSaveButtonEnable() { 
 				return this.options.isSaveButtonEnable !== false
 					; 

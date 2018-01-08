@@ -8,9 +8,9 @@
 
         div.media.gantt(:class="{'active': isDraggingIntoChild, 'primary': node.type=='milestone', 'danger': node.type=='requirement', 'warning': node.type=='way', 'success': node.type=='step'}")
             div(:class="{'tree-margin': true}", v-show="isOpen")
-                tree-list(v-for="child in filteredOrderedNodes", :isReverse="true", :node="child", :key='child.code', :add="add")
+                tree-list(v-for="child in filteredOrderedNodes", :isReverse="true", :node="child", :isDraggable="isDraggable", :key='child.code', :add="add")
 
-            div.tree-node(:id="node.code" draggable="!isRoot"
+            div.tree-node(:id="node.code", :draggable="_isDraggable", :class="{ 'draggable' : _isDraggable }"
                 @click=""
                 @dragstart="dragstart"
                 @dragover="dragover"
@@ -19,7 +19,8 @@
                 @drop="drop"
                 @dragend="dragend"
                 @mouseover="mouseover"
-                @mouseout="mouseout")
+                @mouseout="mouseout"
+            )
                 span.caret.icon.is-small(v-if="node.children && node.children.length > 0")
                     i.vue-tree-icon(:class="caretClass" @click.prevent.stop="toggle")
                 
@@ -90,7 +91,12 @@
                 type: Boolean
                 , default: false
 				, validator: function(value) { return true; } // TODO
-			}
+            }
+            , isDraggable: {
+                type: Boolean
+                , default: true
+				, validator: function(value) { return true; } // TODO
+            }
 			, node: {
 				type: Object
 				, required: true
@@ -103,7 +109,10 @@
 			}
 		}
         , computed: {
-            itemIconClass () {
+            _isDraggable() {
+                return !this.isRoot && this.isDraggable;
+            }
+            , itemIconClass () {
                 //return this.model.isLeaf ? 'icon-file' : 'icon-folder'
                 return "icon-folder";
             }
@@ -151,9 +160,9 @@
             }
 
             // ドラッグしている要素がドロップ領域に入った
-            , dragenterAbove(e) { this.isDraggingToGoUp = true; }
-            , dragenter(e) { this.isDraggingIntoChild = true; }
-            , dragenterBelow(e) { this.isDraggingToGoDown = true; }
+            , dragenterAbove(e) { if (this._isDraggable) this.isDraggingToGoUp = true; }
+            , dragenter(e) { if (this._isDraggable) this.isDraggingIntoChild = true; }
+            , dragenterBelow(e) { if (this._isDraggable) this.isDraggingToGoDown = true; }
 
             // ドラッグしている要素がドロップ領域にある
             , dragover(e) {
@@ -189,6 +198,7 @@
 
             // ドラッグしている要素がドロップ領域にドロップされた
             , dropAbove(e) {
+                if (!this._isDraggable) return;
                 // - 子孫には移動不可
                 // - rootより上には移動不可
                 // - 自分の上には移動不可
@@ -206,6 +216,7 @@
                     , type: "above"});
             }
             , drop(e) {
+                if (!this._isDraggable) return;
                 // - 子孫には移動不可
                 // -  親には移動不可
                 // -  自身には移動不可
@@ -226,6 +237,7 @@
                     , type: "into"});
             }
             , dropBelow(e) {
+                if (!this._isDraggable) return;
                 // - 子孫にはい移動不可
                 console.log(`● below ${ _self.node.name }, ${ this.node.name }`);
                 this.isDraggingToGoDown = false;
@@ -273,7 +285,6 @@
     .vue-tree-icon {
         /* use !important to prevent issues with browser extensions that change fonts */
         font-family: 'icomoon' !important;
-        speak: none;
         font-style: normal;
         font-weight: normal;
         font-variant: normal;
@@ -342,9 +353,13 @@
             max-width: 150px;
             border-bottom: 1px solid blue;
         }
-        &:hover {
-            background-color: #C0C0C0;
+
+        &.draggable {
+            &:hover {
+                background-color: #C0C0C0;
+            }    
         }
+
         &.active {
             outline: 2px dashed pink;
         }

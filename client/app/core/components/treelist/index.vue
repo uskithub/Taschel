@@ -7,7 +7,7 @@
             @dragleave="dragleaveAbove")
 
         div.media.gantt(:class="{'active': isDraggingIntoChild, 'primary': node.type=='milestone', 'danger': node.type=='requirement', 'warning': node.type=='way', 'success': node.type=='step'}")
-            div.tree-node(:id="node.code" draggable="!isRoot"
+            div.tree-node(:id="node.code", :draggable="!isRoot && isDraggable"
                 @click=""
                 @dragstart="dragstart"
                 @dragover="dragover"
@@ -16,7 +16,9 @@
                 @drop="drop"
                 @dragend="dragend"
                 @mouseover="mouseover"
-                @mouseout="mouseout")
+                @mouseout="mouseout"
+            )
+                div.dummyHover
                 span.caret.icon.is-small(v-if="node.children && node.children.length > 0")
                     i.vue-tree-icon(:class="caretClass" @click.prevent.stop="toggle")
                 
@@ -32,7 +34,7 @@
                             i.vue-tree-icon.icon-folder-plus-e
 
             div(:class="{'tree-margin': true}", v-show="isOpen")
-                tree-list(v-for="child in filteredOrderedNodes", :node="child", :key='child.code', :add="add")
+                tree-list(v-for="child in filteredOrderedNodes", :node="child", :isDraggable="isDraggable", :key='child.code', :add="add")
 
         div(class="border bottom", :class="{'active': isDraggingToGoDown}"
             @drop="dropBelow"
@@ -75,7 +77,12 @@
                 type: Boolean
                 , default: false
 				, validator: function(value) { return true; } // TODO
-			}
+            }
+            , isDraggable: {
+                type: Boolean
+                , default: true
+				, validator: function(value) { return true; } // TODO
+            }
 			, node: {
 				type: Object
 				, required: true
@@ -178,8 +185,9 @@
                 // - rootより上には移動不可
                 // - 自分の上には移動不可
                 console.log(`● above ${ _self.node.name }, ${ this.node.name }`);
-
                 this.isDraggingToGoUp = false;
+                if (this.isRoot) return;
+                
                 if (this.node.parent == undefined) return;
                 if (_self.node.code == this.node.code) return;
                 let isDescendant = this.isDescendant(this.node, _self.node);
@@ -211,9 +219,11 @@
                     , type: "into"});
             }
             , dropBelow(e) {
-                // - 子孫にはい移動不可
+                // - 子孫には移動不可
                 console.log(`● below ${ _self.node.name }, ${ this.node.name }`);
                 this.isDraggingToGoDown = false;
+                if (this.isRoot) return;
+
                 this.$parent.arrange({
                     moving: _self.node
                     , target: this.node
@@ -246,9 +256,10 @@
     }
     .media {
         &.gantt {
+            position: relative;
             display: block;
             box-shadow: none;
-            padding: 0.5em 0 0.5em 1em;
+            padding: 0.2em 0 0.2em 1em;
         }
         
         &.active {
@@ -258,7 +269,6 @@
     .vue-tree-icon {
         /* use !important to prevent issues with browser extensions that change fonts */
         font-family: 'icomoon' !important;
-        speak: none;
         font-style: normal;
         font-weight: normal;
         font-variant: normal;
@@ -274,7 +284,7 @@
             }
         }
         &:hover {
-            color: blue;
+            color: red;
         }
     }
     .icon-file:before {
@@ -305,6 +315,7 @@
         content: "\e905";
     }
     .border {
+        position: relative;
         height: 5px;
         &.up {
             margin-top: -5px;
@@ -327,15 +338,25 @@
             max-width: 150px;
             border-bottom: 1px solid blue;
         }
-        &:hover {
-            background-color: #C0C0C0;
+        .dummyHover {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            border-radius: 5px;
+        }
+        &:hover > .dummyHover {
+            border: 2px solid red;
         }
         .caret {
             margin-left: -1rem;
+            z-index: 9999;
         }
         .operation {
             margin-left: 2rem;
             letter-spacing: 1px;
+            z-index: 9999;
         }
     }
     .item {

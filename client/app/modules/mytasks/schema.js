@@ -15,11 +15,11 @@ module.exports = {
 		multiSelect : true
 		, columns : generate(
 			areaTypes.table
-			, [ "code", "type", "root", "name", "purpose", "goal", "author", "status", "lastCommunication"]
+			, [ "type", "root", "name", "purpose", "goal", "author", "lastCommunication"]
 		)
 		, rowClasses : function (model) {
 			return {
-				inactive: !model.status
+				// inactive: !model.status
 			};
 		}
 	}
@@ -27,7 +27,7 @@ module.exports = {
 		title : ""
 		, form : generate(
 			areaTypes.form
-			, [ "code", "root", "type", "name", "purpose", "goal"]
+			, [ "root", "type", "name", "purpose", "goal"]
 		)
 		, options : {
 			searchable: true

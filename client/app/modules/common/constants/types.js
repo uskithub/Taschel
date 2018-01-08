@@ -1,8 +1,8 @@
 module.exports = {
 	taskTypes: [
 		// { id: "project", name: "Project" }
-		{ id: "subproject", name: "Subproject" }
-		, { id: "milestone", name: "Milestone" }
+		// { id: "subproject", name: "Subproject" }
+		{ id: "milestone", name: "Milestone" }
 		, { id: "requirement", name: "Requirement" }
 		, { id: "way", name: "Way" }
 		, { id: "step", name: "Step" }

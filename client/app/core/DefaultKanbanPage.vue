@@ -22,7 +22,7 @@
 		.form
 			vue-form-generator(:schema="schema.projectSelector", :model="modelProjectSelector", ref="projectSelector", @model-updated="selectProject")
 
-		kanban(:boards="groups", :tasks="tasks", @arrange="arrange" @select="select")
+		kanban(:boardGroups="boardGroups", :tasks="tasks", @arrange="arrange" @select="select")
 
 		popup-form(v-if="isEditing", :schema="schema.popupForm", :template="model"
 			, @save="save"
@@ -59,7 +59,7 @@
 				type: Array
 				, validator: function(value) { return true; } // TODO
 			}
-			, groups : {
+			, boardGroups : {
 				type: Array
 				, required: true
 				, validator: function(value) { return true; } // TODO
@@ -143,27 +143,13 @@
 
 </script>
 
-<style lang="scss">
-    @import "../../scss/common/mixins";
-    @import "../../scss/kanban.scss";
+<style lang="scss" scoped>
+	@import "../../scss/common/mixins";
 
     $on-hold: #FB7D44;
     $in-progress: #2A92BF;
     $needs-review: #F4CE46;
     $approved: #00B961;
-
-    * {
-    	box-sizing: border-box;
-    }
-
-    body {
-    	background: #33363D;
-    	color: white;
-    	font-family: 'Lato';
-    	font-weight: 300;
-    	line-height: 1.5;
-    	-webkit-font-smoothing: antialiased;
-    }
 
     .drag-column {
         &-on-hold {
@@ -197,9 +183,9 @@
                 background: $approved;
             }
         }
-    }
-
-    .section {
+	}
+	
+ 	.section {
     	padding: 20px;
     	text-align: center;
 

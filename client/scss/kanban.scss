@@ -53,13 +53,51 @@ ul.drag-list, ul.drag-inner-list {
 .drag-item {
     padding: 10px;
     margin: 10px;
-    height: 100px;
     background: rgba(black, 0.4);
     transition: $ease-out;
 
     &.is-moving {
         transform: scale(1.5);
         background: rgba(black, 0.8);
+    }
+
+    &.card {
+        display: block;
+        width: inherit;
+        margin: 0.5em;
+        padding: 0.5em;
+
+        .block {
+            padding: 0;
+        }
+
+        .title {
+            font-size: 1rem;
+        }
+    }
+    &.requirement {
+        border: 1px solid #7f1414;
+    }
+
+    &.way {
+        border: 1px solid #866112;
+    }
+
+    &.step {
+        border: 1px solid #176e2b;
+    }
+
+    dl {
+        margin: 0;
+    }
+
+    dt {
+        text-decoration: underline;
+    }
+
+    dd {
+        margin-left: 1em;
+        
     }
 
 }

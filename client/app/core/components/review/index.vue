@@ -18,9 +18,10 @@
 									)
 										slot(:name="work.title")
 											strong {{ work.title }}
-											dl
-												dd(v-for="item in description(work)", :key="item.key") {{ item.title }}
-													dl {{ item.value }}
+											.text-muted
+												dl(v-for="item in description(work)", :key="item.key")
+													dt {{ item.title }}
+													dd {{ item.value }}
 							li(class="drag-column", key="form")
 								.form
 									vue-form-generator(:schema="dynamicForm", :model="dynamicModel", :options="options", ref="form", :is-new-model="isNewModel")
@@ -50,7 +51,7 @@
 
 	import "jquery";
 	import "bootstrap";
-	import "bootstrap/dist/css/bootstrap.css";
+	// import "bootstrap/dist/css/bootstrap.css";
 	import "eonasdan-bootstrap-datetimepicker";
 	import "eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.css";
 	import "ion-rangeslider";
@@ -289,8 +290,8 @@
 
 <style lang="scss">	
 	.drag-item {
-		height: inherit;
-		
+		border: 2px solid transparent;
+
 		&.active {
 			border: 2px solid yellow;
 		}
@@ -298,6 +299,8 @@
 
 	.drag-column {
 		&-daily-works {
+			border: 2px solid transparent;
+
 			&.active {
 				border: 2px solid yellow;
 			}

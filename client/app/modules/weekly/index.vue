@@ -1,5 +1,5 @@
 <template lang="pug">
-	kanban-page(:schema="schema", :selectedTasks="selected", :groups="groups", :tasks="tasks", :model="model"
+	kanban-page(:schema="schema", :selectedTasks="selected", :boardGroups="boardGroups", :tasks="tasks", :model="model"
 		, @arrange="arrange" 
 		, @add="generateModel"
 		, @select-kanban="selectKanban"
@@ -45,6 +45,16 @@
 			, ...mapGetters("session", [
 				"me"
 			])
+			, boardGroups() {
+				return this.groups.reduce((groups, board, i) => {
+					if (i == 0) {
+						groups[0].boards.push(board);
+					} else {
+						groups[1].boards.push(board);
+					}
+					return groups;
+				}, [{ name: "unclassified", boards: []}, { name: "classified", boards: []}]);
+			}
 		}
 
 		/**
@@ -299,3 +309,33 @@
 		}
 	};
 </script>
+<style lang="scss">
+	// @see https://www.webcreatorbox.com/tech/css-flexbox-cheat-sheet
+	.drag-container {
+		display: flex;
+	}
+
+	.drag-list {
+		&.content {
+			&.card-columns {
+				flex-grow: 1;
+
+				&:nth-child(2) {
+					flex-grow: 2;
+					display: flex;
+					flex-direction: row-reverse;
+					flex-wrap: wrap;
+					align-items: stretch;
+					align-content: flex-start;
+
+					.drag-column {
+						flex: inherit;
+						flex-grow: inherit;
+						width: 48%;
+						margin: 0 1% 1% 1%;
+					}
+				}
+			}
+		}
+	}
+</style>

@@ -13,6 +13,7 @@ module.exports = {
     , title: _("Daily")
     , fullCalendar : {
 		timezone : "local"
+		// , themeSystem : "bootstrap3"
 		, eventColor: "#FF895D"
 		, eventTextColor: "#6C567B"
 		, closedEventColor : {
@@ -74,7 +75,7 @@ module.exports = {
 		, form: {
 			groups: [
 				{
-					legend: _("work_detail")
+					legend: _("WorkDetail")
 					, fields: [
 						{
 							type: "input"
@@ -82,7 +83,7 @@ module.exports = {
 							, label: _("Name")
 							, model: "name"
 							, featured: true
-							, placeholder: _("work_name")
+							, placeholder: _("WorkName")
 							, validator: validators.string
 						}
 						, {
@@ -90,20 +91,20 @@ module.exports = {
 							, inputType: "text"
 							, label: _("Goal")
 							, model: "goal"
-							, placeholder: _("work_goal")
+							, placeholder: _("WorkGoal")
 							, featured: false
 							, validator: validators.string
 						}
 					]
 				} 
 				, {
-					legend: _("closing")
+					legend: _("Closing")
 					, fields: [
 						{ 
 							type: "dateTimePicker"
 							, label: _("Start")
 							, model: "actualStart"
-							, placeholder: _("Start_time")
+							, placeholder: _("StartTime")
 							, format: "HH:mm"
 							, closeRequired: true
 							, dateTimePickerOptions: {
@@ -124,7 +125,7 @@ module.exports = {
 							type: "dateTimePicker"
 							, label: _("End")
 							, model: "actualEnd"
-							, placeholder: _("End time")
+							, placeholder: _("EndTime")
 							, format: "HH:mm"
 							, closeRequired: true
 							, dateTimePickerOptions: {
@@ -143,11 +144,11 @@ module.exports = {
 						}
 						, { 
 							type: "textArea"
-							, label: _("description")
+							, label: _("Description")
 							, model: "description"
 							, hint: "Max 500 characters"
 							, max: 500
-							, placeholder: "User's biography"
+							, placeholder: _("DescriptionPlaceholder")
 							, rows: 4
 							, closeRequired: true
 							, validator: validators.string
@@ -190,7 +191,7 @@ module.exports = {
 							, model: "goodSide"
 							, hint: "Max 500 characters"
 							, max: 500
-							, placeholder: "User's biography"
+							, placeholder: _("GoodSidePlaceholder")
 							, rows: 3
 							, validator: validators.string
 						}
@@ -200,7 +201,7 @@ module.exports = {
 							, model: "badSide"
 							, hint: "Max 500 characters"
 							, max: 500
-							, placeholder: "User's biography"
+							, placeholder: _("BadSidePlaceholder")
 							, rows: 3
 							, validator: validators.string
 						}
@@ -210,7 +211,7 @@ module.exports = {
 							, model: "improvement"
 							, hint: "Max 500 characters"
 							, max: 500
-							, placeholder: "User's biography"
+							, placeholder: _("ImprovementPlaceholder")
 							, rows: 3
 							, validator: validators.string
 						}
@@ -226,7 +227,7 @@ module.exports = {
 							, model: "highOrderAwakening"
 							, hint: "Max 500 characters"
 							, max: 500
-							, placeholder: "User's biography"
+							, placeholder: _("HighOrderAwakeningPlaceholder")
 							, rows: 4
 							, required: true
 							, validator: validators.string

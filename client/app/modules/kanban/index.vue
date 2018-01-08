@@ -1,5 +1,5 @@
 <template lang="pug">
-	kanban-page(:schema="schema", :selectedProject="currentProject", :selectedTasks="selected", :projects="projects", :groups="groups", :tasks="tasks", :model="model"
+	kanban-page(:schema="schema", :selectedProject="currentProject", :selectedTasks="selected", :projects="projects", :boardGroups="boardGroups", :tasks="tasks", :model="model"
 		@arrange="arrange" 
 		@add="generateModel"
 		@select-project="selectProject"
@@ -40,6 +40,9 @@
 				, "tasks"
 				, "selected"
 			])
+			, boardGroups() {
+				return [{ name: "all", boards: this.groups}];
+			}
 		}
 
 		/**

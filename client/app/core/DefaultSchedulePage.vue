@@ -17,13 +17,16 @@
 			ul.drag-list
 				li(class="drag-column drag-column-weekly-tasks", key="weekly")
 					span.drag-column-header
-						h2 {{ "tasks" }}
+						h2 {{ _("Tasks") }}
 					div.drag-options
 					ul.drag-inner-list(data-code="weekly" ref="tasks")
 						li.drag-item(v-for="task in tasks", :data-code="task.code", :key="task.code" ref="items" data-duration="1:00")
 							slot(:name="task.name")
 								strong {{ task.name }}
-								div {{ task.code }}
+								.text-muted
+									dl(v-for="item in description(task)", :key="item.key")
+										dt {{ item.title }}
+										dd {{ item.value }}
 				li(class="drag-column", key="schedule")
 					full-calendar(:events="events", :options="schema.fullCalendar", :currentWeek="currentWeek")
 
@@ -175,7 +178,21 @@
 			}
 		}
 		, methods: {
-			off() { this.isShowTips = false; }
+			description(task) {
+				return [
+					{
+						key: "purpose"
+						, title: _("Purpose")
+						, value: task.purpose
+					}
+					, {
+						key: "goal"
+						, title: _("Goal")
+						, value: task.goal
+					}
+				];
+			}
+			, off() { this.isShowTips = false; }
 			, makeDraggable() {
 				if (!this.$refs.items) {
 					return;
@@ -283,61 +300,24 @@
 </script>
 
 <style lang="scss">
+	// @see http://makotottn.hatenablog.com/entry/2017/08/29/004422
+	@import "../../../node_modules/fullcalendar/dist/fullcalendar.css";
     @import "../../scss/common/mixins";
 	@import "../../scss/kanban.scss";
-	$on-hold: #FB7D44;
-    $in-progress: #2A92BF;
-    $needs-review: #F4CE46;
-    $approved: #00B961;
 
-    * {
-    	box-sizing: border-box;
-    }
-
-    body {
-    	background: #33363D;
-    	color: white;
-    	font-family: "Lato";
-    	font-weight: 300;
-    	line-height: 1.5;
-    	-webkit-font-smoothing: antialiased;
-    }
+	#app {
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+		text-align: center;
+		margin-top: 60px;
+	}
 
     .drag-column {
 		overflow: visible;
 		
         &-weekly-tasks {
-            .drag-column-header,
-            .is-moved,
-            .drag-options {
-                background: $on-hold;
-			}
 			flex: 0.3;
-        }
-
-        &-in-progress {
-            .drag-column-header,
-            .is-moved,
-            .drag-options {
-                background: $in-progress;
-            }
-        }
-
-        &-needs-review {
-            .drag-column-header,
-            .is-moved,
-            .drag-options{
-                background: $needs-review;
-            }
-        }
-
-        &-approved {
-            .drag-column-header,
-            .is-moved,
-            .drag-options {
-                background: $approved;
-            }
-        }
+		}
     }
 
     .section {
@@ -371,18 +351,10 @@
 		.buttons {
 			padding: 0.5em;
 		}
+	}
 
+	hr { 
+        width: 100%; 
 	}
-</style>
-<style>
-	/* http://makotottn.hatenablog.com/entry/2017/08/29/004422 */
-	@import "../../../node_modules/fullcalendar/dist/fullcalendar.css";
-	#app {
-		font-family: "Avenir", Helvetica, Arial, sans-serif;
-		-webkit-font-smoothing: antialiased;
-		-moz-osx-font-smoothing: grayscale;
-		text-align: center;
-		color: #2c3e50;
-		margin-top: 60px;
-	}
+	
 </style>
