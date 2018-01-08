@@ -15,7 +15,6 @@
 <script>
 	import Vue from "vue";
     import SchedulePage from "../../core/DefaultSchedulePage.vue";
-	import Popup from "../../core/components/popup";
 	import schema from "./schema";
 	import { schema as schemaUtils } from "vue-form-generator";
 	import { cloneDeep, isArray } from "lodash";
@@ -44,7 +43,6 @@
 		
 		components: {
             SchedulePage: SchedulePage
-            , Popup: Popup
 		}
 
 		// getters.js に対応

@@ -42,7 +42,7 @@ module.exports = {
                     , week : ctx.params.week
 				};
 
-				let query = Work.find(filter);
+				let query = Review.find(filter);
 
 				return ctx.queryPageSort(query).exec().then( (docs) => {
 					return this.toJSON(docs);

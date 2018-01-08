@@ -83,7 +83,6 @@ const mutations = {
 		state.reviews.splice(0);
 		state.reviews.push(...models);
 	}
-
 	, [ADD_REVIEW] (state, model) {
 		state.reviews.push(model);
 	}

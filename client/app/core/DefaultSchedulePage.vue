@@ -139,7 +139,6 @@
 			, events() {
 				const closedEventColor = this.schema.fullCalendar.closedEventColor;
 				let _works = cloneDeep(this.works);
-				let _reviews = cloneDeep(this.reviews);
 
 				// the first day of currentWeek(mon), tue, wed, thu, fri 
 				let days = [0, 1, 2, 3].reduce((arr, i) => {
@@ -149,8 +148,10 @@
 
 				// TODO
 				// closeしたworkが件の場合にはeditableをfalseにする
-				_reviews = days.map(d => {
-					const r = _reviews.filter(r => { return r.date == d; });
+				let _reviews = days.map(d => {
+					const r = this.reviews.filter(r => { 
+						console.log("●", r)
+						return r.date == d; });
 					if (r.length > 0) {
 						return {
 							title: "済"
