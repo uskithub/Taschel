@@ -176,6 +176,83 @@ module.exports = {
 			, cancelCaption: _("Cancel")
 		}
 	}
+	, reviewForm : {
+		title : ""
+		, form: {
+			groups: [
+				{
+					id : "reviewOfWorks"
+					, legend: _("ReviewOfWorks")
+					, fields: [
+						{
+							type: "textArea"
+							, label: _("GoodSide")
+							, model: "goodSide"
+							, hint: "Max 500 characters"
+							, max: 500
+							, placeholder: "User's biography"
+							, rows: 3
+							, validator: validators.string
+						}
+						,{
+							type: "textArea"
+							, label: _("BadSide")
+							, model: "badSide"
+							, hint: "Max 500 characters"
+							, max: 500
+							, placeholder: "User's biography"
+							, rows: 3
+							, validator: validators.string
+						}
+						, {
+							type: "textArea"
+							, label: _("Improvement")
+							, model: "improvement"
+							, hint: "Max 500 characters"
+							, max: 500
+							, placeholder: "User's biography"
+							, rows: 3
+							, validator: validators.string
+						}
+					]
+				}
+				, {
+					id : "highOrderReview"
+					, legend: _("HighOrderReview")
+					, fields: [
+						{
+							type: "textArea"
+							, label: _("HighOrderAwakening")
+							, model: "highOrderAwakening"
+							, hint: "Max 500 characters"
+							, max: 500
+							, placeholder: "User's biography"
+							, rows: 4
+							, required: true
+							, validator: validators.string
+						} 
+					]
+				}
+			]
+		}
+		, options: {
+			searchable: true
+			
+			, isSaveButtonEnable: true
+			, isSkipButtonEnable: true
+			, isCancelButtonEnable: true
+	
+			, validateAfterLoad: false // Validate after load a model
+			, validateAfterChanged: false // Validate after every changes on the model
+			, validateBeforeSave: true // Validate before save a model
+		}
+		, resources: {
+			saveCaption: _("Save")
+			, nextCaption: _("Next")
+			, skipCaption: _("Skip")
+			, cancelCaption: _("Cancel")
+		}
+	}
 	, events: {
 		onSelect: null
 		, onNewItem: null

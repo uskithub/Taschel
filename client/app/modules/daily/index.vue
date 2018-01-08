@@ -1,5 +1,5 @@
 <template lang="pug">
-	schedule-page(:schema="schema", :selected="selected", :tasks="assignedInWeeklyTasks", :works="works", :currentWeek="currentWeek", :model="model"
+	schedule-page(:schema="schema", :selected="selected", :reviewingDay="reviewingDay", :tasks="assignedInWeeklyTasks", :works="works", :reviews="reviews", :currentWeek="currentWeek", :model="model", :reviewModel="reviewModel"
 		@assign="assign"
 		@select="select"
 		@update="update"
@@ -8,6 +8,7 @@
 		@close="close"
 		@remove="remove"
 		@cancel="cancel"
+		@selectReviewDay="selectReviewDay"
 	)
 </template>
 
@@ -17,13 +18,26 @@
 	import Popup from "../../core/components/popup";
 	import schema from "./schema";
 	import { schema as schemaUtils } from "vue-form-generator";
-	import { cloneDeep } from "lodash";
+	import { cloneDeep, isArray } from "lodash";
 
 	import toast from "../../core/toastr";
 	import moment from "moment";
 
 	import { mapGetters, mapMutations, mapActions } from "vuex";
-	import { SET_CURRENT_PROJECT, SET_CURRENT_WEEK, LOAD, LOAD_WORKS, SELECT, CLEAR_SELECT, ADD , UPDATE, REMOVE, SET_USER, SHOW_POPUP, HIDE_POPUP } from "../common/constants/mutationTypes";
+	import { SET_CURRENT_PROJECT, SET_CURRENT_WEEK, LOAD, LOAD_WORKS, SELECT, CLEAR_SELECT, ADD , UPDATE, REMOVE, SET_USER, SHOW_POPUP, HIDE_POPUP, SELECT_DAY, LOAD_REVIEWS, ADD_REVIEW } from "../common/constants/mutationTypes";
+
+	// determine whether model is review model or not.
+	// return "highOrderReview", "reviewOfWorks", "works"
+	const determineModel = (model) => {
+		if (model.highOrderAwakening) {
+			return "highOrderReview";
+		}
+		for (let i in schema.reviewForm.form.groups[0].fields) {
+			const f = schema.reviewForm.form.groups[0].fields[i];
+			if (model[f.model]) return "reviewOfWorks";
+		}
+		return false;
+	};
 
     // @see: https://github.com/vue-generators/vue-form-generator
 	export default {
@@ -46,6 +60,7 @@
 				, "works"
 				, "reviews"
 				, "selected"
+				, "reviewingDay"
 			])
 			, ...mapGetters("session", [
 				"me"
@@ -60,6 +75,7 @@
 				// task-pageに当てはめる値を定義したオブジェクト
 				schema
 				, model: null
+				, reviewModel: null
 			};
 		}
 		, watch: {
@@ -109,13 +125,52 @@
 				}
 				this.model = targetModel;
 			}
+			// notice this func is also called when reviewingDay became null.
+			, reviewingDay(day) {
+				if (day == null) {
+					this.reviewModel = null;
+					return;
+				}
+				
+				const reviewingDate = moment(this.currentWeek).date(day).format("YYYY-MM-DD");
+				this.schema.reviewForm.title = `${reviewingDate} の振り返り`;
+
+				const worksOfReviewingDay = this.works.filter(w => {
+					return moment(w.start).format("DD") == day && w.status < 0;
+				});
+
+				let model = {
+					highOrderReview : schemaUtils.createDefaultObject(this.schema.reviewForm.form.groups[1])
+					, reviewOfWorks: new Array(worksOfReviewingDay.length)
+				};
+
+				for (let i in this.reviews) {
+					let review = this.reviews[i];
+					if (review.date == reviewingDate) {
+						model.highOrderReview = review;
+						break;
+					}
+				}
+				model.highOrderReview.week = this.currentWeek;
+				model.highOrderReview.date = reviewingDate;
+				model.highOrderReview.works = worksOfReviewingDay.map(w => { return w.code; });
+
+				for (let i=0; i<worksOfReviewingDay.length; i++) {
+					model.reviewOfWorks[i] = schemaUtils.createDefaultObject(this.schema.reviewForm.form.groups[0]);
+					model.reviewOfWorks[i].code = worksOfReviewingDay[i].code;
+					model.reviewOfWorks[i].goodSide = worksOfReviewingDay[i].goodSide;
+					model.reviewOfWorks[i].badSide = worksOfReviewingDay[i].badSide;
+					model.reviewOfWorks[i].improvement = worksOfReviewingDay[i].improvement;
+				}
+				this.reviewModel = model;
+			}
 		}
 		/**
 		 * Socket handlers. Every property is an event handler
 		 */
 		, socket: {
 			prefix: "/groups/"
-			, events: {
+		 	, events: {
                 empty(res) {
 					this.showPopup({
 						title : this._("GroupIsEmpty")
@@ -172,12 +227,16 @@
 			, ...mapMutations("dailyPage", {
 				select : SELECT
 				, clearSelection : CLEAR_SELECT
+				, selectReviewDay : SELECT_DAY
 			})
 			, ...mapActions("dailyPage", {
 				getAssignedInWeeklyTasks : "readGroups"
 				, createWork : "createWork"
 				, readWorks : "readWorks"
 				, updateWork : "updateWork"
+				, createReview : "createReview"
+				, readReviews : "readReviews"
+				, updateReview : "updateReview"
 			})
 			, ...mapActions("session", [
 				"getSessionUser"
@@ -189,8 +248,14 @@
 				this.updateWork({ model, mutation: UPDATE } );
 			}
 			, save(model) {
-				this.clearSelection();
-				this.updateWork( { model, mutation: UPDATE } );
+				const modelType = determineModel(model);
+				if (modelType == "highOrderReview") {
+					this.createReview( { model, mutation: ADD_REVIEW } );
+					this.selectReviewDay(null);
+				} else {
+					this.clearSelection();
+					this.updateWork( { model, mutation: UPDATE } );
+				}
 			}
 			, close(model) {
 				this.clearSelection();
@@ -203,8 +268,12 @@
 				this.clearSelection();
 			}
 			, cancel() {
-				this.clearSelection();
-				this.model = null;
+				if (this.model) {
+					this.clearSelection();
+					this.model = null;
+				} else {
+					this.selectReviewDay(null);
+				}
 			}
 		}
 
@@ -227,7 +296,12 @@
 						this.readWorks({
 							options: { user : this.me.code, week : this.currentWeek }
 							, mutation: LOAD_WORKS
-						})
+						});
+
+						this.readReviews({
+							options: { user : this.me.code, week : this.currentWeek }
+							, mutation: LOAD_REVIEWS
+						});
 					}
 				}
 			});

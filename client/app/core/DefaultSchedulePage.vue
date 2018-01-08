@@ -33,12 +33,19 @@
 			, @remove="remove"
 			, @cancel="cancel"
 		)
+		review(v-if="reviewingDay", :schema="schema.reviewForm", :works="worksOfReviewingDay", :template="reviewModel"
+			, @save="save"
+			, @close="close"
+			, @remove="remove"
+			, @cancel="cancel"
+		)
 </template>
 
 <script>
     import Vue from "vue";
 	import FullCalendar from "./components/fullcalendar";
 	import PopupForm from "./components/popupform";
+	import Review from "./components/review";
 
 	import $ from "jquery";
 	import "jquery-ui/ui/widgets/draggable";
@@ -55,6 +62,7 @@
         components: {
             FullCalendar
 			, PopupForm
+			, Review
 		}
 		, props: {
 			schema : {
@@ -72,9 +80,18 @@
 				, required: true
 				, validator: function(value) { return true; } // TODO
 			}
+			, reviews : {
+				type: Array
+				, required: true
+				, validator: function(value) { return true; } // TODO
+			}
 			, selected : {
 				type: Array
 				, required: true
+				, validator: function(value) { return true; } // TODO
+			}
+			, reviewingDay : {
+				type: String
 				, validator: function(value) { return true; } // TODO
 			}
 			, currentWeek : {
@@ -83,6 +100,10 @@
 				, validator: function(value) { return true; } // TODO
 			}
 			, model : {
+				type: Object
+				, validator: function(value) { return true; } // TODO
+			}
+			, reviewModel : {
 				type: Object
 				, validator: function(value) { return true; } // TODO
 			}
@@ -103,16 +124,54 @@
 			}
 			, isAddButtonEnable() { return this.options.isAddButtonEnable !== false; }
 			, isEditing() { return this.model != null || this.selected.length > 0; }
+			, worksOfReviewingDay() {
+				if (this.reviewingDay == null) {
+					return [];
+				}
+				return this.works.filter(w => {
+					return moment(w.start).format("DD") == this.reviewingDay 
+						&& w.status < 0;
+				});
+			 }
 			, events() {
 				const closedEventColor = this.schema.fullCalendar.closedEventColor;
 				let _works = cloneDeep(this.works);
+				let _reviews = cloneDeep(this.reviews);
+
+				// the first day of currentWeek(mon), tue, wed, thu, fri 
+				let days = [0, 1, 2, 3].reduce((arr, i) => {
+					arr.push(moment(arr[i]).add(1, "d").format());
+					return arr;
+				}, [this.currentWeek]);
+
+				// TODO
+				// closeしたworkが件の場合にはeditableをfalseにする
+				_reviews = days.map(d => {
+					const r = _reviews.filter(r => { return r.date == d; });
+					if (r.length > 0) {
+						return {
+							title: "済"
+							, allDay: true
+							, start: d
+							, editable: false
+							, color: closedEventColor.color
+						};
+					}
+					return {
+						title: "未"
+						, allDay: true
+						, start: d
+						, editable: false
+					};
+				});	
+				
 				_works.forEach( work => {
 					if (work.status < 0) {
 						work.color = closedEventColor.color;
 						work.textColor = closedEventColor.textColor;
 					}
 				});
-				return _works;
+				return _reviews.concat(_works);
 			}
 		}
 		, methods: {
@@ -190,7 +249,9 @@
 			this.schema.fullCalendar.eventClick = (event, jqEvent, view) => {
 
 				if (event.allDay) {
-					// TODO
+					const day = event.start.format("DD");
+					this.$emit("selectReviewDay", day);
+
 				} else {
 					for (let i in this.works) {
 						let work = this.works[i];

@@ -6,31 +6,30 @@ let C 	 		= require("../../../core/constants");
 
 let _			= require("lodash");
 
-let Work 		= require("./models/work");
-let Task 		= require("../tasks/models/task");
+let Review 		= require("./models/review");
+let Work 		= require("../works/models/work");
 
 module.exports = {
 	settings: {
-		name: "works",
+		name: "reviews",
 		version: 1,
-		namespace: "works",
+		namespace: "reviews",
 		rest: true,
 		ws: true,
 		graphql: true,
 		permission: C.PERM_LOGGEDIN,
 		role: "user",
-		collection: Work,
+		collection: Review,
 		
-		modelPropFilter: "code title start end actualStart actualEnd description week parent goodSide badSide improvement author status asignee lastCommunication createdAt updatedAt"
+		modelPropFilter: "code week date works highOrderAwakening author createdAt updatedAt"
 
 		// TODO: populateModelsを改造すれば、下にのみpopulate、上にのみpopulateもできる
 		, modelPopulates: {
 			// "root": "tasks"			// 親にchildrenを持たせたので、populateすると循環参照になってpopulateが終わらなくなるので注意
 		}
 		, idEncodes: {
-			"parent": "tasks"
+            "works": "works"
 			, "author": "persons"
-			, "asignee": "persons"
 		}
 	}
 	
@@ -39,7 +38,7 @@ module.exports = {
 			cache: true,
 			handler(ctx) {
 				let filter = {
-					asignee : this.personService.decodeID(ctx.params.user)
+					author : this.personService.decodeID(ctx.params.user)
                     , week : ctx.params.week
 				};
 
@@ -66,38 +65,37 @@ module.exports = {
 		, create(ctx) {
 			this.validateParams(ctx, true);
 			
-			let work = new Work({
-				title: ctx.params.title
-				, start: ctx.params.start
-				, end: ctx.params.end
-				, week: ctx.params.week
-				, parent: this.taskService.decodeID(ctx.params.parent_code)
+			let review = new Review({
+                week: ctx.params.week
+				, date: ctx.params.date
+				// , works: this.workService.decodeID(ctx.params.work_code)
+                , highOrderAwakening: ctx.params.highOrderAwakening
+                , works: ctx.params.works.map(code => { return this.workService.decodeID(code); })
 				, author : ctx.user.id
-				, asignee : ctx.user.id
 			});
 
-			return work.save()
-			.then((doc) => {
-				// 親のTaskに追加（本来Promiseだが、待つ必要がないので非同期処理）
-				Task.findById(doc.parent).exec()
-				.then((taskDoc) => {
-					if (taskDoc.works == null) {
-						taskDoc.work = [doc.id];
-					} else {
-						taskDoc.works.push(doc.id);
-					}
-					taskDoc.save();
-				});
-				// あくまでworkのdocを返すこと
-				return doc;
-			})
-			.then((doc) => {
+			return review.save()
+			// .then(doc => {
+			// 	// 親のTaskに追加（本来Promiseだが、待つ必要がないので非同期処理）
+			// 	Work.findById(doc.work).exec()
+			// 	.then(workDoc => {
+			// 		if (workDoc.works == null) {
+			// 			taskDoc.work = [doc.id];
+			// 		} else {
+			// 			taskDoc.works.push(doc.id);
+			// 		}
+			// 		taskDoc.save();
+			// 	});
+			// 	// あくまでworkのdocを返すこと
+			// 	return doc;
+			// })
+			.then(doc => {
 				return this.toJSON(doc);
 			})
-			.then((json) => {
+			.then(json => {
 				return this.populateModels(json);
 			})
-			.then((json) => {
+			.then(json => {
 				this.notifyModelChanges(ctx, "created", json);
 				return json;
 			});
@@ -136,15 +134,6 @@ module.exports = {
 				if (ctx.params.status != null)
 					doc.status = ctx.params.status;
 
-				if (ctx.params.goodSide != null)
-					doc.goodSide = ctx.params.goodSide;
-
-				if (ctx.params.badSide != null)
-					doc.badSide = ctx.params.badSide;
-
-				if (ctx.params.improvement != null)
-					doc.improvement = ctx.params.improvement;
-
 				return doc.save();
 			})
 			.then((doc) => {
@@ -182,15 +171,17 @@ module.exports = {
 		 * @param {boolean} strictMode 		strictMode. If true, need to exists the required parameters
 		 */
 		validateParams(ctx, strictMode) {
-			if (strictMode || ctx.hasParam("title"))
-				ctx.validateParam("title").trim().notEmpty(ctx.t("app:WorkTitleCannotBeBlank")).end();
-
-			// if (strictMode || ctx.hasParam("status"))
-			// 	ctx.validateParam("status").isNumber();
-
-			// ctx.validateParam("purpose").trim().end();
-			// ctx.validateParam("goal").trim().end();
-			// ctx.validateParam("type").trim().end();
+			if (strictMode || ctx.hasParam("week"))
+                ctx.validateParam("week").trim().notEmpty(ctx.t("app:ReviewWeekCannotBeBlank")).end();
+                
+            if (strictMode || ctx.hasParam("date"))
+                ctx.validateParam("date").trim().notEmpty(ctx.t("app:ReviewDateCannotBeBlank")).end();
+                
+            if (strictMode || ctx.hasParam("works"))
+                ctx.validateParam("works").notEmpty(ctx.t("app:ReviewworksCannotBeBlank")).end();
+                
+            if (strictMode || ctx.hasParam("highOrderAwakening"))
+				ctx.validateParam("highOrderAwakening").trim().notEmpty(ctx.t("app:ReviewHighOrderAwakeningCannotBeBlank")).end();
 
 			if (ctx.hasValidationErrors())
 				throw ctx.errorBadRequest(C.ERR_VALIDATION_ERROR, ctx.validationErrors);			
@@ -199,7 +190,7 @@ module.exports = {
 
 	, init(ctx) {
 		// Fired when start the service
-		this.taskService = ctx.services("tasks");
+		this.workService = ctx.services("works");
 		this.personService = ctx.services("persons");
 	}
 
@@ -212,12 +203,12 @@ module.exports = {
 	, graphql: {
 
 		query: `
-			works(limit: Int, offset: Int, sort: String): [Work]
-			work(code: String): Work
+			reviews(limit: Int, offset: Int, sort: String): [Review]
+			review(code: String): Review
 		`,
 
 		types: `
-			type Work {
+			type Review {
 				code: String!
 				purpose: String
 				type: String
@@ -229,21 +220,21 @@ module.exports = {
 		`,
 
 		mutation: `
-			workCreate(name: String!, purpose: String, type: String, goal: String, status: Int): Work
-			workUpdate(code: String!, name: String, purpose: String, type: String, goal: String, status: Int): Work
-			workRemove(code: String!): Work
+            reviewCreate(name: String!, purpose: String, type: String, goal: String, status: Int): Review
+			reviewUpdate(code: String!, name: String, purpose: String, type: String, goal: String, status: Int): Review
+			reviewRemove(code: String!): Review
 		`,
 
 		resolvers: {
 			Query: {
-				works: "find",
-				work: "get"
+				reviews: "find",
+				review: "get"
 			},
 
 			Mutation: {
-				workCreate: "create",
-				workUpdate: "update",
-				workRemove: "remove"
+				reviewCreate: "create",
+				reviewUpdate: "update",
+				reviewRemove: "remove"
 			}
 		}
 	}

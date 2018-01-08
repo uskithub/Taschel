@@ -6,6 +6,9 @@ import {
 	, REMOVE
 	, SELECT
 	, CLEAR_SELECT 
+	, SELECT_DAY
+	, LOAD_REVIEWS
+	, ADD_REVIEW
 } from "../common/constants/mutationTypes";
 
 import { each, find, assign, remove, isArray } from "lodash";
@@ -15,6 +18,7 @@ const state = {
 	, works: []
 	, reviews: []
 	, selected: []
+	, reviewingDay: null
 };
 
 // stateから値を取り出すのはgetterを使う
@@ -23,6 +27,7 @@ const getters = {
 	, works(state) { return state.works; }
 	, reviews(state) { return state.reviews; }
 	, selected(state) { return state.selected; }
+	, reviewingDay(state) { return state.reviewingDay; }
 };
 
 // mutationにはstateを変更する処理を実装する。
@@ -71,17 +76,29 @@ const mutations = {
 	, [CLEAR_SELECT] (state) {
 		state.selected.splice(0);
 	}
+	, [SELECT_DAY] (state, day) {
+		state.reviewingDay = day;
+	}
+	, [LOAD_REVIEWS] (state, models) {
+		state.reviews.splice(0);
+		state.reviews.push(...models);
+	}
+
+	, [ADD_REVIEW] (state, model) {
+		state.reviews.push(model);
+	}
 };
 
 // import { createTask, readTasks, updateTask, deleteTask } from "../common/actions/tasks";
 
 import { readGroups } from "../common/actions/groups";
 import { createWork, readWorks, updateWork } from "../common/actions/works";
+import { createReview, readReviews, updateReview } from "../common/actions/reviews";
 
 export default {
 	namespaced : true
 	, state
 	, getters
-	, actions : { readGroups, createWork, readWorks, updateWork }
+	, actions : { readGroups, createWork, readWorks, updateWork, createReview, readReviews, updateReview }
 	, mutations
 };
