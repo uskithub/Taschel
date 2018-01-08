@@ -1,7 +1,9 @@
 <template lang="pug">
-	kanban-page(:schema="schema", :currentWeek="currentWeek", :selectedTasks="selected", :boardGroups="boardGroups", :tasks="tasks", :model="model"
+
+	kanban-page(:schema="schema", :currentWeek="currentWeek", :selectedTasks="selected", :users="users", :boardGroups="boardGroups", :tasks="tasks", :model="model"
 		@arrange="arrange" 
 		@add="generateModel"
+		@selectUser="selectUser"
 		@changeWeek="changeWeek"
 		@select-kanban="selectKanban"
 		@save="save"
@@ -12,7 +14,7 @@
 
 <script>
 	import Vue from "vue";
-    import KanbanPage from "../../core/DefaultKanbanPage.vue";
+    import KanbanPage from "../../core/DefaultWeeklyPage.vue";
 	import schema from "./schema";
 	import { schema as schemaUtils } from "vue-form-generator";
 	import { cloneDeep } from "lodash";
@@ -21,7 +23,7 @@
 	import moment from "moment";
 
 	import { mapGetters, mapMutations, mapActions } from "vuex";
-	import { SET_CURRENT_PROJECT, SET_CURRENT_WEEK, LOAD, LOAD_PROJECTS, SELECT, CLEAR_SELECT, ADD , UPDATE, REMOVE, SHOW_POPUP, HIDE_POPUP } from "../common/constants/mutationTypes";
+	import { SET_CURRENT_PROJECT, SET_CURRENT_WEEK, LOAD_USERS, SELECT_USER, SET_USER, LOAD, LOAD_PROJECTS, SELECT, CLEAR_SELECT, ADD , UPDATE, REMOVE, SHOW_POPUP, HIDE_POPUP } from "../common/constants/mutationTypes";
 
     // @see: https://github.com/vue-generators/vue-form-generator
 	export default {
@@ -36,7 +38,8 @@
 				"projects"
 				, "currentProject"
 				, "currentWeek"
-				, "popupSchema"
+				, "users"
+				, "selectedUser"
 			])
 			, ...mapGetters("weeklyPage", [
 				"groups"
@@ -56,6 +59,24 @@
 					return groups;
 				}, [{ name: "unclassified", boards: []}, { name: "classified", boards: []}]);
 			}
+			, userSelectorSchema() {
+				if (this.users.length > 0) {
+					const fields = this.schema.userSelector.fields.map(f => {
+						if (f.model == "author") {
+							f.values = this.users.map(user => {
+								return {
+									id : user.code
+									, name : user.username
+								}
+							});
+						}
+						return f;
+					});
+					return { fields : fields };
+				} else {
+					return this.schema.userSelector;
+				}
+			}
 		}
 
 		/**
@@ -66,6 +87,10 @@
 				// task-pageに当てはめる値を定義したオブジェクト
 				schema
 				, model: null
+				// 選択したプロジェクトが格納される
+				, modelUserSelector: {
+					code : this.selectedUser
+				}
 			};
 		}
 		, watch: {
@@ -93,6 +118,9 @@
 					targetModel.asignee_code = (targetModel.asignee.code) ? targetModel.asignee.code : targetModel.asignee;
 				}
 				this.model = targetModel;
+			}
+			, selectedUser(newUser) {
+				console.log(newUser);
 			}
 		}
 		/**
@@ -151,6 +179,7 @@
 			...mapMutations("shared", {
 				setCurrentProject : SET_CURRENT_PROJECT
 				, setCurrentWeek : SET_CURRENT_WEEK
+				, _selectUser : SELECT_USER
 				, showPopup : SHOW_POPUP
 				, hidePopup : HIDE_POPUP
 			})
@@ -169,7 +198,21 @@
 				, createTask : "createTask"
 				, deleteTask : "deleteTask"
 				, arrange : "updateGroups"
+				, getUsers : "readUsers"
 			})
+			, selectUser(code) { 
+				console.log("● selectUser", code);
+				this._selectUser(code); 
+				if (code) {
+					// TODO: user
+					this.getGroups({
+						options: { weekly : this.currentWeek }
+						, mutation: LOAD
+					});
+				} else {
+					this.loadGroups([]);
+				}
+			}
 			, changeWeek(direction) {
 				if (direction == "prev") {
 					const newCurrent = moment(this.currentWeek).subtract(7, "d").format("YYYY-MM-DD");
@@ -303,6 +346,10 @@
 						, mutation: LOAD
 					});
 				}
+
+				// if (mutation.type == `shared/${LOAD_USERS}`) {
+				// 	this.setupAsigneeField();
+				// }
 			});	
 
 			if (this.projects.length > 0) {
@@ -319,10 +366,29 @@
 				this.setCurrentWeek(moment().day(1).format("YYYY-MM-DD"));
 			}
 
+			if (!this.selectedUser) {
+				if (this.me) {
+					this._selectUser(this.me.code);
+				} else {
+					// F5リロード時など、meがundefinedの場合があるので、その場合、meの更新を監視してtaskを更新する
+					this.$store.subscribe((mutation, state) => {
+						if (mutation.type == `session/${SET_USER}`) {
+							this._selectUser(this.me.code);
+							this.modelUserSelector.code = this.me.code;
+						}
+					});	
+				}
+			}
+
+			// TODO: user
 			this.getGroups({
 				options: { weekly : this.currentWeek }
 				, mutation: LOAD
-			});			
+			});
+
+			if (this.users.length == 0) {
+				this.getUsers({ mutation: `shared/${LOAD_USERS}` });	
+			}
 		}
 	};
 </script>

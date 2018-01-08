@@ -18,6 +18,16 @@
 				button.button.is-primary(@click="buttonAddDidPush")
 					i.icon.fa.fa-plus 
 					| {{ schema.resources.addCaption || _("Add") }}
+			.center
+				.form
+					vue-form-generator(:schema="schema.userSelector", :model="modelUserSelector", ref="userSelector", @model-updated="selectUser")
+		
+			.right(v-if="currentWeek")
+				button.button.is-primary(@click="buttonPrevDidPush")
+					i.icon.fa.fa-arrow-left
+				.tag.primary {{ currentWeek }}
+				button.button.is-primary(@click="buttonNextDidPush")
+					i.icon.fa.fa-arrow-right
 		br
 		.form
 			vue-form-generator(:schema="schema.projectSelector", :model="modelProjectSelector", ref="projectSelector", @model-updated="selectProject")
@@ -53,6 +63,10 @@
 			schema : {
 				type: Object
 				, required: true
+				, validator: function(value) { return true; } // TODO
+			}
+			, currentWeek : {
+				type: String
 				, validator: function(value) { return true; } // TODO
 			}
 			, projects : {
@@ -121,7 +135,7 @@
 		}
 		, methods: {
 			off() { this.isShowTips = false; }
-			, selectProject(newVal, schema) { this.$emit("select-project", newVal); }
+            , selectUser(newVal, schema) { this.$emit("selectUser", newVal); }
 			, arrange(context) { this.$emit("arrange", context); }
 			, buttonAddDidPush() {
 				this.$emit("add");
@@ -132,6 +146,8 @@
 						el.focus();
 				});
 			}
+			, buttonPrevDidPush() { this.$emit("changeWeek", "prev"); }
+			, buttonNextDidPush() { this.$emit("changeWeek", "next"); }
 			, select(task) { this.$emit("select-kanban", task); }
 			, save(model) { this.$emit("save", this.model); }
 			, remove() { this.$emit("remove"); }		// deleteは予約語なので怒られる

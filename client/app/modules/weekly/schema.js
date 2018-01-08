@@ -10,7 +10,8 @@ let _ = Vue.prototype._;
 
 module.exports = {
 	id: "weekly"
-	, title: _("Weekly (by KanbanPage)")
+	, title: _("Weekly (by WeeklyPage)")
+	, userSelector: generate(areaTypes.form, ["author"])
 	, popupForm : {
 		title : ""
 		, form : generate(

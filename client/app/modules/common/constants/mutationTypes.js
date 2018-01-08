@@ -49,3 +49,4 @@ export const LOAD_REVIEWS         = "LOAD_REVIEWS";
 
 export const ADD_REVIEW         = "ADD_REVIEW";
 
+export const SELECT_USER        = "SELECT_USER";

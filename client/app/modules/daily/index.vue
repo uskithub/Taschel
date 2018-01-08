@@ -279,9 +279,6 @@
 		 * Call if the component is created
 		 */
 		, created() {
-			if (!this.currentWeek) {
-				this.setCurrentWeek(moment().day(1).format("YYYY-MM-DD"));
-			}
 
 			this.$store.subscribe((mutation, state) => {
 				if (mutation.type == `shared/${SET_CURRENT_WEEK}`) {
@@ -303,6 +300,10 @@
 					}
 				}
 			});
+
+			if (!this.currentWeek) {
+				this.setCurrentWeek(moment().day(1).format("YYYY-MM-DD"));
+			}
 
             this.getAssignedInWeeklyTasks({
                 options: { daily : this.currentWeek }

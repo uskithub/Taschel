@@ -156,7 +156,10 @@ const fields = {
 			}
 			, align: "center"
 		}
-		, form: {}
+		, form: {
+			type: "select"
+			, values: []
+		}
 	}
 	, lastCommunication: {
 		label: _("LastCommunication")

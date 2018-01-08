@@ -77,11 +77,12 @@ const mutations = {
 
 import { createTask, readTasks, updateTask, deleteTask } from "../common/actions/tasks";
 import { createGroup, readGroups, updateGroups } from "../common/actions/groups";
+import { readUsers } from "../common/actions/persons";
 
 export default {
 	namespaced : true
 	, state
 	, getters
-	, actions : { createGroup, readGroups, updateGroups, createTask, readTasks, updateTask, deleteTask }
+	, actions : { createGroup, readGroups, updateGroups, createTask, readTasks, updateTask, deleteTask, readUsers }
 	, mutations
 };
