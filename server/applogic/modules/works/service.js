@@ -39,16 +39,16 @@ module.exports = {
 			cache: true,
 			handler(ctx) {
 				let filter = {
-					asignee : this.personService.decodeID(ctx.params.user)
+					asignee : this.personService.decodeID(ctx.params.user_code)
                     , week : ctx.params.week
 				};
 
 				let query = Work.find(filter);
 
-				return ctx.queryPageSort(query).exec().then( (docs) => {
+				return ctx.queryPageSort(query).exec().then(docs => {
 					return this.toJSON(docs);
 				})
-				.then((json) => {
+				.then(json => {
 					return this.populateModels(json);
 				});
 			}
@@ -77,10 +77,10 @@ module.exports = {
 			});
 
 			return work.save()
-			.then((doc) => {
+			.then(doc => {
 				// 親のTaskに追加（本来Promiseだが、待つ必要がないので非同期処理）
 				Task.findById(doc.parent).exec()
-				.then((taskDoc) => {
+				.then(taskDoc => {
 					if (taskDoc.works == null) {
 						taskDoc.work = [doc.id];
 					} else {
@@ -91,13 +91,13 @@ module.exports = {
 				// あくまでworkのdocを返すこと
 				return doc;
 			})
-			.then((doc) => {
+			.then(doc => {
 				return this.toJSON(doc);
 			})
-			.then((json) => {
+			.then(json => {
 				return this.populateModels(json);
 			})
-			.then((json) => {
+			.then(json => {
 				this.notifyModelChanges(ctx, "created", json);
 				return json;
 			});
@@ -108,10 +108,7 @@ module.exports = {
 			this.validateParams(ctx);
 
 			return this.collection.findById(ctx.modelID).exec()
-			.then((doc) => {
-
-				console.log(ctx.params);
-
+			.then(doc => {
 				if (ctx.params.name != null)
 					doc.name = ctx.params.name;
 

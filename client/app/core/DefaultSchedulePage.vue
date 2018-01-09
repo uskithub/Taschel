@@ -107,6 +107,9 @@
 				, required: true
 				, validator: function(value) { return true; } // TODO
 			}
+			, selectedUser : {
+				type: String 
+			}
 			, model : {
 				type: Object
 				, validator: function(value) { return true; } // TODO

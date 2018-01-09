@@ -174,9 +174,10 @@ module.exports = {
 
 				} else if (ctx.params.weekly != undefined) {
 					let type = `weekly_${ctx.params.weekly}`;
+					let userId = (ctx.params.user_code) ? this.personService.decodeID(ctx.params.user_code) : ctx.user.id;
 					let filter = {
 						$and : [ 
-							{ author : (ctx.params.user_code) ? this.personService.decodeID(ctx.params.user_code) : ctx.user.id }
+							{ author : userId }
 							, { type : type }
 						]
 					};
@@ -192,7 +193,6 @@ module.exports = {
 						// type is "requirement", "way" or "step"
 						// has no children
 						// author or asignee is user
-						let userId = (ctx.params.user_code) ? this.personService.decodeID(ctx.params.user_code) : ctx.user.id;
 						let filter = {
 							status : { $gt : -1 }
 							, type : { $in: ["requirement", "way", "step"] }
@@ -288,9 +288,10 @@ module.exports = {
 					// weeklyのgroupにアサインされているtaskをがっちゃんこして返す
 					//
 					let type = `weekly_${ctx.params.daily}`;
+					let userId = (ctx.params.user_code) ? this.personService.decodeID(ctx.params.user_code) : ctx.user.id;
 					let filter = {
 						$and : [ 
-							{ author : ctx.user.id}
+							{ author : userId }
 							, { type : type }
 						]
 					};
@@ -309,7 +310,7 @@ module.exports = {
 							DEFAULT_WEEKLY_GROUPS.forEach(g => {
 								g.type = type;
 								g.parent =  -1;
-								g.author = ctx.user.id;
+								g.author = userId;
 								let group = new Group(g);
 								promises.push(group.save());
 							});

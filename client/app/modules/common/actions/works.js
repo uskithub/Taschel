@@ -22,7 +22,7 @@ export const createWork = ({ commit }, { model, mutation }) => {
 
 // payload = {
 // 	options : {	
-//    	user : People.code
+//    	user_code : People.code
 //    	, week : "yyyy-MM-dd
 // 	}
 //	, mutation : "LOAD"
@@ -30,8 +30,8 @@ export const createWork = ({ commit }, { model, mutation }) => {
 export const readWorks = ({ commit }, { options, mutation }) => {
 	let url = NAMESPACE;
 
-	if (options != undefined && options.user != undefined && options.week != undefined) {
-		url = `${url}?user=${options.user}&week=${options.week}`;
+	if (options != undefined && options.user_code != undefined && options.week != undefined) {
+		url = `${url}?user=${options.user_code}&week=${options.week}`;
 	} 
 
 	return api(METHOD.get, url)

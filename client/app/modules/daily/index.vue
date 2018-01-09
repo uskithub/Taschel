@@ -244,14 +244,19 @@
 			, selectUser(code) { 
 				this._selectUser(code); 
 				if (code) {
+					this.getAssignedInWeeklyTasks({
+						options: { user_code : code, daily : this.currentWeek }
+						, mutation: LOAD
+					});
+
 					this.readWorks({
 						options: { user : code, week : this.currentWeek }
 						, mutation: LOAD_WORKS
 					});
 					this.readReviews({
 						options: { user : code, week : this.currentWeek }
-					, mutation: LOAD_REVIEWS
-				});
+						, mutation: LOAD_REVIEWS
+					});
 				}
 			}
 			, assign(model) {
@@ -312,17 +317,17 @@
 			this.$store.subscribe((mutation, state) => {
 				if (mutation.type == `shared/${SET_CURRENT_WEEK}`) {
 					this.getAssignedInWeeklyTasks({
-						options: { daily : this.currentWeek }
+						options: { user_code : this.selectedUser, daily : this.currentWeek }
 						, mutation: LOAD
 					});
 
 					this.readWorks({
-						options: { user : this.selectedUser, week : this.currentWeek }
+						options: { user_code : this.selectedUser, week : this.currentWeek }
 						, mutation: LOAD_WORKS
 					});
 
 					this.readReviews({
-						options: { user : this.selectedUser, week : this.currentWeek }
+						options: { user_code : this.selectedUser, week : this.currentWeek }
 						, mutation: LOAD_REVIEWS
 					});
 				}
@@ -335,21 +340,22 @@
 				this.setCurrentWeek(moment().day(1).format("YYYY-MM-DD"));
 			}
 
-            this.getAssignedInWeeklyTasks({
-                options: { daily : this.currentWeek }
-                , mutation: LOAD
-			});
-
 			if (!this.selectedUser) {
 				if (this.me) {
 					this._selectUser(this.me.code);
+
+					this.getAssignedInWeeklyTasks({
+						options: { daily : this.currentWeek }
+						, mutation: LOAD
+					});
+
 					this.readWorks({
-						options: { user : this.me.code, week : this.currentWeek }
+						options: { user_code : this.me.code, week : this.currentWeek }
 						, mutation: `dailyPage/${LOAD_WORKS}`
 					})
 
 					this.readReviews({
-						options: { user : this.me.code, week : this.currentWeek }
+						options: { user_code : this.me.code, week : this.currentWeek }
 						, mutation: LOAD_REVIEWS
 					});
 				} else {
@@ -357,26 +363,37 @@
 					this.$store.subscribe((mutation, state) => {
 						if (mutation.type == `session/${SET_USER}`) {
 							this._selectUser(this.me.code);
+
+							this.getAssignedInWeeklyTasks({
+								options: { user_code : this.me.code, daily : this.currentWeek }
+								, mutation: LOAD
+							});
+
 							this.readWorks({ 
-								options: { user : this.me.code, week : this.currentWeek }
+								options: { user_code : this.me.code, week : this.currentWeek }
 								, mutation: `dailyPage/${LOAD_WORKS}`
 							});
 
 							this.readReviews({
-								options: { user : this.me.code, week : this.currentWeek }
+								options: { user_code : this.me.code, week : this.currentWeek }
 								, mutation: LOAD_REVIEWS
 							});
 						}
 					});	
 				}
 			} else {
+				this.getAssignedInWeeklyTasks({
+					options: { user_code : this.selectedUser, daily : this.currentWeek }
+					, mutation: LOAD
+				});
+
 				this.readWorks({
-					options: { user : this.selectedUser, week : this.currentWeek }
+					options: { user_code : this.selectedUser, week : this.currentWeek }
 					, mutation: `dailyPage/${LOAD_WORKS}`
 				})
 
 				this.readReviews({
-					options: { user : this.selectedUser, week : this.currentWeek }
+					options: { user_code : this.selectedUser, week : this.currentWeek }
 					, mutation: LOAD_REVIEWS
 				});
 			}
