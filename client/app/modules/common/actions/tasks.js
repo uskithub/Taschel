@@ -59,7 +59,6 @@ let createUnpopulatedClone = function(model) {
 export const checkTask = ({ commit }) => {
 	return api(METHOD.get, `${NAMESPACE}?check=true`)
 	.then(data => {
-		console.log(`● !!checked`, data);
 		// if (mutation)
 		// 	commit(mutation, data, { root : (mutation.indexOf("/") > -1) });
 	});
@@ -68,7 +67,6 @@ export const checkTask = ({ commit }) => {
 export const createTask = ({ commit }, { model, mutation }) => {
 	return api(METHOD.post, NAMESPACE, model)
 	.then(data => {
-		console.log(`● !!created mutation: ${ mutation }`, data);
 		if (mutation)
 			commit(mutation, data, { root : (mutation.indexOf("/") > -1) });
 	});
@@ -98,7 +96,6 @@ export const readTasks = ({ commit }, { options, mutation }) => {
 
 	return api(METHOD.get, url)
 	.then(data => {
-		console.log(`● !!read mutation: ${ mutation }`, data);
 		if (mutation)
 			// 各Pageにアサインされたactionからsharedのmutationへcommitを可能にするため、roo:trueとしている
 			commit(mutation
@@ -111,7 +108,6 @@ export const readTasks = ({ commit }, { options, mutation }) => {
 export const updateTask = ({ commit }, { model, mutation }) => {
 	return api(METHOD.put, NAMESPACE + "/" + model.code, model)
 	.then(data => {
-		console.log(`● !!updated mutation: ${ mutation }`, data);
 		if (mutation)
 			commit(mutation, data, { root : (mutation.indexOf("/") > -1) });
 	});
@@ -120,7 +116,6 @@ export const updateTask = ({ commit }, { model, mutation }) => {
 export const deleteTask = ({ commit }, { model, mutation }) => {
 	return api(METHOD.delete, NAMESPACE + "/" + model.code)
 	.then(data => {
-		console.log(`● !!deleted mutation: ${ mutation }`, data);
 		if (mutation)
 			commit(mutation, data, { root : (mutation.indexOf("/") > -1) });
 	});

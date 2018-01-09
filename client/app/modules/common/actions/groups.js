@@ -18,7 +18,6 @@ export const NAMESPACE = "/api/groups";
 export const createGroup = ({ commit }, { model, mutation }) => {
 	return api(METHOD.post, NAMESPACE, model)
 	.then(data => {
-		console.log(`● !!created mutation: ${ mutation }`, data);
 		if (mutation)
 			commit(mutation, data, { root : (mutation.indexOf("/") > -1) });
 	});
@@ -53,7 +52,6 @@ export const readGroups = ({ commit }, { options, mutation }) => {
 
 	return api(METHOD.get, url)
 	.then(data => {
-		console.log(`● !!read mutation: ${ mutation }`, data);
 		if (mutation)
 			// 各Pageにアサインされたactionからsharedのmutationへcommitを可能にするため、roo:trueとしている
 			commit(mutation, data, { root : (mutation.indexOf("/") > -1) });
@@ -79,7 +77,6 @@ export const updateGroups = ({ commit }, { moving, from, to, index, mutation }) 
 
 	return api(METHOD.put, url)
 	.then(data => {
-		console.log(`● !!updated mutation: ${ mutation }`, data);
 		if (mutation)
 			commit(mutation, data, { root : (mutation.indexOf("/") > -1) });
 	});

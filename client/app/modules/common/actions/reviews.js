@@ -14,7 +14,6 @@ export const NAMESPACE = "/api/reviews";
 export const createReview = ({ commit }, { model, mutation }) => {
 	return api(METHOD.post, NAMESPACE, model)
 	.then(data => {
-		console.log(`● !!created mutation: ${ mutation }`, data);
 		if (mutation)
 			commit(mutation, data, { root : (mutation.indexOf("/") > -1) });
 	});
@@ -36,7 +35,6 @@ export const readReviews = ({ commit }, { options, mutation }) => {
 
 	return api(METHOD.get, url)
 	.then(data => {
-		console.log(`● !!read mutation: ${ mutation }`, data);
 		if (mutation)
 			commit(mutation, data, { root : (mutation.indexOf("/") > -1) });
 	});
@@ -49,7 +47,6 @@ export const readReviews = ({ commit }, { options, mutation }) => {
 export const updateReview = ({ commit }, { model, mutation }) => {
 	return api(METHOD.put, NAMESPACE, model)
 	.then(data => {
-		console.log(`● !!updated mutation: ${ mutation }`, data);
 		if (mutation)
 			commit(mutation, data, { root : (mutation.indexOf("/") > -1) });
 	});

@@ -1,6 +1,7 @@
 import Vue from "vue";
+import { METHOD, api } from "../api";
+
 import toastr from "../../../core/toastr";
-import axios from "axios";
 
 export const NAMESPACE = "/api/persons";
 
@@ -11,20 +12,10 @@ export const NAMESPACE = "/api/persons";
 // { commit } はES2015 の引数分割束縛（argument destructuring）という文法
 
 export const readUsers = ({ commit }, { mutation }) => {
-	axios.get(NAMESPACE).then((response) => {
-		let res = response.data;
-		if (res.status == 200 && res.data)
-		// 各Pageにアサインされたactionからsharedのmutationへcommitをかのうにするため、roo:trueとしている
-			commit(mutation
-				, res.data
-				, { root : true }
-			);
-		else
-			console.error("Request error!", res.error);
-
-	}).catch((response) => {
-		console.error("Request error!", response.statusText);
+	return api(METHOD.get, NAMESPACE)
+	.then(data => {
+		if (mutation)
+			commit(mutation, data, { root : (mutation.indexOf("/") > -1) });
 	});
-
 };
 
