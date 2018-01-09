@@ -93,11 +93,12 @@ const mutations = {
 import { readGroups } from "../common/actions/groups";
 import { createWork, readWorks, updateWork } from "../common/actions/works";
 import { createReview, readReviews, updateReview } from "../common/actions/reviews";
+import { readUsers } from "../common/actions/persons";
 
 export default {
 	namespaced : true
 	, state
 	, getters
-	, actions : { readGroups, createWork, readWorks, updateWork, createReview, readReviews, updateReview }
+	, actions : { readGroups, createWork, readWorks, updateWork, createReview, readReviews, updateReview, readUsers }
 	, mutations
 };

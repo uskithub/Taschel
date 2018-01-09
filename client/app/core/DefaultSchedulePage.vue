@@ -13,6 +13,11 @@
 					a.close(title="Close" @click="off")
 			br
 
+		.flex.align-center.justify-space-around
+			.left
+				.form
+					vue-form-generator(:schema="schema.userSelector", :model="modelUserSelector" ref="userSelector" @model-updated="selectUser")
+
 		div.drag-container
 			ul.drag-list
 				li(class="drag-column drag-column-weekly-tasks", key="weekly")
@@ -114,6 +119,10 @@
         , data() {
             return {
 				isShowTips : true
+				// 選択したユーザが格納される
+				, modelUserSelector: {
+					author : this.selectedUser
+				}
 			};
         }
 
@@ -177,6 +186,19 @@
 				return _reviews.concat(_works);
 			}
 		}
+		, watch: {
+			selectedUser(newVal) {
+				this.modelUserSelector.author = newVal;
+			}
+			/*
+			model: {
+				handler: function(newVal, oldVal) {
+					if (newVal === oldVal) // call only if a property changed, not the model
+						console.log("Model property changed!");
+				},
+				deep: true
+			}*/
+		}
 		, methods: {
 			description(task) {
 				return [
@@ -193,6 +215,13 @@
 				];
 			}
 			, off() { this.isShowTips = false; }
+            , selectUser(newVal, schema) { 
+				// if (newVal !== undefined) {
+					// When user reloaded the page by F5, model-update would be called with undefined.
+					// Otherwise user selected nothing-selected, model-update would be called with null.
+					this.$emit("selectUser", newVal);
+				// }
+			}
 			, makeDraggable() {
 				if (!this.$refs.items) {
 					return;

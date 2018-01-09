@@ -70,6 +70,7 @@ module.exports = {
 			}
 		}
 	}
+	, userSelector: generate(areaTypes.form, ["author"])
 	, popupForm : {
 		title : ""
 		, form: {

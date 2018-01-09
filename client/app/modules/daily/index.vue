@@ -1,6 +1,7 @@
 <template lang="pug">
-	schedule-page(:schema="schema", :selected="selected", :reviewingDay="reviewingDay", :tasks="assignedInWeeklyTasks", :works="works", :reviews="reviews", :currentWeek="currentWeek", :model="model", :reviewModel="reviewModel"
+	schedule-page(:schema="schema", :selected="selected", :reviewingDay="reviewingDay", :selectedUser="selectedUser", :users="users", :tasks="assignedInWeeklyTasks", :works="works", :reviews="reviews", :currentWeek="currentWeek", :model="model", :reviewModel="reviewModel"
 		@assign="assign"
+		@selectUser="selectUser"
 		@select="select"
 		@update="update"
 		@setCurrentWeek="setCurrentWeek"
@@ -23,7 +24,7 @@
 	import moment from "moment";
 
 	import { mapGetters, mapMutations, mapActions } from "vuex";
-	import { SET_CURRENT_PROJECT, SET_CURRENT_WEEK, LOAD, LOAD_WORKS, SELECT, CLEAR_SELECT, ADD , UPDATE, REMOVE, SET_USER, SHOW_POPUP, HIDE_POPUP, SELECT_DAY, LOAD_REVIEWS, ADD_REVIEW } from "../common/constants/mutationTypes";
+	import { SET_CURRENT_PROJECT, SET_CURRENT_WEEK, LOAD_USERS, SELECT_USER, SET_USER, LOAD, LOAD_WORKS, SELECT, CLEAR_SELECT, ADD , UPDATE, REMOVE, SHOW_POPUP, HIDE_POPUP, SELECT_DAY, LOAD_REVIEWS, ADD_REVIEW } from "../common/constants/mutationTypes";
 
 	// determine whether model is review model or not.
 	// return "highOrderReview", "reviewOfWorks", "works"
@@ -51,7 +52,8 @@
 				"projects"
 				, "currentProject"
 				, "currentWeek"
-				, "popupSchema"
+				, "users"
+				, "selectedUser"
 			])
 			, ...mapGetters("dailyPage", [
 				"assignedInWeeklyTasks"
@@ -219,8 +221,7 @@
 			...mapMutations("shared", {
 				setCurrentProject : SET_CURRENT_PROJECT
 				, setCurrentWeek : SET_CURRENT_WEEK
-				, showPopup : SHOW_POPUP
-				, hidePopup : HIDE_POPUP
+				, _selectUser : SELECT_USER
 			})
 			, ...mapMutations("dailyPage", {
 				select : SELECT
@@ -235,10 +236,24 @@
 				, createReview : "createReview"
 				, readReviews : "readReviews"
 				, updateReview : "updateReview"
+				, getUsers : "readUsers"
 			})
 			, ...mapActions("session", [
 				"getSessionUser"
 			])
+			, selectUser(code) { 
+				this._selectUser(code); 
+				if (code) {
+					this.readWorks({
+						options: { user : code, week : this.currentWeek }
+						, mutation: LOAD_WORKS
+					});
+					this.readReviews({
+						options: { user : code, week : this.currentWeek }
+					, mutation: LOAD_REVIEWS
+				});
+				}
+			}
 			, assign(model) {
 				this.createWork({ model, mutation: ADD });
 			}
@@ -273,6 +288,20 @@
 					this.selectReviewDay(null);
 				}
 			}
+			, setupUsersField() {
+				this.schema.userSelector.fields.forEach(f => {
+					if (f.model == "author") {
+						f.values = this.users.map(user => {
+							return { 
+								id : user.code
+								, name : user.username }
+						});
+					}
+				});
+				// When user reload by F5, setting up userSelector is called after setting selectedUser and model value cleared by undefined.
+				// So set initial value here again.
+				this._selectUser(this.me.code);
+			}
 		}
 
 		/**
@@ -287,17 +316,18 @@
 						, mutation: LOAD
 					});
 
-					if (this.me) {
-						this.readWorks({
-							options: { user : this.me.code, week : this.currentWeek }
-							, mutation: LOAD_WORKS
-						});
+					this.readWorks({
+						options: { user : this.selectedUser, week : this.currentWeek }
+						, mutation: LOAD_WORKS
+					});
 
-						this.readReviews({
-							options: { user : this.me.code, week : this.currentWeek }
-							, mutation: LOAD_REVIEWS
-						});
-					}
+					this.readReviews({
+						options: { user : this.selectedUser, week : this.currentWeek }
+						, mutation: LOAD_REVIEWS
+					});
+				}
+				if (mutation.type == `shared/${LOAD_USERS}`) {
+					this.setupUsersField();
 				}
 			});
 
@@ -310,31 +340,51 @@
                 , mutation: LOAD
 			});
 
-			if (this.me) {
+			if (!this.selectedUser) {
+				if (this.me) {
+					this._selectUser(this.me.code);
+					this.readWorks({
+						options: { user : this.me.code, week : this.currentWeek }
+						, mutation: `dailyPage/${LOAD_WORKS}`
+					})
+
+					this.readReviews({
+						options: { user : this.me.code, week : this.currentWeek }
+						, mutation: LOAD_REVIEWS
+					});
+				} else {
+					// F5リロード時など、meがundefinedの場合があるので、その場合、meの更新を監視してtaskを更新する
+					this.$store.subscribe((mutation, state) => {
+						if (mutation.type == `session/${SET_USER}`) {
+							this._selectUser(this.me.code);
+							this.readWorks({ 
+								options: { user : this.me.code, week : this.currentWeek }
+								, mutation: `dailyPage/${LOAD_WORKS}`
+							});
+
+							this.readReviews({
+								options: { user : this.me.code, week : this.currentWeek }
+								, mutation: LOAD_REVIEWS
+							});
+						}
+					});	
+				}
+			} else {
 				this.readWorks({
-					options: { user : this.me.code, week : this.currentWeek }
+					options: { user : this.selectedUser, week : this.currentWeek }
 					, mutation: `dailyPage/${LOAD_WORKS}`
 				})
 
 				this.readReviews({
-					options: { user : this.me.code, week : this.currentWeek }
+					options: { user : this.selectedUser, week : this.currentWeek }
 					, mutation: LOAD_REVIEWS
 				});
-			} else {
-				// F5リロード時など、meがundefinedの場合があるので、その場合、meの更新を監視してtaskを更新する
-				this.$store.subscribe((mutation, state) => {
-					if (mutation.type == `session/${SET_USER}`) {
-						this.readWorks({ 
-							options: { user : this.me.code, week : this.currentWeek }
-							, mutation: `dailyPage/${LOAD_WORKS}`
-						});
+			}
 
-						this.readReviews({
-							options: { user : this.me.code, week : this.currentWeek }
-							, mutation: LOAD_REVIEWS
-						});
-					}
-				});				
+			if (this.users.length == 0) {
+				this.getUsers({ mutation: `shared/${LOAD_USERS}` });	
+			} else {
+				this.setupUsersField();
 			}
 		}
 	};

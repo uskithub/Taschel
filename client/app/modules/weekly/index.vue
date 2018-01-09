@@ -1,6 +1,6 @@
 <template lang="pug">
 
-	kanban-page(:schema="schema", :currentWeek="currentWeek", :selectedTasks="selected", :selectedUser="selectedUser",:users="users", :boardGroups="boardGroups", :tasks="tasks", :model="model"
+	kanban-page(:schema="schema", :currentWeek="currentWeek", :selectedTasks="selected", :selectedUser="selectedUser", :users="users", :boardGroups="boardGroups", :tasks="tasks", :model="model"
 		@arrange="arrange" 
 		@add="generateModel"
 		@selectUser="selectUser"
@@ -158,8 +158,6 @@
 				setCurrentProject : SET_CURRENT_PROJECT
 				, setCurrentWeek : SET_CURRENT_WEEK
 				, _selectUser : SELECT_USER
-				, showPopup : SHOW_POPUP
-				, hidePopup : HIDE_POPUP
 			})
 			, ...mapMutations("weeklyPage", {
 				selectKanban : SELECT
@@ -365,13 +363,17 @@
 						}
 					});	
 				}
+				this.getGroups({
+					options: { weekly : this.currentWeek }
+					, mutation: LOAD
+				});
+			} else {
+				this.getGroups({
+					options: { weekly : this.currentWeek, user_code : this.selectedUser }
+					, mutation: LOAD
+				});
 			}
-
-			this.getGroups({
-				options: { weekly : this.currentWeek, user_code : this.selectedUser }
-				, mutation: LOAD
-			});
-
+			
 			if (this.users.length == 0) {
 				this.getUsers({ mutation: `shared/${LOAD_USERS}` });	
 			} else {
