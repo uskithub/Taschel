@@ -20,7 +20,7 @@
 					| {{ schema.resources.addCaption || _("Add") }}
 		br
 		.form
-			vue-form-generator(:schema="schema.projectSelector", :model="modelProjectSelector", ref="projectSelector", @model-updated="selectProject")
+			vue-form-generator(:schema="schema.projectSelector", :model="modelProjectSelector" ref="projectSelector" @model-updated="selectProject")
 
 		kanban(:boardGroups="boardGroups", :tasks="tasks", @arrange="arrange" @select="select")
 

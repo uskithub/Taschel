@@ -176,10 +176,11 @@ module.exports = {
 					let type = `weekly_${ctx.params.weekly}`;
 					let filter = {
 						$and : [ 
-							{ author : ctx.user.id}
+							{ author : (ctx.params.user_code) ? this.personService.decodeID(ctx.params.user_code) : ctx.user.id }
 							, { type : type }
 						]
 					};
+
 					let query = Group.find(filter);
 
 					// 該当週のGroupを取得
@@ -191,11 +192,12 @@ module.exports = {
 						// type is "requirement", "way" or "step"
 						// has no children
 						// author or asignee is user
+						let userId = (ctx.params.user_code) ? this.personService.decodeID(ctx.params.user_code) : ctx.user.id;
 						let filter = {
 							status : { $gt : -1 }
 							, type : { $in: ["requirement", "way", "step"] }
 							, children : { $size: 0 }
-							, $or : [ { author : ctx.user.id }, { asignee : ctx.user.id } ]
+							, $or : [ { author : userId }, { asignee : userId } ]
 						};
 						let query = Task.find(filter);
 
@@ -213,7 +215,7 @@ module.exports = {
 									return promise.then(docs => {
 										g.type = type;
 										g.parent =  -1;
-										g.author = ctx.user.id;
+										g.author = userId;
 										let group = new Group(g);
 										return group.save()
 										.then(doc => {

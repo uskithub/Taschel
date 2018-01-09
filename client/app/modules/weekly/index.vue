@@ -1,6 +1,6 @@
 <template lang="pug">
 
-	kanban-page(:schema="schema", :currentWeek="currentWeek", :selectedTasks="selected", :users="users", :boardGroups="boardGroups", :tasks="tasks", :model="model"
+	kanban-page(:schema="schema", :currentWeek="currentWeek", :selectedTasks="selected", :selectedUser="selectedUser",:users="users", :boardGroups="boardGroups", :tasks="tasks", :model="model"
 		@arrange="arrange" 
 		@add="generateModel"
 		@selectUser="selectUser"
@@ -59,24 +59,6 @@
 					return groups;
 				}, [{ name: "unclassified", boards: []}, { name: "classified", boards: []}]);
 			}
-			, userSelectorSchema() {
-				if (this.users.length > 0) {
-					const fields = this.schema.userSelector.fields.map(f => {
-						if (f.model == "author") {
-							f.values = this.users.map(user => {
-								return {
-									id : user.code
-									, name : user.username
-								}
-							});
-						}
-						return f;
-					});
-					return { fields : fields };
-				} else {
-					return this.schema.userSelector;
-				}
-			}
 		}
 
 		/**
@@ -87,10 +69,6 @@
 				// task-pageに当てはめる値を定義したオブジェクト
 				schema
 				, model: null
-				// 選択したプロジェクトが格納される
-				, modelUserSelector: {
-					code : this.selectedUser
-				}
 			};
 		}
 		, watch: {
@@ -120,7 +98,7 @@
 				this.model = targetModel;
 			}
 			, selectedUser(newUser) {
-				console.log(newUser);
+				console.log("● watch", newUser);
 			}
 		}
 		/**
@@ -201,16 +179,12 @@
 				, getUsers : "readUsers"
 			})
 			, selectUser(code) { 
-				console.log("● selectUser", code);
 				this._selectUser(code); 
 				if (code) {
-					// TODO: user
 					this.getGroups({
-						options: { weekly : this.currentWeek }
+						options: { weekly : this.currentWeek, user_code : code }
 						, mutation: LOAD
 					});
-				} else {
-					this.loadGroups([]);
 				}
 			}
 			, changeWeek(direction) {
@@ -326,6 +300,20 @@
 					}
 				});
 			}
+			, setupUsersField() {
+				this.schema.userSelector.fields.forEach(f => {
+					if (f.model == "author") {
+						f.values = this.users.map(user => {
+							return { 
+								id : user.code
+								, name : user.username }
+						});
+					}
+				});
+				// When user reload by F5, setting up userSelector is called after setting selectedUser and model value cleared by undefined.
+				// So set initial value here again.
+				this._selectUser(this.me.code);
+			}
 		}
 
 		/**
@@ -342,14 +330,14 @@
 
 				if (mutation.type == `shared/${SET_CURRENT_WEEK}`) {
 					this.getGroups({
-						options: { weekly : this.currentWeek }
+						options: { weekly : this.currentWeek, user_code : this.selectedUser }
 						, mutation: LOAD
 					});
 				}
 
-				// if (mutation.type == `shared/${LOAD_USERS}`) {
-				// 	this.setupAsigneeField();
-				// }
+				if (mutation.type == `shared/${LOAD_USERS}`) {
+					this.setupUsersField();
+				}
 			});	
 
 			if (this.projects.length > 0) {
@@ -374,20 +362,20 @@
 					this.$store.subscribe((mutation, state) => {
 						if (mutation.type == `session/${SET_USER}`) {
 							this._selectUser(this.me.code);
-							this.modelUserSelector.code = this.me.code;
 						}
 					});	
 				}
 			}
 
-			// TODO: user
 			this.getGroups({
-				options: { weekly : this.currentWeek }
+				options: { weekly : this.currentWeek, user_code : this.selectedUser }
 				, mutation: LOAD
 			});
 
 			if (this.users.length == 0) {
 				this.getUsers({ mutation: `shared/${LOAD_USERS}` });	
+			} else {
+				this.setupUsersField();
 			}
 		}
 	};

@@ -28,6 +28,7 @@ export const createGroup = ({ commit }, { model, mutation }) => {
 // 	options : {	
 //		parent : Task.code
 //		, weekly : "yyyy-mm-dd"
+//		, user_code : User.code
 // 	}
 //	, mutation : "LOAD"
 // }
@@ -39,6 +40,11 @@ export const readGroups = ({ commit }, { options, mutation }) => {
 			url = `${url}?parent_code=${options.parent}`;
 		} else if (options.weekly != undefined) {
 			url = `${url}?weekly=${options.weekly}`;
+			
+			if (options.user_code != undefined) {
+				url = `${url}&user_code=${options.user_code}`;
+			}
+
 		} else if (options.daily != undefined) {
 			url = `${url}?daily=${options.daily}`;
 		}

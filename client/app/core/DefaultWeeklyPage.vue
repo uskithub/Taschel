@@ -20,7 +20,7 @@
 					| {{ schema.resources.addCaption || _("Add") }}
 			.center
 				.form
-					vue-form-generator(:schema="schema.userSelector", :model="modelUserSelector", ref="userSelector", @model-updated="selectUser")
+					vue-form-generator(:schema="schema.userSelector", :model="modelUserSelector" ref="userSelector" @model-updated="selectUser")
 		
 			.right(v-if="currentWeek")
 				button.button.is-primary(@click="buttonPrevDidPush")
@@ -29,9 +29,6 @@
 				button.button.is-primary(@click="buttonNextDidPush")
 					i.icon.fa.fa-arrow-right
 		br
-		.form
-			vue-form-generator(:schema="schema.projectSelector", :model="modelProjectSelector", ref="projectSelector", @model-updated="selectProject")
-
 		kanban(:boardGroups="boardGroups", :tasks="tasks", @arrange="arrange" @select="select")
 
 		popup-form(v-if="isEditing", :schema="schema.popupForm", :template="model"
@@ -73,6 +70,10 @@
 				type: Array
 				, validator: function(value) { return true; } // TODO
 			}
+			, users : {
+				type: Array
+				, validator: function(value) { return true; } // TODO
+			}
 			, boardGroups : {
 				type: Array
 				, required: true
@@ -91,6 +92,9 @@
 				, required: true
 				, validator: function(value) { return true; } // TODO
 			}
+			, selectedUser : {
+				type: String 
+			}
 			, model : {
 				type: Object
 				, validator: function(value) { return true; } // TODO
@@ -102,9 +106,9 @@
 					field: "id"
 					, direction: 1
 				}
-				// 選択したプロジェクトが格納される
-				, modelProjectSelector: {
-					code : this.selectedProject
+				// 選択したユーザが格納される
+				, modelUserSelector: {
+					author : this.selectedUser
 				}
 				, isShowTips : true
             };
@@ -124,6 +128,9 @@
 			, isEditing() { return this.model != null || this.selectedTasks.length > 0; }
 		}	
 		, watch: {
+			selectedUser(newVal) {
+				this.modelUserSelector.author = newVal;
+			}
 			/*
 			model: {
 				handler: function(newVal, oldVal) {
@@ -135,7 +142,13 @@
 		}
 		, methods: {
 			off() { this.isShowTips = false; }
-            , selectUser(newVal, schema) { this.$emit("selectUser", newVal); }
+            , selectUser(newVal, schema) { 
+				// if (newVal !== undefined) {
+					// When user reloaded the page by F5, model-update would be called with undefined.
+					// Otherwise user selected nothing-selected, model-update would be called with null.
+					this.$emit("selectUser", newVal);
+				// }
+			}
 			, arrange(context) { this.$emit("arrange", context); }
 			, buttonAddDidPush() {
 				this.$emit("add");
