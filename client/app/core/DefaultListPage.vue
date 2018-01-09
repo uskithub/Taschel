@@ -62,6 +62,9 @@
 				, required: true
 				, validator: function(value) { return true; } // TODO
 			}
+			, users : {
+				
+			}
 			, model : {
 				type: Object
 				, validator: function(value) { return true; } // TODO

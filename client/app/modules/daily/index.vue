@@ -1,5 +1,5 @@
 <template lang="pug">
-	schedule-page(:schema="schema", :selected="selected", :reviewingDay="reviewingDay", :selectedUser="selectedUser", :users="users", :tasks="assignedInWeeklyTasks", :works="works", :reviews="reviews", :currentWeek="currentWeek", :model="model", :reviewModel="reviewModel"
+	schedule-page(:schema="schema", :selected="selected", :reviewingDay="reviewingDay", :currentUser="currentUser", :users="users", :tasks="assignedInWeeklyTasks", :works="works", :reviews="reviews", :currentWeek="currentWeek", :model="model", :reviewModel="reviewModel"
 		@assign="assign"
 		@selectUser="selectUser"
 		@select="select"
@@ -15,6 +15,7 @@
 
 <script>
 	import Vue from "vue";
+	import SharedMixin from "../common/mixins/Shared.vue"
     import SchedulePage from "../../core/DefaultSchedulePage.vue";
 	import schema from "./schema";
 	import { schema as schemaUtils } from "vue-form-generator";
@@ -41,29 +42,19 @@
 
     // @see: https://github.com/vue-generators/vue-form-generator
 	export default {
-		
-		components: {
+		mixins : [ SharedMixin ]
+		, components: {
             SchedulePage: SchedulePage
 		}
 
 		// getters.js に対応
 		, computed: {
-			...mapGetters("shared", [
-				"projects"
-				, "currentProject"
-				, "currentWeek"
-				, "users"
-				, "selectedUser"
-			])
-			, ...mapGetters("dailyPage", [
+			...mapGetters("dailyPage", [
 				"assignedInWeeklyTasks"
 				, "works"
 				, "reviews"
 				, "selected"
 				, "reviewingDay"
-			])
-			, ...mapGetters("session", [
-				"me"
 			])
 		}
 
@@ -218,12 +209,7 @@
 		}
 
 		, methods: {
-			...mapMutations("shared", {
-				setCurrentProject : SET_CURRENT_PROJECT
-				, setCurrentWeek : SET_CURRENT_WEEK
-				, _selectUser : SELECT_USER
-			})
-			, ...mapMutations("dailyPage", {
+			...mapMutations("dailyPage", {
 				select : SELECT
 				, clearSelection : CLEAR_SELECT
 				, selectReviewDay : SELECT_DAY
@@ -238,11 +224,8 @@
 				, updateReview : "updateReview"
 				, getUsers : "readUsers"
 			})
-			, ...mapActions("session", [
-				"getSessionUser"
-			])
 			, selectUser(code) { 
-				this._selectUser(code); 
+				this.setCurrentUser(code); 
 				if (code) {
 					this.getAssignedInWeeklyTasks({
 						options: { user_code : code, daily : this.currentWeek }
@@ -293,56 +276,34 @@
 					this.selectReviewDay(null);
 				}
 			}
-			, setupUsersField() {
-				this.schema.userSelector.fields.forEach(f => {
-					if (f.model == "author") {
-						f.values = this.users.map(user => {
-							return { 
-								id : user.code
-								, name : user.username }
-						});
-					}
-				});
-				// When user reload by F5, setting up userSelector is called after setting selectedUser and model value cleared by undefined.
-				// So set initial value here again.
-				this._selectUser(this.me.code);
-			}
 		}
 
 		/**
 		 * Call if the component is created
 		 */
 		, created() {
-
 			this.$store.subscribe((mutation, state) => {
 				if (mutation.type == `shared/${SET_CURRENT_WEEK}`) {
 					this.getAssignedInWeeklyTasks({
-						options: { user_code : this.selectedUser, daily : this.currentWeek }
+						options: { user_code : this.currentUser, daily : this.currentWeek }
 						, mutation: LOAD
 					});
 
 					this.readWorks({
-						options: { user_code : this.selectedUser, week : this.currentWeek }
+						options: { user_code : this.currentUser, week : this.currentWeek }
 						, mutation: LOAD_WORKS
 					});
 
 					this.readReviews({
-						options: { user_code : this.selectedUser, week : this.currentWeek }
+						options: { user_code : this.currentUser, week : this.currentWeek }
 						, mutation: LOAD_REVIEWS
 					});
 				}
-				if (mutation.type == `shared/${LOAD_USERS}`) {
-					this.setupUsersField();
-				}
 			});
 
-			if (!this.currentWeek) {
-				this.setCurrentWeek(moment().day(1).format("YYYY-MM-DD"));
-			}
-
-			if (!this.selectedUser) {
+			if (!this.currentUser) {
 				if (this.me) {
-					this._selectUser(this.me.code);
+					this.setCurrentUser(this.me.code);
 
 					this.getAssignedInWeeklyTasks({
 						options: { daily : this.currentWeek }
@@ -362,7 +323,7 @@
 					// F5リロード時など、meがundefinedの場合があるので、その場合、meの更新を監視してtaskを更新する
 					this.$store.subscribe((mutation, state) => {
 						if (mutation.type == `session/${SET_USER}`) {
-							this._selectUser(this.me.code);
+							this.setCurrentUser(this.me.code);
 
 							this.getAssignedInWeeklyTasks({
 								options: { user_code : this.me.code, daily : this.currentWeek }
@@ -383,25 +344,19 @@
 				}
 			} else {
 				this.getAssignedInWeeklyTasks({
-					options: { user_code : this.selectedUser, daily : this.currentWeek }
+					options: { user_code : this.currentUser, daily : this.currentWeek }
 					, mutation: LOAD
 				});
 
 				this.readWorks({
-					options: { user_code : this.selectedUser, week : this.currentWeek }
+					options: { user_code : this.currentUser, week : this.currentWeek }
 					, mutation: `dailyPage/${LOAD_WORKS}`
 				})
 
 				this.readReviews({
-					options: { user_code : this.selectedUser, week : this.currentWeek }
+					options: { user_code : this.currentUser, week : this.currentWeek }
 					, mutation: LOAD_REVIEWS
 				});
-			}
-
-			if (this.users.length == 0) {
-				this.getUsers({ mutation: `shared/${LOAD_USERS}` });	
-			} else {
-				this.setupUsersField();
 			}
 		}
 	};

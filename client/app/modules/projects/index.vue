@@ -12,6 +12,7 @@
 
 <script>
 	import Vue from "vue";
+	import SharedMixin from "../common/mixins/Shared.vue"
 	import ListPage from "../../core/DefaultListPage.vue";
 	import schema from "./schema";
 	import { schema as schemaUtils } from "vue-form-generator";
@@ -23,19 +24,13 @@
 	import { LOAD_PROJECTS, ADD_PROJECT, LOAD, SELECT, CLEAR_SELECT, UPDATE_PROJECT } from "../common/constants/mutationTypes";
 
 	export default {
-		
-		components: {
+		mixins : [ SharedMixin ]
+		, components: {
 			ListPage: ListPage
 		}
 		, computed: {
-			...mapGetters("shared", [
-				"projects"
-			])
-			, ...mapGetters("projectsPage", [
+			...mapGetters("projectsPage", [
 				"selected"
-			])
-			, ...mapGetters("session", [
-				"me"
 			])
 		}
 
@@ -131,7 +126,6 @@
 				, updateProject : "updateTask"
 				, deleteProject : "deleteTask"
 			})
-
 			, generateModel() {
 				this.schema.popupForm.title = _("CreateNewProject");
 				this.schema.popupForm.form.fields.forEach(f => {
@@ -146,7 +140,6 @@
 				newModel.asignee_code = this.me.code;
 				this.model = newModel;
 			}
-
 			, save(model) {
 				this.clearSelection();
 				if (model.code) {
@@ -174,7 +167,6 @@
 				clonedModel.asignee_code = this.me.code;
 				this.model = clonedModel;
 			}
-
 			, breakdown() {
 				const baseModel = this.selected[0]; 
 				this.schema.popupForm.title = `${baseModel.name} をブレークダウン`;
@@ -218,11 +210,6 @@
 		 * Call if the component is created
 		 */
 		, created() {
-			// Download rows for the page
-			this.getProjects({
-				options: { taskType : "project" }
-				, mutation: `shared/${LOAD_PROJECTS}`
-			});
 		}
 	};
 </script>

@@ -13,6 +13,7 @@
 
 <script>
 	import Vue from "vue";
+	import SharedMixin from "../common/mixins/Shared.vue"
 	import GanttPage from "../../core/DefaultGanttPage.vue";
 	import schema from "./schema";
 	import { schema as schemaUtils } from "vue-form-generator";
@@ -21,22 +22,14 @@
 	import toast from "../../core/toastr";
 
 	import { mapGetters, mapMutations, mapActions } from "vuex";
-	import { SET_CURRENT_PROJECT, LOAD_PROJECTS, LOAD_USERS, UPDATE } from "../common/constants/mutationTypes";
+	import { SET_CURRENT_PROJECT, LOAD_PROJECTS, UPDATE } from "../common/constants/mutationTypes";
 
 	export default {
-		
-		components : {
+		mixins : [ SharedMixin ]
+		, components : {
 			GanttPage: GanttPage
 		}
 		, computed : {
-			...mapGetters("shared", [
-				"projects"
-				, "users"
-				, "currentProject"
-			])
-			, ...mapGetters("session", [
-				"me"
-			])
 		}
 
 		/**
@@ -85,19 +78,13 @@
 			}
 		}		
 		, methods : {
-			...mapMutations("shared", {
-				setCurrentProject : SET_CURRENT_PROJECT
-			})
-			, ...mapActions("ganttPage", {
+			...mapActions("ganttPage", {
 				createTask : "createTask"
 				, getProjects : "readTasks"
 				, updateModel : "updateTask"
 				, arrangeTask : "arrangeTask"
 				, getUsers : "readUsers"
 			})
-			, ...mapActions("session", [
-				"getSessionUser"
-			])
 			, selectProject(code) {
 				this.setCurrentProject(code);
 				// populateしているchildrenを辿って表示するので、getTasks的なことは不要
@@ -210,74 +197,16 @@
 			, cancel() {
 				this.model = null;
 			}
-			, setupProjectsField() {
-				// 動的にプロジェクト一覧を設定している
-				this.schema.projectSelector.fields.forEach(f => {
-					if (f.model == "code") {
-						f.values = this.projects.map(p => {
-							return { id : p.code, name : p.name }
-						});
-					}
-				});	
-				this.schema.popupForm.form.fields.forEach(f => {
-					if (f.model == "root_code") {
-						f.values = this.projects.map(project => {
-							return {
-								id : project.code
-								, name : project.name
-							}
-						});
-						f.default = this.currentProject;
-					}
-				});
-			}
-			, setupAsigneeField() {
-				// 動的にプロジェクト一覧を設定している
-				this.schema.popupForm.form.fields.forEach(f => {
-					if (f.model == "asignee_code") {
-						f.values = this.users.map(user => {
-							return {
-								id : user.code
-								, name : user.username
-							}
-						});
-						// f.default = this.me.code;
-					}
-				});
-			}
 		}
 
 		/**
 		 * Call if the component is created
 		 */
 		, created() {
-			// projectの選択が変わったら、初期値を変える
-			this.$store.subscribe((mutation, state) => {
-				if (mutation.type == `shared/${LOAD_PROJECTS}`
-					|| mutation.type == `shared/${SET_CURRENT_PROJECT}`
-				) {
-					this.setupProjectsField();
-				}
-				if (mutation.type == `shared/${LOAD_USERS}`) {
-					this.setupAsigneeField();
-				}
+			this.getProjects({
+				options: { taskType : "project", populateParent : true }
+				, mutation: `shared/${LOAD_PROJECTS}`
 			});
-
-			if (this.projects.length > 0) {
-				this.setupProjectsField();
-
-			} else {
-				this.getProjects({
-					options: { taskType : "project", populateParent : true }
-					, mutation: `shared/${LOAD_PROJECTS}`
-				});
-			}
-
-			if (this.users.length > 0) {
-				this.setupAsigneeField();
-			} else {
-				this.getUsers({ mutation: `shared/${LOAD_USERS}` });	
-			}
 		}
 	};
 </script>

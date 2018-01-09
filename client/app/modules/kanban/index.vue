@@ -13,6 +13,7 @@
 
 <script>
 	import Vue from "vue";
+	import SharedMixin from "../common/mixins/Shared.vue"
 	import KanbanPage from "../../core/DefaultKanbanPage.vue";
 	import schema from "./schema";
 	import { schema as schemaUtils } from "vue-form-generator";
@@ -21,22 +22,18 @@
 	import toast from "../../core/toastr";
 
 	import { mapGetters, mapMutations, mapActions } from "vuex";
-	import { SET_CURRENT_PROJECT, LOAD, LOAD_PROJECTS, ADD , UPDATE, REMOVE, SELECT, CLEAR_SELECT } from "../common/constants/mutationTypes";
+	import { SET_CURRENT_PROJECT, LOAD, ADD , UPDATE, REMOVE, SELECT, CLEAR_SELECT } from "../common/constants/mutationTypes";
 
     // @see: https://github.com/vue-generators/vue-form-generator
 	export default {
-		
-		components: {
+		mixins : [ SharedMixin ]
+		, components: {
 			KanbanPage: KanbanPage
 		}
 
 		// getters.js に対応
 		, computed: {
-			...mapGetters("shared", [
-				"projects"
-				, "currentProject"
-			])
-			, ...mapGetters("kanbanPage", [
+			...mapGetters("kanbanPage", [
 				"groups"
 				, "tasks"
 				, "selected"
@@ -119,10 +116,7 @@
 		}	
 
 		, methods: {
-			...mapMutations("shared", {
-				setCurrentProject : SET_CURRENT_PROJECT
-			})
-			, ...mapMutations("kanbanPage", {
+			...mapMutations("kanbanPage", {
 				created : ADD
 				, loadGroups : LOAD
 				, updated : UPDATE
@@ -131,8 +125,7 @@
 				, clearSelection : CLEAR_SELECT
 			})
 			, ...mapActions("kanbanPage", {
-				getProjects : "readTasks"
-				, getGroups : "readGroups"
+				getGroups : "readGroups"
 				, createGroup : "createGroup"
 				, updateGroups : "updateGroups"
 			})
@@ -184,39 +177,12 @@
 				this.clearSelection();
 				this.model = null;
 			}
-			, setupProjectsField() {
-				// 動的にプロジェクト一覧を設定している
-				this.schema.projectSelector.fields.forEach(f => {
-					if (f.model == "code") {
-						f.values = this.projects.map(p => {
-							return { id : p.code, name : p.name }
-						});
-					}
-				});
-			}
 		}
 
 		/**
 		 * Call if the component is created
 		 */
 		, created() {
-			// projectがロードされたらprojectSelectorを作る
-			// watchでやると初回時などに呼ばれないのでsubscribeしている
-			this.$store.subscribe((mutation, state) => {
-				if (mutation.type == `shared/${LOAD_PROJECTS}`) {
-					this.setupProjectsField();
-				}
-			});	
-
-			if (this.projects.length > 0) {
-				this.setupProjectsField();
-			} else {
-				this.getProjects({ 
-					options: { taskType : "project" }
-					, mutation: `shared/${LOAD_PROJECTS}`
-				});
-			}
-
 			if (this.currentProject) {
 				this.getGroups({
 					options: { parent : this.currentProject }

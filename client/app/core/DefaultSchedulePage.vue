@@ -107,7 +107,7 @@
 				, required: true
 				, validator: function(value) { return true; } // TODO
 			}
-			, selectedUser : {
+			, currentUser : {
 				type: String 
 			}
 			, model : {
@@ -124,7 +124,7 @@
 				isShowTips : true
 				// 選択したユーザが格納される
 				, modelUserSelector: {
-					author : this.selectedUser
+					author : this.currentUser
 				}
 			};
         }
@@ -190,7 +190,7 @@
 			}
 		}
 		, watch: {
-			selectedUser(newVal) {
+			currentUser(newVal) {
 				this.modelUserSelector.author = newVal;
 			}
 			/*

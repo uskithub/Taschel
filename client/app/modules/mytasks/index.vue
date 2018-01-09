@@ -1,5 +1,5 @@
 <template lang="pug">
-	list-page(:schema="schema", :rows="populatedTasks", :selected="selected", :model="model"
+	list-page(:schema="schema", :rows="populatedTasks", :selected="selected", :users="users", :model="model"
 		@add="generateModel"
 		@select="select"
 		@save="save"
@@ -12,6 +12,7 @@
 
 <script>
 	import Vue from "vue";
+	import SharedMixin from "../common/mixins/Shared.vue"
 	import ListPage from "../../core/DefaultListPage.vue";
 	import schema from "./schema";
 	import { schema as schemaUtils } from "vue-form-generator";
@@ -23,21 +24,14 @@
 	import { LOAD_PROJECTS, SET_CURRENT_PROJECT, LOAD, SELECT, CLEAR_SELECT, ADD , UPDATE, REMOVE, SET_USER } from "../common/constants/mutationTypes";
 
 	export default {
-		
-		components : {
+		mixins : [ SharedMixin ]
+		, components : {
 			ListPage: ListPage
 		}
 		, computed : {
-			...mapGetters("shared", [
-				"projects"
-				, "currentProject"
-			])
-			, ...mapGetters("mytasksPage", [
+			...mapGetters("mytasksPage", [
 				"tasks",
 				"selected"
-			])
-			, ...mapGetters("session", [
-				"me"
 			])
 			, populatedTasks() {
 				if (this.projects.length > 0) {
@@ -148,10 +142,6 @@
 				, deleteTask : "deleteTask"
 				, checkTask : "checkTask"
 			})
-			, ...mapActions("session", [
-				"getSessionUser"
-			])
-
 			, generateModel() {
 				this.schema.popupForm.title = _("CreateNewTask");
 				this.schema.popupForm.form.fields.forEach(f => {
@@ -166,7 +156,6 @@
 				newModel.asignee_code = this.me.code;
 				this.model = newModel;
 			}
-
 			, save(model) {
 				this.clearSelection();
 				if (model.code) {
@@ -180,7 +169,6 @@
 					this.model = null;
 				}
 			}
-
 			, clone() {
 				const baseModel = this.selected[0]; 
 				this.schema.popupForm.title = `${baseModel.name} を元に新規作成`;
@@ -206,7 +194,6 @@
 				clonedModel.asignee_code = this.me.code;
 				this.model = clonedModel;
 			}
-
 			, breakdown() {
 				const baseModel = this.selected[0]; 
 				this.schema.popupForm.title = `${baseModel.name} をブレークダウン`;
@@ -244,7 +231,6 @@
 				this.clearSelection();
 				this.model = null;
 			}
-
 			, setupProjectsField() {
 				// 動的にプロジェクト一覧を設定している
 				this.schema.popupForm.form.fields.forEach(f => {

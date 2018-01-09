@@ -1,6 +1,6 @@
 <template lang="pug">
 
-	kanban-page(:schema="schema", :currentWeek="currentWeek", :selectedTasks="selected", :selectedUser="selectedUser", :users="users", :boardGroups="boardGroups", :tasks="tasks", :model="model"
+	kanban-page(:schema="schema", :currentWeek="currentWeek", :selectedTasks="selected", :currentUser="currentUser", :users="users", :boardGroups="boardGroups", :tasks="tasks", :model="model"
 		@arrange="arrange" 
 		@add="generateModel"
 		@selectUser="selectUser"
@@ -14,6 +14,7 @@
 
 <script>
 	import Vue from "vue";
+	import SharedMixin from "../common/mixins/Shared.vue"
     import KanbanPage from "../../core/DefaultWeeklyPage.vue";
 	import schema from "./schema";
 	import { schema as schemaUtils } from "vue-form-generator";
@@ -23,31 +24,21 @@
 	import moment from "moment";
 
 	import { mapGetters, mapMutations, mapActions } from "vuex";
-	import { SET_CURRENT_PROJECT, SET_CURRENT_WEEK, LOAD_USERS, SELECT_USER, SET_USER, LOAD, LOAD_PROJECTS, SELECT, CLEAR_SELECT, ADD , UPDATE, REMOVE, SHOW_POPUP, HIDE_POPUP } from "../common/constants/mutationTypes";
+	import { SET_CURRENT_PROJECT, SET_CURRENT_WEEK, SET_CURRENT_USER, LOAD_USERS, SET_USER, LOAD, LOAD_PROJECTS, SELECT, CLEAR_SELECT, ADD , UPDATE, REMOVE, SHOW_POPUP, HIDE_POPUP } from "../common/constants/mutationTypes";
 
     // @see: https://github.com/vue-generators/vue-form-generator
 	export default {
-		
-		components: {
+		mixins : [ SharedMixin ]
+		, components: {
             KanbanPage: KanbanPage
 		}
 
 		// getters.js に対応
 		, computed: {
-			...mapGetters("shared", [
-				"projects"
-				, "currentProject"
-				, "currentWeek"
-				, "users"
-				, "selectedUser"
-			])
-			, ...mapGetters("weeklyPage", [
+			...mapGetters("weeklyPage", [
 				"groups"
 				, "tasks"
 				, "selected"
-			])
-			, ...mapGetters("session", [
-				"me"
 			])
 			, boardGroups() {
 				return this.groups.reduce((groups, board, i) => {
@@ -97,7 +88,7 @@
 				}
 				this.model = targetModel;
 			}
-			, selectedUser(newUser) {
+			, currentUser(newUser) {
 				console.log("● watch", newUser);
 			}
 		}
@@ -154,12 +145,7 @@
 		}
 
 		, methods: {
-			...mapMutations("shared", {
-				setCurrentProject : SET_CURRENT_PROJECT
-				, setCurrentWeek : SET_CURRENT_WEEK
-				, _selectUser : SELECT_USER
-			})
-			, ...mapMutations("weeklyPage", {
+			...mapMutations("weeklyPage", {
 				selectKanban : SELECT
 				, loadTasks : LOAD
 				, updated : UPDATE
@@ -174,10 +160,10 @@
 				, createTask : "createTask"
 				, deleteTask : "deleteTask"
 				, arrange : "updateGroups"
-				, getUsers : "readUsers"
+				
 			})
 			, selectUser(code) { 
-				this._selectUser(code); 
+				this.setCurrentUser(code); 
 				if (code) {
 					this.getGroups({
 						options: { weekly : this.currentWeek, user_code : code }
@@ -284,34 +270,6 @@
 				this.clearSelection();
 				this.model = null;
 			}
-			, setupProjectsField() {
-				// 動的にプロジェクト一覧を設定している
-				this.schema.popupForm.form.fields.forEach(f => {
-					if (f.model == "root_code") {
-						f.values = this.projects.map(project => {
-							return {
-								id : project.code
-								, name : project.name
-							}
-						});
-						f.default = this.currentProject;
-					}
-				});
-			}
-			, setupUsersField() {
-				this.schema.userSelector.fields.forEach(f => {
-					if (f.model == "author") {
-						f.values = this.users.map(user => {
-							return { 
-								id : user.code
-								, name : user.username }
-						});
-					}
-				});
-				// When user reload by F5, setting up userSelector is called after setting selectedUser and model value cleared by undefined.
-				// So set initial value here again.
-				this._selectUser(this.me.code);
-			}
 		}
 
 		/**
@@ -320,46 +278,26 @@
 		, created() {
 			// projectの選択が変わったら、初期値を変える
 			this.$store.subscribe((mutation, state) => {
-				if (mutation.type == `shared/${LOAD_PROJECTS}`
-					|| mutation.type == `shared/${SET_CURRENT_PROJECT}`
-				) {
-					this.setupProjectsField();
-				}
-
 				if (mutation.type == `shared/${SET_CURRENT_WEEK}`) {
 					this.getGroups({
-						options: { weekly : this.currentWeek, user_code : this.selectedUser }
+						options: { weekly : this.currentWeek, user_code : this.currentUser }
 						, mutation: LOAD
 					});
 				}
 
 				if (mutation.type == `shared/${LOAD_USERS}`) {
-					this.setupUsersField();
+					this.setupUserSelector();
 				}
-			});	
+			});
 
-			if (this.projects.length > 0) {
-				this.setupProjectsField();
-
-			} else {
-				this.getTasks({ 
-					options: { taskType : "project" }
-					, mutation: `shared/${LOAD_PROJECTS}`
-				});
-			}
-
-			if (!this.currentWeek) {
-				this.setCurrentWeek(moment().day(1).format("YYYY-MM-DD"));
-			}
-
-			if (!this.selectedUser) {
+			if (!this.currentUser) {
 				if (this.me) {
-					this._selectUser(this.me.code);
+					this.setCurrentUser(this.me.code);
 				} else {
 					// F5リロード時など、meがundefinedの場合があるので、その場合、meの更新を監視してtaskを更新する
 					this.$store.subscribe((mutation, state) => {
 						if (mutation.type == `session/${SET_USER}`) {
-							this._selectUser(this.me.code);
+							this.setCurrentUser(this.me.code);
 						}
 					});	
 				}
@@ -369,15 +307,9 @@
 				});
 			} else {
 				this.getGroups({
-					options: { weekly : this.currentWeek, user_code : this.selectedUser }
+					options: { weekly : this.currentWeek, user_code : this.currentUser }
 					, mutation: LOAD
 				});
-			}
-			
-			if (this.users.length == 0) {
-				this.getUsers({ mutation: `shared/${LOAD_USERS}` });	
-			} else {
-				this.setupUsersField();
 			}
 		}
 	};

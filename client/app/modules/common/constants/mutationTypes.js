@@ -10,6 +10,8 @@ export const SET_CURRENT_PROJECT	= "SET_CURRENT_PROJECT";
 
 export const SET_CURRENT_WEEK   = "SET_CURRENT_WEEK";
 
+export const SET_CURRENT_USER        = "SET_CURRENT_USER";
+
 // APIでgetしてきたmodelsをstateに保存する
 export const LOAD				= "LAOD";
 
@@ -49,4 +51,3 @@ export const LOAD_REVIEWS         = "LOAD_REVIEWS";
 
 export const ADD_REVIEW         = "ADD_REVIEW";
 
-export const SELECT_USER        = "SELECT_USER";

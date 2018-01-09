@@ -1,4 +1,4 @@
-import { ARRANGE_AVOBE, ARRANGE_INTO, ARRANGE_BELOW, LOAD_PROJECTS, ADD_PROJECT, LOAD_USERS, UPDATE, UPDATE_PROJECT, SET_CURRENT_PROJECT, SET_CURRENT_WEEK, SHOW_POPUP, HIDE_POPUP, SELECT_USER } from "./constants/mutationTypes";
+import { ARRANGE_AVOBE, ARRANGE_INTO, ARRANGE_BELOW, LOAD_PROJECTS, ADD_PROJECT, LOAD_USERS, UPDATE, UPDATE_PROJECT, SET_CURRENT_PROJECT, SET_CURRENT_WEEK, SET_CURRENT_USER } from "./constants/mutationTypes";
 
 import { assign } from "lodash";
 
@@ -7,21 +7,7 @@ const state = {
 	, users: []
 	, currentProject: null  // task.code 
 	, currentWeek: null // YYYY-MM-DD（moment().day(1).format("YYYY-MM-DD")）
-	, selectedUser : null // code
-	, popupSchema: {
-		isVisible : true
-		, title : "まじか"
-		, message : "それはまた"
-		, buttons : [
-			{
-				type: "SUCCESS"
-				, label : "いいよ"
-				, action() {
-					alert("hoge");
-				}
-			}
-		]
-	}
+	, currentUser : null // code
 };
 
 const getters = {
@@ -29,8 +15,7 @@ const getters = {
 	, users(state) { return state.users; }
 	, currentProject(state) { return state.currentProject; }
 	, currentWeek(state) { return state.currentWeek; }
-	, selectedUser(state) { return state.selectedUser; }
-	, popupSchema(state) { return state.popupSchema; }
+	, currentUser(state) { return state.currentUser; }
 };
 
 const mutations = {
@@ -163,33 +148,19 @@ const mutations = {
 	, [SET_CURRENT_WEEK] (state, date) {
 		state.currentWeek = date;
 	}
-	, [SHOW_POPUP] (state, { title, message, buttons }) {
-		console.log(buttons);
-		state.popupSchema = {
-			isVisible : true
-			, title : title
-			, message : message
-			, buttons : buttons
-		};
-	}
-	, [HIDE_POPUP] (state) {
-		state.popupSchema = {
-			isVisible : false
-			, title : null
-			, message : null
-			, buttons : []
-		};
-	}
-	, [SELECT_USER] (state, code) {
-		state.selectedUser = code;
+	, [SET_CURRENT_USER] (state, code) {
+		state.currentUser = code;
 	}
 };
+
+
+import { readUsers } from "./actions/persons";
+import { readTasks } from "./actions/tasks";
 
 export default {
 	namespaced : true
 	, state
     , getters
-    // sharedにはactionを持たせないこと
-    //, actions
+    , actions : { readUsers, readTasks }
 	, mutations
 };

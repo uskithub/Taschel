@@ -92,7 +92,7 @@
 				, required: true
 				, validator: function(value) { return true; } // TODO
 			}
-			, selectedUser : {
+			, currentUser : {
 				type: String 
 			}
 			, model : {
@@ -108,7 +108,7 @@
 				}
 				// 選択したユーザが格納される
 				, modelUserSelector: {
-					author : this.selectedUser
+					author : this.currentUser
 				}
 				, isShowTips : true
             };
@@ -128,7 +128,7 @@
 			, isEditing() { return this.model != null || this.selectedTasks.length > 0; }
 		}	
 		, watch: {
-			selectedUser(newVal) {
+			currentUser(newVal) {
 				this.modelUserSelector.author = newVal;
 			}
 			/*
