@@ -31,7 +31,7 @@ export const readWorks = ({ commit }, { options, mutation }) => {
 	let url = NAMESPACE;
 
 	if (options != undefined && options.user_code != undefined && options.week != undefined) {
-		url = `${url}?user=${options.user_code}&week=${options.week}`;
+		url = `${url}?user_code=${options.user_code}&week=${options.week}`;
 	} 
 
 	return api(METHOD.get, url)
