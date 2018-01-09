@@ -105,7 +105,7 @@ module.exports = {
 							type: "dateTimePicker"
 							, label: _("Start")
 							, model: "actualStart"
-							, placeholder: _("StartTime")
+							, placeholder: _("StartPlaceholder")
 							, format: "HH:mm"
 							, closeRequired: true
 							, dateTimePickerOptions: {
@@ -126,7 +126,7 @@ module.exports = {
 							type: "dateTimePicker"
 							, label: _("End")
 							, model: "actualEnd"
-							, placeholder: _("EndTime")
+							, placeholder: _("EndPlaceholder")
 							, format: "HH:mm"
 							, closeRequired: true
 							, dateTimePickerOptions: {
