@@ -28,17 +28,14 @@
     "url": "git@github.com:uskithub/Taschel.git"
   },
   "keywords": [
-    "boilerplate",
+    "taschel",
     "express",
     "mongo",
     "vue",
-    "mongodb",
-    "hackaton",
-    "bootstrap",
-    "starter"
+    "mongodb"
   ],
   "config": {
-    "dbName": "boilerplate"
+    "dbName": "taschel"
   },
   "author": "Yusuke SAITO",
   "license": "MIT",
