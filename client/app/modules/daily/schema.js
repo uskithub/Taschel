@@ -58,7 +58,7 @@ module.exports = {
 			, week: {
 				// options apply to basicWeek and agendaWeek views
 				allDaySlot : true
-				, allDayText: _("振り返り")
+				, allDayText: _("Review")
 				, scrollTime : "8:00"
 				, minTime : "6:00"
 				, maxTime : "22:00"

@@ -32,7 +32,7 @@ module.exports = {
 					, model: "name"
 					, featured: true
 					, required: true
-					, placeholder: _("タスクの名称（何をするかが連想できる様に）")
+					, placeholder: _("GroupNamePlaceholder")
 					, validator: validators.string
 				}
 				, {
@@ -40,7 +40,7 @@ module.exports = {
 					, inputType: "text"
 					, label: _("Purpose")
 					, model: "purpose"
-					, placeholder: _("なぜそのタスクをするのか")
+					, placeholder: _("GroupPurposePlaceholder")
 					, featured: false
 					, required: true
 					, validator: validators.string

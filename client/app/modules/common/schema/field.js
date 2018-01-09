@@ -26,7 +26,7 @@ const fields = {
 				if (model.code)
 					return model.code;
 				else
-					return _("※自動採番");
+					return _("AutomaticNumbering");
 			}
 		}
 	}
@@ -70,7 +70,7 @@ const fields = {
 			, inputType: "text"
 			, featured: true
 			, required: true
-			, placeholder: _("タスクの名称（何をするかが連想できる様に）")
+			, placeholder: _("TaskNamePlaceholder")
 			, validator: validators.string
 		}
 	}
@@ -81,7 +81,7 @@ const fields = {
 		, form: {
 			type: "input"
 			, inputType: "text"
-			, placeholder: _("なぜそのタスクをするのか")
+			, placeholder: _("TaskPurposePlaceholder")
 			, featured: false
 			, required: true
 			, validator: validators.string
@@ -95,7 +95,7 @@ const fields = {
 			type: "input"
 			, inputType: "text"
 			, required: true
-			, placeholder: _("どういった状態になったら嬉しいか")
+			, placeholder: _("TaskGoalPlaceholder")
 			, validator: validators.string
 		}
 	}
@@ -114,7 +114,7 @@ const fields = {
 				validators.date
 				, (value, field, model) => {
 					if (model.type == "milestone" && (isNil(value) || value === "")) {
-						return ["milestoneにはdeadlieは必須です"];
+						return [ _("MilestoneRequiresDeadline") ];
 					}
 					return [];
 				}
@@ -227,7 +227,7 @@ export const generate = (areaType, fieldSet) => {
 							}
 							return field.form; 
 						})
-					}
+					};
 				})
 			};
 		} else {
