@@ -233,11 +233,11 @@
 					});
 
 					this.readWorks({
-						options: { user : code, week : this.currentWeek }
+						options: { user_code : code, week : this.currentWeek }
 						, mutation: LOAD_WORKS
 					});
 					this.readReviews({
-						options: { user : code, week : this.currentWeek }
+						options: { user_code : code, week : this.currentWeek }
 						, mutation: LOAD_REVIEWS
 					});
 				}
