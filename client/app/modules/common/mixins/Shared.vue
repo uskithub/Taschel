@@ -103,7 +103,7 @@
 				});
 				// When user reload by F5, setting up userSelector is called after setting selectedUser and model value cleared by undefined.
 				// So set initial value here again.
-				this.setCurrentUser(this.me.code);
+				this.setCurrentUser((this.currentUser != null) ? this.currentUser : this.me.code);
 			}
 			// setup projectSelector dynamically.
 			// call after getting projects state.
