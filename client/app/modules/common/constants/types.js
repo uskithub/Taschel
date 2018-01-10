@@ -6,6 +6,7 @@ module.exports = {
 		, { id: "requirement", name: _("Requirement") }
 		, { id: "way", name: _("Way") }
 		, { id: "step", name: _("Step") }
+		, { id: "todo", name: _("ToDo") }
 		// , { id: "work", name: "Work" }
 	]
 
