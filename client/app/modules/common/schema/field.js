@@ -77,7 +77,9 @@ const fields = {
 	, purpose: {
 		label: _("Purpose")
 		, model: "purpose"
-		, table: {}
+		, table: {
+			align: "left"
+		}
 		, form: {
 			type: "input"
 			, inputType: "text"
@@ -90,7 +92,9 @@ const fields = {
 	, goal: {
 		label: _("Goal")
 		, model: "goal"
-		, table: {}
+		, table: {
+			align: "left"
+		}
 		, form: {
 			type: "input"
 			, inputType: "text"

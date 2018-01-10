@@ -179,5 +179,7 @@
 </script>
 
 <style lang="scss" scoped>
-
+	.align-left {
+		text-align: left;
+	}
 </style>
