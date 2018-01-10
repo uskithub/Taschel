@@ -51,26 +51,44 @@
 		 */
 		, data() {
 			return {
-				schema
+				schema : cloneDeep(schema)
 				, model: null
 			};
 		}
-		, watch: {
-			// clearSelectionを呼ぶと呼ばれる
+		, watch: {			
 			selected(newTasks) {
+				// notice: this func also called after calling clearSelection.
 				if (newTasks.length == 0) {
 					this.model = null;
 					return;
 				}
 				const baseModel = newTasks[0];
-				this.schema.popupForm.title = `${baseModel.name} を編集`;
-				this.schema.popupForm.form.fields.forEach(f => {
-					if (f.model == "root_code") {
-						f.readonly = true;
-						f.disabled = true;
-					}
-					return f;
-				});
+				let popupForm = cloneDeep(schema.popupForm);
+
+				popupForm.title = `${baseModel.name} を編集`;
+
+				if (baseModel.type == "project") {
+					popupForm.form.fields = popupForm.form.fields.filter(f => {
+						return f.model != "root_code";
+					}).map(f => {
+						if (f.model == "type") {
+							f.type = "input";
+							f.inputType = "text";
+							f.readonly = true;
+							f.disabled = true;
+						}
+						return f;
+					});
+				} else {
+					popupForm.form.fields.forEach(f => {
+						if (f.model == "root_code") {
+							f.readonly = true;
+							f.disabled = true;
+						}
+						return f;
+					});
+				}
+				this.schema.popupForm = popupForm;
 
 				let targetModel = cloneDeep(baseModel);
 				if (targetModel.root && targetModel.root != -1) {
