@@ -138,6 +138,7 @@
 
 				let newModel = schemaUtils.createDefaultObject(this.schema.popupForm.form);
 				newModel.asignee_code = this.me.code;
+				newModel.type = "project";
 				this.model = newModel;
 			}
 			, save(model) {
