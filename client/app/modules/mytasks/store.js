@@ -37,10 +37,23 @@ const mutations = {
 	, [CLEAR_SELECT] (state) {
 		state.selected.splice(0);
 	}
-	, [ADD] (state, model) {
-		let isNotUpdate = !find(state.tasks, (item) => item.code == model.code);
-		if (isNotUpdate)
-			state.tasks.push(model);
+	, [ADD] (state, models) {
+		if (models.child) {
+			// { parent, child }の形で来た場合
+			each(state.tasks, (item) => {
+				if (item.code == models.parent.code)
+					assign(item, models.parent);
+			});
+			let isNotUpdate = !find(state.tasks, (item) => item.code == models.child.code);
+			if (isNotUpdate) {
+				state.tasks.push(models.child);
+			}
+		} else {
+			let isNotUpdate = !find(state.tasks, (item) => item.code == models.code);
+			if (isNotUpdate) {
+				state.tasks.push(models);
+			}
+		}
 	}
 	, [UPDATE] (state, model) {
 		each(state.tasks, (item) => {
