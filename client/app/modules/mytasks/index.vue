@@ -63,8 +63,8 @@
 					return;
 				}
 				const baseModel = newTasks[0];
-				let popupForm = cloneDeep(schema.popupForm);
 
+				let popupForm = cloneDeep(schema.popupForm);
 				popupForm.title = `${baseModel.name} を編集`;
 
 				if (baseModel.type == "project") {
@@ -161,14 +161,7 @@
 				, checkTask : "checkTask"
 			})
 			, generateModel() {
-				this.schema.popupForm.title = _("CreateNewTask");
-				this.schema.popupForm.form.fields.forEach(f => {
-					if (f.model == "root_code") {
-						f.readonly = false;
-						f.disabled = false;
-					}
-					return f;
-				});
+				this.schema.popupForm = cloneDeep(schema.popupForm);
 
 				let newModel = schemaUtils.createDefaultObject(this.schema.popupForm.form);
 				newModel.asignee_code = this.me.code;

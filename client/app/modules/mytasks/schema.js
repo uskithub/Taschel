@@ -24,7 +24,7 @@ module.exports = {
 		}
 	}
 	, popupForm : {
-		title : ""
+		title : _("CreateNewTask")
 		, form : generate(
 			areaTypes.form
 			, [ "root", "type", "name", "purpose", "goal"]
