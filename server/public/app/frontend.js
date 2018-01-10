@@ -1,1 +1,1 @@
-webpackJsonp([1],{208:function(n,o,e){"use strict";var t=e(311);!function(n){n&&n.__esModule}(t);console.log("Frontend loaded!")},311:function(n,o){},427:function(n,o,e){n.exports=e(208)}},[427]);
+webpackJsonp([1],{513:function(n,o,e){n.exports=e(514)},514:function(n,o,e){"use strict";var t=e(515);!function(n){n&&n.__esModule}(t);console.log("Frontend loaded!")},515:function(n,o){}},[513]);
