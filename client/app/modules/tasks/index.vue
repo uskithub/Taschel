@@ -1,5 +1,5 @@
 <template lang="pug">
-	task-page(:schema="schema", :selectedProject="currentProject", :selectedTasks="selectedTasks", :projects="projects", :tasks="tasks", :model="model"
+	task-page(:schema="schema", :selectedProject="currentProject", :selectedTasks="selected", :projects="projects", :tasks="tasks", :model="model"
 		@add="generateModel"
 		@select-project="selectProject"
 		@select="select"
@@ -35,7 +35,7 @@
 		, computed: {
 			...mapGetters("tasksPage", [
 				"tasks" 
-				, "selectedTasks"
+				, "selected"
 			])
 		}
 
@@ -51,7 +51,7 @@
 		}
 		, watch: {
 			// clearSelectionを呼ぶと呼ばれる
-			selectedTasks(newTasks) {
+			selected(newTasks) {
 				if (newTasks.length == 0) {
 					this.model = null;
 					return;
@@ -180,7 +180,7 @@
 				}
 			}
 			, clone() {
-				const baseModel = this.selectedTasks[0]; 
+				const baseModel = this.selected[0]; 
 				this.schema.popupForm.title = `${baseModel.name} を元に新規作成`;
 				this.schema.popupForm.form.fields.forEach(f => {
 					if (f.model == "root_code") {
@@ -205,7 +205,7 @@
 				this.model = clonedModel;
 			}
 			, breakdown() {
-				const baseModel = this.selectedTasks[0]; 
+				const baseModel = this.selected[0]; 
 				this.schema.popupForm.title = `${baseModel.name} をブレークダウン`;
 				this.schema.popupForm.form.fields.forEach(f => {
 					if (f.model == "root_code") {
@@ -234,7 +234,7 @@
 				this.model = brokedownModel;
 			}
 			, remove(){ 
-				this.deleteTask( { model: this.selectedTasks[0], mutation: REMOVE } );
+				this.deleteTask( { model: this.selected[0], mutation: REMOVE } );
 				this.clearSelection();
 			}
 			, cancel() {

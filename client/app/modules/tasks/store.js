@@ -12,13 +12,13 @@ import { each, find, assign, remove, isArray } from "lodash";
 
 const state = {
 	tasks: []
-	, selectedTasks: []
+	, selected: []
 };
 
 // stateから値を取り出すのはgetterを使う
 const getters = {
 	tasks(state) { return state.tasks; }
-	, selectedTasks(state) { return state.selectedTasks; }
+	, selected(state) { return state.selected; }
 };
 
 // mutationにはstateを変更する処理を実装する。
@@ -51,28 +51,28 @@ const mutations = {
 	}
 	, [SELECT] (state, row, multiSelect) {
 		if (isArray(row)) {
-			state.selectedTasks.splice(0);
-			state.selectedTasks.push(...row);
+			state.selected.splice(0);
+			state.selected.push(...row);
 		} else {
 			if (multiSelect === true) {
-				if (state.selectedTasks.indexOf(row) != -1)
-					state.selectedTasks = state.selectedTasks.filter(item => item != row);
+				if (state.selected.indexOf(row) != -1)
+					state.selected = state.selected.filter(item => item != row);
 				else
-					state.selectedTasks.push(row);
+					state.selected.push(row);
 
 			} else {
-				state.selectedTasks.splice(0);
-				state.selectedTasks.push(row);
+				state.selected.splice(0);
+				state.selected.push(row);
 			}
 		}
 	}
 	, [DESELECT] (state, row) {
-		state.selectedTasks = state.selectedTasks.filter((item) => {
+		state.selected = state.selected.filter((item) => {
 			return item != row;
 		});
 	}
 	, [CLEAR_SELECT] (state) {
-		state.selectedTasks.splice(0);
+		state.selected.splice(0);
 	}
 	, [UPDATE] (state, model) {
 		each(state.tasks, (item) => {
@@ -81,7 +81,7 @@ const mutations = {
 		});
 	}
 	, [REMOVE] (state, model) {
-		state.selectedTasks = state.selectedTasks.filter(item => item.code != model.code);
+		state.selected = state.selected.filter(item => item.code != model.code);
 	}	
 };
 
