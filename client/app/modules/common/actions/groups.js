@@ -7,7 +7,7 @@ import axios from "axios";
 
 const UNCLASSIFIED = "UNCLASSIFIED";
 
-export const NAMESPACE = "/api/groups";
+const NAMESPACE = "/api/groups";
 
 // actionは非同期処理を実行する際に使う。
 // action自体はstateの変更はしない。

@@ -3,7 +3,7 @@ import { METHOD, api } from "../api";
 
 import toastr from "../../../core/toastr";
 
-export const NAMESPACE = "/api/persons";
+const NAMESPACE = "/api/persons";
 
 // actionは非同期処理を実行する際に使う。
 // action自体はstateの変更はしない。

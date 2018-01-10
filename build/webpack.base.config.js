@@ -24,6 +24,8 @@ module.exports = {
 			"vue-form-generator",
 			"vue-websocket",
 			"apollo-client",
+			"apollo-cache-inmemory",
+			"apollo-link-http",
 			"graphql-tag",
 			"i18next"
 		],

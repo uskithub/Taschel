@@ -47,6 +47,7 @@ module.exports = {
 	test: false,
 
 	db: {
+		useMongoClient: true,
 		uri: process.env.MONGO_URI || "mongodb://localhost/" + pkg.config.dbName + "-dev",
 		options: {
 			user: "",
