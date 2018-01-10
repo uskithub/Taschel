@@ -53,13 +53,13 @@ module.exports = function() {
 				logger.warn("Drop test database...");
 				//mongoose.connection.db.dropDatabase((err) => {
 				//	autoIncrement.initialize(db);
-				require("./seed-db")();		
+				// require("./seed-db")();
 				//);
 			}
 			else {
-				if (!config.isProduction) {
-					require("./seed-db")();	
-				}
+				// if (!config.isProduction) {
+				// 	require("./seed-db")();	
+				// }
 			}
 		});
 

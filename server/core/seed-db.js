@@ -22,7 +22,7 @@ module.exports = function() {
 
 			let admin = new User({
 				fullName: "Administrator",
-				email: "admin@boilerplate-app.com",
+				email: "admin@jibunstyle.com",
 				username: "admin",
 				password: "admin1234",
 				provider: "local",
