@@ -16,7 +16,7 @@
 	import ListPage from "../../core/DefaultListPage.vue";
 	import schema from "./schema";
 	import { schema as schemaUtils } from "vue-form-generator";
-	import { cloneDeep } from "lodash";
+	import { cloneDeep, isObject } from "lodash";
 
 	import toast from "../../core/toastr";
 
@@ -65,6 +65,7 @@
 				const baseModel = newTasks[0];
 
 				let popupForm = cloneDeep(schema.popupForm);
+				popupForm = this.setupProjectsField(popupForm);
 				popupForm.title = `${baseModel.name} を編集`;
 
 				if (baseModel.type == "project") {
@@ -79,6 +80,7 @@
 						}
 						return f;
 					});
+					popupForm.options.isCloneButtonEnable = false;
 				} else {
 					popupForm.form.fields.forEach(f => {
 						if (f.model == "root_code") {
@@ -161,7 +163,9 @@
 				, checkTask : "checkTask"
 			})
 			, generateModel() {
-				this.schema.popupForm = cloneDeep(schema.popupForm);
+				let popupForm = cloneDeep(schema.popupForm);
+				popupForm = this.setupProjectsField(popupForm);
+				this.schema.popupForm = popupForm;
 
 				let newModel = schemaUtils.createDefaultObject(this.schema.popupForm.form);
 				newModel.asignee_code = this.me.code;
@@ -181,24 +185,28 @@
 				}
 			}
 			, clone() {
-				const baseModel = this.selected[0]; 
-				this.schema.popupForm.title = `${baseModel.name} を元に新規作成`;
-				this.schema.popupForm.form.fields.forEach(f => {
+				const baseModel = this.model;
+
+				let popupForm = cloneDeep(schema.popupForm);
+				popupForm = this.setupProjectsField(popupForm);
+				popupForm.title = `${baseModel.name} を元に新規作成`;
+				popupForm.form.fields.forEach(f => {
 					if (f.model == "root_code") {
 						f.readonly = false;
 						f.disabled = false;
 					}
 					return f;
 				});
+				this.schema.popupForm = popupForm;
 
 				let clonedModel = cloneDeep(baseModel);
 				clonedModel.id = null;
 				clonedModel.code = null;
 				if (clonedModel.root && clonedModel.root != -1) {
-					clonedModel.root_code = (clonedModel.root.code) ? clonedModel.root.code : clonedModel.root;
+					clonedModel.root_code = isObject(clonedModel.root) ? clonedModel.root.code : clonedModel.root;
 				}
 				if (clonedModel.parent && clonedModel.parent != -1) {
-					clonedModel.parent_code = (clonedModel.parent.code) ? clonedModel.parent.code : clonedModel.parent;
+					clonedModel.parent_code = isObject(clonedModel.parent) ? clonedModel.parent.code : clonedModel.parent;
 				}
 				clonedModel.children = [];
 				clonedModel.works = [];
@@ -206,30 +214,28 @@
 				this.model = clonedModel;
 			}
 			, breakdown() {
-				const baseModel = this.selected[0]; 
-				this.schema.popupForm.title = `${baseModel.name} をブレークダウン`;
-				this.schema.popupForm.form.fields.forEach(f => {
+				const baseModel = this.model; 
+
+				let popupForm = cloneDeep(schema.popupForm);
+				popupForm = this.setupProjectsField(popupForm);
+				popupForm.title = `${baseModel.name} をブレークダウン`;
+				popupForm.form.fields.forEach(f => {
 					if (f.model == "root_code") {
-						f.readonly = false;
-						f.disabled = false;
+						f.readonly = true;
+						f.disabled = true;
 					}
 					return f;
 				});
+				this.schema.popupForm = popupForm;
 
-				let brokedownModel = cloneDeep(baseModel);
-				brokedownModel.id = null;
-				brokedownModel.code = null;
-				brokedownModel.type = "step";
-				brokedownModel.name = null;
-				brokedownModel.purpose = `${this.model.goal} にするため`;
-				brokedownModel.goal = null;
-				brokedownModel.children = [];
-				brokedownModel.works = [];
-				if (baseModel.root && baseModel.root != -1) {
-					brokedownModel.root_code = (baseModel.root.code) ? baseModel.root.code : baseModel.root;
-				} else {
-					// brokedownModel.root_code = baseModel.code;
+				let brokedownModel = schemaUtils.createDefaultObject(this.schema.popupForm.form);
+				if (baseModel.type == "project") {
+					brokedownModel.root_code = baseModel.code;
+				} else if (baseModel.root && baseModel.root != -1) {
+					brokedownModel.root_code = isObject(baseModel.root) ? baseModel.root.code : baseModel.root;
 				}
+				brokedownModel.type = "step";
+				brokedownModel.purpose = `${baseModel.goal} 状態にするため`;
 				brokedownModel.parent_code = baseModel.code;
 				brokedownModel.asignee_code = this.me.code;
 				this.model = brokedownModel;
@@ -242,20 +248,6 @@
 				this.clearSelection();
 				this.model = null;
 			}
-			, setupProjectsField() {
-				// 動的にプロジェクト一覧を設定している
-				this.schema.popupForm.form.fields.forEach(f => {
-					if (f.model == "root_code") {
-						f.values = this.projects.map(project => {
-							return {
-								id : project.code
-								, name : project.name
-							}
-						});
-						f.default = this.currentProject;
-					}
-				});
-			}
 		}
 
 		/**
@@ -264,19 +256,9 @@
 		 * データの監視とイベントの初期セットアップが完了した状態
 		 */
 		, created() {
-			// projectの選択が変わったら、初期値を変える
-			this.$store.subscribe((mutation, state) => {
-				if (mutation.type == `shared/${LOAD_PROJECTS}`
-					|| mutation.type == `shared/${SET_CURRENT_PROJECT}`
-				) {
-					this.setupProjectsField();
-				}
-			});	
 
-			if (this.projects.length > 0) {
-				this.setupProjectsField();
-
-			} else {
+			if (this.projects.length == 0) {
+				// TODO: sharedでないstateにする
 				this.getTasks({ 
 					options: { taskType : "project", populateParent : true }
 					, mutation: `shared/${LOAD_PROJECTS}`

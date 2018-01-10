@@ -35,13 +35,9 @@
 			// 	"getSessionUser"
 			// ])
 			// setup projectSelector dynamically.
-			, setupProjectsField() {
-				if (this.schema == undefined || this.schema.popupForm == undefined) {
-					return;
-				}
-
-				if (this.schema.popupForm.form.fields == undefined && this.schema.popupForm.form.groups) {
-					this.schema.popupForm.form.groups.forEach(g => {
+			, setupProjectsField(popupForm) {
+				if (popupForm.form.fields == undefined && popupForm.form.groups) {
+					popupForm.form.groups.forEach(g => {
 						g.fields.forEach(f => {
 							if (f.model == "root_code") {
 								f.values = this.projects.map(project => {
@@ -52,7 +48,7 @@
 						});
 					})
 				} else {
-					this.schema.popupForm.form.fields.forEach(f => {
+					popupForm.form.fields.forEach(f => {
 						if (f.model == "root_code") {
 							f.values = this.projects.map(project => {
 								return { id : project.code, name : project.name };
@@ -61,14 +57,11 @@
 						}
 					});
 				}
+				return popupForm;
 			}
-			, setupAsigneeField() {
-				if (this.schema == undefined || this.schema.popupForm == undefined) {
-					return;
-				}
-
-				if (this.schema.popupForm.form.fields == undefined && this.schema.popupForm.form.groups) {
-					this.schema.popupForm.form.groups.forEach(g => {
+			, setupAsigneeField(popupForm) {
+				if (popupForm.form.fields == undefined && popupForm.form.groups) {
+					popupForm.form.groups.forEach(g => {
 						g.fields.forEach(f => {
 							if (f.model == "asignee_code") {
 								f.values = this.users.map(user => {
@@ -78,7 +71,7 @@
 						});
 					})
 				} else {
-					this.schema.popupForm.form.fields.forEach(f => {
+					popupForm.form.fields.forEach(f => {
 						if (f.model == "asignee_code") {
 							f.values = this.users.map(user => {
 								return { id : user.code, name : user.username };
@@ -86,15 +79,16 @@
 						}
 					});
 				}
+				return popupForm;
 			}
 			// setup userSelector dynamically.
 			// call after getting users state.
-			, setupUserSelector() {
-				if (this.schema == undefined || this.schema.userSelector == undefined) {
-					return;
+			, setupUserSelector(schema) {
+				if (schema == undefined || schema.userSelector == undefined) {
+					return schema;
 				}
 
-				this.schema.userSelector.fields.forEach(f => {
+				schema.userSelector.fields.forEach(f => {
 					if (f.model == "author") {
 						f.values = this.users.map(user => {
 							return { id : user.code, name : user.username };
@@ -104,21 +98,23 @@
 				// When user reload by F5, setting up userSelector is called after setting selectedUser and model value cleared by undefined.
 				// So set initial value here again.
 				this.setCurrentUser((this.currentUser != null) ? this.currentUser : this.me.code);
+				return schema;
 			}
 			// setup projectSelector dynamically.
 			// call after getting projects state.
-			, setupProjectSelector() {
-				if (this.schema == undefined || this.schema.projectSelector == undefined) {
-					return;
+			, setupProjectSelector(schema) {
+				if (schema == undefined || schema.projectSelector == undefined) {
+					return schema;
 				}
 
-				this.schema.projectSelector.fields.forEach(f => {
+				schema.projectSelector.fields.forEach(f => {
 					if (f.model == "code") {
 						f.values = this.projects.map(p => {
 							return { id : p.code, name : p.name }
 						});
 					}
 				});
+				return schema;
 			}
 		}
 		, created() {
@@ -126,13 +122,15 @@
 				if (mutation.type == `shared/${LOAD_PROJECTS}`
 					|| mutation.type == `shared/${SET_CURRENT_PROJECT}`
 				) {
-					this.setupProjectsField();
-					this.setupProjectSelector();
+					if (this.schema.popupForm)
+						this.schema.popupForm = this.setupProjectsField(this.schema.popupForm);
+					this.schema = this.setupProjectSelector(this.schema);
 				}
 
 				if (mutation.type == `shared/${LOAD_USERS}`) {
-					this.setupAsigneeField();
-					this.setupUserSelector();
+					if (this.schema.popupForm)
+						this.schema.popupForm = this.setupAsigneeField(this.schema.popupForm);
+					this.schema = this.setupUserSelector(this.schema);
 				}
 			});
 
@@ -143,8 +141,9 @@
 			if (this.users.length == 0) {
 				this.getUsers({ mutation: `shared/${LOAD_USERS}` });	
 			} else {
-				this.setupAsigneeField();
-				this.setupUserSelector();
+				if (this.schema.popupForm)
+					this.schema.popupForm = this.setupAsigneeField(this.schema.popupForm);
+				this.schema = this.setupUserSelector(this.schema);
 			}
 
 			if (this.projects.length == 0) {
@@ -153,8 +152,9 @@
 					, mutation: `shared/${LOAD_PROJECTS}`
 				});
 			} else {
-				this.setupProjectsField();
-				this.setupProjectSelector();
+				if (this.schema.popupForm)
+					this.schema.popupForm = this.setupProjectsField(this.schema.popupForm);
+				this.schema = this.setupProjectSelector(this.schema);
 			}
 		}
 	};

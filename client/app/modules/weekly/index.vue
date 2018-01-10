@@ -286,7 +286,7 @@
 				}
 
 				if (mutation.type == `shared/${LOAD_USERS}`) {
-					this.setupUserSelector();
+					this.schema = this.setupUserSelector(this.schema);
 				}
 			});
 
