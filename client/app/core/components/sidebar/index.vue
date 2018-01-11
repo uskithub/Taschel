@@ -67,7 +67,8 @@
 <script>
 
 	export default {
-		props: [
+		name: "Sidebar"
+        , props: [
 			"minimized"
 		]
 	};

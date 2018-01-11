@@ -66,7 +66,8 @@
 	};
 
 	export default {
-		components: {
+		name: "Review"
+        , components: {
 		}
 		// properties set by it's parent component.
 		// somtimes, parent components set their methods as props.

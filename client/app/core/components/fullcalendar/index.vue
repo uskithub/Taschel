@@ -8,15 +8,14 @@
     import $ from "jquery"
 
     export default {
-        props: [
+        name: "FullCalendar"
+        , props: [
             "events"
             , "options"
             , "currentWeek"
         ]
-
         , computed: {
         }
-
         , watch: {
             events(newEvents) {
                 const fc = $(this.$el);
@@ -28,10 +27,8 @@
                 console.log("● newWeek", newWeek);
             }
         }
-
         , methods: {
         }
-        
         , mounted() {
             const fc = $(this.$el);
             fc.fullCalendar(this.options);

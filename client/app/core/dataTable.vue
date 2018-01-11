@@ -40,8 +40,8 @@
 	}
 
 	export default {
-
-		props: [
+		name: "datatable"
+        , props: [
 			"schema",
 			"rows",
 			"selected",
@@ -49,9 +49,8 @@
 			"select",
 			"selectAll",
 			"search"
-		],
-
-		computed: {
+		]
+		, computed: {
 			filteredOrderedRows() {
 				let items = this.rows;
 				if (this.search) {
@@ -63,10 +62,8 @@
 
 				return orderBy(items, this.order.field, this.order.direction == 1 ? "asc" : "desc");
 			}
-		},
-
-		methods: {
-
+		}
+		, methods: {
 			/**
 			 * Get the cell value from row. If the schema of column 
 			 * has a get() method, it will call it, otherwise, get 
@@ -84,7 +81,7 @@
 					value = get(row, col.field);
 				
 				return this.tableFormatter(row, col, value);
-			},
+			}
 
 			/**
 			 * Format the cell value by schema
@@ -96,7 +93,7 @@
 			 * @param  {*} 		value Value of cell
 			 * @return {String}       Formatted string
 			 */
-			tableFormatter(row, col, value) {
+			, tableFormatter(row, col, value) {
 				if (isNil(value)) return;
 				let formatter = col.formatter;
 				if (formatter) {
@@ -109,7 +106,7 @@
 				}
 
 				return value;
-			},		
+			}
 
 			/**
 			 * Get classes for row. Handle the selected row.
@@ -118,7 +115,7 @@
 			 * @param  {Object} row Row object
 			 * @return {Object}     Object with classes
 			 */
-			getRowClasses(row) {
+			, getRowClasses(row) {
 				// Default classes
 				let res = {
 					selected: this.isSelected(row)
@@ -129,21 +126,19 @@
 					res = defaults(this.schema.rowClasses(row), res); 
 				
 				return res;
-			},
-
+			}
 			/**
 			 * Get classes for cell. Handle the column.align property
 			 * @param  {Object} row Row object
 			 * @param  {Object} col Column schema
 			 * @return {Object}     Object with classes
 			 */
-			getCellClasses(row, col) {
+			, getCellClasses(row, col) {
 				if (!isNil(col.align))
 					return {
 						["align-" + col.align]: true
 					};
-			},
-
+			}
 			/**
 			 * Change the sort field and direction.
 			 * If field is changed, the direction will be ascending.
@@ -152,7 +147,7 @@
 			 * @param  {Object} col Column schema
 			 * @return {[type]}     [description]
 			 */
-			changeSort(col) {
+			, changeSort(col) {
 				if (col.field) {
 					if (this.order.field == col.field) {
 						this.order.direction *= -1;
@@ -161,21 +156,17 @@
 						this.order.direction = 1;
 					}
 				}
-			},
-
+			}
 			/**
 			 * Get the row is selected
 			 * @param  {Object}  row Row object
 			 * @return {Boolean}     Is selected?
 			 */
-			isSelected(row) {
+			, isSelected(row) {
 				return this.selected.indexOf(row) != -1;
 			}
-
 		}
-
 	};
-
 </script>
 
 <style lang="scss" scoped>

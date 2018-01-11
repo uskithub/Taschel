@@ -8,7 +8,7 @@
 
         div.media.gantt(:class="{'active': isDraggingIntoChild, 'primary': node.type=='milestone', 'danger': node.type=='requirement', 'warning': node.type=='way', 'success': node.type=='step'}")
             div(:class="{'tree-margin': true}", v-show="isOpen")
-                tree-list(v-for="child in filteredOrderedNodes", :isReverse="true", :node="child", :isDraggable="isDraggable", :key='child.code', :add="add")
+                time-line(v-for="child in filteredOrderedNodes", :isReverse="true", :node="child", :isDraggable="isDraggable", :key='child.code', :add="add")
 
             div.tree-node(:id="node.code", :draggable="_isDraggable", :class="{ 'draggable' : _isDraggable }"
                 @click=""
@@ -59,17 +59,14 @@
 </template>
 
 <script>
-    // TODO: この方法はどうも上手くいかない
-    // import TreeList from "./treeList.vue";
-    
-
     import toast from "../../toastr";
 
     import $ from 'jquery';
     let _self = null;
 
     export default {
-        data: function () {
+        name: "TimeLine"
+        , data: function () {
             return {
                 isHovering: false
                 , isDraggingToGoUp: false
@@ -78,10 +75,6 @@
                 , isOpen: true
             }
         } 
-        // TODO: この方法はどうも上手くいかない
-        // , components: {
-		// 	TreeList
-        // }
         , props: {
 			isRoot: {
 				type: Boolean
@@ -250,9 +243,6 @@
             , arrange(moveContext) {
                 this.$parent.arrange(moveContext);
             }
-        }
-        , beforeCreate () {
-            this.$options.components.TreeList = require('./index.vue');
         }
         , created() {
 

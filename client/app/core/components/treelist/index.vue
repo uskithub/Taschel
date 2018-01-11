@@ -45,17 +45,16 @@
 </template>
 
 <script>
-    // TODO: この方法はどうも上手くいかない
-    // import TreeList from "./treeList.vue";
-    
-
     import toast from "../../toastr";
 
     import $ from 'jquery';
     let _self = null;
 
     export default {
-        data: function () {
+        // name property is neccesary for recuriseve using.
+        // @see https://vuejs.org/v2/api/#name
+        name: "TreeList"
+        , data: function () {
             return {
                 isHovering: false
                 , isDraggingToGoUp: false
@@ -64,10 +63,8 @@
                 , isOpen: true
             }
         } 
-        // TODO: この方法はどうも上手くいかない
-        // , components: {
-		// 	TreeList
-        // }
+        , components: {
+        }
         , props: {
 			isRoot: {
 				type: Boolean
@@ -234,11 +231,7 @@
                 this.$parent.arrange(moveContext);
             }
         }
-        , beforeCreate () {
-            this.$options.components.TreeList = require('./index.vue');
-        }
         , created() {
-
         }
     }
 </script>

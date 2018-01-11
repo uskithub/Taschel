@@ -21,18 +21,16 @@
 	let drake = null;
 
 	export default {
-		props: [
+		name: "Kanban"
+        , props: [
 			"boardGroups"
 			, "tasks"
 		]
-
 		, computed: {
-
 		}
 		, updated() {
 			this.makeDraggable();
 		}
-
 		, mounted() {
 			this.makeDraggable();
 		}

@@ -35,7 +35,7 @@
 								| {{ schema.resources.cancelCaption || _("Cancel") }}
 					div(v-if="!isNewModel")
 						//- tree-list(v-for="child in orderedChildren", :isReverse="true", :node="child", :key='child.code')
-						tree-list(:node="model", :isRoot="true", :isReverse="true", :isDraggable="false")
+						time-line(:node="model", :isRoot="true", :isReverse="true", :isDraggable="false")
 
 				.block
 					//- button.button.success(@click="schema.buttons[0].action") {{ schema.buttons[0].label }}
@@ -44,7 +44,7 @@
 
 <script>
 	import Vue from "vue";
-	import TreeList from "../treebasedtimeline/index";
+	import TimeLine from "../treebasedtimeline/index";
 
 	import "jquery";
 	import "bootstrap";
@@ -60,9 +60,9 @@
 	import { get as objGet, find, cloneDeep, isArray, isFunction } from "lodash";
 
 	export default {
-
-		components: {
-			TreeList
+		name: "PopupForm"
+        , components: {
+			TimeLine
 		}
 		// properties set by it's parent component.
 		// somtimes, parent components set their methods as props.
@@ -156,7 +156,6 @@
 			}
 		}
 		, methods: {
-
 			buttonSaveDidPush() {
 				if (this.options.validateBeforeSave === false ||  this.validate()) {
 					this.$emit("save", this.finalize(this.model));
