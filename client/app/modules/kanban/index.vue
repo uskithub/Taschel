@@ -152,9 +152,8 @@
 				this.schema.popupForm.title = _("CreateNewGroup");
 
 				let newModel = schemaUtils.createDefaultObject(this.schema.popupForm.form);
-				if (this.currentProject) {
-					newModel.parent_code = this.currentProject;
-				}
+				newModel.parent_code = this.currentProject;
+				newModel.type = "kanban";
 				this.model = newModel;
 			}
 			, save(model) {

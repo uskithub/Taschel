@@ -495,7 +495,7 @@ module.exports = {
 		 */
 		validateParams(ctx, strictMode) {
 			if (strictMode || ctx.hasParam("name"))
-				ctx.validateParam("name").trim().notEmpty(ctx.t("app:TaskNameCannotBeBlank")).end();
+				ctx.validateParam("name").trim().notEmpty(ctx.t("app:GroupNameCannotBeBlank")).end();
 
 			ctx.validateParam("purpose").trim().end();
 			ctx.validateParam("type").trim().end();

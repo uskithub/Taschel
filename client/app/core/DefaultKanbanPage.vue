@@ -102,7 +102,7 @@
 					return {};
 				}
 			}
-			, isAddButtonEnable() { return this.options.isAddButtonEnable !== false; }
+			, isAddButtonEnable() { return this.options.isAddButtonEnable !== false && this.selectedProject != null; }
 			, isEditing() { return this.model != null || this.selectedTasks.length > 0; }
 		}	
 		, watch: {
@@ -129,7 +129,7 @@
 				});
 			}
 			, select(task) { this.$emit("select-kanban", task); }
-			, save(model) { this.$emit("save", this.model); }
+			, save(model) { this.$emit("save", model); }
 			, remove() { this.$emit("remove"); }		// deleteは予約語なので怒られる
 			, cancel() { this.$emit("cancel"); }
 		}

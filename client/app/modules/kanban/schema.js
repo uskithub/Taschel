@@ -16,16 +16,17 @@ module.exports = {
 		title : ""
 		, form: {
 			fields: [
+				// {
+				// 	type: "select"
+				// 	, label: _("GroupType")
+				// 	, model: "type"
+				// 	, readonly: true
+				// 	, disabled: true
+				// 	, values: groupTypes
+				// 	, default: "kanban"
+				// }
+				// , 
 				{
-					type: "select"
-					, label: _("GroupType")
-					, model: "type"
-					, readonly: true
-					, disabled: true
-					, values: groupTypes
-					, default: "kanban"
-				}
-				, {
 					type: "input"
 					, inputType: "text"
 					, label: _("Name")
