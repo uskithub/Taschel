@@ -15,7 +15,7 @@
 <script>
 	import Vue from "vue";
 	import SharedMixin from "../common/mixins/Shared.vue"
-    import KanbanPage from "../../core/DefaultWeeklyPage.vue";
+    import WeeklyPage from "../../core/DefaultWeeklyPage.vue";
 	import schema from "./schema";
 	import { schema as schemaUtils } from "vue-form-generator";
 	import { cloneDeep } from "lodash";
@@ -30,7 +30,7 @@
 	export default {
 		mixins : [ SharedMixin ]
 		, components: {
-            KanbanPage: KanbanPage
+            WeeklyPage: WeeklyPage
 		}
 
 		// getters.js に対応

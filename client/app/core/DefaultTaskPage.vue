@@ -45,12 +45,11 @@
 	import { mapGetters, mapActions } from "vuex";
 
 	export default {
-
-		components: {
+		name: "TaskPage"
+        , components: {
 			DataTable
 			, PopupForm
 		}
-
         // task-page(:schema="schema", :selectedTasks="selectedTasks", :projects="projects", :tasks="tasks", :me="me") に対応させる
 		, props: {
 			schema: {

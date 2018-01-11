@@ -39,8 +39,8 @@
 	import { mapGetters, mapActions } from "vuex";
 
 	export default {
-
-		components: {
+		name: "GanttPage"
+        , components: {
 			DataTable
 			, TreeList
 			, PopupForm

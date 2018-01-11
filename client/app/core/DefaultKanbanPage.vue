@@ -43,7 +43,8 @@
 
 	export default {
 
-		components: {
+		name: "KanbanPage"
+        , components: {
 			Kanban
 			, PopupForm
 		}

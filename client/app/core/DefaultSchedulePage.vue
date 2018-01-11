@@ -66,8 +66,8 @@
 	let drake = null;
 
     export default {
-
-        components: {
+        name: "SchedulePage"
+        , components: {
             FullCalendar
 			, PopupForm
 			, Review

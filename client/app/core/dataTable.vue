@@ -40,7 +40,7 @@
 	}
 
 	export default {
-		name: "datatable"
+		name: "DataTable"
         , props: [
 			"schema",
 			"rows",

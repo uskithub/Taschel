@@ -49,12 +49,11 @@
 	import { mapGetters, mapActions } from "vuex";
 
 	export default {
-
-		components: {
+		name: "WeeklyPage"
+        , components: {
 			Kanban
 			, PopupForm
 		}
-
         // task-page(:schema="schema", :selectedTasks="selectedTasks", :projects="projects", :tasks="tasks", :users="users") に対応させる
 		, props: {
 			schema : {
@@ -162,7 +161,7 @@
 			, buttonPrevDidPush() { this.$emit("changeWeek", "prev"); }
 			, buttonNextDidPush() { this.$emit("changeWeek", "next"); }
 			, select(task) { this.$emit("select-kanban", task); }
-			, save(model) { this.$emit("save", this.model); }
+			, save(model) { this.$emit("save", model); }
 			, remove() { this.$emit("remove"); }		// deleteは予約語なので怒られる
 			, cancel() { this.$emit("cancel"); }
 		}

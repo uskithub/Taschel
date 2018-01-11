@@ -42,7 +42,8 @@
 
 	export default {
 
-		components: {
+		name: "ListPage"
+        , components: {
 			DataTable
 			, PopupForm
 		}

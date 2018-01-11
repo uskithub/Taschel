@@ -19,7 +19,7 @@ module.exports = {
 		)
 		, rowClasses: function(model) {
 			return {
-				inactive: !model.status
+				// inactive: !model.status
 			};
 		}
 
