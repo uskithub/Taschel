@@ -369,14 +369,14 @@ module.exports = {
 			});
 
 			return group.save()
-			.then((doc) => {
+			.then(doc => {
 				return this.toJSON(doc);
 			})
-			.then((json) => {
+			.then(json => {
 				return this.populateModels(json);
 			})
-			.then((json) => {
-				this.notifyModelChanges(ctx, "created", json);
+			.then(json => {
+				this.notifyModelChanges(ctx, "created", { user: ctx.user, json: json } );
 				return json;
 			});
 		}

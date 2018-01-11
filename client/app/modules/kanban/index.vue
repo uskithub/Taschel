@@ -90,6 +90,7 @@
 				 * @param  {Object} res Task object
 				 */
 				created(res) {
+					console.log(res.user, res.json);
 					// this.created(res.data);
 					toast.success(this._("GroupAdded", res), this._("追加しました"));
 				}
