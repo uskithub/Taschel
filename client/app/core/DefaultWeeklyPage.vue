@@ -29,7 +29,7 @@
 				button.button.is-primary(@click="buttonNextDidPush")
 					i.icon.fa.fa-arrow-right
 		br
-		kanban(:boardGroups="boardGroups", :tasks="tasks", @arrange="arrange" @select="select")
+		kanban(:boardGroups="boardGroups", @arrange="arrange" @select="select")
 
 		popup-form(v-if="isEditing", :schema="schema.popupForm", :template="model"
 			, @save="save"
@@ -74,11 +74,6 @@
 				, validator: function(value) { return true; } // TODO
 			}
 			, boardGroups : {
-				type: Array
-				, required: true
-				, validator: function(value) { return true; } // TODO
-			}
-			, tasks : {
 				type: Array
 				, required: true
 				, validator: function(value) { return true; } // TODO

@@ -24,7 +24,6 @@
 		name: "Kanban"
         , props: [
 			"boardGroups"
-			, "tasks"
 		]
 		, computed: {
 		}

@@ -22,7 +22,7 @@
 		.form
 			vue-form-generator(:schema="schema.projectSelector", :model="modelProjectSelector" ref="projectSelector" @model-updated="selectProject")
 
-		kanban(:boardGroups="boardGroups", :tasks="tasks", @arrange="arrange" @select="select")
+		kanban(:boardGroups="boardGroups", @arrange="arrange" @select="select")
 
 		popup-form(v-if="isEditing", :schema="schema.popupForm", :template="model"
 			, @save="save"
@@ -61,11 +61,6 @@
 				, validator: function(value) { return true; } // TODO
 			}
 			, boardGroups : {
-				type: Array
-				, required: true
-				, validator: function(value) { return true; } // TODO
-			}
-			, tasks : {
 				type: Array
 				, required: true
 				, validator: function(value) { return true; } // TODO

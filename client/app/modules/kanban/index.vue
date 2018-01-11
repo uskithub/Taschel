@@ -1,6 +1,6 @@
 <template lang="pug">
 	// TODO: AddはGroupの追加でselectはTaskの編集になっていて、popupFormがおかしい
-	kanban-page(:schema="schema", :selectedProject="currentProject", :selectedTasks="selected", :projects="projects", :boardGroups="boardGroups", :tasks="tasks", :model="model"
+	kanban-page(:schema="schema", :selectedProject="currentProject", :selectedTasks="selectedTasks", :projects="projects", :boardGroups="boardGroups", :model="model"
 		@arrange="arrange" 
 		@add="generateModel"
 		@select-project="selectProject"	
@@ -35,8 +35,7 @@
 		, computed: {
 			...mapGetters("kanbanPage", [
 				"groups"
-				, "tasks"
-				, "selected"
+				, "selectedTasks"
 			])
 			, boardGroups() {
 				return [{ name: "all", boards: this.groups}];
@@ -55,7 +54,7 @@
 		}
 		, watch: {
 			// clearSelectionを呼ぶと呼ばれる
-			selected(newTasks) {
+			selectedTasks(newTasks) {
 				if (newTasks.length == 0) {
 					this.model = null;
 					return;

@@ -1,6 +1,5 @@
 <template lang="pug">
-
-	kanban-page(:schema="schema", :currentWeek="currentWeek", :selectedTasks="selected", :currentUser="currentUser", :users="users", :boardGroups="boardGroups", :tasks="tasks", :model="model"
+	weekly-page(:schema="schema", :currentWeek="currentWeek", :selectedTasks="selectedTasks", :currentUser="currentUser", :users="users", :boardGroups="boardGroups", :model="model"
 		@arrange="arrange" 
 		@add="generateModel"
 		@selectUser="selectUser"
@@ -37,8 +36,7 @@
 		, computed: {
 			...mapGetters("weeklyPage", [
 				"groups"
-				, "tasks"
-				, "selected"
+				, "selectedTasks"
 			])
 			, boardGroups() {
 				return this.groups.reduce((groups, board, i) => {
@@ -64,7 +62,7 @@
 		}
 		, watch: {
 			// clearSelectionを呼ぶと呼ばれる
-			selected(newTasks) {
+			selectedTasks(newTasks) {
 				if (newTasks.length == 0) {
 					this.model = null;
 					return;
@@ -209,7 +207,7 @@
 				}
 			}
 			, clone() {
-				const baseModel = this.selected[0]; 
+				const baseModel = this.selectedTasks[0]; 
 				this.schema.popupForm.title = `${baseModel.name} を元に新規作成`;
 				this.schema.popupForm.form.fields.forEach(f => {
 					if (f.model == "root_code") {
@@ -234,7 +232,7 @@
 				this.model = clonedModel;
 			}
 			, breakdown() {
-				const baseModel = this.selected[0]; 
+				const baseModel = this.selectedTasks[0]; 
 				this.schema.popupForm.title = `${baseModel.name} をブレークダウン`;
 				this.schema.popupForm.form.fields.forEach(f => {
 					if (f.model == "root_code") {
@@ -263,7 +261,7 @@
 				this.model = brokedownModel;
 			}
 			, remove(){ 
-				this.deleteTask( { model: this.selected[0], mutation: REMOVE } );
+				this.deleteTask( { model: this.selectedTasks[0], mutation: REMOVE } );
 				this.clearSelection();
 			}
 			, cancel() {

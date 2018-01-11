@@ -10,15 +10,15 @@ import { each, find, assign, remove, isArray } from "lodash";
 
 const state = {
 	groups: []
-	, tasks: []
-	, selected: []
+	// in the future, maybe selectedGroup will be required. so this is named selected"Tasks"
+	, selectedTasks: []
 };
 
 // stateから値を取り出すのはgetterを使う
 const getters = {
 	groups(state) { return state.groups; }
 	, tasks(state) { return state.tasks; }
-	, selected(state) { return state.selected; }
+	, selectedTasks(state) { return state.selectedTasks; }
 };
 
 // mutationにはstateを変更する処理を実装する。
@@ -42,23 +42,23 @@ const mutations = {
 	}
 	, [SELECT] (state, model, multiSelect) {
 		if (isArray(model)) {
-			state.selected.splice(0);
-			state.selected.push(...model);
+			state.selectedTasks.splice(0);
+			state.selectedTasks.push(...model);
 		} else {
 			if (multiSelect === true) {
-				if (state.selected.indexOf(model) != -1)
-					state.selected = state.selected.filter(item => item != model);
+				if (state.selectedTasks.indexOf(model) != -1)
+					state.selectedTasks = state.selectedTasks.filter(item => item != model);
 				else
-					state.selected.push(model);
+					state.selectedTasks.push(model);
 
 			} else {
-				state.selected.splice(0);
-				state.selected.push(model);
+				state.selectedTasks.splice(0);
+				state.selectedTasks.push(model);
 			}
 		}
 	}
 	, [CLEAR_SELECT] (state) {
-		state.selected.splice(0);
+		state.selectedTasks.splice(0);
 	}
 };
 
