@@ -29,7 +29,7 @@ module.exports = {
 		title : ""
 		, form : generate(
 			areaTypes.form
-			, ["root", "type","name", "purpose", "goal", "asignee"]
+			, ["root", "type","name", "purpose", "goal", "asignee", "description"]
 		)
 		, options: {
 			searchable: true

@@ -16,7 +16,7 @@ module.exports = {
 		title : ""
 		, form : generate(
 			areaTypes.form
-			, [ "root", "type", "name", "purpose", "goal"]
+			, [ "root", "type", "name", "purpose", "goal", "description"]
 		)
 		, options : {
 			searchable: true

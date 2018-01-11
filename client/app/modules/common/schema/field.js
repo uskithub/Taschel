@@ -103,6 +103,22 @@ const fields = {
 			, validator: validators.string
 		}
 	}
+	, description: {
+		label: _("Description")
+		, model: "description"
+		, table: {
+			align: "left"
+		}
+		, form: {
+			type: "textArea"
+			, inputType: "text"
+			, hint: "Max 500 characters"
+			, max: 500
+			, placeholder: _("DescriptionPlaceholder")
+			, rows: 5
+			, validator: validators.string
+		}
+	}
 	, deadline: {
 		label: _("Deadline")
 		, model: "deadline"
