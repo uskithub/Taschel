@@ -2,7 +2,7 @@ import Vue from "vue";
 import moment from "moment";
 import { taskTypes } from "../../common/constants/types";
 import { validators } from "vue-form-generator";
-import { cloneDeep, isNil, isMap } from "lodash";
+import { cloneDeep, isObject, isNil, isMap } from "lodash";
 
 let _ = Vue.prototype._;
 
@@ -35,7 +35,7 @@ const fields = {
 		, model: "root"
 		, table: {
 			formatter(value, model, col) {
-				return (model.root.name) ? model.root.name : "-";
+				return isObject(model.root) ? model.root.name : "-";
 			}
 		}
 		, form: {

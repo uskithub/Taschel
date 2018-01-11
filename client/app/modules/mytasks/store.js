@@ -39,19 +39,17 @@ const mutations = {
 	}
 	, [ADD] (state, models) {
 		if (models.child) {
-			// { parent, child }の形で来た場合
+			// the case models is { parent, child }
 			each(state.tasks, (item) => {
 				if (item.code == models.parent.code)
 					assign(item, models.parent);
 			});
-			let isNotUpdate = !find(state.tasks, (item) => item.code == models.child.code);
-			if (isNotUpdate) {
-				state.tasks.push(models.child);
-			}
+			state.tasks.unshift(models.child);
+
 		} else {
 			let isNotUpdate = !find(state.tasks, (item) => item.code == models.code);
 			if (isNotUpdate) {
-				state.tasks.push(models);
+				state.tasks.unshift(models);
 			}
 		}
 	}
