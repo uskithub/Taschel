@@ -102,7 +102,7 @@ module.exports = {
 					legend: _("Closing")
 					, fields: [
 						{ 
-							type: "dateTimePicker"
+							type: "myDateTimePicker"
 							, label: _("Start")
 							, model: "actualStart"
 							, placeholder: _("StartPlaceholder")
@@ -123,7 +123,7 @@ module.exports = {
 							, validator: validators.date
 						}
 						, { 
-							type: "dateTimePicker"
+							type: "myDateTimePicker"
 							, label: _("End")
 							, model: "actualEnd"
 							, placeholder: _("EndPlaceholder")

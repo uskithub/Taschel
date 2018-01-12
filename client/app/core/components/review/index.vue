@@ -51,9 +51,7 @@
 
 	import "jquery";
 	import "bootstrap";
-	// import "bootstrap/dist/css/bootstrap.css";
 	import "eonasdan-bootstrap-datetimepicker";
-	import "eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.css";
 	import "ion-rangeslider";
 	import "ion-rangeslider/css/ion.rangeSlider.css";
 	import "ion-rangeslider/css/ion.rangeSlider.skinFlat.css";
@@ -316,6 +314,25 @@
 		left: 0;
 		background-color: rgba(0, 0, 0, 0.6);
 		z-index: 9999;
+
+		$icon-font-path: "../../../../../node_modules/bootstrap-sass/assets/fonts/bootstrap/";	
+		@import "../../../../../node_modules/bootstrap-sass/assets/stylesheets/bootstrap/variables";
+		@import "../../../../../node_modules/bootstrap-sass/assets/stylesheets/bootstrap/mixins";
+		@import "../../../../../node_modules/bootstrap-sass/assets/stylesheets/bootstrap/glyphicons";
+		@import "../../../../../node_modules/bootstrap-sass/assets/stylesheets/bootstrap/type";
+		@import "../../../../../node_modules/bootstrap-sass/assets/stylesheets/bootstrap/dropdowns";
+		@import "../../../../../node_modules/bootstrap-sass/assets/stylesheets/bootstrap/input-groups";
+
+		@import "../../../../../node_modules/eonasdan-bootstrap-datetimepicker/src/sass/bootstrap-datetimepicker-build";
+		
+		.bootstrap-datetimepicker-widget {
+			color: #000;
+
+			a {
+				color: $link-color;
+				text-decoration: none;
+			}
+		}
 	}
 
 	.popup {
@@ -333,13 +350,6 @@
 
 			.body {
 				overflow: visible;
-
-				.bootstrap-datetimepicker-widget {
-					&.dropdown-menu {
-						visibility: visible;
-						opacity: 1;
-					}
-				}
 			}
 		}
 	}

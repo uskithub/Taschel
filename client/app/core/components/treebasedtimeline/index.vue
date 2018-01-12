@@ -7,8 +7,6 @@
             @dragleave="dragleaveBelow")
 
         div.media.gantt(:class="{'active': isDraggingIntoChild, 'milestone': node.type=='milestone', 'requirement': node.type=='requirement', 'way': node.type=='way', 'step': node.type=='step', 'todo': node.type=='todo'}")
-            div(:class="{'tree-margin': true}", v-show="isOpen")
-                time-line(v-for="child in filteredOrderedNodes", :isReverse="true", :node="child", :isDraggable="isDraggable", :key='child.code', :add="add")
 
             div.tree-node(:id="node.code", :draggable="_isDraggable", :class="{ 'draggable' : _isDraggable }"
                 @click=""
@@ -35,6 +33,9 @@
                         slot(name="addTreeNode")
                             i.vue-tree-icon.icon-folder-plus-e
 
+            div(:class="{'tree-margin': true}", v-show="isOpen")
+                time-line(v-for="child in filteredOrderedNodes", :isReverse="true", :node="child", :isDraggable="isDraggable", :key='child.code', :add="add")
+
             .content.list
                 .media(v-for="work in node.works", :key="work.code")
                     .media-left
@@ -50,6 +51,7 @@
                                 i.fa.fa-heart
                             a(href="#")
                                 i.fa.fa-trash
+            
 
         div.border.up(:class="{'active': isDraggingToGoUp}"
             @drop="dropAbove"
@@ -110,7 +112,7 @@
                 return "icon-folder";
             }
             , caretClass () {
-                return this.isOpen ? (this.isReverse ? "icon-caret-up" : "icon-caret-down") : "icon-caret-right";
+                return this.isOpen ? "icon-caret-down" : "icon-caret-right";
             }
             , isFolder() {
                 return this.node.children && this.node.children.length > 0

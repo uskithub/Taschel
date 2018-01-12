@@ -126,15 +126,16 @@ const fields = {
 		, model: "deadline"
 		, table: {}
 		, form: {
-			type: "dateTimePicker"
+			type: "myDateTimePicker"
 			, placeholder: _("Deadline")
 			, format: "YYYY-MM-DD"
 			, dateTimePickerOptions: {
 				format: "YYYY-MM-DD"
+				, showClear: true
 			}
 			, validator: [
-				validators.date
-				, (value, field, model) => {
+				// validators.date
+				 (value, field, model) => {
 					if (model.type == "milestone" && (isNil(value) || value === "")) {
 						return [ _("MilestoneRequiresDeadline") ];
 					}

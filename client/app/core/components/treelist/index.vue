@@ -97,7 +97,7 @@
                 return "icon-folder";
             }
             , caretClass () {
-                return this.isOpen ? ( this.isReverse ? "icon-caret-up" : "icon-caret-down" ) : "icon-caret-right";
+                return this.isOpen ? "icon-caret-down" : "icon-caret-right";
             }
             , isFolder() {
                 return this.node.children && this.node.children.length > 0
