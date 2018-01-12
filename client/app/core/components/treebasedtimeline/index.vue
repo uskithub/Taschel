@@ -6,7 +6,7 @@
             @dragover="dragover"
             @dragleave="dragleaveBelow")
 
-        div.media.gantt(:class="{'active': isDraggingIntoChild, 'milestone': node.type=='milestone', 'requirement': node.type=='requirement', 'way': node.type=='way', 'step': node.type=='step'}")
+        div.media.gantt(:class="{'active': isDraggingIntoChild, 'milestone': node.type=='milestone', 'requirement': node.type=='requirement', 'way': node.type=='way', 'step': node.type=='step', 'todo': node.type=='todo'}")
             div(:class="{'tree-margin': true}", v-show="isOpen")
                 time-line(v-for="child in filteredOrderedNodes", :isReverse="true", :node="child", :isDraggable="isDraggable", :key='child.code', :add="add")
 
@@ -251,6 +251,6 @@
 </script>
 
 <style lang="scss" scoped>
-    @import "../../../../scss/gantt/gantt";
-    @include font-face("../../../../scss/gantt/");
+    @import "../../../../scss/taschel/gantt";
+    @include font-face("../../../../scss/taschel/");
 </style>

@@ -168,46 +168,8 @@
 
 <style lang="scss" scoped>
 	@import "../../scss/common/mixins";
+	@import "../../scss/taschel/kanban";
 
-    $on-hold: #FB7D44;
-    $in-progress: #2A92BF;
-    $needs-review: #F4CE46;
-    $approved: #00B961;
-
-    .drag-column {
-        &-on-hold {
-            .drag-column-header,
-            .is-moved,
-            .drag-options {
-                background: $on-hold;
-            }
-        }
-
-        &-in-progress {
-            .drag-column-header,
-            .is-moved,
-            .drag-options {
-                background: $in-progress;
-            }
-        }
-
-        &-needs-review {
-            .drag-column-header,
-            .is-moved,
-            .drag-options{
-                background: $needs-review;
-            }
-        }
-
-        &-approved {
-            .drag-column-header,
-            .is-moved,
-            .drag-options {
-                background: $approved;
-            }
-        }
-	}
-	
  	.section {
     	padding: 20px;
     	text-align: center;

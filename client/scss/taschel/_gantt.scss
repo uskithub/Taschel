@@ -1,3 +1,4 @@
+@import "variables";
 
 @mixin font-face($relativePath: './') {
     @font-face {
@@ -18,20 +19,28 @@
         padding: 0.5em 0 0.5em 1em;
 
         &.milestone {
-            border: 1px solid #7f1414;
+            border: 1px solid $milestoneColor;
+        }
+
+        &.requirement {
+            border: 1px solid $requirementColor;
         }
 
         &.way {
-            border: 1px solid #866112;
+            border: 1px solid $wayColor;
         }
     
         &.step {
-            border: 1px solid #176e2b;
+            border: 1px solid $stepColor;
+        }
+
+        &.todo {
+            border: 1px solid $todoColor;
         }
     }
 
     &.active {
-        outline: 2px dashed yellow;
+        outline: 2px dashed $activeColor;
     }
 }
 .vue-tree-icon {

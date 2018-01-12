@@ -64,7 +64,9 @@ const fields = {
 	, name: {
 		label: _("Name")
 		, model: "name"
-		, table: {}
+		, table: {
+			align: "left"
+		}
 		, form: {
 			type: "input"
 			, inputType: "text"

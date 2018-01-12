@@ -6,7 +6,7 @@
             @dragover="dragover"
             @dragleave="dragleaveAbove")
 
-        div.media.gantt(:class="{'active': isDraggingIntoChild, 'milestone': node.type=='milestone', 'requirement': node.type=='requirement', 'way': node.type=='way', 'step': node.type=='step'}")
+        div.media.gantt(:class="{'active': isDraggingIntoChild, 'milestone': node.type=='milestone', 'requirement': node.type=='requirement', 'way': node.type=='way', 'step': node.type=='step', 'todo': node.type=='todo'}")
             div.tree-node(:id="node.code", :draggable="!isRoot && isDraggable"
                 @click=""
                 @dragstart="dragstart"
@@ -237,6 +237,6 @@
 </script>
 
 <style lang="scss" scoped>
-    @import "../../../../scss/gantt/gantt";
-    @include font-face("../../../../scss/gantt/");
+    @import "../../../../scss/taschel/gantt";
+    @include font-face("../../../../scss/taschel/");
 </style>

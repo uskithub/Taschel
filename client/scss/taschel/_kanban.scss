@@ -1,3 +1,5 @@
+@import "variables";
+
 $ease-out: all .3s cubic-bezier(0.23, 1, 0.32, 1);
 
 ul.drag-list, ul.drag-inner-list {
@@ -76,15 +78,15 @@ ul.drag-list, ul.drag-inner-list {
         }
     }
     &.requirement {
-        border: 1px solid #7f1414;
+        border: 1px solid $requirementColor;
     }
 
     &.way {
-        border: 1px solid #866112;
+        border: 1px solid $wayColor;
     }
 
     &.step {
-        border: 1px solid #176e2b;
+        border: 1px solid $stepColor;
     }
 
     dl {

@@ -335,7 +335,7 @@
 	// @see http://makotottn.hatenablog.com/entry/2017/08/29/004422
 	@import "../../../node_modules/fullcalendar/dist/fullcalendar.css";
     @import "../../scss/common/mixins";
-	@import "../../scss/kanban.scss";
+	@import "../../scss/taschel/kanban";
 
 	#app {
 		-webkit-font-smoothing: antialiased;

@@ -88,5 +88,5 @@
 </script>
 
 <style lang="scss" scoped>
-    @import "../../../../scss/kanban.scss";
+    @import "../../../../scss/taschel/kanban";
 </style>
