@@ -24,6 +24,7 @@
 
 		popup-form(v-if="isEditing", :schema="schema.popupForm", :template="model"
 			, @save="save"
+			, @close="close"
 			, @clone="clone"
 			, @breakdown="breakdown"
 			, @remove="remove"
@@ -137,6 +138,7 @@
 				});
 			}
 			, save(model) { this.$emit("save", model); }
+			, close(model) { this.$emit("close", model); }
 			, clone() { this.$emit("clone"); }
 			, breakdown() { this.$emit("breakdown"); }
 			, remove() { this.$emit("remove"); }		// deleteは予約語なので怒られる

@@ -147,8 +147,8 @@ module.exports = {
 							type: "textArea"
 							, label: _("Description")
 							, model: "description"
-							, hint: "Max 500 characters"
-							, max: 500
+							, hint: "Max 1000 characters"
+							, max: 1000
 							, placeholder: _("DescriptionPlaceholder")
 							, rows: 4
 							, closeRequired: true

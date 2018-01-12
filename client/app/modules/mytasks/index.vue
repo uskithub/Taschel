@@ -3,6 +3,7 @@
 		@add="generateModel"
 		@select="select"
 		@save="save"
+		@close="close"
 		@clone="clone"
 		@breakdown="breakdown"
 		@remove="remove"
@@ -71,7 +72,7 @@
 				popupForm.title = `${baseModel.name} を編集`;
 
 				if (baseModel.type == "project") {
-					popupForm.form.fields = popupForm.form.fields.filter(f => {
+					popupForm.form.groups[0].fields = popupForm.form.groups[0].fields.filter(f => {
 						return f.model != "root_code";
 					}).map(f => {
 						if (f.model == "type") {
@@ -84,7 +85,7 @@
 					});
 					popupForm.options.isCloneButtonEnable = false;
 				} else {
-					popupForm.form.fields.forEach(f => {
+					popupForm.form.groups[0].fields.forEach(f => {
 						if (f.model == "root_code") {
 							f.readonly = true;
 							f.disabled = true;
@@ -186,13 +187,18 @@
 					this.model = null;
 				}
 			}
+			, close(model) {
+				this.clearSelection();
+				model.status = -1;
+				this.updateTask( { model, mutation: UPDATE } );
+			}
 			, clone() {
 				const baseModel = this.model;
 
 				let popupForm = cloneDeep(schema.popupForm);
 				popupForm = this.setupProjectsField(popupForm);
 				popupForm.title = `${baseModel.name} を元に新規作成`;
-				popupForm.form.fields.forEach(f => {
+				popupForm.form.groups[0].fields.forEach(f => {
 					if (f.model == "root_code") {
 						f.readonly = false;
 						f.disabled = false;
@@ -221,7 +227,7 @@
 				let popupForm = cloneDeep(schema.popupForm);
 				popupForm = this.setupProjectsField(popupForm);
 				popupForm.title = `${baseModel.name} をブレークダウン`;
-				popupForm.form.fields.forEach(f => {
+				popupForm.form.groups[0].fields.forEach(f => {
 					if (f.model == "root_code") {
 						f.readonly = true;
 						f.disabled = true;
@@ -258,9 +264,7 @@
 		 * データの監視とイベントの初期セットアップが完了した状態
 		 */
 		, created() {
-
 			if (this.projects.length == 0) {
-				// TODO: sharedでないstateにする
 				this.getTasks({ 
 					options: { taskType : "project", populateParent : true }
 					, mutation: `shared/${LOAD_PROJECTS}`

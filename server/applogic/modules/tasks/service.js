@@ -54,18 +54,28 @@ module.exports = {
 				let filter = {};
 
 				if (ctx.params.type !== undefined) {
+					// find from ProjectsPage
 					// /tasks?type=project
 					filter.type = ctx.params.type;
 					filter.isDeleted = { $ne: true };
+					filter.status = { "$gt" : -1 };
+
 				} else if (ctx.params.root_code != undefined) {
+					// find from TasksPage
 					// /tasks?root_code=${hash}
 					filter.root = this.taskService.decodeID(ctx.params.root_code);
 					filter.isDeleted = { $ne: true };
+					filter.status = { "$gt" : -1 };
+
 				} else if (ctx.params.user_code != undefined) {
+					// find from MyTasksPage
 					// /tasks?user_code=${hash}
 					let user_code = this.personService.decodeID(ctx.params.user_code);
 					filter.$or = [ {author : user_code}, {asignee : user_code} ];
+					filter.type = { $ne: "project" };
 					filter.isDeleted = { $ne: true };
+					filter.status = { "$gt" : -1 };
+					
 				} else {
 					filter.type = { $ne: "project" };
 					filter.isDeleted = { $ne: true };
@@ -181,9 +191,11 @@ module.exports = {
 				if (ctx.params.status != null)
 					doc.status = ctx.params.status;
 
-				if (ctx.params.asignee_code != null) {
+				if (ctx.params.asignee_code != null)
 					doc.asignee = this.personService.decodeID(ctx.params.asignee_code);
-				}
+
+				if (ctx.params.closingComment != null)
+					doc.closingComment = ctx.params.closingComment;
 
 				return doc.save();
 			})

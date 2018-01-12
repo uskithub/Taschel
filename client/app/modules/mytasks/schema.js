@@ -27,7 +27,10 @@ module.exports = {
 		title : _("CreateNewTask")
 		, form : generate(
 			areaTypes.form
-			, [ "root", "type", "name", "purpose", "goal", "description"]
+			, {
+				TaskDetail : [ "root", "type", "name", "purpose", "goal", "description"]
+				, Closing : [ "closingComment"]
+			}
 		)
 		, options : {
 			searchable: true

@@ -2,7 +2,7 @@ import Vue from "vue";
 import moment from "moment";
 import { taskTypes } from "../../common/constants/types";
 import { validators } from "vue-form-generator";
-import { cloneDeep, isObject, isNil, isMap } from "lodash";
+import { cloneDeep, isObject, isNil, isArray } from "lodash";
 
 let _ = Vue.prototype._;
 
@@ -114,8 +114,8 @@ const fields = {
 		, form: {
 			type: "textArea"
 			, inputType: "text"
-			, hint: "Max 500 characters"
-			, max: 500
+			, hint: "Max 1000 characters"
+			, max: 1000
 			, placeholder: _("DescriptionPlaceholder")
 			, rows: 5
 			, validator: validators.string
@@ -152,6 +152,23 @@ const fields = {
 			, min: 0
 			, max: 90
 			, validator: validators.integer
+		}
+	}
+	, closingComment: {
+		label: _("ClosingComment")
+		, model: "closingComment"
+		, table: {
+			align: "left"
+		}
+		, form: {
+			type: "textArea"
+			, inputType: "text"
+			, hint: "Max 1000 characters"
+			, max: 1000
+			, placeholder: _("ClosingCommentPlaceholder")
+			, rows: 4
+			, closeRequired: true
+			, validator: validators.string
 		}
 	}
 	, asignee : {
@@ -234,11 +251,11 @@ export const areaTypes = {
 
 export const generate = (areaType, fieldSet) => {
 	if (areaType == areaTypes.form) {
-		if (isMap(fieldSet)) {
+		if (!isArray(fieldSet)) {
 			return {
-				groups : fieldSet.keys.map(key => {
+				groups : Object.keys(fieldSet).map(key => {
 					return {
-						legend : key
+						legend : _(key)
 						, fields: fieldSet[key].map(f => { 
 							let field = cloneDeep(fields[f]);
 							if (field.form.label == undefined) {
@@ -267,7 +284,7 @@ export const generate = (areaType, fieldSet) => {
 			};
 		}
 	} else {
-		return  fieldSet.map(f => { 
+		return fieldSet.map(f => { 
 			let field = cloneDeep(fields[f]);
 			if (field.table.title == undefined) {
 				field.table.title = field.label;

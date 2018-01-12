@@ -1,6 +1,8 @@
 import axios from "axios";
 import toastr from "../../core/toastr";
 
+import { isObject } from "lodash";
+
 export const METHOD = {
 	get : "get"
 	, post : "post"
@@ -8,7 +10,19 @@ export const METHOD = {
 	, delete : "delete"
 };
 
+const unpopulate = (model) => {
+	if (isObject(model.root)) {
+		model.root = model.root.code;
+	}
+	if (isObject(model.parent)) {
+		model.parent = model.parent.code;
+	}
+	return model;
+};
+
 export const api = (method, url, model) => {
+	if (model) model = unpopulate(model);
+
 	return new Promise((resolve, reject) => {
 		if (!METHOD[method]) {
 			reject(new Error(`Unknown HTTP Method was called: ${ method }`));
@@ -39,7 +53,8 @@ export const api = (method, url, model) => {
 		});
 	})
 	.catch(error => {
-		console.log(error);
+		console.error(`API ERROR: [${method}] ${url}`, model);
+		console.error(error);
 		toastr.error(error.message);
 	});
 };

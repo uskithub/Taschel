@@ -54,6 +54,9 @@ const mutations = {
 		}
 	}
 	, [UPDATE] (state, model) {
+		if (model.status < 0) {
+			state.tasks = state.tasks.filter(t => { return t.code != model.code; });
+		} 
 		each(state.tasks, (item) => {
 			if (item.code == model.code)
 				assign(item, model);
