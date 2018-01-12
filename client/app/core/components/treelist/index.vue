@@ -6,7 +6,7 @@
             @dragover="dragover"
             @dragleave="dragleaveAbove")
 
-        div.media.gantt(:class="{'active': isDraggingIntoChild, 'primary': node.type=='milestone', 'danger': node.type=='requirement', 'warning': node.type=='way', 'success': node.type=='step'}")
+        div.media.gantt(:class="{'active': isDraggingIntoChild, 'milestone': node.type=='milestone', 'requirement': node.type=='requirement', 'way': node.type=='way', 'step': node.type=='step'}")
             div.tree-node(:id="node.code", :draggable="!isRoot && isDraggable"
                 @click=""
                 @dragstart="dragstart"
@@ -237,131 +237,6 @@
 </script>
 
 <style lang="scss" scoped>
-    @font-face {
-        font-family: 'icomoon';
-        src:  url('fonts/icomoon.eot?ui1hbx');
-        src:  url('fonts/icomoon.eot?ui1hbx#iefix') format('embedded-opentype'),
-        url('fonts/icomoon.ttf?ui1hbx') format('truetype'),
-        url('fonts/icomoon.woff?ui1hbx') format('woff'),
-        url('fonts/icomoon.svg?ui1hbx#icomoon') format('svg');
-        font-weight: normal;
-        font-style: normal;
-    }
-    .media {
-        &.gantt {
-            position: relative;
-            display: block;
-            box-shadow: none;
-            padding: 0.2em 0 0.2em 1em;
-        }
-        
-        &.active {
-            outline: 2px dashed yellow;
-        }
-    }
-    .vue-tree-icon {
-        /* use !important to prevent issues with browser extensions that change fonts */
-        font-family: 'icomoon' !important;
-        font-style: normal;
-        font-weight: normal;
-        font-variant: normal;
-        text-transform: none;
-        line-height: 1;
-        /* Better Font Rendering =========== */
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-        &.item-icon {
-            margin-right: 4px;
-            &:hover {
-                color: inherit;
-            }
-        }
-        &:hover {
-            color: red;
-        }
-    }
-    .icon-file:before {
-        content: "\e906";
-    }
-    .icon-folder:before {
-        content: "\e907";
-    }
-    .icon-caret-down:before {
-        content: "\e900";
-    }
-    .icon-caret-up:before {
-        content: "▲";
-    }
-    .icon-caret-right:before {
-        content: "\e901";
-    }
-    .icon-edit:before {
-        content: "\e902";
-    }
-    .icon-folder-plus-e:before {
-        content: "\e903";
-    }
-    .icon-plus:before {
-        content: "\e904";
-    }
-    .icon-trash:before {
-        content: "\e905";
-    }
-    .border {
-        position: relative;
-        height: 5px;
-        &.up {
-            margin-top: -5px;
-            background-color: transparent;
-        }
-        &.bottom {
-            // background-color: #c00;
-        }
-        &.active {
-            border-bottom: 3px dashed yellow;
-            /*background-color: blue;*/
-        }
-    }
-    .tree-node {
-        display: flex;
-        align-items: center;
-        padding: 5px 0 5px 1rem;
-        .input {
-            border: none;
-            max-width: 150px;
-            border-bottom: 1px solid blue;
-        }
-        .dummyHover {
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            border-radius: 5px;
-        }
-        &:hover > .dummyHover {
-            border: 2px solid red;
-        }
-        .caret {
-            margin-left: -1rem;
-            z-index: 9999;
-        }
-        .operation {
-            margin-left: 2rem;
-            letter-spacing: 1px;
-            z-index: 9999;
-        }
-    }
-    .item {
-        cursor: pointer;
-    }
-    .tree-margin {
-        margin-left: 0.5em;
-    }
-
-    .work {
-        background-color: rgba(0,0,0,0.5);
-        border-radius: 2px;
-        text-align: right;
-    }
+    @import "../../../../scss/gantt/gantt";
+    @include font-face("../../../../scss/gantt/");
 </style>
