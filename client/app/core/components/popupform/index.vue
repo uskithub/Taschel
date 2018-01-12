@@ -311,5 +311,18 @@
 		}
 	}
 
+	.form-group {
+		&.disabled.readonly {
+			.field-wrap {
+				padding-left: 1em;
+			}
+			input, select {
+				border: none;
+				background: none;
+				box-shadow: none;
+			}
+		}
+	}
+
 	
 </style>
