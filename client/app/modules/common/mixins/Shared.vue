@@ -4,6 +4,8 @@
 	import { cloneDeep } from "lodash";
 	import moment from "moment";
 
+	import { taskTypes } from "../constants/types";
+
 	import { mapGetters, mapMutations, mapActions } from "vuex";
 	import { SET_CURRENT_PROJECT, SET_CURRENT_WEEK, SET_CURRENT_USER, LOAD_USERS, LOAD_PROJECTS } from "../constants/mutationTypes";
 
@@ -115,6 +117,41 @@
 					}
 				});
 				return schema;
+			}
+			, setupTaskTypeField(parentTaskType) {
+				switch(parentTaskType) {
+					case "project":
+						return cloneDeep(taskTypes);
+					case "milestone":
+						return [
+							{ id: "milestone", name: _("Milestone") }
+							, { id: "requirement", name: _("Requirement") }
+							, { id: "way", name: _("Way") }
+							, { id: "step", name: _("Step") }
+							, { id: "todo", name: _("ToDo") }
+						];
+					case "requirement":
+					case "way":
+					case "step":
+						return [
+							, { id: "requirement", name: _("Requirement") }
+							, { id: "way", name: _("Way") }
+							, { id: "step", name: _("Step") }
+							, { id: "todo", name: _("ToDo") }
+						];
+				}
+			}
+			, setupDefaultTaskType(parentTaskType) {
+				switch (parentTaskType) {
+					case "project":
+						return "milestone";
+					case "milestone":
+						return "requirement";
+					case "requirement":
+						return "way";
+					default:
+						return "step";
+				}
 			}
 		}
 		, created() {

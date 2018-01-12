@@ -23,12 +23,12 @@
 		data-table(:schema="schema.table", :rows="rows", :order="order", :search="search", :selected="selected", :select="select", :select-all="selectAll")
 
 		popup-form(v-if="isEditing", :schema="schema.popupForm", :template="model"
-			, @save="save"
-			, @close="close"
-			, @clone="clone"
-			, @breakdown="breakdown"
-			, @remove="remove"
-			, @cancel="cancel"
+			@save="save"
+			@close="close"
+			@clone="clone"
+			@breakdown="breakdown"
+			@remove="remove"
+			@cancel="cancel"
 		)
 </template>
 

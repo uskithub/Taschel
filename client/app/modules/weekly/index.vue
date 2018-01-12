@@ -6,6 +6,8 @@
 		@changeWeek="changeWeek"
 		@select-kanban="selectKanban"
 		@save="save"
+		@clone="clone"
+		@breakdown="breakdown"
 		@remove="remove"
 		@cancel="cancel"
 	)
@@ -239,13 +241,16 @@
 						f.readonly = false;
 						f.disabled = false;
 					}
+					if (f.model == "type") {
+						f.values = this.setupTaskTypeField(baseModel.type);
+					}
 					return f;
 				});
 
 				let brokedownModel = cloneDeep(baseModel);
 				brokedownModel.id = null;
 				brokedownModel.code = null;
-				brokedownModel.type = "step";
+				brokedownModel.type = this.setupDefaultTaskType(baseModel.type);
 				brokedownModel.name = null;
 				brokedownModel.purpose = `${this.model.goal} にするため`;
 				brokedownModel.goal = null;

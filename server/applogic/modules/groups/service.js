@@ -193,6 +193,17 @@ module.exports = {
 						// type is "requirement", "way" or "step"
 						// has no children
 						// author or asignee is user
+						// let filter = {
+						// 	status : { $gt : -1 }
+						// 	, type : { $in: ["requirement", "way", "step"] }
+						// 	, children : { $size: 0 }
+						// 	, $or : [ { author : userId }, { asignee : userId } ]
+						// };
+
+						// status is open ( > -1)
+						// type is "requirement", "way", "step", "todo"
+						// has no children
+						// author or asignee is user
 						let filter = {
 							status : { $gt : -1 }
 							, type : { $in: ["requirement", "way", "step"] }

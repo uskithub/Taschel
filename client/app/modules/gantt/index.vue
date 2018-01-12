@@ -100,20 +100,8 @@
 				});
 
 				let newModel = schemaUtils.createDefaultObject(this.schema.popupForm.form);
-				switch (parent.type) {
-					case "project":
-						newModel.type = "milestone";
-						break;
-					case "milestone":
-						newModel.type = "requirement";
-						break;
-					case "requirement":
-						newModel.type = "way";
-						break;
-					default:
-						newModel.type = "step";
-						break;
-				}
+				
+				newModel.type = this.setupDefaultTaskType(parent.type);
 				newModel.purpose = `${parent.goal} にするため`;
 				newModel.root_code = this.currentProject;
 				newModel.parent_code = parent.code;
@@ -170,13 +158,16 @@
 						f.readonly = false;
 						f.disabled = false;
 					}
+					if (f.model == "type") {
+						f.values = this.setupTaskTypeField(baseModel.type);
+					}
 					return f;
 				});
 
 				let brokedownModel = cloneDeep(baseModel);
 				brokedownModel.id = null;
 				brokedownModel.code = null;
-				brokedownModel.type = "step";
+				brokedownModel.type = this.setupDefaultTaskType(baseModel.type);
 				brokedownModel.name = null;
 				brokedownModel.purpose = `${this.model.goal} にするため`;
 				brokedownModel.goal = null;

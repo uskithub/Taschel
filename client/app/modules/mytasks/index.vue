@@ -232,6 +232,9 @@
 						f.readonly = true;
 						f.disabled = true;
 					}
+					if (f.model == "type") {
+						f.values = this.setupTaskTypeField(baseModel.type);
+					}
 					return f;
 				});
 				this.schema.popupForm = popupForm;
@@ -242,7 +245,7 @@
 				} else if (baseModel.root && baseModel.root != -1) {
 					brokedownModel.root_code = isObject(baseModel.root) ? baseModel.root.code : baseModel.root;
 				}
-				brokedownModel.type = "step";
+				brokedownModel.type = this.setupDefaultTaskType(baseModel.type);
 				brokedownModel.purpose = `${baseModel.goal} 状態にするため`;
 				brokedownModel.parent_code = baseModel.code;
 				brokedownModel.asignee_code = this.me.code;

@@ -32,9 +32,12 @@
 		kanban(:boardGroups="boardGroups", @arrange="arrange" @select="select")
 
 		popup-form(v-if="isEditing", :schema="schema.popupForm", :template="model"
-			, @save="save"
-			, @remove="remove"
-			, @cancel="cancel"
+			@save="save"
+			@close="close"
+			@clone="clone"
+			@breakdown="breakdown"
+			@remove="remove"
+			@cancel="cancel"
 		)
 </template>
 
@@ -157,6 +160,9 @@
 			, buttonNextDidPush() { this.$emit("changeWeek", "next"); }
 			, select(task) { this.$emit("select-kanban", task); }
 			, save(model) { this.$emit("save", model); }
+			, close(model) { this.$emit("close", model); }
+			, clone() { this.$emit("clone"); }
+			, breakdown() { this.$emit("breakdown"); }
 			, remove() { this.$emit("remove"); }		// deleteは予約語なので怒られる
 			, cancel() { this.$emit("cancel"); }
 		}
