@@ -59,16 +59,16 @@ module.exports = {
 		 * 
 		 */
 		find: {
-			cache: true,
-			handler(ctx) {
+			cache: true
+			, _handler(ctx) {
 				// TODO: group -> taskの検索順にし、Groupがない場合は [] を返してdefaultグループを作るように促す
 				if (ctx.params.parent_code != undefined) {
 					// root is the project
-					// type is "requirement", "way" or "step"
+					// type is "requirement", "way", "step" or "todo"
 					// has no children
 					let filter = {
 						root : this.taskService.decodeID(ctx.params.parent_code)
-						, type : { $in: ["requirement", "way", "step"] }
+						, type : { $in: ["requirement", "way", "step", "todo"] }
 						, children : { $size: 0 }
 					};
 					let query = Task.find(filter);
@@ -190,26 +190,255 @@ module.exports = {
 					})
 					.then(jsons => {
 						// status is open ( > -1)
-						// type is "requirement", "way" or "step"
-						// has no children
-						// author or asignee is user
-						// let filter = {
-						// 	status : { $gt : -1 }
-						// 	, type : { $in: ["requirement", "way", "step"] }
-						// 	, children : { $size: 0 }
-						// 	, $or : [ { author : userId }, { asignee : userId } ]
-						// };
-
-						// status is open ( > -1)
-						// type is "requirement", "way", "step", "todo"
+						// type is "requirement", "way" or "step", "todo"
 						// has no children
 						// author or asignee is user
 						let filter = {
 							status : { $gt : -1 }
-							, type : { $in: ["requirement", "way", "step"] }
+							, type : { $in: ["requirement", "way", "step", "todo"] }
 							, children : { $size: 0 }
 							, $or : [ { author : userId }, { asignee : userId } ]
 						};
+
+						let query = Task.find(filter);
+
+						// myTasksでクローズしていないものを取得
+						return ctx.queryPageSort(query).exec()
+						.then(taskDocs => {
+
+							if (jsons.length == 0) {
+								// TODO: 該当週のデータがないならないで返す？
+								// this.notifyNotSetupYet(ctx);
+								
+								// generating and returning default groups.
+								// using reduce for array will be correct sequence.
+								return DEFAULT_WEEKLY_GROUPS.reduce((promise, g) => {
+									return promise.then(docs => {
+										g.type = type;
+										g.parent =  -1;
+										g.author = userId;
+										let group = new Group(g);
+										return group.save()
+										.then(doc => {
+											docs.push(doc);
+											return docs;
+										});
+									});
+								}, Promise.resolve([]))
+								.then(docs => {
+									return this.toJSON(docs);
+								})
+								.then(jsons => {
+									return this.populateModels(jsons);
+								})
+								.then(jsons => {
+									return Promise.resolve()
+									.then(() => {
+										return this.toJSON(taskDocs);
+									})
+									.then(taskJsons => {
+										return this.populateModels(taskJsons);
+									})
+									.then(taskJsons => {
+										// 既存Groupに分類されていないTaskを未分類として既存Groupとともに返す
+										let unclassifiedGroup = {
+											code: UNCLASSIFIED
+											, type: type
+											, name: "unclassified"
+											, purpose: "for_classify"
+											, children: taskJsons
+										};
+										jsons.unshift(unclassifiedGroup);
+										return jsons;
+									});
+								});
+							} else {
+								// ある場合は未分類Groupと一緒に返す
+								// 既存Groupに分類されていないTaskを未分類として既存Groupとともに返す
+								let classifiedTasks = jsons.reduce((arr, g) => {
+									return arr.concat(g.children);
+								}, []);
+								// taskはJSONにすると_idでの突き合わせができなくなるのでしない
+								let unclassifiedTaskDocs = taskDocs.filter(t => { return !classifiedTasks.includes(t._id); });
+
+								return Promise.resolve().then(() => {
+									return this.taskService.toJSON(unclassifiedTaskDocs);
+								})
+								.then(unclassifiedTaskJsons => {
+									return this.taskService.populateModels(unclassifiedTaskJsons);
+								})
+								.then(unclassifiedTaskJsons => {
+									return this.populateModels(jsons)
+									.then(jsons => {
+										let unclassifiedGroup = {
+											code: UNCLASSIFIED
+											, type: `weekly_${ctx.params.weekly}`
+											, name: "unclassified"
+											, purpose: "for_classify"
+											, children: unclassifiedTaskJsons
+										};
+										jsons.unshift(unclassifiedGroup);
+										return jsons;
+									});
+								});
+							}
+						});
+					});
+				} else if (ctx.params.daily != undefined) {
+					//
+					// weeklyのgroupにアサインされているtaskをがっちゃんこして返す
+					//
+					let type = `weekly_${ctx.params.daily}`;
+					let userId = (ctx.params.user_code) ? this.personService.decodeID(ctx.params.user_code) : ctx.user.id;
+					let filter = {
+						$and : [ 
+							{ author : userId }
+							, { type : type }
+						]
+					};
+					let query = Group.find(filter);
+
+					// 該当週のGroupを取得
+					return ctx.queryPageSort(query).exec().then(docs => {
+						return this.toJSON(docs);
+					})
+					.then(jsons => {
+						if (jsons.length == 0) {
+							// TODO: 該当週のデータがないならないで返す？
+							// this.notifyNotSetupYet(ctx);
+							let promises = [];
+
+							DEFAULT_WEEKLY_GROUPS.forEach(g => {
+								g.type = type;
+								g.parent =  -1;
+								g.author = userId;
+								let group = new Group(g);
+								promises.push(group.save());
+							});
+
+							return Promise.all(promises).then(docs => {
+								const assignedInWeeklyGroup = {
+									code: ASSIGNED_IN_WEEKLY
+									, type: type
+									, name: "assignedInWeekly"
+									, purpose: "for_assigning"
+									, children: []
+								};
+								return [assignedInWeeklyGroup];
+							});
+						} else {
+							return this.populateModels(jsons)
+							.then(jsons => {
+								const assignedInWeekly = jsons.reduce((arr, g) => {
+									return arr.concat(g.children);
+								}, []);
+	
+								const assignedInWeeklyGroup = {
+									code: ASSIGNED_IN_WEEKLY
+									, type: type
+									, name: "assignedInWeekly"
+									, purpose: "for_assigning"
+									, children: assignedInWeekly
+								};
+	
+								return [assignedInWeeklyGroup];
+							});
+						}
+					});
+				}
+			}
+			, handler(ctx) {
+				// TODO: group -> taskの検索順にし、Groupがない場合は [] を返してdefaultグループを作るように促す
+				if (ctx.params.parent_code != undefined) {
+					const projectCode = ctx.params.parent_code;
+					const projectId = this.taskService.decodeID(projectCode);
+					// getting selected project model
+					return this.taskService.getByID(projectId)
+					.then(projectJson => {
+						let filter = {
+							type : "kanban"
+							, parent : projectId
+						};
+						let query = Group.find(filter);
+						// 選択されているProjectのGroupを取得
+						return ctx.queryPageSort(query).exec().then(docs => {
+							return this.toJSON(docs);
+						})
+						.then(jsons => {
+							// to get unclassified tasks, create the classified tasks code array
+							let classifiedTaskCodes = jsons.reduce((arr, g) => {
+								return arr.concat(g.children.map(id => { this.taskService.encodeID(id); }));
+							}, []);
+
+							const recursiveUnclassifiedFilter = (task, classifiedArray) => {
+								task.children = task.children.filter(child => {
+									return !(child.status < 0 || classifiedTaskCodes.includes(child.code));
+								})
+								.map(child => {
+									return recursiveUnclassifiedFilter(child, classifiedArray);
+								});
+								return task;
+							};
+
+							let unclassifiedGroups = projectJson.children.reduce((result, child) => {
+								if (child.status < 0 || classifiedTaskCodes.includes(child.code)) {
+									return result;
+								}
+								child = recursiveUnclassifiedFilter(child, classifiedTaskCodes);
+								if (child.type == "milestone") {
+									result.push({
+										code: UNCLASSIFIED
+										, type: "kanban"
+										, name: child.name
+										, purpose: "for_classify"
+										, parent: projectCode
+										, children: child.children
+									});
+								} else {
+									result[0].children.push(child);
+								}
+								return result;
+							}, [{
+								code: UNCLASSIFIED
+								, type: "kanban"
+								, name: "unclassified"
+								, purpose: "for_classify"
+								, parent: projectCode
+								, children: []
+							}]);
+
+							return unclassifiedGroups.concat(jsons);
+						});
+					});
+
+				} else if (ctx.params.weekly != undefined) {
+					let type = `weekly_${ctx.params.weekly}`;
+					let userId = (ctx.params.user_code) ? this.personService.decodeID(ctx.params.user_code) : ctx.user.id;
+					let filter = {
+						$and : [ 
+							{ author : userId }
+							, { type : type }
+						]
+					};
+
+					let query = Group.find(filter);
+
+					// 該当週のGroupを取得
+					return ctx.queryPageSort(query).exec().then(docs => {
+						return this.toJSON(docs);
+					})
+					.then(jsons => {
+						// status is open ( > -1)
+						// type is "requirement", "way" or "step", "todo"
+						// has no children
+						// author or asignee is user
+						let filter = {
+							status : { $gt : -1 }
+							, type : { $in: ["requirement", "way", "step", "todo"] }
+							, children : { $size: 0 }
+							, $or : [ { author : userId }, { asignee : userId } ]
+						};
+
 						let query = Task.find(filter);
 
 						// myTasksでクローズしていないものを取得

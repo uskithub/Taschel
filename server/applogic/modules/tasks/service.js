@@ -54,7 +54,7 @@ module.exports = {
 				let filter = {};
 
 				if (ctx.params.type !== undefined) {
-					// find from ProjectsPage
+					// find from ProjectsPage, GanttPage
 					// /tasks?type=project
 					filter.type = ctx.params.type;
 					filter.isDeleted = { $ne: true };
@@ -79,6 +79,7 @@ module.exports = {
 				} else {
 					filter.type = { $ne: "project" };
 					filter.isDeleted = { $ne: true };
+					filter.status = { "$gt" : -1 };
 				}
 
 				let query = Task.find(filter);
