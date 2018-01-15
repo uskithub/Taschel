@@ -1,11 +1,11 @@
 <template lang="pug">
-	div.drag-container
-		ul.drag-list.content.card-columns(v-for="group in boardGroups", :key="group.name")
-			li(v-for="board in group.boards" class="drag-column", :class="{['drag-column-' + board.code]: true}", :key="board.code")
-				span.drag-column-header
+	div
+		ul.kanban-container(v-for="group in boardGroups", :key="group.name")
+			li.kanban-board(v-for="board in group.boards", :key="board.code")
+				span.kanban-header
 					legend {{ board.name }}
-				div.drag-options
-				ul.drag-inner-list(ref="boards", :data-code="board.code")
+				.drag-options
+				ul.kanban-list(ref="boards", :data-code="board.code")
 					kanban(v-for="task in board.children", :task="task", :key="task.code")
 </template>
 
@@ -50,7 +50,10 @@
 				if (drake) {
 					drake.destroy();
 				}
-				drake = dragula(this.$refs.boards)
+
+				let containers = this.$refs.boards;//.concut(document.querySelectorAll(".kanban-list .kanban-inner-list"));
+				
+				drake = dragula(containers)
 					.on("drag", (li, ul) => {
 						console.log("● draggin ", li);
 						previousBoardCode = ul.dataset.code;
@@ -62,11 +65,11 @@
 							if (ul.children[index].classList.contains("is-moving")) 
 								break;
 						}
-						this.$emit("arrange", { moving: li.dataset.code
-							, from: previousBoardCode
-							, to: ul.dataset.code
-							, index: index 
-						});
+						// this.$emit("arrange", { moving: li.dataset.code
+						// 	, from: previousBoardCode
+						// 	, to: ul.dataset.code
+						// 	, index: index 
+						// });
 					})
 					.on("dragend", (li) => {
 						previousBoardCode = null;
@@ -87,5 +90,5 @@
 </script>
 
 <style lang="scss" scoped>
-    @import "../../../../scss/taschel/kanban";
+    @import "../../../../scss/taschel/kanban2";
 </style>
