@@ -6,22 +6,20 @@
 					legend {{ board.name }}
 				div.drag-options
 				ul.drag-inner-list(ref="boards", :data-code="board.code")
-					li.drag-item.card(v-for="task in board.children", :class="{'requirement': task.type=='requirement', 'way': task.type=='way', 'step': task.type=='step'}", :data-code="task.code", :key="task.code" @click="select($event, task)")
-						slot(:name="task.name")
-							strong {{ task.name }}
-							.text-muted
-								dl(v-for="item in description(task)", :key="item.key")
-									dt {{ item.title }}
-									dd {{ item.value }}
+					kanban(v-for="task in board.children", :task="task", :key="task.code")
 </template>
 
 <script>
+	import Kanban from "./kanban.vue";
 	import dragula from "dragula";
 	let previousBoardCode = null;
 	let drake = null;
 
 	export default {
-		name: "Kanban"
+		name: "KanbanBoard"
+		, components: {
+			Kanban
+		}
         , props: [
 			"boardGroups"
 		]
@@ -54,6 +52,7 @@
 				}
 				drake = dragula(this.$refs.boards)
 					.on("drag", (li, ul) => {
+						console.log("● draggin ", li);
 						previousBoardCode = ul.dataset.code;
 						li.classList.add("is-moving");
 					})

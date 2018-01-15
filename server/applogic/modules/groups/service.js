@@ -387,7 +387,7 @@ module.exports = {
 								child = recursiveUnclassifiedFilter(child, classifiedTaskCodes);
 								if (child.type == "milestone") {
 									result.push({
-										code: UNCLASSIFIED
+										code: `MILESTONE-${child.code}`
 										, type: "kanban"
 										, name: child.name
 										, purpose: "for_classify"

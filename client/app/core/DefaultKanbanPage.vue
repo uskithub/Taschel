@@ -22,7 +22,7 @@
 		.form
 			vue-form-generator(:schema="schema.projectSelector", :model="modelProjectSelector" ref="projectSelector" @model-updated="selectProject")
 
-		kanban(:boardGroups="boardGroups", @arrange="arrange" @select="select")
+		kanban-board(:boardGroups="boardGroups", @arrange="arrange" @select="select")
 
 		popup-form(v-if="isEditing", :schema="schema.popupForm", :template="model"
 			, @save="save"
@@ -34,7 +34,7 @@
 <script>
 	import Vue from "vue";
 	import { schema as schemaUtils } from "vue-form-generator";
-	import Kanban from "./components/kanban";
+	import KanbanBoard from "./components/kanban";
 	import PopupForm from "./components/popupform";
 
 	import { each, find, cloneDeep, isFunction, debounce } from "lodash";
@@ -45,7 +45,7 @@
 
 		name: "KanbanPage"
         , components: {
-			Kanban
+			KanbanBoard
 			, PopupForm
 		}
 
