@@ -58,22 +58,33 @@ export const readGroups = ({ commit }, { options, mutation }) => {
 	});
 };
 
+// { moving: { type: "task", code: el.dataset.code }
+//	, from: { type: source.dataset.type, code: source.dataset.code }
+//	, to: { type: target.dataset.code, code: target.dataset.code }
+//	, index: index 
+// }
 export const updateGroups = ({ commit }, { moving, from, to, index, mutation }) => {
 	console.log("● do update", { moving, from, to, index });
 
-	// ① from, to => UNCLASSIFIED, xxx
-	//		/api/groups/${to}?task=${moving}&index=${index}&from=UNCLASSIFIED
+	// ① from, to => UNCLASSIFIED|task, group	/api/groups/${to}?task=${moving}&index=${index}
+	//		-> [toDoc]
+	// ② from, to => group, UNCLASSIFIED|task	/api/groups/${from}?task=${moving}&index=${index}&remove=true
+	//		-> [fromDoc]
+	// ③ from, to => group, group			/api/groups/${to}?task=${moving}&index=${index}&from=${from}
+	//	  1. from, to => xxx, yyy
+	//		-> [toDoc, fromDoc];
+	//	  2. from, to => xxx, xxx
+	//		-> [fromDoc];
 
-	// ② from, to => xxx, UNCLASSIFIED
-	//		/api/groups/${from}?task=${moving}&index=${index}&to=UNCLASSIFIED
+	let url = NAMESPACE;
 
-	// ③ from, to => xxx, yyy
-	// ④ from, to => xxx, xxx
-	//		/api/groups/${to}?task=${moving}&index=${index}&from=${from}
-
-	let url = (to == UNCLASSIFIED) 
-		? `${NAMESPACE}/${from}?task=${moving}&index=${index}&to=${UNCLASSIFIED}`
-		: `${NAMESPACE}/${to}?task=${moving}&index=${index}&from=${from}`;
+	if (from.type == "task" || from.code == "UNCLASSIFIED") {
+		url = `${url}/${to.code}?task=${moving.code}&index=${index}`;
+	} else if (to.type == "task" || to.code == "UNCLASSIFIED") {
+		url = `${url}/${from.code}?task=${moving.code}&index=${index}&remove=true`;
+	} else {
+		url = `${url}/${to.code}?task=${moving.code}&index=${index}&from=${from.code}`;
+	}
 
 	return api(METHOD.put, url)
 	.then(data => {

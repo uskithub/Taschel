@@ -140,14 +140,38 @@
 					this.loadGroups([]);
 				}
 			}
+			// { moving: { type: "task", code: el.dataset.code }
+			//	, from: { type: source.dataset.type, code: source.dataset.code }
+			//	, to: { type: target.dataset.code, code: target.dataset.code }
+			//	, index: index 
+			// }
 			, arrange(context) {
-				// validation
-				if (context.from == context.to && context.to == "UNCLASSIFIED") {
-					// TODO: milestone板同士では移動ができてしまう
+				const milestonePrefix = "MILESTONE-";
+				// TODO: validation
+				if (context.from.code == context.to.code && context.to.code == "UNCLASSIFIED") {
 					return;
 				}
+
+				if (context.from.type == "group" && context.from.code.indexOf(milestonePrefix) === 0) {
+					context.from.type = "task";
+					context.from.code = context.from.code.replace(milestonePrefix, "");
+				}
+
+				if (context.to.type == "group" && context.to.code.indexOf(milestonePrefix) === 0) {
+					context.to.type = "task";
+					context.to.code = context.to.code.replace(milestonePrefix, "");
+				}
+
 				context.mutation = UPDATE;
-				this.updateGroups(context);
+
+				// task
+				if ((context.from.type == "task" || context.from.code == "UNCLASSIFIED") 
+					&& (context.to.type == "task" || context.to.code == "UNCLASSIFIED")) {
+					// TODO
+				} else {
+					// group
+					this.updateGroups(context);
+				}
 			}
 			, generateModel() {
 				this.schema.popupForm.title = _("CreateNewGroup");

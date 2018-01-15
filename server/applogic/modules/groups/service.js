@@ -166,7 +166,7 @@ module.exports = {
 									return this.populateModels(jsons)
 									.then(jsons => {
 										return classifiedDummyGroupJsons.filter(json => { return json.children.length > 0; }).concat(jsons);
-									})
+									});
 								});
 							});
 						});
@@ -348,11 +348,10 @@ module.exports = {
 				}
 			}
 			, handler(ctx) {
-				// TODO: group -> taskの検索順にし、Groupがない場合は [] を返してdefaultグループを作るように促す
 				if (ctx.params.parent_code != undefined) {
 					const projectCode = ctx.params.parent_code;
 					const projectId = this.taskService.decodeID(projectCode);
-					// getting selected project model
+					// getting selected project model.
 					return this.taskService.getByID(projectId)
 					.then(projectJson => {
 						let filter = {
@@ -360,16 +359,16 @@ module.exports = {
 							, parent : projectId
 						};
 						let query = Group.find(filter);
-						// 選択されているProjectのGroupを取得
 						return ctx.queryPageSort(query).exec().then(docs => {
 							return this.toJSON(docs);
 						})
 						.then(jsons => {
-							// to get unclassified tasks, create the classified tasks code array
+							// for getting unclassified tasks, create the classified tasks code array.
 							let classifiedTaskCodes = jsons.reduce((arr, g) => {
-								return arr.concat(g.children.map(id => { this.taskService.encodeID(id); }));
+								return arr.concat(g.children.map(id => { return this.taskService.encodeID(id); }));
 							}, []);
-
+							
+							// exclude status is closed or already classified tasks.
 							const recursiveUnclassifiedFilter = (task, classifiedArray) => {
 								task.children = task.children.filter(child => {
 									return !(child.status < 0 || classifiedTaskCodes.includes(child.code));
@@ -407,7 +406,10 @@ module.exports = {
 								, children: []
 							}]);
 
-							return unclassifiedGroups.concat(jsons);
+							return this.populateModels(jsons)
+							.then(jsons => {
+								return unclassifiedGroups.concat(jsons);
+							});
 						});
 					});
 
@@ -630,73 +632,77 @@ module.exports = {
 
 			console.log("● update", ctx.modelID, movingId, index, ctx.params.from);
 
-			// ① from, to => UNCLASSIFIED, xxx
+			// ① from, to => UNCLASSIFIED|task, group	/api/groups/${to}?task=${moving}&index=${index}
 			//		- toに追加のみ
-			// ② from, to => xxx, UNCLASSIFIED
+			// ② from, to => group, UNCLASSIFIED|task	/api/groups/${from}?task=${moving}&index=${index}&remove=true
 			//		- fromから削除のみ
-			// ③ from, to => xxx, yyy
+			// ③ from, to => group, group				/api/groups/${to}?task=${moving}&index=${index}&from=${from}
+			//	  1. from, to => xxx, yyy
 			//		- toに追加
 			//		- fromから削除
-			// ④ from, to => xxx, xxx
+			//	  2. from, to => xxx, xxx
 			//		- to（=from）内で移動
-
 			return Promise.resolve()
 			.then(() => {
 				if (ctx.params.from) {
 					let toId = ctx.modelID;
-					if (ctx.params.from == UNCLASSIFIED) {
-						// ① from, to => UNCLASSIFIED, xxx
+					let fromId = this.groupService.decodeID(ctx.params.from);
+					if (toId != fromId) {
+						// ③-1 from, to => xxx, yyy
 						return this.collection.findById(toId).exec()
-						.then((doc) => {
+						.then(doc => {
 							doc.children.splice(index, 0, movingId);
 							return doc.save()
-							.then((doc) => {
-								return [doc];
+							.then(toDoc => {
+								return this.collection.findById(fromId).exec()
+								.then(fromDoc => {
+									fromDoc.children = fromDoc.children.filter( c => { return c != movingId; });
+									return fromDoc.save();
+								})
+								.then(fromDoc => {
+									console.log("③-1");
+									return [toDoc, fromDoc];
+								});
 							});
 						});	
 					} else {
-						let fromId = this.groupService.decodeID(ctx.params.from);
-						if (toId != fromId) {
-							// ③ from, to => xxx, yyy
-							return this.collection.findById(toId).exec()
-							.then((doc) => {
-								doc.children.splice(index, 0, movingId);
-								return doc.save()
-								.then((toDoc) => {
-									return this.collection.findById(fromId).exec()
-									.then((fromDoc) => {
-										fromDoc.children = fromDoc.children.filter( c => { return c != movingId; });
-										return fromDoc.save();
-									})
-									.then((fromDoc) => {
-										return [toDoc, fromDoc];
-									});
-								});
-							});	
-						} else {
-							// ④ from, to => xxx, xxx
-							return this.collection.findById(toId).exec()
-							.then((doc) => {
-								doc.children = doc.children.filter( c => { return c != movingId; });
-								doc.children.splice(index, 0, movingId);
-								return doc.save()
-								.then((doc) => {
-									return [doc];
-								});
+						// ③-2 from, to => xxx, xxx
+						return this.collection.findById(toId).exec()
+						.then(doc => {
+							doc.children = doc.children.filter( c => { return c != movingId; });
+							doc.children.splice(index, 0, movingId);
+							return doc.save()
+							.then(doc => {
+								console.log("③-2");
+								return [doc];
 							});
-						}
+						});
 					}
+				
 				} else {
-					// ② from, to => xxx, UNCLASSIFIED
-					let fromId = ctx.modelID;
-					return this.collection.findById(fromId).exec()
-					.then((fromDoc) => {
-						fromDoc.children = fromDoc.children.filter( c => { return c != movingId; });
-						return fromDoc.save();
-					})
-					.then((fromDoc) => {
-						return [fromDoc];
-					});
+					if (ctx.params.remove) {
+						// ② from, to => xxx, UNCLASSIFIED|task
+						let fromId = ctx.modelID;
+						return this.collection.findById(fromId).exec()
+						.then(fromDoc => {
+							fromDoc.children = fromDoc.children.filter( c => { return c != movingId; });
+							return fromDoc.save();
+						})
+						.then(fromDoc => {
+							return [fromDoc];
+						});
+					} else {
+						// ① from, to => UNCLASSIFIED|task, group
+						let toId = ctx.modelID;
+						return this.collection.findById(toId).exec()
+						.then(doc => {
+							doc.children.splice(index, 0, movingId);
+							return doc.save()
+							.then(doc => {
+								return [doc];
+							});
+						});	
+					}
 				}
 			})
 			.then((docs) => {
