@@ -1,14 +1,14 @@
 <template lang="pug">
-    li.drag-item.card(:class="{'requirement': task.type=='requirement', 'way': task.type=='way', 'step': task.type=='step'}", :data-code="task.code", :key="task.code" @click="select($event, task)")
-        slot(:name="task.name")
-            strong {{ task.name }}
-            div(v-if="task.children && task.children.length > 0" )
-                kanban(v-for="child in task.children", :task="child", :key="child.code")
-            div.text-muted(v-else)
-                dl(v-for="item in description(task)", :key="item.key")
-                    dt {{ item.title }}
-                    dd {{ item.value }}
-
+	li.kanban-item.card(:class="{'requirement': task.type=='requirement', 'way': task.type=='way', 'step': task.type=='step'}", :data-code="task.code", :key="task.code" @click="select($event, task)")
+		slot(:name="task.name")
+			strong {{ task.name }}
+			div(v-if="task.children && task.children.length > 0" )
+				ul.kanban-list
+					kanban(v-for="child in task.children", :task="child", :key="child.code")
+			//- div.text-muted(v-else)
+			//- 	dl(v-for="item in description(task)", :key="item.key")
+			//- 		dt {{ item.title }}
+			//- 		dd {{ item.value }}
 </template>
 
 <script>

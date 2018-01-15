@@ -1,11 +1,11 @@
 <template lang="pug">
-	div.drag-container
-		ul.drag-list.content.card-columns(v-for="group in boardGroups", :key="group.name")
-			li(v-for="board in group.boards" class="drag-column", :class="{['drag-column-' + board.code]: true}", :key="board.code")
-				span.drag-column-header
+	.container
+		ul.kanban-board-container.content.card-columns(v-for="group in boardGroups", :key="group.name")
+			li.kanban-board(v-for="board in group.boards", :class="{['drag-column-' + board.code]: true}", :key="board.code")
+				span.kanban-board-header
 					legend {{ board.name }}
 				div.drag-options
-				ul.drag-inner-list(ref="boards", :data-code="board.code")
+				ul.kanban-list(:data-code="board.code")
 					kanban(v-for="task in board.children", :task="task", :key="task.code")
 </template>
 
@@ -29,7 +29,9 @@
 			this.makeDraggable();
 		}
 		, mounted() {
-			this.makeDraggable();
+			this.$nextTick(function () {
+				this.makeDraggable();
+			});
 		}
 		, methods : {
 			description(task) {
@@ -50,7 +52,9 @@
 				if (drake) {
 					drake.destroy();
 				}
-				drake = dragula(this.$refs.boards)
+				let kanbanList = Array.from(document.querySelectorAll(".kanban-list"), el => { return el; });
+				
+				drake = dragula(kanbanList)
 					.on("drag", (li, ul) => {
 						console.log("● draggin ", li);
 						previousBoardCode = ul.dataset.code;
@@ -62,11 +66,11 @@
 							if (ul.children[index].classList.contains("is-moving")) 
 								break;
 						}
-						this.$emit("arrange", { moving: li.dataset.code
-							, from: previousBoardCode
-							, to: ul.dataset.code
-							, index: index 
-						});
+						// this.$emit("arrange", { moving: li.dataset.code
+						// 	, from: previousBoardCode
+						// 	, to: ul.dataset.code
+						// 	, index: index 
+						// });
 					})
 					.on("dragend", (li) => {
 						previousBoardCode = null;
