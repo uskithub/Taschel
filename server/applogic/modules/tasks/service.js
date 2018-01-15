@@ -63,7 +63,7 @@ module.exports = {
 				} else if (ctx.params.root_code != undefined) {
 					// find from TasksPage
 					// /tasks?root_code=${hash}
-					filter.root = this.taskService.decodeID(ctx.params.root_code);
+					filter.root = this.decodeID(ctx.params.root_code);
 					filter.isDeleted = { $ne: true };
 					filter.status = { "$gt" : -1 };
 
@@ -114,8 +114,8 @@ module.exports = {
 				, status: ctx.params.status
 				, deadline: ctx.params.deadline
 				, timeframe: (ctx.params.timeframe != undefined) ? ctx.params.timeframe : -1
-				, root: (ctx.params.root_code != undefined) ? this.taskService.decodeID(ctx.params.root_code) : -1
-				, parent: (ctx.params.parent_code != undefined) ? this.taskService.decodeID(ctx.params.parent_code) : -1
+				, root: (ctx.params.root_code != undefined) ? this.decodeID(ctx.params.root_code) : -1
+				, parent: (ctx.params.parent_code != undefined) ? this.decodeID(ctx.params.parent_code) : -1
 				, author : ctx.user.id
 				, asignee : (ctx.params.asignee_code != undefined) ? this.personService.decodeID(ctx.params.asignee_code) : -1
 			});
@@ -165,6 +165,10 @@ module.exports = {
 				return this.actions.arrange(ctx, ctx.params.arrange);
 			}
 
+			if (ctx.params.task) {
+				return this.actions.arrange2(ctx);
+			}
+
 			return this.collection.findById(ctx.modelID).exec()
 			.then((doc) => {
 
@@ -172,7 +176,7 @@ module.exports = {
 					doc.purpose = ctx.params.purpose;
 
 				if (ctx.params.root_code != null) {
-					doc.root = this.taskService.decodeID(ctx.params.root_code);
+					doc.root = this.decodeID(ctx.params.root_code);
 					// TODO: parentを取得し、rootがblankの場合、同じrootを指定、blankでなければ親子のreleationを切り離す、を先祖に遡って実施
 					// TODO: 全ての子孫を再帰的に、同じrootを指定する必要あり
 				}
@@ -240,8 +244,8 @@ module.exports = {
 			if (ctx.params.parent_code === undefined)
 				throw this.errorBadRequest(C.ERR_MODEL_NOT_FOUND, ctx.t("app:TaskNotFound"));
 
-			let parentId = this.taskService.decodeID(ctx.params.parent_code);
-			let childId = this.taskService.decodeID(childJson.code);
+			let parentId = this.decodeID(ctx.params.parent_code);
+			let childId = this.decodeID(childJson.code);
 
 			return this.collection.findById(parentId).exec()
 			.then((doc) => {
@@ -264,10 +268,10 @@ module.exports = {
 			// TODO: バリデータ
 			// ?arrange=above&target=${target.code}&targetParent=${target.parent.code}
 
-			let movingId = this.taskService.decodeID(ctx.params.code);
-			let targetId = this.taskService.decodeID(ctx.params.target);
-			let targetParentId = this.taskService.decodeID(ctx.params.targetParent);
-			let parentId = this.taskService.decodeID(ctx.params.parent);
+			let movingId = this.decodeID(ctx.params.code);
+			let targetId = this.decodeID(ctx.params.target);
+			let targetParentId = this.decodeID(ctx.params.targetParent);
+			let parentId = this.decodeID(ctx.params.parent);
 			
 			let promises = [];
 
@@ -379,17 +383,62 @@ module.exports = {
 			});			
 		}
 
+		, arrange2(ctx) {
+			let movingId = this.decodeID(ctx.params.task);
+			let index = ctx.params.index;
+
+			// ① from, to => task, task			/api/tasks/${to}?task=${moving}&index=${index}&from=${from}
+			//	  1. from, to => xxx, yyy
+			//		- toに追加
+			//		- fromから削除
+			//	  2. from, to => xxx, xxx
+			//		- to（=from）内で移動
+			return Promise.resolve()
+			.then(() => {
+				let toId = ctx.modelID;
+				let fromId = this.decodeID(ctx.params.from);
+				if (toId != fromId) {
+					// ①-1. from, to => xxx, yyy
+					return this.collection.findById(toId).exec()
+					.then(doc => {
+						doc.children.splice(index, 0, movingId);
+						return doc.save()
+						.then(toDoc => {
+							return this.collection.findById(fromId).exec()
+							.then(fromDoc => {
+								fromDoc.children = fromDoc.children.filter( c => { return c != movingId; });
+								return fromDoc.save();
+							})
+							.then(fromDoc => {
+								return [toDoc, fromDoc];
+							});
+						});
+					});
+				} else {
+					// ①-2. from, to => xxx, xxx
+					return this.collection.findById(toId).exec()
+					.then(doc => {
+						doc.children = doc.children.filter( c => { return c != movingId; });
+						doc.children.splice(index, 0, movingId);
+						return doc.save()
+						.then(doc => {
+							return [doc];
+						});
+					});
+				}
+			});
+		}
 		// 親子関係、rootの整合性をチェックする
 		, check(ctx) {
 			let recursiveReduceCheck = (children, parent, rootId, result = { entities:[], errors:[] }) => {
 				return children.reduce((data, child) => {
-					const cid = this.taskService.decodeID(child.code);
-					const cpid = (child.parent == -1) ? -1 : this.taskService.decodeID(child.parent);
-					const crid = (child.root == -1) ? -1 : this.taskService.decodeID(child.root);
-					const pid = this.taskService.decodeID(parent.code);
+					const cid = this.decodeID(child.code);
+					const cpid = (child.parent == -1) ? -1 : this.decodeID(child.parent);
+					const crid = (child.root == -1) ? -1 : this.decodeID(child.root);
+					const pid = this.decodeID(parent.code);
 					if (parent.type == "project") {
 						if (parent.parent && parent.parent != -1) {
-							const ppid = this.taskService.decodeID(parent.parent);
+							const ppid = this.decodeID(parent.parent);
 							data.errors.push(`project[${pid}] must not have any parent(parent[${ppid}])`);
 						}
 					}
@@ -419,7 +468,7 @@ module.exports = {
 			})
 			.then(jsons => {
 				return jsons.reduce((obj, project) => {
-					const rootId = this.taskService.decodeID(project.code);
+					const rootId = this.decodeID(project.code);
 					return recursiveReduceCheck(project.children, project, rootId, obj);
 				}, { entities:[], errors:[] })
 			});
@@ -452,7 +501,6 @@ module.exports = {
 
 	, init(ctx) {
 		// Fired when start the service
-		this.taskService = ctx.services("tasks");
 		this.personService = ctx.services("persons");
 		this.workService = ctx.services("works");
 	}

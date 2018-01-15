@@ -646,7 +646,7 @@ module.exports = {
 			.then(() => {
 				if (ctx.params.from) {
 					let toId = ctx.modelID;
-					let fromId = this.groupService.decodeID(ctx.params.from);
+					let fromId = this.decodeID(ctx.params.from);
 					if (toId != fromId) {
 						// ③-1 from, to => xxx, yyy
 						return this.collection.findById(toId).exec()
@@ -753,7 +753,6 @@ module.exports = {
 
 	init(ctx) {
 		// Fired when start the service
-		this.groupService = ctx.services("groups");
 		this.taskService = ctx.services("tasks");
 		this.personService = ctx.services("persons");
 	},

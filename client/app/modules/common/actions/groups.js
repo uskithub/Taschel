@@ -70,7 +70,7 @@ export const updateGroups = ({ commit }, { moving, from, to, index, mutation }) 
 	//		-> [toDoc]
 	// ② from, to => group, UNCLASSIFIED|task	/api/groups/${from}?task=${moving}&index=${index}&remove=true
 	//		-> [fromDoc]
-	// ③ from, to => group, group			/api/groups/${to}?task=${moving}&index=${index}&from=${from}
+	// ③ from, to => group, group				/api/groups/${to}?task=${moving}&index=${index}&from=${from}
 	//	  1. from, to => xxx, yyy
 	//		-> [toDoc, fromDoc];
 	//	  2. from, to => xxx, xxx

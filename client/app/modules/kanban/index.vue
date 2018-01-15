@@ -128,6 +128,7 @@
 				getGroups : "readGroups"
 				, createGroup : "createGroup"
 				, updateGroups : "updateGroups"
+				, arrangeTask : "arrangeTask2"
 			})
 			, selectProject(code) {
 				this.setCurrentProject(code);
@@ -162,14 +163,21 @@
 					context.to.code = context.to.code.replace(milestonePrefix, "");
 				}
 
-				context.mutation = UPDATE;
-
-				// task
 				if ((context.from.type == "task" || context.from.code == "UNCLASSIFIED") 
 					&& (context.to.type == "task" || context.to.code == "UNCLASSIFIED")) {
-					// TODO
+					// task
+					if (context.from.code == "UNCLASSIFIED") {
+						context.from.type = "task";
+						context.from.code = this.currentProject;
+					} else if (context.to.code == "UNCLASSIFIED") {
+						context.to.type = "task";
+						context.to.code = this.currentProject;
+					}
+					context.mutation = UPDATE;
+					this.arrangeTask(context);
 				} else {
 					// group
+					context.mutation = UPDATE;
 					this.updateGroups(context);
 				}
 			}

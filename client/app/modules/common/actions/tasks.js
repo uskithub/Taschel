@@ -189,3 +189,17 @@ export const arrangeTask = ({ commit }, { moving, target, type }) => {
 		});
 	}
 };
+
+// TODO: Unify arrangeTask and arrangeTask2 by making ganttPage with dragula.
+export const arrangeTask2 = ({ commit }, { moving, from, to, index, mutation }) => {
+	console.log("● arrange", { moving, from, to, index });
+
+	// ① from, to => task, task			/api/tasks/${to}?task=${moving}&index=${index}&from=${from}
+	//	  1. from, to => xxx, yyy
+	//	  2. from, to => xxx, xxx
+	return api(METHOD.put, `${NAMESPACE}/${to.code}?task=${moving.code}&index=${index}&from=${from.code}`)
+	.then(data => {
+		if (mutation)
+			commit(mutation, data, { root : (mutation.indexOf("/") > -1) });
+	});
+};
