@@ -163,6 +163,9 @@
 					context.to.code = context.to.code.replace(milestonePrefix, "");
 				}
 
+				context.parent_code = this.currentProject;
+				context.mutation = UPDATE;
+
 				if ((context.from.type == "task" || context.from.code == "UNCLASSIFIED") 
 					&& (context.to.type == "task" || context.to.code == "UNCLASSIFIED")) {
 					// task
@@ -173,11 +176,9 @@
 						context.to.type = "task";
 						context.to.code = this.currentProject;
 					}
-					context.mutation = UPDATE;
 					this.arrangeTask(context);
 				} else {
 					// group
-					context.mutation = UPDATE;
 					this.updateGroups(context);
 				}
 			}

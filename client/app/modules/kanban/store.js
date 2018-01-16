@@ -34,11 +34,9 @@ const mutations = {
 	, [ADD] (state, model) {
 		state.groups.push(model);
 	}
-	, [UPDATE] (state, model) {
-		each(state.groups, (item) => {
-			if (item.code == model.code)
-				assign(item, model);
-		});
+	, [UPDATE] (state, models) {
+		state.groups.splice(0);
+		state.groups.push(...models);
 	}
 	, [SELECT] (state, model, multiSelect) {
 		if (isArray(model)) {

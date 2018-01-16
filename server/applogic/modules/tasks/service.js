@@ -121,7 +121,7 @@ module.exports = {
 			});
 
 			return task.save()
-			.then((doc) => {
+			.then(doc => {
 
 				if (ctx.params.type == "project") {
 					// kanbanを作る
@@ -143,10 +143,10 @@ module.exports = {
 					return this.toJSON(doc);
 				}				
 			})
-			.then((json) => {
+			.then(json => {
 				return this.populateModels(json);
 			})
-			.then((json) => {
+			.then(json => {
 				if (ctx.params.parent_code != undefined) {
 					// breakdownの場合
 					return this.actions.breakdown(ctx, json);
@@ -410,7 +410,8 @@ module.exports = {
 								return fromDoc.save();
 							})
 							.then(fromDoc => {
-								return [toDoc, fromDoc];
+								// return [toDoc, fromDoc];
+								return this.groupService.actions.find(ctx);
 							});
 						});
 					});
@@ -422,7 +423,8 @@ module.exports = {
 						doc.children.splice(index, 0, movingId);
 						return doc.save()
 						.then(doc => {
-							return [doc];
+							// return [doc];
+							return this.groupService.actions.find(ctx);
 						});
 					});
 				}
@@ -502,6 +504,7 @@ module.exports = {
 	, init(ctx) {
 		// Fired when start the service
 		this.personService = ctx.services("persons");
+		this.groupService = ctx.services("groups");
 		this.workService = ctx.services("works");
 	}
 

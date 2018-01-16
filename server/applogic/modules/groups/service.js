@@ -660,8 +660,8 @@ module.exports = {
 									return fromDoc.save();
 								})
 								.then(fromDoc => {
-									console.log("③-1");
-									return [toDoc, fromDoc];
+									// return [toDoc, fromDoc];
+									return this.actions.find(ctx);
 								});
 							});
 						});	
@@ -673,8 +673,8 @@ module.exports = {
 							doc.children.splice(index, 0, movingId);
 							return doc.save()
 							.then(doc => {
-								console.log("③-2");
-								return [doc];
+								// return [doc];
+								return this.actions.find(ctx);
 							});
 						});
 					}
@@ -689,7 +689,8 @@ module.exports = {
 							return fromDoc.save();
 						})
 						.then(fromDoc => {
-							return [fromDoc];
+							// return [fromDoc];
+							return this.actions.find(ctx);
 						});
 					} else {
 						// ① from, to => UNCLASSIFIED|task, group
@@ -699,19 +700,20 @@ module.exports = {
 							doc.children.splice(index, 0, movingId);
 							return doc.save()
 							.then(doc => {
-								return [doc];
+								// return [doc];
+								return this.actions.find(ctx);
 							});
 						});	
 					}
 				}
 			})
-			.then((docs) => {
-				return this.toJSON(docs);
-			})
-			.then((jsons) => {
-				return this.populateModels(jsons);
-			})
-			.then((jsons) => {
+			// .then(docs => {
+			// 	return this.toJSON(docs);
+			// })
+			// .then(jsons => {
+			// 	return this.populateModels(jsons);
+			// })
+			.then(jsons => {
 				this.notifyModelChanges(ctx, "updated", jsons);
 				return jsons;
 			});								
