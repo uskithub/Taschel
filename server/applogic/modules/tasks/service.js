@@ -84,7 +84,7 @@ module.exports = {
 
 				let query = Task.find(filter);
 
-				return ctx.queryPageSort(query).exec().then( (docs) => {
+				return ctx.queryPageSort(query).exec().then(docs => {
 					return this.toJSON(docs);
 				})
 				.then(json => {
@@ -391,6 +391,7 @@ module.exports = {
 			//	  1. from, to => xxx, yyy
 			//		- toに追加
 			//		- fromから削除
+			//      - movingの親をtoに
 			//	  2. from, to => xxx, xxx
 			//		- to（=from）内で移動
 			return Promise.resolve()
@@ -410,8 +411,25 @@ module.exports = {
 								return fromDoc.save();
 							})
 							.then(fromDoc => {
-								// return [toDoc, fromDoc];
-								return this.groupService.actions.find(ctx);
+								return this.collection.findById(movingId).exec()
+								.then(movingDoc => {
+									movingDoc.parent = toId;
+									return movingDoc.save();
+								})
+								.then(movingDoc => {
+								// 	return this.toJSON([toDoc, fromDoc, movingDoc]);
+								// })
+								// .then(jsons => {
+								// 	return this.populateModels(jsons);
+								// })
+								// .then(jsons => {
+								// 	// Groups find will use cache. So putting task docs into cache here.
+								// 	this.putToCache(this.getCacheKey("model", toId), jsons[0]);
+								// 	this.putToCache(this.getCacheKey("model", fromId), jsons[1]);
+								// 	this.putToCache(this.getCacheKey("model", movingId), jsons[2]);
+									// return [toDoc, fromDoc, movingDoc];
+									return this.groupService.actions.find(ctx);
+								});
 							});
 						});
 					});

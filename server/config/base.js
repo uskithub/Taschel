@@ -66,7 +66,7 @@ module.exports = {
 		options: null
 	},
 
-	cacheTimeout: 5 * 60, // 5 mins
+	cacheTimeout: null, //5 * 60, // 5 mins
 
 	mailer: {
 		enabled: false, // change this flag to true to turn emailing feature on.
