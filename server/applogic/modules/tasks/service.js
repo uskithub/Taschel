@@ -53,7 +53,7 @@ module.exports = {
 
 				let filter = {};
 
-				if (ctx.params.type !== undefined) {
+				if (ctx.params.type != undefined) {
 					// find from ProjectsPage, GanttPage
 					// /tasks?type=project
 					filter.type = ctx.params.type;
@@ -87,7 +87,7 @@ module.exports = {
 				return ctx.queryPageSort(query).exec().then( (docs) => {
 					return this.toJSON(docs);
 				})
-				.then((json) => {
+				.then(json => {
 					return this.populateModels(json);
 				});
 			}

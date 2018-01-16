@@ -1,6 +1,6 @@
 <template lang="pug">
 	// TODO: AddはGroupの追加でselectはTaskの編集になっていて、popupFormがおかしい
-	kanban-page(:schema="schema", :selectedProject="currentProject", :selectedTasks="selectedTasks", :projects="projects", :boardGroups="boardGroups", :model="model"
+	kanban-page(:schema="schema", :selectedProject="currentProject", :selectedTasks="selectedTasks", :boardGroups="boardGroups", :model="model"
 		@arrange="arrange" 
 		@add="generateModel"
 		@select-project="selectProject"	

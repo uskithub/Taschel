@@ -363,9 +363,11 @@ module.exports = {
 							return this.toJSON(docs);
 						})
 						.then(jsons => {
+							return this.populateModels(jsons);
+						}).then(jsons => {
 							// for getting unclassified tasks, create the classified tasks code array.
 							let classifiedTaskCodes = jsons.reduce((arr, g) => {
-								return arr.concat(g.children.map(id => { return this.taskService.encodeID(id); }));
+								return arr.concat(g.children.map(child => { return child.code; }));
 							}, []);
 							
 							// exclude status is closed or already classified tasks.
@@ -406,10 +408,7 @@ module.exports = {
 								, children: []
 							}]);
 
-							return this.populateModels(jsons)
-							.then(jsons => {
-								return unclassifiedGroups.concat(jsons);
-							});
+							return unclassifiedGroups.concat(jsons);
 						});
 					});
 

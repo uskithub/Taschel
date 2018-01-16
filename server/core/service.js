@@ -299,9 +299,11 @@ class Service {
 			})
 			.then((json) => {
 				// Save to cache
-				if (cacheKey)
-					this.putToCache(cacheKey, json);
-
+				if (cacheKey) {
+					// After caching, if the returned json was modified, cached json also would change.
+					// So caching the clone json.
+					this.putToCache(cacheKey, _.cloneDeep(json));
+				}
 				return json;
 			});
 		});			

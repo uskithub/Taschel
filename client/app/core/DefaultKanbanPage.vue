@@ -56,10 +56,6 @@
 				, required: true
 				, validator: function(value) { return true; } // TODO
 			}
-			, projects : {
-				type: Array
-				, validator: function(value) { return true; } // TODO
-			}
 			, boardGroups : {
 				type: Array
 				, required: true
