@@ -4,16 +4,16 @@
 			.panel
 				.header {{ schema.title }}
 				.body 
-					div.drag-container
-						ul.drag-list
-							li(class="drag-column drag-column-daily-works" key="works", :class="{ active : isHighOrderReivew }"
+					.kanban-system-container
+						ul.kanban-board-container
+							li.kanban-board.kanban-board-daily-works(key="works", :class="{ active : isHighOrderReivew }"
 								@click.prevent.stop="select($event, null, works.length+1)"
 							)
-								span.drag-column-header
-									h2 {{ "works" }}
+								span.kanban-board-header
+									legend {{ "works" }}
 								div.drag-options
-								ul.drag-inner-list(data-code="daily" ref="works")
-									li.drag-item(v-for="(work, i) in works", :class="{ active : index == i }", :data-code="work.code", :key="work.code" ref="items"
+								ul.kanban-list(data-code="daily" ref="works")
+									li.kanban-item(v-for="(work, i) in works", :class="{ active : index == i }", :data-code="work.code", :key="work.code" ref="items"
 										@click.prevent.stop="select($event, work, i)"
 									)
 										slot(:name="work.title")
@@ -22,24 +22,23 @@
 												dl(v-for="item in description(work)", :key="item.key")
 													dt {{ item.title }}
 													dd {{ item.value }}
-							li(class="drag-column", key="form")
-								.form
-									vue-form-generator(:schema="dynamicForm", :model="dynamicModel", :options="options", ref="form", :is-new-model="isNewModel")
+							li.kanban-board.form(key="form")
+								vue-form-generator(:schema="dynamicForm", :model="dynamicModel", :options="options", ref="form", :is-new-model="isNewModel")
 
-									.errors.text-center
-										div.alert.alert-danger(v-for="(item, index) in validationErrors", :key="index") {{ item.field.label }}: 
-											strong {{ item.error }}
+								.errors.text-center
+									div.alert.alert-danger(v-for="(item, index) in validationErrors", :key="index") {{ item.field.label }}: 
+										strong {{ item.error }}
 
-									.buttons.flex.justify-space-around
-										button.button.primary(@click="buttonSaveDidPush", :disabled="!isSaveButtonEnable")
-											i.icon.fa.fa-save 
-											| {{ saveButtonCaption }}
-										button.button.outline(v-if="options.isSkipButtonEnable" @click="buttonSkipDidPush", :disabled="!isSkipButtonEnable")
-											i.icon.fa.fa-save
-											| {{ schema.resources.skipCaption || _("Skip") }}
-										button.button.outline(@click="buttonCancelDidPush", :disabled="!isCancelButtonEnable")
-											i.icon.fa.fa-close
-											| {{ schema.resources.cancelCaption || _("Cancel") }}
+								.buttons.flex.justify-space-around
+									button.button.primary(@click="buttonSaveDidPush", :disabled="!isSaveButtonEnable")
+										i.icon.fa.fa-save 
+										| {{ saveButtonCaption }}
+									button.button.outline(v-if="options.isSkipButtonEnable" @click="buttonSkipDidPush", :disabled="!isSkipButtonEnable")
+										i.icon.fa.fa-save
+										| {{ schema.resources.skipCaption || _("Skip") }}
+									button.button.outline(@click="buttonCancelDidPush", :disabled="!isCancelButtonEnable")
+										i.icon.fa.fa-close
+										| {{ schema.resources.cancelCaption || _("Cancel") }}
 
 				.block
 					//- button.button.success(@click="schema.buttons[0].action") {{ schema.buttons[0].label }}
@@ -288,7 +287,9 @@
 </script>
 
 <style lang="scss">	
-	.drag-item {
+	@import "../../../../scss/taschel/kanban";
+
+	.kanban-item {
 		border: 2px solid transparent;
 
 		&.active {
@@ -296,7 +297,7 @@
 		}
 	}
 
-	.drag-column {
+	.kanban-board {
 		&-daily-works {
 			border: 2px solid transparent;
 

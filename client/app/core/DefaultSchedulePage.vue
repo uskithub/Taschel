@@ -174,10 +174,10 @@
 
 				// the first day of currentWeek(mon), tue, wed, thu, fri 
 				let days = [0, 1, 2, 3].reduce((arr, i) => {
-					arr.push(moment(arr[i]).add(1, "d").format());
+					arr.push(moment(arr[i]).add(1, "d").format("YYYY-MM-DD"));
 					return arr;
 				}, [this.currentWeek]);
-
+				
 				// TODO
 				// closeしたworkが件の場合にはeditableをfalseにする
 				let _reviews = days.map(d => {

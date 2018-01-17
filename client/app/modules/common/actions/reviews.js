@@ -29,8 +29,8 @@ export const createReview = ({ commit }, { model, mutation }) => {
 export const readReviews = ({ commit }, { options, mutation }) => {
 	let url = NAMESPACE;
 
-	if (options != undefined && options.user != undefined && options.week != undefined) {
-		url = `${url}?user=${options.user}&week=${options.week}`;
+	if (options != undefined && options.user_code != undefined && options.week != undefined) {
+		url = `${url}?user_code=${options.user_code}&week=${options.week}`;
 	} 
 
 	return api(METHOD.get, url)

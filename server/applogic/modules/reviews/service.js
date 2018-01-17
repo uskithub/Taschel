@@ -38,16 +38,16 @@ module.exports = {
 			cache: true,
 			handler(ctx) {
 				let filter = {
-					author : this.personService.decodeID(ctx.params.user)
+					author : this.personService.decodeID(ctx.params.user_code)
                     , week : ctx.params.week
 				};
 
 				let query = Review.find(filter);
 
-				return ctx.queryPageSort(query).exec().then( (docs) => {
+				return ctx.queryPageSort(query).exec().then(docs => {
 					return this.toJSON(docs);
 				})
-				.then((json) => {
+				.then(json => {
 					return this.populateModels(json);
 				});
 			}
