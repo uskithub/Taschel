@@ -29,7 +29,7 @@
 				button.button.is-primary(@click="buttonNextDidPush")
 					i.icon.fa.fa-arrow-right
 		br
-		kanban(:boardGroups="boardGroups", @arrange="arrange" @select="select")
+		kanban-board(:boardGroups="boardGroups", @arrange="arrange" @select="select")
 
 		popup-form(v-if="isEditing", :schema="schema.popupForm", :template="model"
 			@save="save"
@@ -44,7 +44,7 @@
 <script>
 	import Vue from "vue";
 	import { schema as schemaUtils } from "vue-form-generator";
-	import Kanban from "./components/kanban";
+	import KanbanBoard from "./components/kanban";
 	import PopupForm from "./components/popupform";
 
 	import { each, find, cloneDeep, isFunction, debounce } from "lodash";
@@ -54,7 +54,7 @@
 	export default {
 		name: "WeeklyPage"
         , components: {
-			Kanban
+			KanbanBoard
 			, PopupForm
 		}
         // task-page(:schema="schema", :selectedTasks="selectedTasks", :projects="projects", :tasks="tasks", :users="users") に対応させる

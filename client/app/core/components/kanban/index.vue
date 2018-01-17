@@ -1,5 +1,5 @@
 <template lang="pug">
-	.container
+	.kanban-system-container
 		ul.kanban-board-container.content.card-columns(v-for="group in boardGroups", :key="group.name")
 			li.kanban-board(v-for="board in group.boards", :key="board.code")
 				span.kanban-board-header

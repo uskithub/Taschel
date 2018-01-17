@@ -319,28 +319,28 @@
 </script>
 <style lang="scss">
 	// @see https://www.webcreatorbox.com/tech/css-flexbox-cheat-sheet
-	.drag-container {
+	.kanban-system-container {
 		display: flex;
-	}
 
-	.drag-list {
-		&.content {
-			&.card-columns {
-				flex-grow: 1;
+		.kanban-board-container {
+			&.content {
+				&.card-columns {
+					flex-grow: 1;
 
-				&:nth-child(2) {
-					flex-grow: 2;
-					display: flex;
-					flex-direction: row-reverse;
-					flex-wrap: wrap;
-					align-items: stretch;
-					align-content: flex-start;
+					&:nth-child(2) {
+						flex-grow: 2;
+						display: flex;
+						flex-direction: row-reverse;
+						flex-wrap: wrap;
+						align-items: stretch;
+						align-content: flex-start;
 
-					.drag-column {
-						flex: inherit;
-						flex-grow: inherit;
-						width: 48%;
-						margin: 0 1% 1% 1%;
+						.kanban-board {
+							flex: inherit;
+							flex-grow: inherit;
+							width: 48%;
+							margin: 0 1% 1% 1%;
+						}
 					}
 				}
 			}
