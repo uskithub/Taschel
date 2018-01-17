@@ -38,6 +38,42 @@
 https://www.npmjs.com/package/vue-gantt
 https://github.com/CroudSupport/croud-vue-gantt
 
+# Structure
+
+```txt
+project
+   +---subproject
+   |      +---milestone
+   |      |      +---requirement
+   |      |      |      +---step
+   |      |      |      +---step
+   |      |      |      +---step
+   |      |      |      |     +---todo
+   |      |      |      |
+   |      |      |      +---todo
+   |      |      |
+   |      |      +---requirement
+   |      |             +---way
+   |      |             |     +---step
+   |      |             |     +---step
+   |      |             |           +---todo
+   |      |             |
+   |      |             +---way
+   |      |             |     +---todo
+   |      |             +---way
+   |      |                   +---todo
+   |      |                   +---todo
+   |      |                         
+   |      +---milestone
+   |             +---requirement
+   |                    +---step
+   |                    +---step
+   |                       
+   +---subproject
+          +---milestone
+          ...
+```
+
 # タスク間の関係について
 
 **親子関係**

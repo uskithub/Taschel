@@ -23,14 +23,22 @@ export const createReview = ({ commit }, { model, mutation }) => {
 // 	options : {	
 //    	user : People.code
 //    	, week : "YYYY-MM-DD"
+//		, date : "YYYY-MM-DD"
 // 	}
 //	, mutation : "LOAD"
 // }
 export const readReviews = ({ commit }, { options, mutation }) => {
 	let url = NAMESPACE;
 
-	if (options != undefined && options.user_code != undefined && options.week != undefined) {
-		url = `${url}?user_code=${options.user_code}&week=${options.week}`;
+	if (options != undefined) {
+		// for dailyPage
+		if (options.user_code != undefined && options.week != undefined) {
+			url = `${url}?user_code=${options.user_code}&week=${options.week}`;
+		}
+		// for dailyPage 
+		else if (options.date) {
+			url = `${url}?date=${options.date}`;
+		}
 	} 
 
 	return api(METHOD.get, url)

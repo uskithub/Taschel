@@ -14,30 +14,23 @@ module.exports = {
 	, projectSelector: generate(areaTypes.form, ["project"])
 	, popupForm : {
 		title : ""
-		, form : (() => {
-			let _form = generate(
-				areaTypes.form
-				, [ "root", "type", "name", "purpose", "goal", "deadline", "timeframe", "asignee", "description"]
-			);
-			return { 
-				fields : _form.fields.map(f => {
-					if (f.model == "root_code") {
-						f.readonly = true;
-						f.disabled = true;
-					}
-					return f;
-				})
-			};
-		})()
+		, form : {
+			fields: [
+				{ 
+					type: "textArea"
+					, label: _("Comment")
+					, model: "comment"
+					, hint: "Max 250 characters"
+					, max: 250
+					, placeholder: _("CommentPlaceholder")
+					, rows: 4
+					, required: true
+					, validator: validators.string
+				}
+			]
+		}
 		, options : {
-			searchable: true
-	
-			, isAddButtonEnable: true
-			, isSaveButtonEnable: true
-			, isCloseButtonEnable: false
-			, isBreakdownButtonEnable: false
-			, isCloneButtonEnable: false
-			, isDeleteButtonEnable: true
+			isSaveButtonEnable: true
 			, isCancelButtonEnable: true
 	
 			, validateAfterLoad: false // Validate after load a model
@@ -46,9 +39,7 @@ module.exports = {
 		}
 		, resources: {
 			saveCaption: _("Save")
-			, cloneCaption: _("Clone")
-			, breakdownCaption: _("Breakdown")
-			, deleteCaption: _("Delete")
+			, cancelCaption: _("Cancel")
 		}
 	}
 	, events : {

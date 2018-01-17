@@ -37,11 +37,17 @@ module.exports = {
 		find: {
 			cache: true,
 			handler(ctx) {
-				let filter = {
-					author : this.personService.decodeID(ctx.params.user_code)
-                    , week : ctx.params.week
-				};
+				let filter = {};
 
+				if (ctx.params.date) {
+					filter.date = ctx.params.date;
+				} else {
+					filter = {
+						author : this.personService.decodeID(ctx.params.user_code)
+						, week : ctx.params.week
+					};
+				}
+				
 				let query = Review.find(filter);
 
 				return ctx.queryPageSort(query).exec().then(docs => {
