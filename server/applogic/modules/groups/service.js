@@ -27,6 +27,18 @@ const DEFAULT_DAILY_GROUPS = [
 	, { name: "Friday", purpose: "for_friday" }
 ];
 
+const isDescendant = (testee, tester) => {
+	if (tester.children.length > 0) {
+		for (let i in tester.children) {
+			const child = tester.children[i];
+			if (child.code == testee.code || isDescendant(testee, child)) {
+				return true;
+			}
+		}
+	}
+	return false;
+};
+
 module.exports = {
 	settings: {
 		name: "groups",
@@ -421,35 +433,31 @@ module.exports = {
 							, { type : type }
 						]
 					};
-
 					let query = Group.find(filter);
-
-					// 該当週のGroupを取得
 					return ctx.queryPageSort(query).exec().then(docs => {
 						return this.toJSON(docs);
 					})
 					.then(jsons => {
 						// status is open ( > -1)
-						// type is "requirement", "way" or "step", "todo"
-						// has no children
+						// type is "requirement", "way", "step" or "todo"
 						// author or asignee is user
 						let filter = {
 							status : { $gt : -1 }
 							, type : { $in: ["requirement", "way", "step", "todo"] }
-							, children : { $size: 0 }
 							, $or : [ { author : userId }, { asignee : userId } ]
 						};
+						const excludeRule = ((serviceName, json) => {
+							if ( serviceName != "tasks" ) { return true; }
+							return json.status > -1
+								&& ["requirement", "way", "step", "todo"].includes(json.type)
+								&& (json.author == userId || json.asignee == userId);
+						});
 
 						let query = Task.find(filter);
-
-						// myTasksでクローズしていないものを取得
 						return ctx.queryPageSort(query).exec()
 						.then(taskDocs => {
 
 							if (jsons.length == 0) {
-								// TODO: 該当週のデータがないならないで返す？
-								// this.notifyNotSetupYet(ctx);
-								
 								// generating and returning default groups.
 								// using reduce for array will be correct sequence.
 								return DEFAULT_WEEKLY_GROUPS.reduce((promise, g) => {
@@ -474,13 +482,26 @@ module.exports = {
 								.then(jsons => {
 									return Promise.resolve()
 									.then(() => {
-										return this.toJSON(taskDocs);
+										return this.taskService.toJSON(taskDocs);
 									})
 									.then(taskJsons => {
-										return this.populateModels(taskJsons);
+										// populated items also should be filtered.
+										return this.taskService.populateModels(taskJsons, excludeRule);
 									})
 									.then(taskJsons => {
-										// 既存Groupに分類されていないTaskを未分類として既存Groupとともに返す
+										// exclude what is descendant of the other task.
+										taskJsons = taskJsons.reduce((result, t) => {
+											const otherJsons = taskJsons.filter(_t => { return _t.code != t.code; });
+											for (let i in otherJsons) {
+												const other = otherJsons[i];
+												if (isDescendant(t, other)) {
+													return result;
+												}
+											}
+											result.push(t);
+											return result;
+										}, []);
+
 										let unclassifiedGroup = {
 											code: UNCLASSIFIED
 											, type: type
@@ -505,9 +526,22 @@ module.exports = {
 									return this.taskService.toJSON(unclassifiedTaskDocs);
 								})
 								.then(unclassifiedTaskJsons => {
-									return this.taskService.populateModels(unclassifiedTaskJsons);
+									return this.taskService.populateModels(unclassifiedTaskJsons, excludeRule);
 								})
 								.then(unclassifiedTaskJsons => {
+									// exclude what is descendant of the other task.
+									unclassifiedTaskJsons = unclassifiedTaskJsons.reduce((result, t) => {
+										const otherJsons = unclassifiedTaskJsons.filter(_t => { return _t.code != t.code; });
+										for (let i in otherJsons) {
+											const other = otherJsons[i];
+											if (isDescendant(t, other)) {
+												return result;
+											}
+										}
+										result.push(t);
+										return result;
+									}, []);
+									
 									return this.populateModels(jsons)
 									.then(jsons => {
 										let unclassifiedGroup = {

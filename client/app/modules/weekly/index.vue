@@ -171,6 +171,9 @@
 					});
 				}
 			}
+			// , arrange(context) {
+			// 	console.log(context);
+			// }
 			, changeWeek(direction) {
 				if (direction == "prev") {
 					const newCurrent = moment(this.currentWeek).subtract(7, "d").format("YYYY-MM-DD");

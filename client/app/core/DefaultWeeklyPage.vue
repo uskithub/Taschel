@@ -146,7 +146,10 @@
 					this.$emit("selectUser", newVal);
 				// }
 			}
-			, arrange(context) { this.$emit("arrange", context); }
+			, arrange(context) { 
+				context.weekly = this.currentWeek;
+				this.$emit("arrange", context); 
+			}
 			, buttonAddDidPush() {
 				this.$emit("add");
 

@@ -25,7 +25,9 @@
 		, computed: {
 		}
 		, updated() {
-			this.makeDraggable();
+			this.$nextTick(function () {
+				this.makeDraggable();
+			});
 		}
 		, mounted() {
 			this.$nextTick(function () {
@@ -64,7 +66,7 @@
 							if (target.children[index].classList.contains("is-moving")) 
 								break;
 						}
-						// console.log("● dropped", el.dataset.code, target.dataset.code, source.dataset.code, index)
+						console.log("● dropped", el.dataset.code, target.dataset.code, source.dataset.code, index)
 						this.$emit("arrange", { moving: { type: "task", code: el.dataset.code }
 							, from: { type: source.dataset.type, code: source.dataset.code }
 							, to: { type: target.dataset.type, code: target.dataset.code }

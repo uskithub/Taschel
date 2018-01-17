@@ -192,9 +192,9 @@ class Service {
 	 * 
 	 * @memberOf Service
 	 */
-	populateModels(docs, populateSchema, encodeSchema) {
+	populateModels(docs, excludeRule = null, populateSchema, encodeSchema) {
 		populateSchema = populateSchema || this.$settings.modelPopulates; 
-		encodeSchema = this.$settings.idEncodes;
+		encodeSchema = encodeSchema || this.$settings.idEncodes;
 
 		// 生idで持っている値をencodeして返すための処理
 		if (docs != null && encodeSchema) {
@@ -232,8 +232,8 @@ class Service {
 					let service = Services.get(serviceName);
 					if (service && _.isFunction(service["getByID"])) {
 						let items = _.isArray(docs) ? docs : [docs]; 
-						items.forEach((doc) => {
-							promises.push(service.getByID(doc[field]).then((populated) => {
+						items.forEach(doc => {
+							promises.push(service.getByID(doc[field], excludeRule).then(populated => {
 								doc[field] = populated;
 							}));
 						});
@@ -256,7 +256,7 @@ class Service {
 	 * @param {Number|Array} id
 	 * @returns {Object|Array} JSON object(s)
 	 */
-	getByID(id) {
+	getByID(id, excludeRule = null) {
 		if (this.collection == null || id == null)
 			return Promise.resolve();
 
@@ -272,7 +272,7 @@ class Service {
 			else
 				return null;				
 		})
-		.then((data) => {
+		.then(data => {
 			if (data)
 				return data;
 			
@@ -282,22 +282,34 @@ class Service {
 			} else
 				query = this.collection.findById(id);
 
-			return query.exec().then((docs) => {
+			return query.exec().then(docs => {
 				if (_.isArray(docs)) {
-					// findの結果、_idの昇順に並び替わってしまうので、元の並びになるようにしている
+					// the result of find, array will be cahnged to be ascendant of _id,
+					// so unmaking original scequences.
 					let _docs = docs.reduce((obj, d) => { 
 						obj[d._id] = d;
 						return obj;
 					}, {});
 					let reorderedDocs = id.map(id => _docs[id]);
-					return this.toJSON(reorderedDocs);
+					const jsons = this.toJSON(reorderedDocs);
+					if (excludeRule) {
+						return jsons.filter(j => { return excludeRule(this.name, j); });
+					} else {
+						return jsons;
+					}
 				}
-				return this.toJSON(docs);
+
+				const json = this.toJSON(docs);
+				if (excludeRule) {
+					return excludeRule(this.name, json) ? json : null;
+				} else {
+					return json;
+				}
 			})
-			.then((json) => {
-				return this.populateModels(json);
+			.then(json => {
+				return this.populateModels(json, excludeRule);
 			})
-			.then((json) => {
+			.then(json => {
 				// Save to cache
 				if (cacheKey) {
 					// After caching, if the returned json was modified, cached json also would change.

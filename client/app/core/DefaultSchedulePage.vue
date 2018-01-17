@@ -18,40 +18,42 @@
 				.form
 					vue-form-generator(:schema="schema.userSelector", :model="modelUserSelector" ref="userSelector" @model-updated="selectUser")
 
-		div.drag-container
-			ul.drag-list
-				li(class="drag-column drag-column-weekly-tasks", key="weekly")
-					span.drag-column-header
-						h2 {{ _("Tasks") }}
+		div.kanban-system-container
+			ul.kanban-board-container
+				li.kanban-board.kanban-board-weekly-tasks(key="weekly")
+					span.kanban-board-header
+						legend {{ _("Tasks") }}
 					div.drag-options
-					ul.drag-inner-list(data-code="weekly" ref="tasks")
-						li.drag-item(v-for="task in tasks", :data-code="task.code", :key="task.code" ref="items" data-duration="1:00")
-							slot(:name="task.name")
-								strong {{ task.name }}
-								.text-muted
-									dl(v-for="item in description(task)", :key="item.key")
-										dt {{ item.title }}
-										dd {{ item.value }}
-				li(class="drag-column", key="schedule")
+					ul.kanban-list(data-code="weekly" ref="tasks")
+						kanban(v-for="task in tasks", :task="task", :key="task.code")
+						//- li.kanban-item.card(v-for="task in tasks", :class="{'requirement': task.type=='requirement', 'way': task.type=='way', 'step': task.type=='step'}", :data-code="task.code", :key="task.code" ref="items" data-duration="1:00")
+						//- 	slot(:name="task.name")
+						//- 		strong {{ task.name }}
+						//- 		.text-muted
+						//- 			dl(v-for="item in description(task)", :key="item.key")
+						//- 				dt {{ item.title }}
+						//- 				dd {{ item.value }}
+				li.kanban-board(key="schedule")
 					full-calendar(:events="events", :options="schema.fullCalendar", :currentWeek="currentWeek")
 
 		popup-form(v-if="isEditing", :schema="schema.popupForm", :template="model"
-			, @save="save"
-			, @close="close"
-			, @remove="remove"
-			, @cancel="cancel"
+			@save="save"
+			@close="close"
+			@remove="remove"
+			@cancel="cancel"
 		)
 		review(v-if="reviewingDay", :schema="schema.reviewForm", :works="worksOfReviewingDay", :template="reviewModel"
-			, @save="save"
-			, @close="close"
-			, @remove="remove"
-			, @cancel="cancel"
+			@save="save"
+			@close="close"
+			@remove="remove"
+			@cancel="cancel"
 		)
 </template>
 
 <script>
     import Vue from "vue";
 	import FullCalendar from "./components/fullcalendar";
+	import Kanban from "./components/kanban/kanban.vue";
 	import PopupForm from "./components/popupform";
 	import Review from "./components/review";
 
@@ -68,7 +70,8 @@
     export default {
         name: "SchedulePage"
         , components: {
-            FullCalendar
+			FullCalendar
+			, Kanban
 			, PopupForm
 			, Review
 		}
@@ -226,13 +229,17 @@
 				// }
 			}
 			, makeDraggable() {
-				if (!this.$refs.items) {
+				const kanbanItems = Array.from(document.querySelectorAll(".kanban-item"), el => { 
+					el.dataset.duration = "1:00";
+					return el; 
+				});
+				if (kanbanItems.length == 0) {
 					return;
 				}
-				this.$refs.items.forEach( t => {
+				kanbanItems.forEach( t => {
 					$(t).draggable({
 						zIndex: 999
-						, containment: ".drag-container"
+						, containment: ".kanban-system-container"
 						, revert: true      // immediately snap back to original position
 						, revertDuration: 0  //
 						, start: function() {
@@ -323,10 +330,14 @@
 			};
 		}
 		, updated() {
-			this.makeDraggable();
+			this.$nextTick(function () {
+				this.makeDraggable();
+			});
 		}
 		, mounted() {
-			this.makeDraggable();
+			this.$nextTick(function () {
+				this.makeDraggable();
+			});
 		}
     };
 </script>
@@ -344,13 +355,15 @@
 		margin-top: 60px;
 	}
 
-    .drag-column {
-		overflow: visible;
-		
-        &-weekly-tasks {
-			flex: 0.3;
+	.kanban-board-container {
+		.kanban-board {
+			overflow: visible;
+			
+			&.kanban-board-weekly-tasks {
+				flex: 0.3;
+			}
 		}
-    }
+	}
 
     .section {
     	padding: 20px;

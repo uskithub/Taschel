@@ -63,7 +63,7 @@ export const readGroups = ({ commit }, { options, mutation }) => {
 //	, to: { type: target.dataset.code, code: target.dataset.code }
 //	, index: index 
 // }
-export const updateGroups = ({ commit }, { moving, from, to, index, parent_code, mutation }) => {
+export const updateGroups = ({ commit }, { moving, from, to, index, parent_code, weekly, mutation }) => {
 	console.log("● do update", { moving, from, to, index });
 
 	// ① from, to => UNCLASSIFIED|task, group	/api/groups/${to}?task=${moving}&index=${index}
@@ -86,7 +86,8 @@ export const updateGroups = ({ commit }, { moving, from, to, index, parent_code,
 		url = `${url}/${to.code}?task=${moving.code}&index=${index}&from=${from.code}`;
 	}
 
-	url = `${url}&parent_code=${parent_code}`;
+	if (parent_code) { url = `${url}&parent_code=${parent_code}`; }
+	if (weekly) { url = `${url}&weekly=${weekly}`; }
 
 	return api(METHOD.put, url)
 	.then(data => {
