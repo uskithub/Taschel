@@ -169,7 +169,6 @@ module.exports = {
 						let query = Task.find(filter);
 						return ctx.queryPageSort(query).exec()
 						.then(taskDocs => {
-
 							if (jsons.length == 0) {
 								// generating and returning default groups.
 								// using reduce for array will be correct sequence.
@@ -255,7 +254,7 @@ module.exports = {
 										return result;
 									}, []);
 
-									return this.populateModels(jsons)
+									return this.populateModels(jsons, excludeRule)
 									.then(jsons => {
 										let unclassifiedGroup = {
 											code: UNCLASSIFIED
