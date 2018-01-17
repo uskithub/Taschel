@@ -52,6 +52,7 @@ module.exports = {
 				if (ctx.params.check) { return this.actions.check(ctx); }
 
 				let filter = {};
+				let excludeRule = null;
 
 				if (ctx.params.type != undefined) {
 					// find from ProjectsPage, GanttPage
@@ -59,6 +60,11 @@ module.exports = {
 					filter.type = ctx.params.type;
 					filter.isDeleted = { $ne: true };
 					filter.status = { "$gt" : -1 };
+
+					excludeRule = ((serviceName, json) => {
+						if ( serviceName != "tasks" ) { return true; }
+						return json.status > -1;
+					});
 
 				} else if (ctx.params.root_code != undefined) {
 					// find from TasksPage
@@ -88,7 +94,7 @@ module.exports = {
 					return this.toJSON(docs);
 				})
 				.then(json => {
-					return this.populateModels(json);
+					return this.populateModels(json, excludeRule);
 				});
 			}
 		}

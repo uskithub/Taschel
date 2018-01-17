@@ -67,6 +67,23 @@
 	let previousBoardCode = null;
 	let drake = null;
 
+	// finding the task object has the code from the objects in the array.
+	// recursivly finding its children.
+	const findTask = (code, array) => {
+		for (let i in array) {
+			let t = array[i];
+			if (t.code == code) {
+				return t;
+			} else if (t.children.length > 0) {
+				let result = findTask(code, t.children);
+				if (result) {
+					return result;
+				}
+			}
+		}
+		return null;
+	};
+
     export default {
         name: "SchedulePage"
         , components: {
@@ -265,7 +282,7 @@
 				if (!date.hasTime()) { return; }
 
 				const code = $(jqEvent.target).data("code");
-				const task = this.tasks.filter(t => { return t.code == code; })[0];
+				const task = findTask(code, this.tasks);
 				const newModel = {
 					title : task.name
 					, start : date.utc().format()
