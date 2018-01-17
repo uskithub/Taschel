@@ -5,6 +5,7 @@ import VueRouter from "vue-router";
 
 import Weekly from "../modules/weekly";
 import Daily from "../modules/daily";
+import DailyReview from "../modules/daily-review";
 import Projects from "../modules/projects"; 
 import Tasks from "../modules/tasks";
 import Kanban from "../modules/kanban"; 
@@ -21,6 +22,7 @@ export default new VueRouter({
 		{ path: "/", component: MyTasks }
 		, { path: "/weekly", component: Weekly }
 		, { path: "/daily", component: Daily }
+		, { path: "/daily-review", component: DailyReview }
 		, { path: "/projects", component: Projects }
 		, { path: "/tasks", component: Tasks }
 		, { path: "/kanban", component: Kanban }

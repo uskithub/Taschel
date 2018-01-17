@@ -12,6 +12,7 @@ import projectsPage from "../modules/projects/store";
 import tasksPage from "../modules/tasks/store";
 import weeklyPage from "../modules/weekly/store";
 import dailyPage from "../modules/daily/store";
+import dailyReviewPage from "../modules/daily-review/store";
 import debugPage from "../modules/debug/store";
 
 Vue.use(Vuex);
@@ -27,6 +28,7 @@ export default new Vuex.Store({
 		, tasksPage
 		, weeklyPage
 		, dailyPage
+		, dailyReviewPage
 		, debugPage
 	}
 });

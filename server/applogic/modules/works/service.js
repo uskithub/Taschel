@@ -5,6 +5,7 @@ let config 		= require("../../../config");
 let C 	 		= require("../../../core/constants");
 
 let _			= require("lodash");
+let moment 		= require("moment");
 
 let Work 		= require("./models/work");
 let Task 		= require("../tasks/models/task");
@@ -38,11 +39,21 @@ module.exports = {
 		find: {
 			cache: true,
 			handler(ctx) {
-				let filter = {
-					asignee : this.personService.decodeID(ctx.params.user_code)
-                    , week : ctx.params.week
-				};
+				let filter = {};
 
+				if (ctx.params.date) {
+					const start = moment(ctx.params.date).format();
+					const end = moment(ctx.params.date).add(1, "d").format();
+					filter.start = {
+						"$gte" : start, "$lt" : end
+					};
+				} else {
+					filter = {
+						asignee : this.personService.decodeID(ctx.params.user_code)
+						, week : ctx.params.week
+					};
+				}
+				
 				let query = Work.find(filter);
 
 				return ctx.queryPageSort(query).exec().then(docs => {

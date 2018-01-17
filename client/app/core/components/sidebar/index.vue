@@ -20,6 +20,12 @@
 						span.icon
 							i.fa.fa-tasks
 						span.label {{ "Daily" | i18n }}
+
+				router-link(tag="li", to="/daily-review")
+					a(:title="_('Daily Review')")
+						span.icon
+							i.fa.fa-tasks
+						span.label {{ "Daily Review" | i18n }}
 				
 				router-link(tag="li", to="/projects")
 					a(:title="_('Projects')")
