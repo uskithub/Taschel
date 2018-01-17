@@ -89,6 +89,6 @@ module.exports = {
 		, "デフォルトのカバン（TODO/In Progress/Done）はProjectPageにてProjectを新規作成した際に作成されます"
 		, "openされているmilestoneは未分類のタスクとして自動でカンバンに表示されます"
 		, "typeがrequirement、wayあるいはstepのタスクが表示されます"
-		, "unclassifiedグループやmilestone間でタスクを移動してもサーバに保存はされず、次回の表示時に変更はクリアされます"
+		, "現在、ボードでなく、タスク内へのドロップはおかしな挙動するのでご注意を"
 	]
 };

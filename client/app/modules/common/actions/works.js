@@ -51,3 +51,11 @@ export const updateWork = ({ commit }, { model, mutation }) => {
 			commit(mutation, data, { root : (mutation.indexOf("/") > -1) });
 	});
 };
+
+export const deleteWork = ({ commit }, { model, mutation }) => {
+	return api(METHOD.delete, NAMESPACE + "/" + model.code)
+	.then(data => {
+		if (mutation)
+			commit(mutation, data, { root : (mutation.indexOf("/") > -1) });
+	});
+};

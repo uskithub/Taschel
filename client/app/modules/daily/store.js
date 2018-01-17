@@ -56,6 +56,9 @@ const mutations = {
 				assign(item, model);
 		});
 	}
+	, [REMOVE] (state, model) {
+		state.works = state.works.filter(w => { return w.code != model.code; });
+	}
 	, [SELECT] (state, model, multiSelect) {
 		if (isArray(model)) {
 			state.selected.splice(0);
@@ -91,7 +94,7 @@ const mutations = {
 // import { createTask, readTasks, updateTask, deleteTask } from "../common/actions/tasks";
 
 import { readGroups } from "../common/actions/groups";
-import { createWork, readWorks, updateWork } from "../common/actions/works";
+import { createWork, readWorks, updateWork, deleteWork } from "../common/actions/works";
 import { createReview, readReviews, updateReview } from "../common/actions/reviews";
 import { readUsers } from "../common/actions/persons";
 
@@ -99,6 +102,6 @@ export default {
 	namespaced : true
 	, state
 	, getters
-	, actions : { readGroups, createWork, readWorks, updateWork, createReview, readReviews, updateReview, readUsers }
+	, actions : { readGroups, createWork, readWorks, updateWork, deleteWork, createReview, readReviews, updateReview, readUsers }
 	, mutations
 };

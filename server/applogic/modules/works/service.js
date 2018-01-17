@@ -156,17 +156,25 @@ module.exports = {
 			});								
 		}
 
+		// removing the model and updating the parent task.
 		, remove(ctx) {
-			ctx.assertModelIsExist(ctx.t("app:TaskNotFound"));
+			ctx.assertModelIsExist(ctx.t("app:WorkNotFound"));
 
 			return Work.remove({ _id: ctx.modelID })
 			.then(() => {
 				return ctx.model;
 			})
-			.then((json) => {
-				this.notifyModelChanges(ctx, "removed", json);
-				return json;
-			});		
+			.then(json => {
+				return Task.findById(this.taskService.decodeID(json.parent)).exec()
+				.then(taskDoc => {
+					taskDoc.works = taskDoc.works.filter(id => { return id != ctx.modelID; });
+					return taskDoc.save();
+				})
+				.then(doc => {
+					this.notifyModelChanges(ctx, "removed", json);
+					return json;
+				});		
+			});
 		}	
 	}
 	

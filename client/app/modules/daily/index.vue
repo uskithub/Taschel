@@ -219,6 +219,7 @@
 				, createWork : "createWork"
 				, readWorks : "readWorks"
 				, updateWork : "updateWork"
+				, deleteWork : "deleteWork"
 				, createReview : "createReview"
 				, readReviews : "readReviews"
 				, updateReview : "updateReview"
@@ -264,8 +265,7 @@
 				this.updateWork( { model, mutation: UPDATE } );
 			}
 			, remove(){ 
-				// TODO:
-				// this.deleteWork( { model: this.selected[0], mutation: REMOVE } );
+				this.deleteWork( { model: this.selected[0], mutation: REMOVE } );
 				this.clearSelection();
 			}
 			, cancel() {

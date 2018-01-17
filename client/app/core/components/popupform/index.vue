@@ -171,7 +171,9 @@
 			, buttonCloneDidPush() { this.$emit("clone"); }
 			, buttonPostponeDidPush() { this.$emit("postpone"); }
 			, buttonBreakdownDidPush() { this.$emit("breakdown"); }
-			, buttonDeleteDidPush() { this.$emit("remove"); }	// deleteは予約語なので怒られる
+			, buttonDeleteDidPush() { 
+				if (window.confirm(_("本当に削除します？"))) { this.$emit("remove"); }
+			}	// deleteは予約語なので怒られる
 			, buttonCancelDidPush() { this.$emit("cancel"); }
 
 			, validate() {
