@@ -6,9 +6,9 @@
             @dragover="dragover"
             @dragleave="dragleaveBelow")
 
-        div.media.gantt(:class="{'active': isDraggingIntoChild, 'milestone': node.type=='milestone', 'requirement': node.type=='requirement', 'way': node.type=='way', 'step': node.type=='step', 'todo': node.type=='todo'}")
+        .media.gantt(:class="{'active': isDraggingIntoChild, 'milestone': node.type=='milestone', 'requirement': node.type=='requirement', 'way': node.type=='way', 'step': node.type=='step', 'todo': node.type=='todo'}")
 
-            div.tree-node(:id="node.code", :draggable="_isDraggable", :class="{ 'draggable' : _isDraggable }"
+            .tree-node(:id="node.code", :draggable="_isDraggable", :class="{ 'draggable' : _isDraggable }"
                 @click=""
                 @dragstart="dragstart"
                 @dragover="dragover"
@@ -19,39 +19,23 @@
                 @mouseover="mouseover"
                 @mouseout="mouseout"
             )
-                span.caret.icon.is-small(v-if="node.children && node.children.length > 0")
+                span.icon-caret.icon.is-small(v-if="node.children && node.children.length > 0")
                     i.vue-tree-icon(:class="caretClass" @click.prevent.stop="toggle")
                 
                 slot(name="treeNodeIcon")
                     i.vue-tree-icon.item-icon.icon-folder
 
                 //- div.node-content {{ `${node.name}(${node.code}) parent=${(node.parent instanceof Object) ? "obj" : node.parent}, children=[${(node.children) ? node.children.reduce((str, c) => { str += c.code + ", "; return str; }, "") : ""}]`}}
-                div.node-content {{ node.name }}
+                .node-content {{ node.name }}
 
-                div.operation(v-show="isHovering")
+                .operation(v-show="isHovering")
                     span(v-if="add != undefined" title="add tree node" @click.prevent.stop="add($event, node)")
                         slot(name="addTreeNode")
                             i.vue-tree-icon.icon-folder-plus-e
 
-            div(:class="{'tree-margin': true}", v-show="isOpen")
+            .tree-margin(v-show="isOpen")
                 time-line(v-for="child in filteredOrderedNodes", :isReverse="true", :node="child", :isDraggable="isDraggable", :key='child.code', :add="add")
-
-            .content.list
-                .media(v-for="work in node.works", :key="work.code")
-                    .media-left
-                        img.avatar(src="https://s3.amazonaws.com/uifaces/faces/twitter/kolage/73.jpg")
-                    .media-content
-                        strong {{ work.asignee }}
-                        small.text-muted {{ work.actualEnd }}
-                        p {{ work.description }}
-                        .functions
-                            a(href="#")
-                                i.fa.fa-reply
-                            a(href="#")
-                                i.fa.fa-heart
-                            a(href="#")
-                                i.fa.fa-trash
-            
+                message(v-for="work in node.works", :key="work.code", :work="work", :user="getUser(work.author)") 
 
         div.border.up(:class="{'active': isDraggingToGoUp}"
             @drop="dropAbove"
@@ -61,13 +45,18 @@
 </template>
 
 <script>
+    import Message from "../message";
     import toast from "../../toastr";
+    import { mapGetters } from "vuex";
 
     import $ from 'jquery';
     let _self = null;
 
     export default {
         name: "TimeLine"
+        , components: {
+            Message
+		}
         , data: function () {
             return {
                 isHovering: false
@@ -104,7 +93,10 @@
 			}
 		}
         , computed: {
-            _isDraggable() {
+            ...mapGetters("shared", [
+				"users"
+			])
+            , _isDraggable() {
                 return !this.isRoot && this.isDraggable;
             }
             , itemIconClass () {
@@ -245,6 +237,15 @@
             , arrange(moveContext) {
                 this.$parent.arrange(moveContext);
             }
+			, getUser(code) {
+				for (let i in this.users) {
+					const user = this.users[i];
+					if (user.code == code) {
+						return user;
+					}
+				}
+				return null;
+			}
         }
         , created() {
 

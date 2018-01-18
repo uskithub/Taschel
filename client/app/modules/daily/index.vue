@@ -44,7 +44,7 @@
 	export default {
 		mixins : [ SharedMixin ]
 		, components: {
-            SchedulePage: SchedulePage
+            SchedulePage
 		}
 
 		// getters.js に対応

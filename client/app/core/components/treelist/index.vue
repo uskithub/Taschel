@@ -19,7 +19,7 @@
                 @mouseout="mouseout"
             )
                 div.dummyHover
-                span.caret.icon.is-small(v-if="node.children && node.children.length > 0")
+                span.icon-caret.icon.is-small(v-if="node.children && node.children.length > 0")
                     i.vue-tree-icon(:class="caretClass" @click.prevent.stop="toggle")
                 
                 slot(name="treeNodeIcon")

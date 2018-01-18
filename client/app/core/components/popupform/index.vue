@@ -275,66 +275,66 @@
 
 <style lang="scss">
 
-	.popup-container {
-        position: absolute;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
-		background-color: rgba(0, 0, 0, 0.6);
-		z-index: 9999;
+	.container {
+		.popup-container {
+			position: absolute;
+			top: 0;
+			right: 0;
+			bottom: 0;
+			left: 0;
+			background-color: rgba(0, 0, 0, 0.6);
+			z-index: 9999;
 
-		$icon-font-path: "../../../../../node_modules/bootstrap-sass/assets/fonts/bootstrap/";	
-		@import "../../../../../node_modules/bootstrap-sass/assets/stylesheets/bootstrap/variables";
-		@import "../../../../../node_modules/bootstrap-sass/assets/stylesheets/bootstrap/mixins";
-		@import "../../../../../node_modules/bootstrap-sass/assets/stylesheets/bootstrap/glyphicons";
-		@import "../../../../../node_modules/bootstrap-sass/assets/stylesheets/bootstrap/type";
-		@import "../../../../../node_modules/bootstrap-sass/assets/stylesheets/bootstrap/dropdowns";
-		@import "../../../../../node_modules/bootstrap-sass/assets/stylesheets/bootstrap/input-groups";
+			$icon-font-path: "../../../../../node_modules/bootstrap-sass/assets/fonts/bootstrap/";	
+			@import "../../../../../node_modules/bootstrap-sass/assets/stylesheets/bootstrap/variables";
+			@import "../../../../../node_modules/bootstrap-sass/assets/stylesheets/bootstrap/mixins";
+			@import "../../../../../node_modules/bootstrap-sass/assets/stylesheets/bootstrap/glyphicons";
+			@import "../../../../../node_modules/bootstrap-sass/assets/stylesheets/bootstrap/type";
+			@import "../../../../../node_modules/bootstrap-sass/assets/stylesheets/bootstrap/dropdowns";
+			@import "../../../../../node_modules/bootstrap-sass/assets/stylesheets/bootstrap/input-groups";
 
-		@import "../../../../../node_modules/eonasdan-bootstrap-datetimepicker/src/sass/bootstrap-datetimepicker-build";
-		
-		.bootstrap-datetimepicker-widget {
-			color: #000;
+			@import "../../../../../node_modules/eonasdan-bootstrap-datetimepicker/src/sass/bootstrap-datetimepicker-build";
+			
+			.bootstrap-datetimepicker-widget {
+				color: #000;
 
-			a {
-				color: $link-color;
-				text-decoration: none;
+				a {
+					color: $link-color;
+					text-decoration: none;
+				}
+			}
+		}
+
+		.popup {
+			position: absolute;
+			top: 150px;
+			left: 100px;
+			right: 100px;
+			bottom: 0;
+			margin: auto;
+			transition: all .4s ease;
+			font-size: 0.8em;
+
+			.panel {
+				background-color: rgba(16, 67, 87, 0.8);
+
+				.body {
+					overflow: visible;
+				}
+			}
+		}
+
+		.form-group {
+			&.disabled.readonly {
+				.field-wrap {
+					padding-left: 1em;
+				}
+				input, select {
+					border: none;
+					background: none;
+					box-shadow: none;
+				}
 			}
 		}
 	}
-
-	.popup {
-		position: absolute;
-		top: 150px;
-		left: 100px;
-		right: 100px;
-		bottom: 0;
-		margin: auto;
-		transition: all .4s ease;
-		font-size: 0.8em;
-
-		.panel {
-			background-color: rgba(16, 67, 87, 0.8);
-
-			.body {
-				overflow: visible;
-			}
-		}
-	}
-
-	.form-group {
-		&.disabled.readonly {
-			.field-wrap {
-				padding-left: 1em;
-			}
-			input, select {
-				border: none;
-				background: none;
-				box-shadow: none;
-			}
-		}
-	}
-
-	
 </style>
