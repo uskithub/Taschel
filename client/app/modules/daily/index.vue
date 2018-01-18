@@ -79,7 +79,7 @@
 					return;
 				}
 				const baseModel = newWorks[0];
-				this.schema.popupForm.title = `${baseModel.name} を編集`;
+				this.schema.popupForm.title = `${baseModel.title} を編集`;
 
 				let actualStartFormat, actualEndFormat;
 				this.schema.popupForm.form.groups[1].fields.forEach(f => {
