@@ -25,6 +25,10 @@ let WorkSchema = new Schema({
 		type: String
 		, trim: true
 	}
+	, goal: {
+		type: String
+		, trim: true
+	}
     , start: {
 		type: Date
 	}

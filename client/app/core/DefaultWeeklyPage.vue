@@ -29,7 +29,7 @@
 				button.button.is-primary(@click="buttonNextDidPush")
 					i.icon.fa.fa-arrow-right
 		br
-		kanban-board(:boardGroups="boardGroups", @arrange="arrange" @select="select")
+		kanban-board.weekly-grid(:boardGroups="boardGroups", @arrange="arrange" @select="select")
 
 		popup-form(v-if="isEditing", :schema="schema.popupForm", :template="model"
 			@save="save"
@@ -175,9 +175,39 @@
 
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 	@import "../../scss/common/mixins";
 	@import "../../scss/taschel/kanban";
+
+	// @see https://www.webcreatorbox.com/tech/css-flexbox-cheat-sheet
+	.kanban-system-container {
+		&.weekly-grid {
+			display: flex;
+			.kanban-board-container {
+				&.content {
+					&.card-columns {
+						flex-grow: 1;
+
+						&:nth-child(2) {
+							flex-grow: 2;
+							display: flex;
+							flex-direction: row-reverse;
+							flex-wrap: wrap;
+							align-items: stretch;
+							align-content: flex-start;
+
+							.kanban-board {
+								flex: inherit;
+								flex-grow: inherit;
+								width: 48%;
+								margin: 0 1% 1% 1%;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 
  	.section {
     	padding: 20px;

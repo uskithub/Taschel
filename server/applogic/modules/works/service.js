@@ -22,7 +22,7 @@ module.exports = {
 		role: "user",
 		collection: Work,
 		
-		modelPropFilter: "code title start end actualStart actualEnd description week parent goodSide badSide improvement comments author status asignee lastCommunication createdAt updatedAt"
+		modelPropFilter: "code goal title start end actualStart actualEnd description week parent goodSide badSide improvement comments author status asignee lastCommunication createdAt updatedAt"
 
 		// TODO: populateModelsを改造すれば、下にのみpopulate、上にのみpopulateもできる
 		, modelPopulates: {
@@ -121,9 +121,6 @@ module.exports = {
 
 			return this.collection.findById(ctx.modelID).exec()
 			.then(doc => {
-				if (ctx.params.name != null)
-					doc.name = ctx.params.name;
-
 				if (ctx.params.goal != null)
 					doc.goal = ctx.params.goal;
 

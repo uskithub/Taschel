@@ -81,15 +81,6 @@ module.exports = {
 						{
 							type: "input"
 							, inputType: "text"
-							, label: _("Name")
-							, model: "name"
-							, featured: true
-							, placeholder: _("WorkName")
-							, validator: validators.string
-						}
-						, {
-							type: "input"
-							, inputType: "text"
 							, label: _("Goal")
 							, model: "goal"
 							, placeholder: _("WorkGoal")
