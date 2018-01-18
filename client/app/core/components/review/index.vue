@@ -29,7 +29,7 @@
 									div.alert.alert-danger(v-for="(item, index) in validationErrors", :key="index") {{ item.field.label }}: 
 										strong {{ item.error }}
 
-								.buttons.flex.justify-space-around
+								.buttons.flex.justify-space-around(v-if="!isAudience")
 									button.button.primary(@click="buttonSaveDidPush", :disabled="!isSaveButtonEnable")
 										i.icon.fa.fa-save 
 										| {{ saveButtonCaption }}
@@ -39,6 +39,10 @@
 									button.button.outline(@click="buttonCancelDidPush", :disabled="!isCancelButtonEnable")
 										i.icon.fa.fa-close
 										| {{ schema.resources.cancelCaption || _("Cancel") }}
+								.buttons.flex.justify-space-around(v-else)
+									button.button.outline(@click="buttonCancelDidPush", :disabled="!isCancelButtonEnable")
+										i.icon.fa.fa-close
+										| {{ schema.resources.cancelCaption || _("Cancel") }}	
 
 				.block
 					//- button.button.success(@click="schema.buttons[0].action") {{ schema.buttons[0].label }}
@@ -91,6 +95,10 @@
 					console.log("model.template", value);
 					return true;
 				}
+			}
+			, isAudience: {
+				type: Boolean
+				, default: false
 			}
 		}
 		, data() {

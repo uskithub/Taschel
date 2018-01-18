@@ -13,13 +13,13 @@ module.exports = {
 	, title: _("DailyReview")
 	, projectSelector: generate(areaTypes.form, ["project"])
 	, popupForm : {
-		title : ""
+		title : _("Comment")
 		, form : {
 			fields: [
 				{ 
 					type: "textArea"
-					, label: _("Comment")
-					, model: "comment"
+					, label: _("Description")
+					, model: "description"
 					, hint: "Max 250 characters"
 					, max: 250
 					, placeholder: _("CommentPlaceholder")

@@ -6,30 +6,30 @@ let C 	 		= require("../../../core/constants");
 
 let _			= require("lodash");
 
-let Review 		= require("./models/review");
+let Comment 	= require("./models/comment");
 let Work 		= require("../works/models/work");
+let Review 		= require("../reviews/models/review");
 
 module.exports = {
 	settings: {
-		name: "reviews",
+		name: "comments",
 		version: 1,
-		namespace: "reviews",
+		namespace: "comments",
 		rest: true,
 		ws: true,
 		graphql: true,
 		permission: C.PERM_LOGGEDIN,
 		role: "user",
-		collection: Review,
+		collection: Comment,
 		
-		modelPropFilter: "code week date works highOrderAwakening comments author createdAt updatedAt"
+		modelPropFilter: "code description work review replies author createdAt updatedAt"
 
-		// TODO: populateModelsを改造すれば、下にのみpopulate、上にのみpopulateもできる
 		, modelPopulates: {
-			// "root": "tasks"			// 親にchildrenを持たせたので、populateすると循環参照になってpopulateが終わらなくなるので注意
-			comments : "comments"
+			"replies": "comments"
 		}
 		, idEncodes: {
-            "works": "works"
+			"work": "works"
+			, "review": "reviews"
 			, "author": "persons"
 		}
 	}
@@ -72,30 +72,40 @@ module.exports = {
 		, create(ctx) {
 			this.validateParams(ctx, true);
 			
-			let review = new Review({
-                week: ctx.params.week
-				, date: ctx.params.date
-				// , works: this.workService.decodeID(ctx.params.work_code)
-                , highOrderAwakening: ctx.params.highOrderAwakening
-                , works: ctx.params.works.map(code => { return this.workService.decodeID(code); })
+			let comment = new Comment({
+				description: ctx.params.description
+				, work: ctx.params.work_code ? this.workService.decodeID(ctx.params.work_code) : null
+				, review: ctx.params.review_code ? this.reviewService.decodeID(ctx.params.review_code) : null
 				, author : ctx.user.id
 			});
 
-			return review.save()
-			// .then(doc => {
-			// 	// 親のTaskに追加（本来Promiseだが、待つ必要がないので非同期処理）
-			// 	Work.findById(doc.work).exec()
-			// 	.then(workDoc => {
-			// 		if (workDoc.works == null) {
-			// 			taskDoc.work = [doc.id];
-			// 		} else {
-			// 			taskDoc.works.push(doc.id);
-			// 		}
-			// 		taskDoc.save();
-			// 	});
-			// 	// あくまでworkのdocを返すこと
-			// 	return doc;
-			// })
+			return comment.save()
+			.then(doc => {
+				if (doc.work) {
+					Work.findById(doc.work).exec()
+					.then(workDoc => {
+						if (workDoc.comments == null) {
+							workDoc.comments = [doc.id];
+						} else {
+							workDoc.comments.push(doc.id);
+						}
+						workDoc.save();
+					});
+				} else if (doc.review) {
+					Review.findById(doc.review).exec()
+					.then(reviewDoc => {
+						if (reviewDoc.comments == null) {
+							reviewDoc.comments = [doc.id];
+						} else {
+							reviewDoc.comments.push(doc.id);
+						}
+						reviewDoc.save();
+					});
+				}
+				
+				// あくまでworkのdocを返すこと
+				return doc;
+			})
 			.then(doc => {
 				return this.toJSON(doc);
 			})
@@ -178,17 +188,11 @@ module.exports = {
 		 * @param {boolean} strictMode 		strictMode. If true, need to exists the required parameters
 		 */
 		validateParams(ctx, strictMode) {
-			if (strictMode || ctx.hasParam("week"))
-                ctx.validateParam("week").trim().notEmpty(ctx.t("app:ReviewWeekCannotBeBlank")).end();
-                
-            if (strictMode || ctx.hasParam("date"))
-                ctx.validateParam("date").trim().notEmpty(ctx.t("app:ReviewDateCannotBeBlank")).end();
-                
-            if (strictMode || ctx.hasParam("works"))
-                ctx.validateParam("works").notEmpty(ctx.t("app:ReviewworksCannotBeBlank")).end();
-                
-            if (strictMode || ctx.hasParam("highOrderAwakening"))
-				ctx.validateParam("highOrderAwakening").trim().notEmpty(ctx.t("app:ReviewHighOrderAwakeningCannotBeBlank")).end();
+			if (strictMode || ctx.hasParam("description"))
+				ctx.validateParam("description").trim().notEmpty(ctx.t("app:CommentDescriptionCannotBeBlank")).end();
+			
+			if (strictMode || (ctx.hasParam("work_code") || ctx.hasParam("review_code")))
+				ctx.validateParam("work_code").trim().notEmpty(ctx.t("app:ReviewDateCannotBeBlank")).end();
 
 			if (ctx.hasValidationErrors())
 				throw ctx.errorBadRequest(C.ERR_VALIDATION_ERROR, ctx.validationErrors);			
@@ -198,7 +202,7 @@ module.exports = {
 	, init(ctx) {
 		// Fired when start the service
 		this.workService = ctx.services("works");
-		this.personService = ctx.services("persons");
+		this.reviewService = ctx.services("reviews");
 	}
 
 	, socket: {
@@ -210,12 +214,12 @@ module.exports = {
 	, graphql: {
 
 		query: `
-			reviews(limit: Int, offset: Int, sort: String): [Review]
-			review(code: String): Review
+			comments(limit: Int, offset: Int, sort: String): [Comment]
+			comment(code: String): Comment
 		`,
 
 		types: `
-			type Review {
+			type Comment {
 				code: String!
 				purpose: String
 				type: String
@@ -227,21 +231,21 @@ module.exports = {
 		`,
 
 		mutation: `
-            reviewCreate(name: String!, purpose: String, type: String, goal: String, status: Int): Review
-			reviewUpdate(code: String!, name: String, purpose: String, type: String, goal: String, status: Int): Review
-			reviewRemove(code: String!): Review
+            commentCreate(name: String!, purpose: String, type: String, goal: String, status: Int): Comment
+			commentUpdate(code: String!, name: String, purpose: String, type: String, goal: String, status: Int): Comment
+			commentRemove(code: String!): Comment
 		`,
 
 		resolvers: {
 			Query: {
-				reviews: "find",
-				review: "get"
+				comments: "find",
+				comment: "get"
 			},
 
 			Mutation: {
-				reviewCreate: "create",
-				reviewUpdate: "update",
-				reviewRemove: "remove"
+				commentCreate: "create",
+				commentUpdate: "update",
+				commentRemove: "remove"
 			}
 		}
 	}

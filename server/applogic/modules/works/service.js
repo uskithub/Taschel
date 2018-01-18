@@ -22,11 +22,12 @@ module.exports = {
 		role: "user",
 		collection: Work,
 		
-		modelPropFilter: "code title start end actualStart actualEnd description week parent goodSide badSide improvement author status asignee lastCommunication createdAt updatedAt"
+		modelPropFilter: "code title start end actualStart actualEnd description week parent goodSide badSide improvement comments author status asignee lastCommunication createdAt updatedAt"
 
 		// TODO: populateModelsを改造すれば、下にのみpopulate、上にのみpopulateもできる
 		, modelPopulates: {
 			// "root": "tasks"			// 親にchildrenを持たせたので、populateすると循環参照になってpopulateが終わらなくなるので注意
+			comments : "comments"
 		}
 		, idEncodes: {
 			"parent": "tasks"

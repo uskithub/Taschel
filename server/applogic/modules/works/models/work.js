@@ -69,6 +69,10 @@ let WorkSchema = new Schema({
 		type: String
 		, trim: true
 	}
+	, comments : [{
+		type: Number
+		, ref: "Comment"
+	}]
 	, author : {
 		type: Number,
 		required: "Please fill in an author ID",
@@ -82,10 +86,6 @@ let WorkSchema = new Schema({
 	, asignee : {
 		type: Number,
 		ref: "User"
-	}
-	, lastCommunication: {
-		type: Date,	
-		"default": Date.now
 	}
 	, metadata: {}
 

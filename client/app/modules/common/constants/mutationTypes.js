@@ -52,3 +52,7 @@ export const LOAD_REVIEWS         = "LOAD_REVIEWS";
 export const ADD_REVIEW         = "ADD_REVIEW";
 
 export const SET_REVIEWING_DAY  = "SET_REVIEWING_DAY"; 
+
+export const ADD_COMMENT  = "ADD_COMMENT"; 
+
+

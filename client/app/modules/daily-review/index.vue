@@ -25,6 +25,20 @@
 									dl(v-for="item in description(work)", :key="item.key")
 										dt {{ item.title }}
 										dd {{ item.value }}
+							.media(v-for="comment in work.comments", :key="comment.code")
+								.media-left
+									img.avatar(src="https://s3.amazonaws.com/uifaces/faces/twitter/kolage/73.jpg")
+								.media-content
+									strong {{ comment.author }}
+									small.text-muted {{ comment.updatedAt }}
+									p {{ comment.description }}
+									//- .functions
+									//- 	a(href="#")
+									//- 		i.fa.fa-reply
+									//- 	a(href="#")
+									//- 		i.fa.fa-heart
+									//- 	a(href="#")
+									//- 		i.fa.fa-trash
 		popup-form(v-if="isEditing", :schema="schema.popupForm", :template="model"
 			@save="save"
 			@cancel="cancel"
@@ -40,7 +54,7 @@
     import moment from "moment";
 
     import { mapGetters, mapMutations, mapActions } from "vuex";
-    import { SET_REVIEWING_DAY, LOAD_WORKS, LOAD_REVIEWS} from "../common/constants/mutationTypes";
+    import { SET_REVIEWING_DAY, LOAD_WORKS, LOAD_REVIEWS, ADD_COMMENT} from "../common/constants/mutationTypes";
 	
 	const yesterday = moment().add(-1, "d");
 
@@ -99,6 +113,7 @@
 			, ...mapActions("dailyReviewPage", {
 				readWorks : "readWorks"
                 , readReviews : "readReviews"
+                , createComment : "createComment"
 			})
 			, setup() {
                 console.log("● [method:setup]");
@@ -155,9 +170,22 @@
 				}
 			}
 			, comment(event, type, code) {
-				console.log(`● type: ${type}, code: ${code}`);
-				this.model = {};
-			}
+                console.log(`● type: ${type}, code: ${code}`);
+                if (type == "review") {
+                    this.model = {
+                        review_code : code 
+                    };
+                } else {
+                    this.model = {
+                        work_code : code
+                    };
+                }
+            }
+            , save(model) { 
+                console.log("●save", model);
+                this.createComment( { model, mutation: ADD_COMMENT } );
+                this.model = null;
+            }
 			, cancel() { this.model = null; }
 		}
         , created() {

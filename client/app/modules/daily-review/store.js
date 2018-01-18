@@ -2,6 +2,7 @@ import {
 	SET_REVIEWING_DAY
 	, LOAD_WORKS
 	, LOAD_REVIEWS
+	, ADD_COMMENT
 } from "../common/constants/mutationTypes";
 
 import { each, find, assign, remove, isArray } from "lodash";
@@ -30,15 +31,33 @@ const mutations = {
 		state.reviews.splice(0);
 		state.reviews.push(...models);
 	}
-};s
+	, [ADD_COMMENT] (state, model) {
+		if (model.work) {
+			state.works.forEach(item => {
+				if (item.code == model.work) {
+					if (item.comments) { item.comments.push(model); }
+					else { item.comments = [model]; }
+				}
+			});
+		} else if (model.review) {
+			state.reviews.forEach(item => {
+				if (item.code == model.review) {
+					if (item.comments) { item.comments.push(model); }
+					else { item.comments = [model]; }
+				}
+			});
+		}
+	}
+};
 
 import { createWork, readWorks, updateWork, deleteWork } from "../common/actions/works";
 import { createReview, readReviews, updateReview } from "../common/actions/reviews";
+import { createComment } from "../common/actions/comments";
 
 export default {
 	namespaced : true
 	, state
 	, getters
-	, actions : { readWorks, readReviews }
+	, actions : { readWorks, readReviews, createComment }
 	, mutations
 };
