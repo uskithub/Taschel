@@ -18,6 +18,7 @@
 							slot(name="HighOrderAwakening")
 								strong {{ _("HighOrderAwakening") }}
 							.text-muted {{ _reviews.review.highOrderAwakening }}
+							message(v-for="comment in _reviews.review.comments", :key="comment.code", :comment="comment", :user="getUser(comment.author)")
 						li.kanban-item.card(v-for="work in _reviews.works", :key="work.code"  @click="comment($event, 'work', work.code)")
 							slot(:name="work.title")
 								strong {{ work.title }}
@@ -25,20 +26,7 @@
 									dl(v-for="item in description(work)", :key="item.key")
 										dt {{ item.title }}
 										dd {{ item.value }}
-							.media(v-for="comment in work.comments", :key="comment.code")
-								.media-left
-									img.avatar(src="https://s3.amazonaws.com/uifaces/faces/twitter/kolage/73.jpg")
-								.media-content
-									strong {{ comment.author }}
-									small.text-muted {{ comment.updatedAt }}
-									p {{ comment.description }}
-									//- .functions
-									//- 	a(href="#")
-									//- 		i.fa.fa-reply
-									//- 	a(href="#")
-									//- 		i.fa.fa-heart
-									//- 	a(href="#")
-									//- 		i.fa.fa-trash
+							message(v-for="comment in work.comments", :key="comment.code", :comment="comment", :user="getUser(comment.author)")
 		popup-form(v-if="isEditing", :schema="schema.popupForm", :template="model"
 			@save="save"
 			@cancel="cancel"
@@ -49,6 +37,7 @@
     import Vue from "vue";
 	import SharedMixin from "../common/mixins/Shared.vue"
 	import PopupForm from "../../core/components/popupform";
+	import Message from "../../core/components/message";
     import schema from "./schema";
 
     import moment from "moment";
@@ -63,6 +52,7 @@
         , mixins : [ SharedMixin ]
         , components: {
 			PopupForm
+			, Message
 		}
 		, computed: {
 			...mapGetters("dailyReviewPage", [

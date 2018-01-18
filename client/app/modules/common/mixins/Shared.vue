@@ -153,6 +153,15 @@
 						return "step";
 				}
 			}
+			, getUser(code) {
+				for (let i in this.users) {
+					const user = this.users[i];
+					if (user.code == code) {
+						return user;
+					}
+				}
+				return null;
+			}
 		}
 		, created() {
 			this.$store.subscribe((mutation, state) => {

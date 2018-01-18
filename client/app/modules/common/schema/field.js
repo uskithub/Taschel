@@ -135,7 +135,7 @@ const fields = {
 			}
 			, validator: [
 				// validators.date
-				 (value, field, model) => {
+				(value, field, model) => {
 					if (model.type == "milestone" && (isNil(value) || value === "")) {
 						return [ _("MilestoneRequiresDeadline") ];
 					}

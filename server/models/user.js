@@ -187,10 +187,10 @@ UserSchema.virtual("avatar").get(function() {
 
 	// Generate a gravatar picture
 	if (!this.email)
-		return "https://gravatar.com/avatar/?s=64&d=wavatar";
+		return "https://gravatar.com/avatar/?s=128&d=wavatar";
 	
 	let md5 = crypto.createHash("md5").update(this.email).digest("hex");
-	return "https://gravatar.com/avatar/" + md5 + "?s=64&d=wavatar";
+	return "https://gravatar.com/avatar/" + md5 + "?s=128&d=wavatar";
 });
 
 /**

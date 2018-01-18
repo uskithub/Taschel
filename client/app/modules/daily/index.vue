@@ -138,7 +138,7 @@
 				for (let i in this.reviews) {
 					let review = this.reviews[i];
 					if (review.date == reviewingDate) {
-						model.highOrderReview = review;
+						model.highOrderReview = cloneDeep(review);
 						break;
 					}
 				}

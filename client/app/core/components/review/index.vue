@@ -13,6 +13,11 @@
 									legend {{ "works" }}
 								div.drag-options
 								ul.kanban-list(data-code="daily" ref="works")
+									li.kanban-item(v-if="template.highOrderReview.highOrderAwakening" key="HighOrderReview") 
+										slot(name="HighOrderAwakening")
+											strong {{ _("HighOrderAwakening") }}
+										.text-muted {{ template.highOrderReview.highOrderAwakening }}
+										message(v-if="template.highOrderReview.comments" v-for="comment in template.highOrderReview.comments", :key="comment.code", :comment="comment", :user="getUser(comment.author)")
 									li.kanban-item(v-for="(work, i) in works", :class="{ active : index == i }", :data-code="work.code", :key="work.code" ref="items"
 										@click.prevent.stop="select($event, work, i)"
 									)
@@ -22,6 +27,7 @@
 												dl(v-for="item in description(work)", :key="item.key")
 													dt {{ item.title }}
 													dd {{ item.value }}
+										message(v-for="comment in work.comments", :key="comment.code", :comment="comment", :user="getUser(comment.author)")
 							li.kanban-board.form(key="form")
 								vue-form-generator(:schema="dynamicForm", :model="dynamicModel", :options="options", ref="form", :is-new-model="isNewModel")
 
@@ -59,8 +65,10 @@
 	import "ion-rangeslider/css/ion.rangeSlider.css";
 	import "ion-rangeslider/css/ion.rangeSlider.skinFlat.css";
 
+	import Message from "../message";
 	import { schema as schemaUtils } from "vue-form-generator";
 	import { get as objGet, find, cloneDeep, isArray, isFunction } from "lodash";
+	import { mapGetters } from "vuex";
 
 	const isHighOrderReivew = (works, index) => {
 		return index >= works.length;
@@ -69,6 +77,7 @@
 	export default {
 		name: "Review"
         , components: {
+			Message
 		}
 		// properties set by it's parent component.
 		// somtimes, parent components set their methods as props.
@@ -109,7 +118,10 @@
 			};
 		}
 		, computed: {
-			isNewModel() { return this.model.code == null; }
+			...mapGetters("shared", [
+				"users"
+			])
+			, isNewModel() { return this.model.code == null; }
 			, options() { return this.schema.options || {}; }
 			, isSaveButtonEnable() { return this.options.isSaveButtonEnable !== false; }
 			, isSkipButtonEnable() { return this.options.isSkipButtonEnable !== false && !isHighOrderReivew(this.works, this.index); }
@@ -288,6 +300,15 @@
 				if (!isAsync) { return handleErrors(results); }
 				
 				return Promise.all(results).then(handleErrors);
+			}
+			, getUser(code) {
+				for (let i in this.users) {
+					const user = this.users[i];
+					if (user.code == code) {
+						return user;
+					}
+				}
+				return null;
 			}
 		}
 		, created() {}
