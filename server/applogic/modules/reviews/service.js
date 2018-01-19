@@ -3,6 +3,7 @@
 let logger 		= require("../../../core/logger");
 let config 		= require("../../../config");
 let C 	 		= require("../../../core/constants");
+let slack		= require("../../libs/slack");
 
 let _			= require("lodash");
 
@@ -104,6 +105,7 @@ module.exports = {
 			})
 			.then(json => {
 				this.notifyModelChanges(ctx, "created", json);
+				slack.postMessage(`${ctx.user.username} が日次レビューをした！`);
 				return json;
 			});
 		}

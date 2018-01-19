@@ -12,6 +12,7 @@ import Kanban from "../modules/kanban";
 import MyTasks from "../modules/mytasks";
 import Gantt from "../modules/gantt";
 import Profile from "../modules/profile";
+import Settings from "../modules/settings";
 import Debug from "../modules/debug";
 
 Vue.use(VueRouter);
@@ -28,6 +29,7 @@ export default new VueRouter({
 		, { path: "/kanban", component: Kanban }
 		, { path: "/gantt", component: Gantt }
 		, { path: "/profile", component: Profile }
+		, { path: "/settings", component: Settings }
 		, { path: "/debug", component: Debug }
 		
 		//, { path: "/users", component: User, meta: { needRole: "admin" } }
