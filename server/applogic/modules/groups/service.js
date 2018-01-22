@@ -15,8 +15,8 @@ const ASSIGNED_IN_WEEKLY = "ASSIGNED_IN_WEEKLY";
 const DEFAULT_WEEKLY_GROUPS = [
 	{ name: "Conducive-Urgent", purpose: "for_the_top_priority_tasks" }
 	, { name: "Conducive-Unurgent", purpose: "for_the_tasks_you_should_give_priority_to" }
-	, { name: "Conducive-Unurgent" , purpose: "for_the_tasks_you_should_give_priority_to" }
 	, { name: "Unconducive-Urgent", purpose: "for_the_tasks_you_should_doubt_their_priority" }
+	, { name: "Unconducive-Unurgent", purpose: "for_the_tasks_you_should_not_do" }
 ];
 
 const DEFAULT_DAILY_GROUPS = [
