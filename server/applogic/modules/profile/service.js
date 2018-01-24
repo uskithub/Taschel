@@ -36,6 +36,12 @@ module.exports = {
 				});
 			}
 		}
+
+		, update(ctx) {
+			console.log("● ctx", ctx);
+
+			return "hoge";
+		}
 	},
 
 	methods: {

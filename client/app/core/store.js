@@ -15,6 +15,8 @@ import dailyPage from "../modules/daily/store";
 import dailyReviewPage from "../modules/daily-review/store";
 import debugPage from "../modules/debug/store";
 
+import profile from "../modules/profile/store";
+
 Vue.use(Vuex);
 
 export default new Vuex.Store({
@@ -30,5 +32,6 @@ export default new Vuex.Store({
 		, dailyPage
 		, dailyReviewPage
 		, debugPage
+		, profile
 	}
 });
