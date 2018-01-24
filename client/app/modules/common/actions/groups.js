@@ -3,7 +3,6 @@ import { METHOD, api } from "../api";
 
 import toastr from "../../../core/toastr";
 import { ADD, SELECT, UPDATE } from "../constants/mutationTypes";
-import axios from "axios";
 
 const UNCLASSIFIED = "UNCLASSIFIED";
 
