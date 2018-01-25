@@ -5,12 +5,8 @@ let config 		= require("../../../config");
 let C 	 		= require("../../../core/constants");
 
 let _			= require("lodash");
-let google		= require("googleapis");
-let googleAuth	= require("google-auth-library");
 
 let User 		= require("./models/user");
-
-const SCOPES = ["https://www.googleapis.com/auth/calendar.readonly"];
 
 module.exports = {
 	settings: {
@@ -24,7 +20,7 @@ module.exports = {
 		role: "user",
 		collection: User,
 
-		modelPropFilter: "code username fullName email avatar passwordLess provider profile socialLinks roles apiKey lastLogin locale status createdAt updatedAt"
+		modelPropFilter: "code username fullName email avatar passwordLess provider profile socialLinks roles apiKey lastLogin locale status credentials createdAt updatedAt"
 	},
 	
 	actions: {
@@ -39,41 +35,6 @@ module.exports = {
 					return this.populateModels(json);
 				});
 			}
-		}
-
-		, update(ctx) {
-			ctx.assertModelIsExist(ctx.t("app:UserNotFound"));
-			console.log("● ctx", ctx);
-
-			return this.collection.findById(ctx.modelID).exec()
-			.then(doc => {
-				if (doc.googleAuthToken) {
-
-				} else {
-					const clientID = config.authKeys.google.clientID;
-					const clientSecret = config.authKeys.google.clientSecret;
-					const redirectUrl = "http://localhost:3000/authorizing";
-
-					let auth = new googleAuth();
-					let oauth2Client = new auth.OAuth2(clientID, clientSecret, redirectUrl);
-
-					let authUrl = oauth2Client.generateAuthUrl({
-						access_type: "offline",
-						scope: SCOPES
-					});
-					return Promise.resolve()
-					.then(() => {
-						return this.toJSON(doc)
-					})
-					.then(json => {
-						return this.populateModels(json);
-					})
-					.then(json => {
-						json.googleAuthUrl = authUrl;
-						return json;
-					});
-				}
-			});
 		}
 	},
 

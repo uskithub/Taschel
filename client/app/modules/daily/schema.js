@@ -20,6 +20,10 @@ module.exports = {
 			color: "#C5F0A4"
 			, textColor: "#226B80"
 		}
+		, googleCalendarEventColor : {
+			color: "#808080"
+			, textColor: "#ffffff"
+		}
 		, googleCalendarApiKey: "AIzaSyBs9rLYkbTc8gf05hOsZ4iOWLBj8Rptn1k"
 		, droppable: true
 		, editable: true
@@ -101,7 +105,7 @@ module.exports = {
 							, closeRequired: true
 							, dateTimePickerOptions: {
 								format: "HH:mm"
-								, stepping: 15
+								, stepping: 5
 							}
 							, finalize: (model, value, field) => {
 								if (value) {
@@ -122,7 +126,7 @@ module.exports = {
 							, closeRequired: true
 							, dateTimePickerOptions: {
 								format: "HH:mm"
-								, stepping: 15
+								, stepping: 5
 							}
 							, finalize: (model, value, field) => {
 								if (value) {

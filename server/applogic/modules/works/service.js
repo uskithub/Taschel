@@ -7,8 +7,11 @@ let C 	 		= require("../../../core/constants");
 let _			= require("lodash");
 let moment 		= require("moment");
 
+let google		= require("googleapis");
+
 let Work 		= require("./models/work");
 let Task 		= require("../tasks/models/task");
+let User 		= require("../persons/models/user");
 
 module.exports = {
 	settings: {
@@ -48,21 +51,90 @@ module.exports = {
 					filter.start = {
 						"$gte" : start, "$lt" : end
 					};
+
+					let query = Work.find(filter);
+					return ctx.queryPageSort(query).exec().then(docs => {
+						return this.toJSON(docs);
+					})
+					.then(json => {
+						return this.populateModels(json);
+					});
 				} else {
+					const userId = ctx.params.user_code ? this.personService.decodeID(ctx.params.user_code) : null;
 					filter = {
-						asignee : this.personService.decodeID(ctx.params.user_code)
+						asignee : userId
 						, week : ctx.params.week
 					};
-				}
-				
-				let query = Work.find(filter);
+					let query = Work.find(filter);					
 
-				return ctx.queryPageSort(query).exec().then(docs => {
-					return this.toJSON(docs);
-				})
-				.then(json => {
-					return this.populateModels(json);
-				});
+					return ctx.queryPageSort(query).exec()
+					.then(docs => {
+						return this.toJSON(docs);
+					})
+					.then(json => {	
+						return this.populateModels(json);
+					})
+					.then(json => {
+						if (userId) {
+							return this.personService.collection.findById(userId).exec()
+							.then(doc => {
+								if (doc.credentials.access_token) {
+									let week = moment(ctx.params.week);
+									const min = week.format();
+									const max = week.add(5, "d").format();
+			
+									console.log(min, max);
+			
+									const clientID = config.authKeys.google.clientID;
+									const clientSecret = config.authKeys.google.clientSecret;
+									const redirectUrl = "/auth/google/callback";
+				
+									let OAuth2 = google.auth.OAuth2;
+									let oauth2Client = new OAuth2(clientID, clientSecret, redirectUrl);
+									oauth2Client.credentials = doc.credentials;
+				
+									let calendar = google.calendar("v3");
+									// @see https://github.com/google/google-api-nodejs-client/blob/master/src/apis/calendar/v3.ts#L1025
+		
+									return new Promise((resolve, reject) => {
+		
+										calendar.events.list({
+											auth: oauth2Client
+											, calendarId: "primary"
+											, timeMax: max
+											, timeMin: min
+											, maxResults: 10
+											, singleEvents: true
+											, orderBy: "startTime"
+										}
+										, (err, response) => {
+											if (err) {
+												return reject(err);
+											}
+				
+											return resolve(response.data.items);
+										});
+									}).then(items => {
+										const events = items.map(item => {
+											return {
+												code: "GOOGLE_CALENDAR"
+												, title: item.summary
+												, start: item.start.dateTime
+												, end: item.end.dateTime
+												, week: ctx.params.week
+											};
+										});
+										return json.concat(events);
+									});
+								} else {
+									return json;
+								}
+							});
+						} else {
+							return json;
+						}
+					});
+				}
 			}
 		}
 

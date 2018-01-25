@@ -132,6 +132,15 @@ let UserSchema = new Schema({
 		type: Number,
 		default: 1
 	},
+
+	credentials: {
+		access_token: { type: String }
+		, refresh_token: { type: String }
+		, token_type: { type: String }
+		, expiry_date: { type: Number }
+		, expires_in: { type: Number }
+		, id_token: { type: String }
+	},
 	
 	metadata: {}
 

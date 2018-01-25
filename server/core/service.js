@@ -203,7 +203,7 @@ class Service {
 					let service = Services.get(serviceName);
 					if (service && _.isFunction(service["encodeID"])) {
 						let items = _.isArray(docs) ? docs : [docs]; 
-						items.forEach((doc) => {
+						items.forEach(doc => {
 							let value = doc[field];
 							if (value == undefined) return;
 							if (_.isArray(value)) {

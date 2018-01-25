@@ -13,17 +13,20 @@ module.exports = function() {
 	if (config.authKeys.google.clientID && config.authKeys.google.clientSecret) {
 
 		passport.use("google", new GoogleStrategy({
-			clientID: config.authKeys.google.clientID,
-			clientSecret: config.authKeys.google.clientSecret,
-			callbackURL: "/auth/google/callback",
-			passReqToCallback: true
-		}, function(req, accessToken, refreshToken, profile, done) {
+			clientID: config.authKeys.google.clientID
+			, clientSecret: config.authKeys.google.clientSecret
+			, callbackURL: "/auth/google/callback"
+			, accessType: "offline"
+			, passReqToCallback: true
+		}, function(req, accessToken, refreshToken, credentials, profile, done) {
 			// logger.info("Received profile: ", profile);
+			credentials.refresh_token = refreshToken;
 
 			helper.linkToSocialAccount({
 				req, 
 				accessToken,
 				refreshToken,
+				credentials,
 				profile,
 				done,
 

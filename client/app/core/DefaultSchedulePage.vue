@@ -170,6 +170,7 @@
 			 }
 			, events() {
 				const closedEventColor = this.schema.fullCalendar.closedEventColor;
+				const googleCalendarEventColor = this.schema.fullCalendar.googleCalendarEventColor;
 				let _works = cloneDeep(this.works);
 
 				// the first day of currentWeek(mon), tue, wed, thu, fri 
@@ -201,7 +202,12 @@
 				});	
 				
 				_works.forEach( work => {
-					if (work.status < 0) {
+					if (work.code == "GOOGLE_CALENDAR") {
+						work.color = googleCalendarEventColor.color;
+						work.textColor = googleCalendarEventColor.textColor;
+						work.editable = false;
+						work.durationEditable = false;
+					} else if (work.status < 0) {
 						work.color = closedEventColor.color;
 						work.textColor = closedEventColor.textColor;
 					}
@@ -320,6 +326,7 @@
 
 			// for user's editing with popupForm
 			this.schema.fullCalendar.eventClick = (event, jqEvent, view) => {
+				if (event.code == "GOOGLE_CALENDAR") return;
 
 				if (event.allDay) {
 					const day = event.start.format("DD");

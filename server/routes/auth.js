@@ -179,11 +179,11 @@ module.exports = function(app, db) {
 	 * Available scopes: https://developers.google.com/+/web/api/rest/oauth#authorization-scopes
 	 */
 	authRouter.get("/google", passport.authenticate("google", {
-		scope: "profile email"
-		/*scope: [
-			'https://www.googleapis.com/auth/plus.login',
-			'https://www.googleapis.com/auth/plus.profile.emails.read'
-		]*/
+		scope: [
+			"https://www.googleapis.com/auth/plus.login"
+			, "https://www.googleapis.com/auth/plus.profile.emails.read"
+			, "https://www.googleapis.com/auth/calendar.readonly"
+		]
 	}));
 
 	authRouter.get("/google/callback", passport.authenticate("google", {

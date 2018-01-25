@@ -1,7 +1,6 @@
 import Vue from "vue";
 import { METHOD, api } from "../api";
 
-import toastr from "../../../core/toastr";
 import { ADD, SELECT, UPDATE } from "../constants/mutationTypes";
 
 const UNCLASSIFIED = "UNCLASSIFIED";

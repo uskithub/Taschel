@@ -109,6 +109,7 @@ module.exports.linkToSocialAccount = function linkToSocialAccount(opts) {
 	let req = opts.req;
 	let accessToken = opts.accessToken;
 	let refreshToken = opts.refreshToken;
+	let credentials = opts.credentials;
 	let profile = opts.profile;
 	let done = opts.done;
 	let provider = opts.provider;
@@ -127,10 +128,12 @@ module.exports.linkToSocialAccount = function linkToSocialAccount(opts) {
 					req.flash("error", { msg: req.t("SocialIDLinkedToOtherAccount") });
 					return done(err);
 				}
-				else
-					// Same user same account
-					return done(err, existingUser);
 
+				// Same user same account
+				existingUser.credentials = credentials;
+				existingUser.save(function(err) {
+					done(err, existingUser);
+				});
 			} else {
 				// Not found linked account. We create the link
 				User.findById(req.user.id, function(err, user) {
@@ -142,6 +145,7 @@ module.exports.linkToSocialAccount = function linkToSocialAccount(opts) {
 					user.profile.gender = user.profile.gender || userData.gender;
 					user.profile.picture = user.profile.picture || userData.picture;
 					user.profile.location = user.profile.location || userData.location;
+					user.credentials = credentials;
 
 					user.save(function(err) {
 						req.flash("info", { msg: req.t("AccountHasBeenLinked") });

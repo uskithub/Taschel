@@ -283,7 +283,7 @@
 		 */
 		, created() {
 			this.$store.subscribe((mutation, state) => {
-				if (mutation.type == `shared/${SET_CURRENT_WEEK}`) {
+				if (mutation.type == `shared/${SET_CURRENT_WEEK}` && this.currentUser) {
 					this.getAssignedInWeeklyTasks({
 						options: { user_code : this.currentUser, daily : this.currentWeek }
 						, mutation: LOAD
