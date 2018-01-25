@@ -16,6 +16,16 @@ module.exports = function(app, db) {
 			res.render("index");
 	});
 
+	app.get("/authorizing", function(req, res) {
+		if (req.user != null)
+			res.render("main", {
+				user: req.user
+				, code: req.query.code
+			});
+		else
+			res.render("index");
+	});
+
 	// Handle health check routes
 	require("./health")(app, db);
 

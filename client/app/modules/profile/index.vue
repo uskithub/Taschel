@@ -44,6 +44,9 @@
 		, watch : {
 			profile(newProfile) {
 				console.log("● newProfile", newProfile);
+				if (newProfile.googleAuthUrl) {
+					window.location.href = newProfile.googleAuthUrl;
+				}
 			}
  		}
 		, methods: {
@@ -52,8 +55,7 @@
 				, "updateProfile"
 			])
 			, enableCalendar() {
-				console.log("on");
-				this.updateProfile({ mode: this.profile, mutation: "UPDATE" });
+				this.updateProfile({ model: this.profile, mutation: "UPDATE" });
 			}
 		}
 		, created() {
