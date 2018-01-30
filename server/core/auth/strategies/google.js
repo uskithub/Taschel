@@ -19,8 +19,14 @@ module.exports = function() {
 			, accessType: "offline"
 			, passReqToCallback: true
 		}, function(req, accessToken, refreshToken, credentials, profile, done) {
+
+			// console.log("● accessToken", accessToken);
+			// console.log("● refreshToken", refreshToken);
+			// console.log("● credentials", credentials);
+			// console.log("● profile", profile);
+
 			// logger.info("Received profile: ", profile);
-			credentials.refresh_token = refreshToken;
+			if (refreshToken) credentials.refresh_token = refreshToken;
 
 			helper.linkToSocialAccount({
 				req, 
