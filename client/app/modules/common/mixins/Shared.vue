@@ -1,7 +1,7 @@
 <script>
 	import Vue from "vue";
 
-	import { cloneDeep } from "lodash";
+	import { cloneDeep, isObject } from "lodash";
 	import moment from "moment";
 
 	import { taskTypes } from "../constants/types";
@@ -161,6 +161,32 @@
 					}
 				}
 				return null;
+			}
+			, populateRoot(model) {
+				if (this.projects.length == 0) return model;
+
+				const _projects = this.projects.reduce((result, p) => {
+					result[p.code] = p;
+					return result;
+				}, {});
+
+				const _recursive = (model) => {
+					if (model.root && !isObject(model.root)) {
+						if (model.root == -1) {
+							model.root = null;
+						} else {
+							model.root = _projects[model.root];
+						}
+					}
+					if (model.children) {
+						model.children = model.children.map(t => {
+							return _recursive(t);
+						});
+					}
+					return model;
+				};
+				
+				return _recursive(model);
 			}
 		}
 		, created() {

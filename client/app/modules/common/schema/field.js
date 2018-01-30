@@ -35,7 +35,7 @@ const fields = {
 		, model: "root"
 		, table: {
 			formatter(value, model, col) {
-				return isObject(model.root) ? model.root.name : "-";
+				return isObject(value) ? value.name : "-";
 			}
 		}
 		, form: {
@@ -73,6 +73,23 @@ const fields = {
 			, featured: true
 			, required: true
 			, placeholder: _("TaskNamePlaceholder")
+			, validator: validators.string
+		}
+	}
+	, shortname: {
+		label: _("ShortName")
+		, model: "shortname"
+		, table: {
+			formatter(value, model, col) {
+				return isObject(value) ? value.shortname : "-";
+			}
+		}
+		, form: {
+			type: "input"
+			, inputType: "text"
+			, featured: true
+			, required: true
+			, placeholder: _("TaskShortNamePlaceholder")
 			, validator: validators.string
 		}
 	}

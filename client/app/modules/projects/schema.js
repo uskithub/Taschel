@@ -14,7 +14,7 @@ module.exports = {
 		multiSelect: true
 		, columns: generate(
 			areaTypes.table
-			, [ "name", "purpose", "goal"]
+			, [ "shortname", "name", "purpose", "goal"]
 		)
 		, rowClasses: function(model) {
 			return {
@@ -26,7 +26,7 @@ module.exports = {
 		form : (() => {
 			let _form = generate(
 				areaTypes.form
-				, ["name", "purpose", "goal", "description"]
+				, ["name", "shortname", "purpose", "goal", "description"]
 			);
 			return { 
 				fields : _form.fields.map( f => {

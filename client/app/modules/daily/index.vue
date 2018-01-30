@@ -1,5 +1,5 @@
 <template lang="pug">
-	schedule-page(:schema="schema", :selected="selected", :reviewingDay="reviewingDay", :currentUser="currentUser", :users="users", :tasks="assignedInWeeklyTasks", :works="works", :reviews="reviews", :currentWeek="currentWeek", :model="model", :reviewModel="reviewModel"
+	schedule-page(:schema="schema", :selected="selected", :reviewingDay="reviewingDay", :currentUser="currentUser", :users="users", :tasks="populatedTasks", :works="works", :reviews="reviews", :currentWeek="currentWeek", :model="model", :reviewModel="reviewModel"
 		@assign="assign"
 		@selectUser="selectUser"
 		@select="select"
@@ -19,7 +19,7 @@
     import SchedulePage from "../../core/DefaultSchedulePage.vue";
 	import schema from "./schema";
 	import { schema as schemaUtils } from "vue-form-generator";
-	import { cloneDeep, isArray } from "lodash";
+	import { cloneDeep, isArray, isObject } from "lodash";
 
 	import toast from "../../core/toastr";
 	import moment from "moment";
@@ -46,8 +46,6 @@
 		, components: {
             SchedulePage
 		}
-
-		// getters.js に対応
 		, computed: {
 			...mapGetters("dailyPage", [
 				"assignedInWeeklyTasks"
@@ -56,6 +54,11 @@
 				, "selected"
 				, "reviewingDay"
 			])
+			, populatedTasks() {
+				return this.assignedInWeeklyTasks.map(t => {
+					return this.populateRoot(t);
+				});
+			}
 		}
 
 		/**

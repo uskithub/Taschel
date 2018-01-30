@@ -19,7 +19,7 @@
     import WeeklyPage from "../../core/DefaultWeeklyPage.vue";
 	import schema from "./schema";
 	import { schema as schemaUtils } from "vue-form-generator";
-	import { cloneDeep } from "lodash";
+	import { cloneDeep, isObject } from "lodash";
 
 	import toast from "../../core/toastr";
 	import moment from "moment";
@@ -33,8 +33,6 @@
 		, components: {
             WeeklyPage: WeeklyPage
 		}
-
-		// getters.js に対応
 		, computed: {
 			...mapGetters("weeklyPage", [
 				"groups"
@@ -42,6 +40,7 @@
 			])
 			, boardGroups() {
 				return this.groups.reduce((groups, board, i) => {
+					board = this.populateRoot(board);
 					if (i == 0) {
 						groups[0].boards.push(board);
 					} else {
@@ -160,7 +159,6 @@
 				, createTask : "createTask"
 				, deleteTask : "deleteTask"
 				, arrange : "updateGroups"
-				
 			})
 			, selectUser(code) { 
 				this.setCurrentUser(code); 
@@ -282,6 +280,12 @@
 		 * Call if the component is created
 		 */
 		, created() {
+			if (this.projects.length == 0) {
+				this.getTasks({ 
+					options: { taskType : "project", populateParent : true }
+					, mutation: `shared/${LOAD_PROJECTS}`
+				});
+			}
 			// projectの選択が変わったら、初期値を変える
 			this.$store.subscribe((mutation, state) => {
 				if (mutation.type == `shared/${SET_CURRENT_WEEK}`) {

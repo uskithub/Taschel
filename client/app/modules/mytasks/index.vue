@@ -38,10 +38,10 @@
 				if (this.projects.length > 0) {
 					return this.tasks.map(t => {
 						if (!isObject(t.root)) {
-							t.root = this.projects.filter(p => { return p.code == t.root; })[0];
+							t.root = t.shortname = this.projects.filter(p => { return p.code == t.root; })[0];
 						}
 						return t;
-					})
+					});
 				} 
 				return this.tasks;
 			}

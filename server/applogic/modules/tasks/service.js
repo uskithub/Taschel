@@ -27,7 +27,7 @@ module.exports = {
 		role: "user",
 		collection: Task,
 		
-		modelPropFilter: "code type purpose name goal description deadline timeframe root parent children works status closingComment author asignee isDeleted lastCommunication createdAt updatedAt"
+		modelPropFilter: "code type purpose name shortname goal description deadline timeframe root parent children works status closingComment author asignee isDeleted lastCommunication createdAt updatedAt"
 
 		// TODO: populateModelsを改造すれば、下にのみpopulate、上にのみpopulateもできる
 		, modelPopulates: {
@@ -113,7 +113,8 @@ module.exports = {
 			
 			let task = new Task({
 				type: ctx.params.type
-                , name: ctx.params.name
+				, name: ctx.params.name
+				, shortname: ctx.params.shortname
                 , purpose: ctx.params.purpose
 				, goal: ctx.params.goal
 				, description: ctx.params.description
@@ -192,6 +193,9 @@ module.exports = {
 
 				if (ctx.params.name != null)
 					doc.name = ctx.params.name;
+
+				if (ctx.params.shortname != null)
+					doc.shortname = ctx.params.shortname;
 
 				if (ctx.params.goal != null)
 					doc.goal = ctx.params.goal;

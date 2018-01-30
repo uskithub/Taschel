@@ -29,6 +29,10 @@ let TaskSchema = new Schema({
 		type: String
 		, trim: true
 	}
+	, shortname: {
+		type: String
+		, trim: true
+	}
 	, purpose: {
 		type: String
 		, trim: true
