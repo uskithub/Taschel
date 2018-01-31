@@ -68,19 +68,20 @@
             color: white;
 
             .kanban-item {
-                padding: 1em;
-                margin: 1em;
+                margin: 0.5em;
+                padding: 0.5em;
                 background: rgba(black, 0.4);
             
                 &.is-moving {
                     background: rgba(black, 0.8);
                 }
             
-                &.card {
-                    display: block;
+                &.media {
                     width: inherit;
-                    margin: 0.5em;
-                    padding: 0.5em;
+
+                    .media-right {
+                        margin-left: 0.5em;
+                    }
             
                     .block {
                         padding: 0;
