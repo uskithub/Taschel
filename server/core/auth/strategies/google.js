@@ -16,9 +16,12 @@ module.exports = function() {
 			clientID: config.authKeys.google.clientID
 			, clientSecret: config.authKeys.google.clientSecret
 			, callbackURL: "/auth/google/callback"
-			, accessType: "offline"
+			// notice: below options are never used if you set here. Set at passport.authenticate("google", {...}) instead of here.
+			// , accessType: "offline"
+			// , prompt: "consent"
 			, passReqToCallback: true
-		}, function(req, accessToken, refreshToken, credentials, profile, done) {
+		}
+		, function(req, accessToken, refreshToken, credentials, profile, done) {
 
 			// console.log("● accessToken", accessToken);
 			// console.log("● refreshToken", refreshToken);

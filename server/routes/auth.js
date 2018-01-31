@@ -184,6 +184,8 @@ module.exports = function(app, db) {
 			, "https://www.googleapis.com/auth/plus.profile.emails.read"
 			, "https://www.googleapis.com/auth/calendar.readonly"
 		]
+		, accessType: "offline"
+		, prompt: "consent"
 	}));
 
 	authRouter.get("/google/callback", passport.authenticate("google", {
