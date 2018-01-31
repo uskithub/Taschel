@@ -27,6 +27,17 @@ const DEFAULT_DAILY_GROUPS = [
 	, { name: "Friday", purpose: "for_friday" }
 ];
 
+// use this function to create an unclassifiedGroup.
+const flatTree = (model, arr = []) => {
+	arr.push(model);
+	if (model.children && model.children.length > 0) {
+		arr = model.children.reduce((result, m) => {
+			return flatTree(m, result);
+		}, arr);
+	}
+	return arr;
+};
+
 const isDescendant = (testee, tester) => {
 	if (tester.children.length > 0) {
 		for (let i in tester.children) {
@@ -37,6 +48,14 @@ const isDescendant = (testee, tester) => {
 		}
 	}
 	return false;
+};
+
+const deleteClassified = (inArr, excludes) => {
+	return inArr.map(t => {
+		t.children = t.children.filter( child => { return !excludes.includes(child.code); });
+		t.children = deleteClassified(t.children, excludes);
+		return t;
+	});
 };
 
 module.exports = {
@@ -73,16 +92,6 @@ module.exports = {
 		find: {
 			cache: true
 			, handler(ctx) {
-				// use this function to create an unclassifiedGroup.
-				const flatTree = (model, arr = []) => {
-					arr.push(model);
-					if (model.children && model.children.length > 0) {
-						arr = model.children.reduce((result, m) => {
-							return flatTree(m, result);
-						}, arr);
-					}
-					return arr;
-				};
 
 				if (ctx.params.parent_code != undefined) {
 					const projectCode = ctx.params.parent_code;
@@ -149,6 +158,15 @@ module.exports = {
 					});
 
 				} else if (ctx.params.weekly != undefined) {
+					// 1) read groups
+					// 2a) if groups.length == 0
+					//		read tasks and make them an unclassified group
+					// 2b) else 
+					//		2b-1) make a classified tasks an array. 
+					//			each groups' children and each tasks' children recursivly
+					//		2b-2) make an unclassified group
+					//			exclude what is descendant of the other task.
+					//		2b-3) delete classified children in the classified group
 					let type = `weekly_${ctx.params.weekly}`;
 					let userId = (ctx.params.user_code) ? this.personService.decodeID(ctx.params.user_code) : ctx.user.id;
 					let filter = {
@@ -238,13 +256,12 @@ module.exports = {
 									return jsons;
 								});
 							} else {
-								// make unclassifiedGroup
+								// make a classified tasks an array. 
 								let classifiedTaskCodes = groupJsons
 									.reduce((arr, g) => { return g.children.reduce((ret, t) => { return ret.concat(flatTree(t)); }, arr); }, [])
 									.map(j => { return j.code; });
 
-								console.log("●", classifiedTaskCodes);
-
+								// make an unclassified group
 								let unclassifiedTaskJsons = taskJsons.filter(t => { return !classifiedTaskCodes.includes(t.code); });
 
 								// exclude what is descendant of the other task.
@@ -259,6 +276,9 @@ module.exports = {
 									result.push(t);
 									return result;
 								}, []);
+
+								// delete classified children in the classified group
+								unclassifiedTaskJsons = deleteClassified(unclassifiedTaskJsons, classifiedTaskCodes);
 
 								let unclassifiedGroup = {
 									code: UNCLASSIFIED
