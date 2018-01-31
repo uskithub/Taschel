@@ -3,7 +3,7 @@
 		slot(:name="task.name")
 			.tag(v-if="isDisplayTag") {{ task.root.shortname }}
 			strong  {{ task.name }}
-			ul.kanban-list(v-if="task.children.length > 0" data-type="task", :data-code="task.code")
+			ul.kanban-list(v-if="task.children.length > 0" data-type="task", :class="{'draggable':isDraggable}", :data-code="task.code")
 				kanban(v-for="child in task.children", :task="child", :key="child.code")
 </template>
 
@@ -20,6 +20,10 @@
 			, isDisplayShortname: {
 				type: Boolean
 				, default: false
+			}
+			, isDraggable : {
+				type: Boolean
+				, default: true
 			}
 		}
 		, computed: {

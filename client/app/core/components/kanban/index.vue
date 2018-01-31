@@ -5,8 +5,8 @@
 				span.kanban-board-header
 					legend {{ board.name }}
 				div.drag-options
-				ul.kanban-list(data-type="group", :data-code="board.code")
-					kanban(v-for="task in board.children", :task="task", :key="task.code", :isDisplayShortname="true")
+				ul.kanban-list.draggable(data-type="group", :data-code="board.code")
+					kanban(v-for="task in board.children", :task="task", :key="task.code", :isDisplayShortname="true", :isDraggable="board.type=='kanban'||board.code=='UNCLASSIFIED'")
 </template>
 
 <script>
@@ -19,9 +19,12 @@
 		, components: {
 			Kanban
 		}
-        , props: [
-			"boardGroups"
-		]
+        , props: {
+			boardGroups : {
+				type: Array
+				, validator: function(value) { return true; } // TODO
+			}
+		}
 		, computed: {
 		}
 		, updated() {
@@ -53,7 +56,7 @@
 				if (drake) {
 					drake.destroy();
 				}
-				let kanbanList = Array.from(document.querySelectorAll(".kanban-list"), el => { return el; });
+				let kanbanList = Array.from(document.querySelectorAll(".kanban-list.draggable"), el => { return el; });
 				
 				drake = dragula(kanbanList)
 					.on("drag", (el, source) => {
