@@ -6,7 +6,7 @@
 					legend {{ board.name }}
 				div.drag-options
 				ul.kanban-list(data-type="group", :data-code="board.code")
-					kanban(v-for="task in board.children", :task="task", :key="task.code")
+					kanban(v-for="task in board.children", :task="task", :key="task.code", :isDisplayShortname="true")
 </template>
 
 <script>

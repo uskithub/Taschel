@@ -1,7 +1,8 @@
 <template lang="pug">
 	li.kanban-item.card(:class="{'requirement': task.type=='requirement', 'way': task.type=='way', 'step': task.type=='step'}", :data-code="task.code", :key="task.code" @click="select($event, task)")
 		slot(:name="task.name")
-			strong  {{ label(task) }}
+			.tag(v-if="isDisplayTag") {{ task.root.shortname }}
+			strong  {{ task.name }}
 			ul.kanban-list(v-if="task.children.length > 0" data-type="task", :data-code="task.code")
 				kanban(v-for="child in task.children", :task="child", :key="child.code")
 </template>
@@ -11,16 +12,23 @@
 	
 	export default {
 		name: "Kanban"
-        , props: [
-			"task"
-		]
+        , props: {
+			task: {
+				type: Object
+				, validator: function(value) { return true; } // TODO
+			}
+			, isDisplayShortname: {
+				type: Boolean
+				, default: false
+			}
+		}
 		, computed: {
+			isDisplayTag() {
+				return this.isDisplayShortname && isObject(this.task.root) && this.task.root.shortname != null;
+			}
 		}
 		, methods : {
-			label(task) {
-				return isObject(task.root) ? `${task.root.shortname} ${task.name}` : task.name;
-			}
-			, description(task) {
+			description(task) {
 				return [
 					{
 						key: "purpose"

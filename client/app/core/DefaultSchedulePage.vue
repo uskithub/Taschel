@@ -25,7 +25,7 @@
 						legend {{ _("Tasks") }}
 					div.drag-options
 					ul.kanban-list(data-code="weekly" ref="tasks")
-						kanban(v-for="task in tasks", :task="task", :key="task.code")
+						kanban(v-for="task in tasks", :task="task", :key="task.code", :isDisplayShortname="true")
 						//- li.kanban-item.card(v-for="task in tasks", :class="{'requirement': task.type=='requirement', 'way': task.type=='way', 'step': task.type=='step'}", :data-code="task.code", :key="task.code" ref="items" data-duration="1:00")
 						//- 	slot(:name="task.name")
 						//- 		strong {{ task.name }}
