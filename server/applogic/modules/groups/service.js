@@ -73,6 +73,17 @@ module.exports = {
 		find: {
 			cache: true
 			, handler(ctx) {
+				// use this function to create an unclassifiedGroup.
+				const flatTree = (model, arr = []) => {
+					arr.push(model);
+					if (model.children && model.children.length > 0) {
+						arr = model.children.reduce((result, m) => {
+							return flatTree(m, result);
+						}, arr);
+					}
+					return arr;
+				};
+
 				if (ctx.params.parent_code != undefined) {
 					const projectCode = ctx.params.parent_code;
 					const projectId = this.taskService.decodeID(projectCode);
@@ -146,11 +157,21 @@ module.exports = {
 							, { type : type }
 						]
 					};
+					const excludeTaskRule = ((serviceName, json) => {
+						if ( serviceName != "tasks" ) { return true; }
+						return json.status > -1
+							&& ["requirement", "way", "step", "todo"].includes(json.type)
+							&& (json.author == userId || json.asignee == userId);
+					});
 					let query = Group.find(filter);
-					return ctx.queryPageSort(query).exec().then(docs => {
+					return ctx.queryPageSort(query).exec()
+					.then(docs => { 
 						return this.toJSON(docs);
 					})
 					.then(jsons => {
+						return this.populateModels(jsons, excludeTaskRule);
+					})
+					.then(groupJsons => {
 						// status is open ( > -1)
 						// type is "requirement", "way", "step" or "todo"
 						// author or asignee is user
@@ -159,17 +180,18 @@ module.exports = {
 							, type : { $in: ["requirement", "way", "step", "todo"] }
 							, $or : [ { author : userId }, { asignee : userId } ]
 						};
-						const excludeRule = ((serviceName, json) => {
-							if ( serviceName != "tasks" ) { return true; }
-							return json.status > -1
-								&& ["requirement", "way", "step", "todo"].includes(json.type)
-								&& (json.author == userId || json.asignee == userId);
-						});
 
 						let query = Task.find(filter);
 						return ctx.queryPageSort(query).exec()
-						.then(taskDocs => {
-							if (jsons.length == 0) {
+						.then(docs => {
+							return this.taskService.toJSON(docs);
+						})
+						.then(jsons => {
+							return this.taskService.populateModels(jsons, excludeTaskRule);
+						})
+						.then(taskJsons => {
+
+							if (groupJsons.length == 0) {
 								// generating and returning default groups.
 								// using reduce for array will be correct sequence.
 								return DEFAULT_WEEKLY_GROUPS.reduce((promise, g) => {
@@ -192,58 +214,9 @@ module.exports = {
 									return this.populateModels(jsons);
 								})
 								.then(jsons => {
-									return Promise.resolve()
-									.then(() => {
-										return this.taskService.toJSON(taskDocs);
-									})
-									.then(taskJsons => {
-										// populated items also should be filtered.
-										return this.taskService.populateModels(taskJsons, excludeRule);
-									})
-									.then(taskJsons => {
-										// exclude what is descendant of the other task.
-										taskJsons = taskJsons.reduce((result, t) => {
-											const otherJsons = taskJsons.filter(_t => { return _t.code != t.code; });
-											for (let i in otherJsons) {
-												const other = otherJsons[i];
-												if (isDescendant(t, other)) {
-													return result;
-												}
-											}
-											result.push(t);
-											return result;
-										}, []);
-
-										let unclassifiedGroup = {
-											code: UNCLASSIFIED
-											, type: type
-											, name: "unclassified"
-											, purpose: "for_classify"
-											, children: taskJsons
-										};
-										jsons.unshift(unclassifiedGroup);
-										return jsons;
-									});
-								});
-							} else {
-								// ある場合は未分類Groupと一緒に返す
-								// 既存Groupに分類されていないTaskを未分類として既存Groupとともに返す
-								let classifiedTasks = jsons.reduce((arr, g) => {
-									return arr.concat(g.children);
-								}, []);
-								// taskはJSONにすると_idでの突き合わせができなくなるのでしない
-								let unclassifiedTaskDocs = taskDocs.filter(t => { return !classifiedTasks.includes(t._id); });
-
-								return Promise.resolve().then(() => {
-									return this.taskService.toJSON(unclassifiedTaskDocs);
-								})
-								.then(unclassifiedTaskJsons => {
-									return this.taskService.populateModels(unclassifiedTaskJsons, excludeRule);
-								})
-								.then(unclassifiedTaskJsons => {
 									// exclude what is descendant of the other task.
-									unclassifiedTaskJsons = unclassifiedTaskJsons.reduce((result, t) => {
-										const otherJsons = unclassifiedTaskJsons.filter(_t => { return _t.code != t.code; });
+									taskJsons = taskJsons.reduce((result, t) => {
+										const otherJsons = taskJsons.filter(_t => { return _t.code != t.code; });
 										for (let i in otherJsons) {
 											const other = otherJsons[i];
 											if (isDescendant(t, other)) {
@@ -254,19 +227,48 @@ module.exports = {
 										return result;
 									}, []);
 
-									return this.populateModels(jsons, excludeRule)
-									.then(jsons => {
-										let unclassifiedGroup = {
-											code: UNCLASSIFIED
-											, type: `weekly_${ctx.params.weekly}`
-											, name: "unclassified"
-											, purpose: "for_classify"
-											, children: unclassifiedTaskJsons
-										};
-										jsons.unshift(unclassifiedGroup);
-										return jsons;
-									});
+									let unclassifiedGroup = {
+										code: UNCLASSIFIED
+										, type: type
+										, name: "unclassified"
+										, purpose: "for_classify"
+										, children: taskJsons
+									};
+									jsons.unshift(unclassifiedGroup);
+									return jsons;
 								});
+							} else {
+								// make unclassifiedGroup
+								let classifiedTaskCodes = groupJsons
+									.reduce((arr, g) => { return g.children.reduce((ret, t) => { return ret.concat(flatTree(t)); }, arr); }, [])
+									.map(j => { return j.code; });
+
+								console.log("●", classifiedTaskCodes);
+
+								let unclassifiedTaskJsons = taskJsons.filter(t => { return !classifiedTaskCodes.includes(t.code); });
+
+								// exclude what is descendant of the other task.
+								unclassifiedTaskJsons = unclassifiedTaskJsons.reduce((result, t) => {
+									const otherJsons = unclassifiedTaskJsons.filter(_t => { return _t.code != t.code; });
+									for (let i in otherJsons) {
+										const other = otherJsons[i];
+										if (isDescendant(t, other)) {
+											return result;
+										}
+									}
+									result.push(t);
+									return result;
+								}, []);
+
+								let unclassifiedGroup = {
+									code: UNCLASSIFIED
+									, type: `weekly_${ctx.params.weekly}`
+									, name: "unclassified"
+									, purpose: "for_classify"
+									, children: unclassifiedTaskJsons
+								};
+								groupJsons.unshift(unclassifiedGroup);
+								return groupJsons;
 							}
 						});
 					});
