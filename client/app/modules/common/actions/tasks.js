@@ -3,7 +3,7 @@ import { METHOD, api } from "../api";
 
 import toastr from "../../../core/toastr";
 
-import { assign, cloneDeep } from "lodash";
+import { assign, cloneDeep, isObject } from "lodash";
 
 import { ARRANGE_AVOBE, ARRANGE_INTO, ARRANGE_BELOW } from "../constants/mutationTypes";
 
@@ -25,25 +25,12 @@ let recursiveSetParentReference = function(model) {
 	}
 };
 
-// 相互参照しているオブジェクトをJSON化しようとすると無限ループになるので、parentをcodeに戻す
-let recursiveRevertParentReference = function(model) {
-	if (model.parent != -1) {
-		model.parent = model.parent.code;
-	}
-	if (model.children == undefined || model.children.length == 0) {
-		return model;
-	} else {
-		model.children = model.children.map((c) => {
-			return recursiveRevertParentReference(c);
-		});
-		return model;
-	}
-};
-
+// unpopulate loop reference
 let createUnpopulatedClone = function(model) {
 	let _model = cloneDeep(model);
-	if (_model.root && _model.root != -1 && _model.root.code) _model.root = _model.root.code;
+	if (_model.root && isObject(_model.root)) _model.root = _model.root.code;
 	if (_model.parent && _model.parent != -1 && _model.parent.code) _model.parent = _model.parent.code;
+	delete _model.shortname;	
 	_model.children = _model.children.map( c => {
 		return (c.code) ? c.code : c;
 	});
