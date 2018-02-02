@@ -92,7 +92,8 @@ export const readTasks = ({ commit }, { options, mutation }) => {
 };
 
 export const updateTask = ({ commit }, { model, mutation }) => {
-	return api(METHOD.put, NAMESPACE + "/" + model.code, model)
+	const _model = createUnpopulatedClone(model);
+	return api(METHOD.put, NAMESPACE + "/" + _model.code, _model)
 	.then(data => {
 		if (mutation)
 			commit(mutation, data, { root : (mutation.indexOf("/") > -1) });
