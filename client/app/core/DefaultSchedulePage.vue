@@ -42,7 +42,7 @@
 			@remove="remove"
 			@cancel="cancel"
 		)
-		review(v-if="reviewingDay", :schema="schema.reviewForm", :works="worksOfReviewingDay", :template="reviewModel"
+		review(v-if="reviewingDayOfWeek", :schema="schema.reviewForm", :works="worksOfReviewingDate", :template="reviewModel"
 			@save="save"
 			@close="close"
 			@remove="remove"
@@ -118,8 +118,8 @@
 				, required: true
 				, validator: function(value) { return true; } // TODO
 			}
-			, reviewingDay : {
-				type: String
+			, reviewingDayOfWeek : {
+				type: Number
 				, validator: function(value) { return true; } // TODO
 			}
 			, currentWeek : {
@@ -159,12 +159,12 @@
 			}
 			, isAddButtonEnable() { return this.options.isAddButtonEnable !== false; }
 			, isEditing() { return this.model != null || this.selected.length > 0; }
-			, worksOfReviewingDay() {
-				if (this.reviewingDay == null) {
+			, worksOfReviewingDate() {
+				if (this.reviewingDayOfWeek == null) {
 					return [];
 				}
 				return this.works.filter(w => {
-					return moment(w.start).format("DD") == this.reviewingDay 
+					return moment(w.start).day() == this.reviewingDayOfWeek 
 						&& w.status < 0;
 				});
 			 }
@@ -182,8 +182,7 @@
 				// TODO
 				// closeしたworkが件の場合にはeditableをfalseにする
 				let _reviews = days.map(d => {
-					const r = this.reviews.filter(r => { 
-						return r.date == d; });
+					const r = this.reviews.filter(r => { return r.date == d; });
 					if (r.length > 0) {
 						return {
 							title: "済"
@@ -329,8 +328,9 @@
 				if (event.code == "GOOGLE_CALENDAR") return;
 
 				if (event.allDay) {
-					const day = event.start.format("DD");
-					this.$emit("selectReviewDay", day);
+					console.log(`●`, event);
+					const dayOfWeek = event.start.day();
+					this.$emit("selectReviewDayOfWeek", dayOfWeek);
 
 				} else {
 					for (let i in this.works) {

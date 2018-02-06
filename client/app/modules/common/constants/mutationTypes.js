@@ -45,7 +45,7 @@ export const ARRANGE_INTO     = "ARRANGE_INTO";
 
 export const ARRANGE_BELOW     = "ARRANGE_BELOW";
 
-export const SELECT_DAY         = "SELECT_DAY";
+export const SELECT_DAY_OF_WEEK   = "SELECT_DAY_OF_WEEK";
 
 export const LOAD_REVIEWS         = "LOAD_REVIEWS";
 

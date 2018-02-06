@@ -1,5 +1,5 @@
 <template lang="pug">
-	schedule-page(:schema="schema", :selected="selected", :reviewingDay="reviewingDay", :currentUser="currentUser", :users="users", :tasks="populatedTasks", :works="works", :reviews="reviews", :currentWeek="currentWeek", :model="model", :reviewModel="reviewModel"
+	schedule-page(:schema="schema", :selected="selected", :reviewingDayOfWeek="reviewingDayOfWeek", :currentUser="currentUser", :users="users", :tasks="populatedTasks", :works="works", :reviews="reviews", :currentWeek="currentWeek", :model="model", :reviewModel="reviewModel"
 		@assign="assign"
 		@selectUser="selectUser"
 		@select="select"
@@ -9,7 +9,7 @@
 		@close="close"
 		@remove="remove"
 		@cancel="cancel"
-		@selectReviewDay="selectReviewDay"
+		@selectReviewDayOfWeek="selectReviewDayOfWeek"
 	)
 </template>
 
@@ -25,7 +25,7 @@
 	import moment from "moment";
 
 	import { mapGetters, mapMutations, mapActions } from "vuex";
-	import { SET_CURRENT_PROJECT, SET_CURRENT_WEEK, LOAD_USERS, SELECT_USER, SET_USER, LOAD, LOAD_WORKS, SELECT, CLEAR_SELECT, ADD , UPDATE, REMOVE, SHOW_POPUP, HIDE_POPUP, SELECT_DAY, LOAD_REVIEWS, ADD_REVIEW } from "../common/constants/mutationTypes";
+	import { SET_CURRENT_PROJECT, SET_CURRENT_WEEK, LOAD_USERS, SELECT_USER, SET_USER, LOAD, LOAD_WORKS, SELECT, CLEAR_SELECT, ADD , UPDATE, REMOVE, SHOW_POPUP, HIDE_POPUP, SELECT_DAY_OF_WEEK, LOAD_REVIEWS, ADD_REVIEW } from "../common/constants/mutationTypes";
 
 	// determine whether model is review model or not.
 	// return "highOrderReview", "reviewOfWorks", "works"
@@ -52,7 +52,7 @@
 				, "works"
 				, "reviews"
 				, "selected"
-				, "reviewingDay"
+				, "reviewingDayOfWeek"
 			])
 			, populatedTasks() {
 				return this.assignedInWeeklyTasks.map(t => {
@@ -120,22 +120,22 @@
 				this.model = targetModel;
 			}
 			// notice this func is also called when reviewingDay became null.
-			, reviewingDay(day) {
-				if (day == null) {
+			, reviewingDayOfWeek(dayOfWeek) {
+				if (dayOfWeek == null) {
 					this.reviewModel = null;
 					return;
 				}
 				
-				const reviewingDate = moment(this.currentWeek).date(day).format("YYYY-MM-DD");
+				const reviewingDate = moment(this.currentWeek).day(dayOfWeek).format("YYYY-MM-DD");
 				this.schema.reviewForm.title = `${reviewingDate} の振り返り`;
 
-				const worksOfReviewingDay = this.works.filter(w => {
-					return moment(w.start).format("DD") == day && w.status < 0;
+				const worksOfReviewingDate = this.works.filter(w => {
+					return moment(w.start).day() == dayOfWeek && w.status < 0;
 				});
 
 				let model = {
 					highOrderReview : schemaUtils.createDefaultObject(this.schema.reviewForm.form.groups[1])
-					, reviewOfWorks: new Array(worksOfReviewingDay.length)
+					, reviewOfWorks: new Array(worksOfReviewingDate.length)
 				};
 
 				for (let i in this.reviews) {
@@ -147,14 +147,14 @@
 				}
 				model.highOrderReview.week = this.currentWeek;
 				model.highOrderReview.date = reviewingDate;
-				model.highOrderReview.works = worksOfReviewingDay.map(w => { return w.code; });
+				model.highOrderReview.works = worksOfReviewingDate.map(w => { return w.code; });
 
-				for (let i=0; i<worksOfReviewingDay.length; i++) {
+				for (let i=0; i<worksOfReviewingDate.length; i++) {
 					model.reviewOfWorks[i] = schemaUtils.createDefaultObject(this.schema.reviewForm.form.groups[0]);
-					model.reviewOfWorks[i].code = worksOfReviewingDay[i].code;
-					model.reviewOfWorks[i].goodSide = worksOfReviewingDay[i].goodSide;
-					model.reviewOfWorks[i].badSide = worksOfReviewingDay[i].badSide;
-					model.reviewOfWorks[i].improvement = worksOfReviewingDay[i].improvement;
+					model.reviewOfWorks[i].code = worksOfReviewingDate[i].code;
+					model.reviewOfWorks[i].goodSide = worksOfReviewingDate[i].goodSide;
+					model.reviewOfWorks[i].badSide = worksOfReviewingDate[i].badSide;
+					model.reviewOfWorks[i].improvement = worksOfReviewingDate[i].improvement;
 				}
 				this.reviewModel = model;
 			}
@@ -215,7 +215,7 @@
 			...mapMutations("dailyPage", {
 				select : SELECT
 				, clearSelection : CLEAR_SELECT
-				, selectReviewDay : SELECT_DAY
+				, selectReviewDayOfWeek : SELECT_DAY_OF_WEEK
 			})
 			, ...mapActions("dailyPage", {
 				getAssignedInWeeklyTasks : "readGroups"
@@ -256,7 +256,7 @@
 				const modelType = determineModel(model);
 				if (modelType == "highOrderReview") {
 					this.createReview( { model, mutation: ADD_REVIEW } );
-					this.selectReviewDay(null);
+					this.selectReviewDayOfWeek(null);
 				} else {
 					this.clearSelection();
 					this.updateWork( { model, mutation: UPDATE } );
@@ -276,7 +276,7 @@
 					this.clearSelection();
 					this.model = null;
 				} else {
-					this.selectReviewDay(null);
+					this.selectReviewDayOfWeek(null);
 				}
 			}
 		}

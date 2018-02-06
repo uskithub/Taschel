@@ -6,7 +6,7 @@ import {
 	, REMOVE
 	, SELECT
 	, CLEAR_SELECT 
-	, SELECT_DAY
+	, SELECT_DAY_OF_WEEK
 	, LOAD_REVIEWS
 	, ADD_REVIEW
 } from "../common/constants/mutationTypes";
@@ -18,7 +18,7 @@ const state = {
 	, works: []
 	, reviews: []
 	, selected: []
-	, reviewingDay: null
+	, reviewingDayOfWeek: null
 };
 
 // stateから値を取り出すのはgetterを使う
@@ -27,7 +27,7 @@ const getters = {
 	, works(state) { return state.works; }
 	, reviews(state) { return state.reviews; }
 	, selected(state) { return state.selected; }
-	, reviewingDay(state) { return state.reviewingDay; }
+	, reviewingDayOfWeek(state) { return state.reviewingDayOfWeek; }
 };
 
 // mutationにはstateを変更する処理を実装する。
@@ -79,8 +79,8 @@ const mutations = {
 	, [CLEAR_SELECT] (state) {
 		state.selected.splice(0);
 	}
-	, [SELECT_DAY] (state, day) {
-		state.reviewingDay = day;
+	, [SELECT_DAY_OF_WEEK] (state, dayOfWeek) {
+		state.reviewingDayOfWeek = dayOfWeek;
 	}
 	, [LOAD_REVIEWS] (state, models) {
 		state.reviews.splice(0);

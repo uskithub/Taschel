@@ -115,7 +115,7 @@ module.exports = {
 			this.validateParams(ctx);
 
 			return this.collection.findById(ctx.modelID).exec()
-			.then((doc) => {
+			.then(doc => {
 
 				console.log(ctx.params);
 
@@ -145,13 +145,13 @@ module.exports = {
 
 				return doc.save();
 			})
-			.then((doc) => {
+			.then(doc => {
 				return this.toJSON(doc);
 			})
-			.then((json) => {
+			.then(json => {
 				return this.populateModels(json);
 			})
-			.then((json) => {
+			.then(json => {
 				this.notifyModelChanges(ctx, "updated", json);
 				return json;
 			});								
