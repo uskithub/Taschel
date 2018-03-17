@@ -12,6 +12,7 @@ import VueI18Next from "./core/i18next.js";
 import VueFormGenerator from "vue-form-generator";
 import VueWebsocket from "vue-websocket";
 import fieldMyDateTimePicker from "./core/components/customField/dateTimePicker/index";
+import fieldTagsInput from "./core/components/customField/tagsInput/index";
 
 import store from "./core/store";
 import App from "./core/App";
@@ -19,6 +20,7 @@ import App from "./core/App";
 Vue.use(Filters);
 
 Vue.component("fieldMyDateTimePicker", fieldMyDateTimePicker);
+Vue.component("fieldTagsInput", fieldTagsInput);
 
 Vue.use(VueFormGenerator);
 Vue.use(VueWebsocket);

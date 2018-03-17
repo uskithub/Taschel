@@ -204,6 +204,21 @@ const fields = {
 			, values: []
 		}
 	}
+	, assistants : {
+		label: _("Assistants")
+		, model: "assistants"
+		, table: {
+			formatter(value, model, col) {
+				return (model.assistants) ? model.assistants.username : "-";
+			}
+			, align: "center"
+		}
+		, form: {
+			model: "assistants"
+			, type: "tagsInput"
+			, values: []
+		}
+	}
 	, author : {
 		label: _("Author")
 		, model: "author"
