@@ -2,39 +2,39 @@ const clone = items => {
   return JSON.parse(JSON.stringify(items));
 };
 
-const validateUserRules = (text, validation) => {
+const validateUserRules = (name, validation) => {
   return validation
     .filter(val => {
-      if (typeof val.rule === 'string') return !new RegExp(val.rule).test(text);
-      if (val.rule instanceof RegExp) return !val.rule.test(text);
+      if (typeof val.rule === 'string') return !new RegExp(val.rule).test(name);
+      if (val.rule instanceof RegExp) return !val.rule.test(name);
       const isFunction = {}.toString.call(val.rule) === '[object Function]';
-      if (isFunction) return val.rule(text);
+      if (isFunction) return val.rule(name);
     })
     .map(val => val.type);
 };
 
-const createClasses = (text, tags, validation, checkFromInside) => {
+const createClasses = (name, tags, validation, checkFromInside) => {
   if (!validation) validation = [];
   if (checkFromInside === undefined) checkFromInside = true;
-  const classes = validateUserRules(text, validation);
+  const classes = validateUserRules(name, validation);
   if (checkFromInside) {
-    if (tags.filter(t => t.text === text).length > 1) classes.push('duplicate');
+    if (tags.filter(t => t.name === name).length > 1) classes.push('duplicate');
   } else {
-    if (tags.map(t => t.text).indexOf(text) !== -1) classes.push('duplicate');
+    if (tags.map(t => t.name).indexOf(name) !== -1) classes.push('duplicate');
   }
   classes.length === 0 ? classes.push('valid') : classes.push('invalid');
   return classes;
 };
 
 const createTag = (tag, tags, validation, checkFromInside) => {
-  if (tag.text === undefined) tag = { text: tag };
+  if (tag.name === undefined) tag = { name: tag };
   const t = clone(tag);
-  t.tiClasses = createClasses(t.text, tags, validation, checkFromInside);
+  t.tiClasses = createClasses(t.name, tags, validation, checkFromInside);
   return t;
 };
 
-const createTags = (tags, validation, checkFromInside) => {
-  return tags.map(t => createTag(t, tags, validation, checkFromInside));
+const createTags = (tags, autocompleteItems, validation, checkFromInside) => {
+  return tags.map(t => createTag(t, autocompleteItems, validation, checkFromInside));
 };
 
 export {

@@ -1,5 +1,5 @@
 <template lang="pug">
-	vue-tags-input(v-model="value", :tags="tags")
+	vue-tags-input(v-model="value", :autocompleteItems="schema.values", :addOnlyFromAutocomplete="schema.values != undefined", :autocompleteAlwaysOpen="schema.values != undefined")
 </template>
 
 <script>
@@ -15,13 +15,15 @@
 			VueTagsInput
 		}
 		, data() {
-			// createdより早くmodelが参照されるので、ここで詰めている
 			return {
 				tags: []
 			};
 		}
 		, methods: {
 			
+		}
+		, created() {
+			console.log("● value", this.value);
 		}
 		, mounted() {
 			
@@ -33,5 +35,10 @@
 </script>
 
 
-<style lang="sass">
+<style lang="scss">
+
+.autocomplete {
+	color: #000;
+}
+
 </style>

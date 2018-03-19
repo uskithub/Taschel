@@ -54,11 +54,16 @@ const fields = {
 			}
 		}
 		, form: {
-			type: "select"
+			// type: "select"
+			// , required: true
+			// , values: taskTypes
+			// , default: "step"
+			// , validator: validators.required
+			type: "tagsInput"
 			, required: true
 			, values: taskTypes
 			, default: "step"
-			, validator: validators.required
+			//, validator: validators.required
 		}
 	}
 	, name: {
