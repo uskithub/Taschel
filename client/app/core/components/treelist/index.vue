@@ -1,12 +1,13 @@
 <template lang="pug">
     div(v-if="node != null")
-        div.border.up(:class="{'active': isDraggingToGoUp}"
+        .border.up(:class="{'active': isDraggingToGoUp}"
             @drop="dropAbove"
             @dragenter="dragenterAbove"
             @dragover="dragover"
-            @dragleave="dragleaveAbove")
+            @dragleave="dragleaveAbove"
+        )
 
-        div.media.gantt(:class="{'active': isDraggingIntoChild, 'milestone': node.type=='milestone', 'requirement': node.type=='requirement', 'way': node.type=='way', 'step': node.type=='step', 'todo': node.type=='todo'}")
+        .media.gantt(:class="{'active': isDraggingIntoChild, 'milestone': node.type=='milestone', 'requirement': node.type=='requirement', 'way': node.type=='way', 'step': node.type=='step', 'todo': node.type=='todo'}")
             div.tree-node(:id="node.code", :draggable="!isRoot && isDraggable"
                 @click=""
                 @dragstart="dragstart"
@@ -36,11 +37,12 @@
             div(:class="{'tree-margin': true}", v-show="isOpen")
                 tree-list(v-for="child in filteredOrderedNodes", :node="child", :isDraggable="isDraggable", :key='child.code', :add="add")
 
-        div(class="border bottom", :class="{'active': isDraggingToGoDown}"
+        .border.bottom(:class="{'active': isDraggingToGoDown}"
             @drop="dropBelow"
             @dragenter="dragenterBelow"
             @dragover="dragover"
-            @dragleave="dragleaveBelow")
+            @dragleave="dragleaveBelow"
+        )
 
 </template>
 

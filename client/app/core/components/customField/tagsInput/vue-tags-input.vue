@@ -240,7 +240,7 @@ export default {
 				return createTag(i, this.value, this.validation, false);
 			});
 			if (!this.autocompleteFilterDuplicates) return items;
-			return items.filter(i => !this.tagsCopy.find(t => t.name === i.name));
+			return items.filter(i => !this.tagsCopy.find(t => t.id === i.id));
 		},
 	},
 	methods: {

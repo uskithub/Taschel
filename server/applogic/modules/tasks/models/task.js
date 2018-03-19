@@ -25,6 +25,10 @@ let TaskSchema = new Schema({
 		type: String
 		, trim: true
 	}
+	, properties: [{
+		type: String
+		, trim: true
+	}]
 	, name: {
 		type: String
 		, trim: true

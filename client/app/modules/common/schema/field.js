@@ -1,6 +1,6 @@
 import Vue from "vue";
 import moment from "moment";
-import { taskTypes } from "../../common/constants/types";
+import { taskTypes, taskProperties } from "../../common/constants/types";
 import { validators } from "vue-form-generator";
 import { cloneDeep, isObject, isNil, isArray } from "lodash";
 
@@ -64,6 +64,22 @@ const fields = {
 			, values: taskTypes
 			, default: "step"
 			//, validator: validators.required
+		}
+	}
+	, properties: {
+		label: _("TaskProperties")
+		, model: "properties"
+		, table: {
+			formatter(value) {
+				let type = find(taskProperties, (type) => type.id == value);
+				return type ? type.name : value;
+			}
+		}
+		, form: {
+			type: "tagsInput"
+			, required: true
+			, values: taskProperties
+			, default: []
 		}
 	}
 	, name: {

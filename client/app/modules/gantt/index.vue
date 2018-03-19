@@ -101,7 +101,8 @@
 
 				let newModel = schemaUtils.createDefaultObject(this.schema.popupForm.form);
 				
-				newModel.type = [this.setupDefaultTaskType(parent.type)];
+				newModel.type = "step";
+				newModel.properties = [];
 				newModel.purpose = `${parent.goal} にするため`;
 				newModel.root_code = this.currentProject;
 				newModel.parent_code = parent.code;

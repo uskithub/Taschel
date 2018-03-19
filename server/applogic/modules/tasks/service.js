@@ -27,7 +27,7 @@ module.exports = {
 		role: "user",
 		collection: Task,
 		
-		modelPropFilter: "code type purpose name shortname goal description deadline timeframe root parent children works status closingComment author asignee isDeleted lastCommunication createdAt updatedAt"
+		modelPropFilter: "code type properties purpose name shortname goal description deadline timeframe root parent children works status closingComment author asignee isDeleted lastCommunication createdAt updatedAt"
 
 		// TODO: populateModelsを改造すれば、下にのみpopulate、上にのみpopulateもできる
 		, modelPopulates: {
@@ -113,6 +113,7 @@ module.exports = {
 			
 			let task = new Task({
 				type: ctx.params.type
+				, properties: ctx.params.properties
 				, name: ctx.params.name
 				, shortname: ctx.params.shortname
                 , purpose: ctx.params.purpose
@@ -128,40 +129,40 @@ module.exports = {
 			});
 
 			return task.save()
-			.then(doc => {
+				.then(doc => {
 
-				if (ctx.params.type == "project") {
-					// kanbanを作る
-					// 配列の順番になるように、reduceで作っている
-					return DEFAULT_KANBAN_GROUPS.reduce((promise, g) => {
-						return promise.then(()=> {
-							g.type = "kanban";
-							g.parent =  doc.id;
-							g.author = doc.author;
-							let group = new Group(g);
-							return group.save();
-						});
-					}, Promise.resolve())
-					.then(() => {
+					if (ctx.params.type == "project") {
+						// kanbanを作る
+						// 配列の順番になるように、reduceで作っている
+						return DEFAULT_KANBAN_GROUPS.reduce((promise, g) => {
+							return promise.then(()=> {
+								g.type = "kanban";
+								g.parent =  doc.id;
+								g.author = doc.author;
+								let group = new Group(g);
+								return group.save();
+							});
+						}, Promise.resolve())
+							.then(() => {
+								return this.toJSON(doc);
+							});
+
+					} else {
 						return this.toJSON(doc);
-					});
-
-				} else {
-					return this.toJSON(doc);
-				}				
-			})
-			.then(json => {
-				return this.populateModels(json);
-			})
-			.then(json => {
-				if (ctx.params.parent_code != undefined) {
-					// breakdownの場合
-					return this.actions.breakdown(ctx, json);
-				} else {
-					this.notifyModelChanges(ctx, "created", json);
-					return json;
-				}
-			});
+					}				
+				})
+				.then(json => {
+					return this.populateModels(json);
+				})
+				.then(json => {
+					if (ctx.params.parent_code != undefined) {
+						// breakdownの場合
+						return this.actions.breakdown(ctx, json);
+					} else {
+						this.notifyModelChanges(ctx, "created", json);
+						return json;
+					}
+				});
 		}
 
 		, update(ctx) {
@@ -177,53 +178,53 @@ module.exports = {
 			}
 
 			return this.collection.findById(ctx.modelID).exec()
-			.then(doc => {
+				.then(doc => {
 
-				if (ctx.params.purpose != null)
-					doc.purpose = ctx.params.purpose;
+					if (ctx.params.purpose != null)
+						doc.purpose = ctx.params.purpose;
 
-				if (ctx.params.root_code != null) {
-					doc.root = this.decodeID(ctx.params.root_code);
-					// TODO: parentを取得し、rootがblankの場合、同じrootを指定、blankでなければ親子のreleationを切り離す、を先祖に遡って実施
-					// TODO: 全ての子孫を再帰的に、同じrootを指定する必要あり
-				}
+					if (ctx.params.root_code != null) {
+						doc.root = this.decodeID(ctx.params.root_code);
+						// TODO: parentを取得し、rootがblankの場合、同じrootを指定、blankでなければ親子のreleationを切り離す、を先祖に遡って実施
+						// TODO: 全ての子孫を再帰的に、同じrootを指定する必要あり
+					}
 
-				if (ctx.params.type != null)
-					doc.type = ctx.params.type;
+					if (ctx.params.type != null)
+						doc.type = ctx.params.type;
 
-				if (ctx.params.name != null)
-					doc.name = ctx.params.name;
+					if (ctx.params.name != null)
+						doc.name = ctx.params.name;
 
-				if (ctx.params.shortname != null)
-					doc.shortname = ctx.params.shortname;
+					if (ctx.params.shortname != null)
+						doc.shortname = ctx.params.shortname;
 
-				if (ctx.params.goal != null)
-					doc.goal = ctx.params.goal;
+					if (ctx.params.goal != null)
+						doc.goal = ctx.params.goal;
 
-				if (ctx.params.description != null)
-					doc.description = ctx.params.description;
+					if (ctx.params.description != null)
+						doc.description = ctx.params.description;
 
-				if (ctx.params.status != null)
-					doc.status = ctx.params.status;
+					if (ctx.params.status != null)
+						doc.status = ctx.params.status;
 
-				if (ctx.params.asignee_code != null)
-					doc.asignee = this.personService.decodeID(ctx.params.asignee_code);
+					if (ctx.params.asignee_code != null)
+						doc.asignee = this.personService.decodeID(ctx.params.asignee_code);
 
-				if (ctx.params.closingComment != null)
-					doc.closingComment = ctx.params.closingComment;
+					if (ctx.params.closingComment != null)
+						doc.closingComment = ctx.params.closingComment;
 
-				return doc.save();
-			})
-			.then(doc => {
-				return this.toJSON(doc);
-			})
-			.then(json => {
-				return this.populateModels(json);
-			})
-			.then(json => {
-				this.notifyModelChanges(ctx, "updated", json);
-				return json;
-			});								
+					return doc.save();
+				})
+				.then(doc => {
+					return this.toJSON(doc);
+				})
+				.then(json => {
+					return this.populateModels(json);
+				})
+				.then(json => {
+					this.notifyModelChanges(ctx, "updated", json);
+					return json;
+				});								
 		}
 
 		// TODO: 親からの参照を外す、childrenも再帰的に削除
@@ -235,17 +236,17 @@ module.exports = {
 
 			// 論理削除とする
 			return this.collection.findById(ctx.modelID).exec()
-			.then((doc) => {
-				doc.isDeleted = true;
-				return doc.save();
-			})
-			.then(() => {
-				return ctx.model;
-			})
-			.then((json) => {
-				this.notifyModelChanges(ctx, "removed", json);
-				return json;
-			});		
+				.then((doc) => {
+					doc.isDeleted = true;
+					return doc.save();
+				})
+				.then(() => {
+					return ctx.model;
+				})
+				.then((json) => {
+					this.notifyModelChanges(ctx, "removed", json);
+					return json;
+				});		
 		}
 
 		// 子タスクのcreate時に、同時に親の方に子タスクを付け加える
@@ -258,19 +259,19 @@ module.exports = {
 			let childId = this.decodeID(childJson.code);
 
 			return this.collection.findById(parentId).exec()
-			.then((doc) => {
-				return Task.findByIdAndUpdate(doc.id, { $addToSet: { children: childId }}, { "new": true });
-			})
-			.then((doc) => {
-				return this.toJSON(doc);
-			})
-			.then((json) => {
-				return this.populateModels(json);
-			})
-			.then((json) => {
-				this.notifyModelChanges(ctx, "brokedown", { parent : json, child : childJson });
-				return { parent : json, child : childJson };
-			});
+				.then((doc) => {
+					return Task.findByIdAndUpdate(doc.id, { $addToSet: { children: childId }}, { "new": true });
+				})
+				.then((doc) => {
+					return this.toJSON(doc);
+				})
+				.then((json) => {
+					return this.populateModels(json);
+				})
+				.then((json) => {
+					this.notifyModelChanges(ctx, "brokedown", { parent : json, child : childJson });
+					return { parent : json, child : childJson };
+				});
 		}
 
 		// タスクの入れ替え
@@ -311,39 +312,39 @@ module.exports = {
 					// into 3. target.childrenにmovingを追加（先頭）
 					if (type == "into") {
 						return this.collection.findById(targetId).exec()
-						.then((targetDoc) => {
-							targetDoc.children.unshift(movingId);
-							targetDoc.save();
-							return [parentDoc, targetDoc];
-						});
+							.then((targetDoc) => {
+								targetDoc.children.unshift(movingId);
+								targetDoc.save();
+								return [parentDoc, targetDoc];
+							});
 					}
 
 					// above 3. (target->parent).childrenにmovingを追加（targetの前に）
 					// below 3. (target->parent).childrenにmovingを追加（targetの後に）
 					return Promise.resolve()
-					.then(() => {
-						// 親が同じ中で入れ替えの場合はわざわざfindしない
-						if (parentId == targetParentId) {
-							return parentDoc;
-						} else {
-							return this.collection.findById(targetParentId).exec();
-						}
-					}).then(targetParentDoc => {
-						let index = 0;
-						for (let i in targetParentDoc.children) {
-							let c = targetParentDoc.children[i];
-							if (c == targetId) {
-								break;
+						.then(() => {
+							// 親が同じ中で入れ替えの場合はわざわざfindしない
+							if (parentId == targetParentId) {
+								return parentDoc;
+							} else {
+								return this.collection.findById(targetParentId).exec();
 							}
-							index++;
-						}
-						console.log("● before:", targetParentDoc.children);
-						targetParentDoc.children.splice((type=="below" ? index+1 : index), 0, movingId);
-						console.log("● after :", targetParentDoc.children);
-						targetParentDoc.save();
-	
-						return [parentDoc, targetParentDoc];
-					});
+						}).then(targetParentDoc => {
+							let index = 0;
+							for (let i in targetParentDoc.children) {
+								let c = targetParentDoc.children[i];
+								if (c == targetId) {
+									break;
+								}
+								index++;
+							}
+							console.log("● before:", targetParentDoc.children);
+							targetParentDoc.children.splice((type=="below" ? index+1 : index), 0, movingId);
+							console.log("● after :", targetParentDoc.children);
+							targetParentDoc.save();
+		
+							return [parentDoc, targetParentDoc];
+						});
 				})
 			);
 			
@@ -363,34 +364,34 @@ module.exports = {
 			);
 
 			return Promise.all(promises)
-			.then(docs => {
-				// flatten
-				return [docs[1], docs[0][0], docs[0][1]];
-			})
-			.then(docs => {
-				return this.toJSON(docs);
-			})
-			.then(jsons => {
-				return this.populateModels(jsons);
-			})
-			.then(jsons => {
-				this.notifyModelChanges(ctx, "arranged", jsons);
-				if (type == "into") {
-					return {
-						// ここでのkeyは入れ替え前の「movingParent」
-						moving : jsons[0]
-						, movingParent : jsons[1]
-						, target : jsons[2]
-						
-					};
-				} else {
-					return {
-						moving : jsons[0]
-						, movingParent : jsons[1]
-						, targetParent : jsons[2]
-					};
-				}
-			});			
+				.then(docs => {
+					// flatten
+					return [docs[1], docs[0][0], docs[0][1]];
+				})
+				.then(docs => {
+					return this.toJSON(docs);
+				})
+				.then(jsons => {
+					return this.populateModels(jsons);
+				})
+				.then(jsons => {
+					this.notifyModelChanges(ctx, "arranged", jsons);
+					if (type == "into") {
+						return {
+							// ここでのkeyは入れ替え前の「movingParent」
+							moving : jsons[0]
+							, movingParent : jsons[1]
+							, target : jsons[2]
+							
+						};
+					} else {
+						return {
+							moving : jsons[0]
+							, movingParent : jsons[1]
+							, targetParent : jsons[2]
+						};
+					}
+				});			
 		}
 
 		, arrange2(ctx) {
@@ -405,58 +406,58 @@ module.exports = {
 			//	  2. from, to => xxx, xxx
 			//		- to（=from）内で移動
 			return Promise.resolve()
-			.then(() => {
-				let toId = ctx.modelID;
-				let fromId = this.decodeID(ctx.params.from);
-				if (toId != fromId) {
-					// ①-1. from, to => xxx, yyy
-					return this.collection.findById(toId).exec()
-					.then(doc => {
-						doc.children.splice(index, 0, movingId);
-						return doc.save()
-						.then(toDoc => {
-							return this.collection.findById(fromId).exec()
-							.then(fromDoc => {
-								fromDoc.children = fromDoc.children.filter( c => { return c != movingId; });
-								return fromDoc.save();
-							})
-							.then(fromDoc => {
-								return this.collection.findById(movingId).exec()
-								.then(movingDoc => {
-									movingDoc.parent = toId;
-									return movingDoc.save();
-								})
-								.then(movingDoc => {
-								// 	return this.toJSON([toDoc, fromDoc, movingDoc]);
-								// })
-								// .then(jsons => {
-								// 	return this.populateModels(jsons);
-								// })
-								// .then(jsons => {
-								// 	// Groups find will use cache. So putting task docs into cache here.
-								// 	this.putToCache(this.getCacheKey("model", toId), jsons[0]);
-								// 	this.putToCache(this.getCacheKey("model", fromId), jsons[1]);
-								// 	this.putToCache(this.getCacheKey("model", movingId), jsons[2]);
-									// return [toDoc, fromDoc, movingDoc];
-									return this.groupService.actions.find(ctx);
-								});
+				.then(() => {
+					let toId = ctx.modelID;
+					let fromId = this.decodeID(ctx.params.from);
+					if (toId != fromId) {
+						// ①-1. from, to => xxx, yyy
+						return this.collection.findById(toId).exec()
+							.then(doc => {
+								doc.children.splice(index, 0, movingId);
+								return doc.save()
+									.then(toDoc => {
+										return this.collection.findById(fromId).exec()
+											.then(fromDoc => {
+												fromDoc.children = fromDoc.children.filter( c => { return c != movingId; });
+												return fromDoc.save();
+											})
+											.then(fromDoc => {
+												return this.collection.findById(movingId).exec()
+													.then(movingDoc => {
+														movingDoc.parent = toId;
+														return movingDoc.save();
+													})
+													.then(movingDoc => {
+													// 	return this.toJSON([toDoc, fromDoc, movingDoc]);
+													// })
+													// .then(jsons => {
+													// 	return this.populateModels(jsons);
+													// })
+													// .then(jsons => {
+													// 	// Groups find will use cache. So putting task docs into cache here.
+													// 	this.putToCache(this.getCacheKey("model", toId), jsons[0]);
+													// 	this.putToCache(this.getCacheKey("model", fromId), jsons[1]);
+													// 	this.putToCache(this.getCacheKey("model", movingId), jsons[2]);
+														// return [toDoc, fromDoc, movingDoc];
+														return this.groupService.actions.find(ctx);
+													});
+											});
+									});
 							});
-						});
-					});
-				} else {
-					// ①-2. from, to => xxx, xxx
-					return this.collection.findById(toId).exec()
-					.then(doc => {
-						doc.children = doc.children.filter( c => { return c != movingId; });
-						doc.children.splice(index, 0, movingId);
-						return doc.save()
-						.then(doc => {
-							// return [doc];
-							return this.groupService.actions.find(ctx);
-						});
-					});
-				}
-			});
+					} else {
+						// ①-2. from, to => xxx, xxx
+						return this.collection.findById(toId).exec()
+							.then(doc => {
+								doc.children = doc.children.filter( c => { return c != movingId; });
+								doc.children.splice(index, 0, movingId);
+								return doc.save()
+									.then(doc => {
+										// return [doc];
+										return this.groupService.actions.find(ctx);
+									});
+							});
+					}
+				});
 		}
 		// 親子関係、rootの整合性をチェックする
 		, check(ctx) {
@@ -490,18 +491,18 @@ module.exports = {
 			};
 
 			return this.collection.find({ root : -1 }).exec()
-			.then(docs => {
-				return this.toJSON(docs);
-			})
-			.then(jsons => {
-				return this.populateModels(jsons);
-			})
-			.then(jsons => {
-				return jsons.reduce((obj, project) => {
-					const rootId = this.decodeID(project.code);
-					return recursiveReduceCheck(project.children, project, rootId, obj);
-				}, { entities:[], errors:[] })
-			});
+				.then(docs => {
+					return this.toJSON(docs);
+				})
+				.then(jsons => {
+					return this.populateModels(jsons);
+				})
+				.then(jsons => {
+					return jsons.reduce((obj, project) => {
+						const rootId = this.decodeID(project.code);
+						return recursiveReduceCheck(project.children, project, rootId, obj);
+					}, { entities:[], errors:[] });
+				});
 		}
 	}
 	
@@ -522,7 +523,7 @@ module.exports = {
 
 			ctx.validateParam("purpose").trim().end();
 			ctx.validateParam("goal").trim().end();
-			ctx.validateParam("type").trim().end();
+			// ctx.validateParam("type").trim().end();
 
 			if (ctx.hasValidationErrors())
 				throw ctx.errorBadRequest(C.ERR_VALIDATION_ERROR, ctx.validationErrors);			
