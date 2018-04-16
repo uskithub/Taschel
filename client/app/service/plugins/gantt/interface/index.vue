@@ -1,7 +1,6 @@
 <template lang="pug">
 	section
-		h1 {{ _("DailyLoop") }}
-		fullcalendar(:events="events", :options="options", :currentWeek="currentWeek")
+		h1 {{ _("Gantt") }}
 </template>
 
 <script>
@@ -14,9 +13,6 @@
 		mixins : [ Base ]
 		, data() {
 			return {
-				events: []
-				, options: {}
-				, currentWeek : "2018-04-10"
 			};
 		}
 	};

@@ -1,9 +1,7 @@
-import fullcalendar from "./components/fullcalendar";
-
 const plugin = {
 	// @see https://jp.vuejs.org/v2/guide/plugins.html
 	install (Vue, options) {
-		console.log("★★★ install DailyLoop plugin ★★★");
+		console.log("★★★ install Gantt plugin ★★★");
 		
 		const finalOptions = Object.assign({}, options);
 
@@ -12,7 +10,7 @@ const plugin = {
 		// strategies.googleMapsAPIsLoaded = strategies.created;
 
 		// componentの追加
-		Vue.component("fullcalendar", fullcalendar);
+		// Vue.component("fullcalendar", fullcalendar);
 
 		// maps.googleapiのロード
 		// if (finalOptions.load) {

@@ -16,6 +16,8 @@ import Settings from "../modules/settings";
 import Debug from "../modules/debug";
 
 import DailyLoop from "../service/plugins/dailyLoop/interface/index"
+import Gantt2 from "../service/plugins/gantt/interface/index"
+import Kanban2 from "../service/plugins/kanban/interface/index"
 
 Vue.use(VueRouter);
 
@@ -38,5 +40,7 @@ export default new VueRouter({
 		// , { path: "*", component: NotFound }
 
 		, { path: "/v2/dailyLoop", component: DailyLoop }
+		, { path: "/v2/gantt", component: Gantt2 }
+		, { path: "/v2/kanban", component: Kanban2 }
 	]
 });

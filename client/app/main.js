@@ -17,6 +17,7 @@ import fieldMyDateTimePicker from "./core/components/customField/dateTimePicker/
 import fieldTagsInput from "./core/components/customField/tagsInput/index";
 
 import dailyLoopPlugin from "./service/plugins/dailyLoop/index";
+import GanttPlugin from "./service/plugins/gantt/index";
 
 import store from "./system/store";
 import App from "./system/App";
@@ -48,3 +49,4 @@ Vue.use(VueI18Next, (i18next) => {
 });
 
 Vue.use(dailyLoopPlugin);
+Vue.use(GanttPlugin);
