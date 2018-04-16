@@ -5,7 +5,7 @@ import toastr from "../../../core/toastr";
 
 const NAMESPACE = "/api/profile";
 
-import Service from "../../../core/service";
+import Service from "../../../system/service";
 let service = new Service("profile"); 
 
 export const getProfile = function ({ commit }) {

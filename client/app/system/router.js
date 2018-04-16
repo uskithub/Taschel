@@ -15,6 +15,8 @@ import Profile from "../modules/profile";
 import Settings from "../modules/settings";
 import Debug from "../modules/debug";
 
+import DailyLoop from "../service/plugins/dailyLoop/interface/index"
+
 Vue.use(VueRouter);
 
 export default new VueRouter({
@@ -34,5 +36,7 @@ export default new VueRouter({
 		
 		//, { path: "/users", component: User, meta: { needRole: "admin" } }
 		// , { path: "*", component: NotFound }
+
+		, { path: "/v2/dailyLoop", component: DailyLoop }
 	]
 });

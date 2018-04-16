@@ -33,7 +33,7 @@
 </template>
 
 <script>
-	import Service from "../../core/service";
+	import Service from "../../system/service";
 
 	import { mapGetters, mapActions } from "vuex";
 

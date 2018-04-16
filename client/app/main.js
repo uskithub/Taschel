@@ -7,15 +7,19 @@ import Vue from "vue";
 import axios from "axios";
 axios.defaults.headers.post["Content-Type"] = "application/json";
 
-import Filters from "./core/filters";
-import VueI18Next from "./core/i18next.js";
+import Filters from "./system/filters";
+import VueI18Next from "./system/i18next.js";
+
 import VueFormGenerator from "vue-form-generator";
 import VueWebsocket from "vue-websocket";
+
 import fieldMyDateTimePicker from "./core/components/customField/dateTimePicker/index";
 import fieldTagsInput from "./core/components/customField/tagsInput/index";
 
-import store from "./core/store";
-import App from "./core/App";
+import dailyLoopPlugin from "./service/plugins/dailyLoop/index";
+
+import store from "./system/store";
+import App from "./system/App";
 
 Vue.use(Filters);
 
@@ -30,7 +34,7 @@ Vue.use(VueWebsocket);
 // Register i18next localization module. We need to 
 // wait it before start the application!
 Vue.use(VueI18Next, (i18next) => {
-	let router = require("./core/router").default; // Load only after i18next initialized
+	let router = require("./system/router").default; // Load only after i18next initialized
 
 	new Vue({
 		el: "#app",
@@ -42,3 +46,5 @@ Vue.use(VueI18Next, (i18next) => {
 		render: h => h("app")
 	});
 });
+
+Vue.use(dailyLoopPlugin);
