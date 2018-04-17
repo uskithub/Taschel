@@ -15,9 +15,9 @@ import Profile from "../modules/profile";
 import Settings from "../modules/settings";
 import Debug from "../modules/debug";
 
-import DailyLoop from "../service/plugins/dailyLoop/interface/index"
-import Gantt2 from "../service/plugins/gantt/interface/index"
-import Kanban2 from "../service/plugins/kanban/interface/index"
+import DailyLoop from "../service/plugins/dailyLoop/interface/index";
+import Gantt2 from "../service/plugins/gantt/interface/index";
+import Kanban2 from "../service/plugins/kanban/interface/index";
 
 Vue.use(VueRouter);
 
