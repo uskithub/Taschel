@@ -6,7 +6,7 @@
 					legend {{ board.name }}
 				div.drag-options
 				ul.kanban-list.draggable(data-type="group", :data-code="board.code")
-					kanban(v-for="task in board.children", :task="task", :key="task.code", :isDisplayShortname="true", :isDraggable="board.type=='kanban'||board.code=='UNCLASSIFIED'")
+					kanban(v-for="task in board.children", :task="task", :key="task.code", :isDisplayShortname="true", :isDraggable="board.type=='kanban'||board.code=='UNCLASSIFIED'", :onClick="onClick")
 </template>
 
 <script>
@@ -86,7 +86,7 @@
 						}, 100);
 					});
 			}
-			, select(e, task) {
+			, onClick(e, task) {
 				this.$emit("select", task);
 			}
 		}

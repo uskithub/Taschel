@@ -1,5 +1,6 @@
 <template lang="pug">
-	li.kanban-item.media(:class="{'requirement': task.type=='requirement', 'way': task.type=='way', 'step': task.type=='step'}", :data-code="task.code", :key="task.code" @click="select($event, task)")
+	li.kanban-item.media(:class="{'requirement': task.type=='requirement', 'way': task.type=='way', 'step': task.type=='step'}", :data-code="task.code", :key="task.code" 
+		@click="onClick($event, task)")
 		slot(:name="task.name")
 			.media-content
 				.tag(v-if="isDisplayTag") {{ task.root.shortname }}
@@ -49,8 +50,8 @@
 					}
 				];
 			}
-			, select(e, task) {
-				this.$emit("select", task);
+			, onClick(e, task) {
+				this.$emit("onClick", task);
 			}
 			, off(e, task) {
 				// TODO
