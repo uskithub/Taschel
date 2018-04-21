@@ -10,7 +10,7 @@
 	import Vue from "vue";
 
 	import PageHeader from "../core/components/header/index";
-	import Sidebar from "../core/components/sidebar/index";
+	import Sidebar from "./fundamentals/sidebar/index";
 
 	import Service from "./service";
 

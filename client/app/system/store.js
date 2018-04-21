@@ -1,7 +1,8 @@
 import Vue from "vue";
 import Vuex from "vuex";
 
-import session from "../modules/session/store";
+import session from "../service/fundamentals/stores/session";
+import task from "../service/fundamentals/stores/task";
 
 import shared from "../modules/common/store";
 
@@ -22,6 +23,7 @@ Vue.use(Vuex);
 export default new Vuex.Store({
 	modules: {
 		session
+		, task 
 		, shared
 		, ganttPage
 		, kanbanPage

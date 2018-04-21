@@ -9,8 +9,16 @@
 	const _ = Vue.prototype._;
 
 	export default {
-		
-		methods : {
+
+		computed : {
+			...mapGetters("session", [
+				"me"
+				, "currentProject"
+				, "currentWeek"
+				, "currentUser"
+			])
+		}
+		, methods : {
 		}
 	};
 </script>

@@ -38,13 +38,13 @@ Vue.use(VueI18Next, (i18next) => {
 	let router = require("./system/router").default; // Load only after i18next initialized
 
 	new Vue({
-		el: "#app",
-		components: {
+		el: "#app"
+		, components: {
 			App
-		},
-		router,
-		store,
-		render: h => h("app")
+		}
+		, router
+		, store
+		, render: h => h("app")
 	});
 });
 

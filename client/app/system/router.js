@@ -38,7 +38,8 @@ export default new VueRouter({
 		
 		//, { path: "/users", component: User, meta: { needRole: "admin" } }
 		// , { path: "*", component: NotFound }
-
+		
+		, { path: "/v2/myTasks", component: DailyLoop }
 		, { path: "/v2/dailyLoop", component: DailyLoop }
 		, { path: "/v2/gantt", component: Gantt2 }
 		, { path: "/v2/kanban", component: Kanban2 }
