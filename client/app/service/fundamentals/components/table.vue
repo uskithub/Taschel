@@ -16,7 +16,7 @@
 						.label(v-for="label in col.labels(row)", :class="'label-' + label.type") {{ label.caption }}
 		tfoot
 			tr
-				td
+				td(v-if="schema.multiSelect")
 				td(v-for="col in schema.columns") &nbsp;
 
 </template>

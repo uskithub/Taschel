@@ -1,6 +1,6 @@
 import Vue from "vue";
 import { METHOD, api } from "../../../system/fundamentals/api";
-import { ADD_MESSAGE, ADD_NOTIFICATION, SET_USER, SEARCH } from "../mutationTypes";
+import { ADD_MESSAGE, ADD_NOTIFICATION, SET_USER, SEARCH, PUSH_CRUMB, POP_CRUMB, SET_WAY_BACK, CLEAR_CRUKB } from "../mutationTypes";
 
 const NAMESPACE= "/api/session";
 
@@ -11,6 +11,7 @@ const state = {
 	]
 	, messages: []
 	, searchText: ""
+	, breadcrumb: []
 	// user.code
 	, currentUser: null
 	// YYYY-MM-DD（moment().day(1).format("YYYY-MM-DD")）
@@ -24,6 +25,7 @@ const getters = {
 	, notifications(state) { return state.notifications; }
 	, messages(state) { return state.messages; }
 	, searchText(state) { return state.searchText; }
+	, breadcrumb(state) { return state.breadcrumb; }
 	, currentUser(state) { return state.currentUser; }
 	, currentWeek(state) { return state.currentWeek; }
 	, currentProject(state) { return state.currentProject; }
@@ -55,7 +57,25 @@ const mutations = {
 	}
 	, [SEARCH] (state, text) {
 		state.searchText = text;
-	}	
+	}
+	, [PUSH_CRUMB] (state, crumb) {
+		state.breadcrumb.push(crumb);
+		console.log("crumb", state.breadcrumb);
+	}
+	, [POP_CRUMB] (state) {
+		return state.breadcrumb.pop();
+	}
+	, [SET_WAY_BACK] (state, func) {
+		if (state.breadcrumb.length > 0) {
+			state.breadcrumb[state.breadcrumb.length-1].back = () => {
+				func();
+				state.breadcrumb[state.breadcrumb.length-1].back = null;
+			};
+		}
+	}
+	, [CLEAR_CRUKB] (state) {
+		state.breadcrumb.splice(0);
+	}
 };
 
 export default {
