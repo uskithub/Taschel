@@ -1,7 +1,7 @@
 <template lang="pug">
 	section
 		editing(v-if="isEditing", :target="currentTask" @close="onClose")
-		data-table(v-else, :schema="schema.table", :rows="tasks", :order="order", :selected="[currentTask]", :select="onSelect")
+		data-table(v-else, :schema="schema.table", :rows="tasks", :order="order", :selectedRows="[currentTask]" @onSelect="onSelect")
 </template> 
 
 <script>
