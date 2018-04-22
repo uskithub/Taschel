@@ -53,9 +53,9 @@ const mutations = {
 		state.tasks.splice(0);
 		state.tasks.push(...models);
 	}
-	// , [SELECT_TASK] (state, row) {
-	// 	state.currentTask = row;
-	// }
+	, [SELECT_TASK] (state, row) {
+		state.currentTask = row;
+	}
 	// , [CLEAR_SELECTION] (state) {
 	// 	state.currentTask = null;
 	// }

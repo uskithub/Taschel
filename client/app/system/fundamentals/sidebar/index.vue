@@ -9,6 +9,12 @@
 							i.fa.fa-home
 						span.label {{ "Home2" | i18n }}
 
+				router-link(tag="li", to="/v2/projects")
+					a(:title="_('Projects')")
+						span.icon
+							i.fa.fa-home
+						span.label {{ "Project2" | i18n }}
+
 				router-link(tag="li", to="/")
 					a(:title="_('Home')")
 						span.icon

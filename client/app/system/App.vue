@@ -3,6 +3,7 @@
 		page-header(:toggle-sidebar="toggleSidebar")
 		sidebar(:minimized="miniSidebar")
 		section.app-main(:class="{ miniSidebar: miniSidebar }")
+			navigator
 			router-view(keep-alive)
 </template>
 
@@ -11,7 +12,7 @@
 
 	import PageHeader from "../core/components/header/index";
 	import Sidebar from "./fundamentals/sidebar/index";
-
+	import Navigator from "./fundamentals/navigator/index";
 	import Service from "./service";
 
 	import { mapActions, mapGetters } from "vuex";
@@ -53,6 +54,7 @@
 		components: {
 			PageHeader
 			, Sidebar
+			, Navigator
 		}
 
 		/**

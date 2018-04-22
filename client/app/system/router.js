@@ -16,6 +16,7 @@ import Settings from "../modules/settings";
 import Debug from "../modules/debug";
 
 import MyTasks2 from "../service/standards/myTasks/interface/index";
+import Projects2 from "../service/standards/projects/interface/index";
 import DailyLoop from "../service/plugins/dailyLoop/interface/index";
 import Gantt2 from "../service/plugins/gantt/interface/index";
 import Kanban2 from "../service/plugins/kanban/interface/index";
@@ -42,6 +43,7 @@ export default new VueRouter({
 		
 		, { path: "/v2/", component: MyTasks2 }
 		, { path: "/v2/dailyLoop", component: DailyLoop }
+		, { path: "/v2/projects", name: Projects2.name, component: Projects2 }
 		, { path: "/v2/gantt", component: Gantt2 }
 		, { path: "/v2/kanban", component: Kanban2 }
 	]
