@@ -15,6 +15,7 @@ import Profile from "../modules/profile";
 import Settings from "../modules/settings";
 import Debug from "../modules/debug";
 
+import MyTasks2 from "../service/standards/myTasks/interface/index";
 import DailyLoop from "../service/plugins/dailyLoop/interface/index";
 import Gantt2 from "../service/plugins/gantt/interface/index";
 import Kanban2 from "../service/plugins/kanban/interface/index";
@@ -39,7 +40,7 @@ export default new VueRouter({
 		//, { path: "/users", component: User, meta: { needRole: "admin" } }
 		// , { path: "*", component: NotFound }
 		
-		, { path: "/v2/myTasks", component: DailyLoop }
+		, { path: "/v2/", component: MyTasks2 }
 		, { path: "/v2/dailyLoop", component: DailyLoop }
 		, { path: "/v2/gantt", component: Gantt2 }
 		, { path: "/v2/kanban", component: Kanban2 }

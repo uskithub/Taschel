@@ -1,7 +1,7 @@
 <template lang="pug">
 	section
-		h1 {{ _("MyTasks") }}
-		data-table(:schema="schema.table", :rows="tasks", :order="order", :selected="[currentTask]", :select="select", :select-all="selectAll")
+		h1 {{ _("V2 MyTasks") }}
+		data-table(:schema="schema.table", :rows="tasks", :order="order", :selectedRows="selectedRows" @onSelect="onSelect" @onSelectAll="onSelectAll")
 </template>
 
 <script>
@@ -10,7 +10,7 @@
 	import DataTable from "../../../fundamentals/components/table";
 	import schema from "./schema";
 	import { mapGetters, mapMutations, mapActions } from "vuex";
-	import { LOAD_TASK } from "../../../fundamentals/mutationTypes";
+	import { SET_USER, LOAD_TASKS } from "../../../fundamentals/mutationTypes";
 	const _ = Vue.prototype._;
 	
 	export default {
@@ -23,18 +23,29 @@
 				"tasks"
 				, "currentTask"
 			])
+			, selectedRows() {
+				return (this.currentTask) ? [ this.currentTask ] : [];
+			}
 		}
 		, data() {
 			return {
 				schema
+				, order : {}
 				, options: {}
-				, currentWeek : "2018-04-10"
 			};
 		}
 		, methods : {
 			...mapActions("task", {
 				readTasks : "readTasks"
 			})
+			
+				, onSelect(e, row) {
+					console.log(e, row);
+				}
+				, onSelectAll(e) {
+					console.log(e);
+				}
+			
 		}
 		, created() {
 			if (this.me) {
@@ -46,7 +57,7 @@
 				// F5リロード時など、meがundefinedの場合があるので、その場合、meの更新を監視してtaskを更新する
 				this.$store.subscribe((mutation, state) => {
 					if (mutation.type == `session/${SET_USER}`) {
-						this.getTasks({ 
+						this.readTasks({ 
 							options: { user : this.me.code }
 							, mutation: `task/${LOAD_TASKS}`
 						});

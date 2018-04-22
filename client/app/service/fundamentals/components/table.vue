@@ -2,13 +2,13 @@
 	table.table.stripped
 		thead
 			tr
-				th.selector(v-if="schema.multiSelect", width="20px" @click="selectAll") 
+				th.selector(v-if="schema.multiSelect", width="20px" @click="$emit('onSelectAll')") 
 					i.fa.fa-square-o
-				th.sortable(v-for="col in schema.columns", :width="col.width || 'auto'", @click="changeSort(col)", :class="{ sorted: col.field == order.field, 'desc': col.field == order.field && order.direction == -1 }") {{ col.title }}
+				th.sortable(v-for="col in schema.columns", :width="col.width || 'auto'", :class="{ sorted: col.field == order.field, 'desc': col.field == order.field && order.direction == -1 }"  @click="changeSort(col)") {{ col.title }}
 		
 		tbody
-			tr(v-for="row in filteredOrderedRows", @click="select($event, row)", :class="getRowClasses(row)")
-				td.selector(v-if="schema.multiSelect", width="20px", @click.stop.prevent="select($event, row, true)") 
+			tr(v-for="row in filteredOrderedRows", :class="getRowClasses(row)" @click="$emit('onSelect', $event, row)")
+				td.selector(v-if="schema.multiSelect", width="20px" @click.stop.prevent="$emit('onSelect', $event, row)") 
 					i.fa.fa-square-o
 				td(v-for="col in schema.columns", :class="getCellClasses(row, col)") 
 					span(v-html="getCellValue(row, col)")
@@ -41,15 +41,38 @@
 
 	export default {
 		name: "DataTable"
-        , props: [
-			"schema",
-			"rows",
-			"selected",
-			"order",
-			"select",
-			"selectAll",
-			"search"
-		]
+		, props: {
+			schema : {
+				type: Object
+				, validator: function(value) { return true; } // TODO
+				, required : true
+			}
+			, rows : {
+				type: Array
+				, validator: function(value) { return true; } // TODO
+				, required : true
+			}
+			, selectedRows : {
+				type: Array
+				, validator: function(value) { return true; } // TODO
+				, required : true
+			}
+			, order : {
+				type: Object
+				, validator: function(value) { return true; } // TODO
+			}
+			, onSelect : {
+				type: Function
+				, validator: function(value) { return true; } // TODO
+			}
+			, onSelectAll : {
+				type: Function
+				, validator: function(value) { return true; } // TODO
+			}
+			, search : {
+				type: String
+			}
+		}
 		, computed: {
 			filteredOrderedRows() {
 				let items = this.rows;
@@ -162,7 +185,7 @@
 			 * @return {Boolean}     Is selected?
 			 */
 			, isSelected(row) {
-				return this.selected.indexOf(row) != -1;
+				return this.selectedRows.indexOf(row) != -1;
 			}
 		}
 	};
