@@ -1,12 +1,12 @@
 <template lang="pug">
-  
+	vue-form-generator(:schema="schema.form", :model="model", :options="options", :is-new-model="isNewModel" ref="form")
 </template>
 <script>
 	import Vue from "vue";
 	import Base from "../../../fundamentals/mixins/base";
-	import schema from "./schema";
 	import { mapGetters, mapMutations, mapActions } from "vuex";
 	import { LOAD_TASKS, SELECT_TASK, SET_WAY_BACK, POP_CRUMB } from "../../../fundamentals/mutationTypes";
+	import { cloneDeep } from "lodash";
 	const _ = Vue.prototype._;
 
 	export default {
@@ -16,6 +16,19 @@
 				type: Object
 				, validator: (value) => { return true; } // TODO
 			}
+			, schema : {
+				type: Object
+				, validator: (value) => { return true; } // TODO
+			}
+		}
+		, data() {
+			return {
+				model: cloneDeep(this.target)
+				, options: {}
+			};
+		}
+		, computed: {
+			isNewModel() { return this.model.code === undefined; }
 		}
 		, methods : {
 			...mapMutations("session", {

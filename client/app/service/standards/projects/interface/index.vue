@@ -1,6 +1,6 @@
 <template lang="pug">
 	section
-		editing(v-if="isEditing", :target="currentTask" @close="onClose")
+		editing(v-if="isEditing", :target="currentTask", :schema="schema" @close="onClose")
 		data-table(v-else, :schema="schema.table", :rows="tasks", :order="order", :selectedRows="[currentTask]" @onSelect="onSelect")
 </template> 
 

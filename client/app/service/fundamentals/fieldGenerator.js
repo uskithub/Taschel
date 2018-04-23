@@ -303,8 +303,9 @@ export const componentTypes = {
 	, table : "table"
 };
 
-export const generate = (arecomponentTypesaType, fieldSet) => {
-	if (componentTypes == componentTypes.form) {
+export const generate = (componentType, fieldSet) => {
+	console.log("componentTypes", componentTypes);
+	if (componentType == componentTypes.form) {
 		if (!isArray(fieldSet)) {
 			return {
 				groups : Object.keys(fieldSet).map(key => {

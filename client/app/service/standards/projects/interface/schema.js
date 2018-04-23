@@ -20,4 +20,23 @@ module.exports = {
 			};
 		}
 	}
+	, form : (() => {
+		let _form = generate(
+			componentTypes.form
+			, ["name", "shortname", "purpose", "goal", "description"]
+		);
+		console.log(_form);
+		return { 
+			fields : _form.fields.map( f => {
+				if (f.model == "type") {
+					f.type = "input";
+					f.inputType = "text";
+					f.default = "project";
+					f.readonly = true;
+					f.disabled = true;
+				}
+				return f;
+			})
+		};
+	})()
 };
