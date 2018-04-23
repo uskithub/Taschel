@@ -2,13 +2,13 @@
 	table.table.stripped
 		thead
 			tr
-				th.selector(v-if="schema.multiSelect", width="20px" @click="$emit('onSelectAll')") 
+				th.selector(v-if="schema.multiSelect", width="20px" @click="$emit('selectAll')") 
 					i.fa.fa-square-o
 				th.sortable(v-for="col in schema.columns", :width="col.width || 'auto'", :class="{ sorted: col.field == order.field, 'desc': col.field == order.field && order.direction == -1 }"  @click="changeSort(col)") {{ col.title }}
 		
 		tbody
-			tr(v-for="row in filteredOrderedRows", :class="getRowClasses(row)" @click="$emit('onSelect', $event, row)")
-				td.selector(v-if="schema.multiSelect", width="20px" @click.stop.prevent="$emit('onSelect', $event, row)") 
+			tr(v-for="row in filteredOrderedRows", :class="getRowClasses(row)" @click="$emit('select', $event, row)")
+				td.selector(v-if="schema.multiSelect", width="20px" @click.stop.prevent="$emit('select', $event, row)") 
 					i.fa.fa-square-o
 				td(v-for="col in schema.columns", :class="getCellClasses(row, col)") 
 					span(v-html="getCellValue(row, col)")
@@ -194,5 +194,9 @@
 <style lang="scss" scoped>
 	.align-left {
 		text-align: left;
+	}
+
+	tr:not(.selected) {
+		transition: all .4s ease .4s;
 	}
 </style>

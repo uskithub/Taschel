@@ -1,5 +1,13 @@
 <template lang="pug">
-	vue-form-generator(:schema="schema.form", :model="model", :options="options", :is-new-model="isNewModel" ref="form")
+	.form
+		vue-form-generator(:schema="schema.form", :model="model", :options="options", :is-new-model="isNewModel" ref="form")
+		.buttons.flex.justify-space-around
+			button.button.primary(@click="onSave")
+				i.icon.fa.fa-save 
+				| {{ _("Save") }}
+			button.button.outline(@click="onCancel")
+				i.icon.fa.fa-close
+				| {{ _("Cancel") }}
 </template>
 <script>
 	import Vue from "vue";
@@ -35,6 +43,29 @@
 				setWayBack : SET_WAY_BACK
 				, popCrumb : POP_CRUMB
 			})
+			, validate() {
+				let res = this.$refs.form.validate();
+
+				if (!res) {
+					// Set focus to first input with error
+					this.$nextTick(() => {
+						let el = document.querySelector("div.form tr.error input:nth-child(1)");
+						if (el)
+							el.focus();
+					});
+				}
+				return res;	
+			}
+			, onSave() {
+				if (this.validate()) {
+					this.$emit("save", this.model);
+				} else {
+					// Validation error
+				}
+			}
+			, onCancel() {
+
+			}
 		}
 		, created() {
 			this.setWayBack(() => { 

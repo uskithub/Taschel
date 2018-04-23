@@ -1,6 +1,8 @@
 import Vue from "vue";
 import { METHOD, api } from "../../../system/fundamentals/api";
-import { LOAD_TASKS, SELECT_TASK, CLEAR_SELECTION, ARRANGE_AVOBE, ARRANGE_INTO, ARRANGE_BELOW } from "../mutationTypes";
+import { LOAD_TASKS, SELECT_TASK, CLEAR_SELECTION
+	//, ARRANGE_AVOBE, ARRANGE_INTO, ARRANGE_BELOW 
+} from "../mutationTypes";
 
 const NAMESPACE= "/api/tasks";
 
@@ -56,9 +58,9 @@ const mutations = {
 	, [SELECT_TASK] (state, row) {
 		state.currentTask = row;
 	}
-	// , [CLEAR_SELECTION] (state) {
-	// 	state.currentTask = null;
-	// }
+	, [CLEAR_SELECTION] (state) {
+		state.currentTask = null;
+	}
 	// , [ADD_TASK] (state, models) {
 	// 	if (models.child) {
 	// 		// the case models is { parent, child }

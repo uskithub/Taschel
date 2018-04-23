@@ -1,7 +1,7 @@
 <template lang="pug">
 	section
 		h1 {{ _("V2 MyTasks") }}
-		data-table(:schema="schema.table", :rows="tasks", :order="order", :selectedRows="selectedRows" @onSelect="onSelect" @onSelectAll="onSelectAll")
+		data-table(:schema="schema.table", :rows="tasks", :order="order", :selectedRows="selectedRows" @select="onSelect" @selectAll="onSelectAll")
 </template>
 
 <script>
