@@ -13,6 +13,7 @@
 	import Vue from "vue";
 	import Base from "../../../fundamentals/mixins/base";
 	import { mapGetters, mapMutations, mapActions } from "vuex";
+	import { schema as schemaUtils } from "vue-form-generator";
 	import { LOAD_TASKS, SELECT_TASK, SET_WAY_BACK, POP_CRUMB } from "../../../fundamentals/mutationTypes";
 	import { cloneDeep } from "lodash";
 	const _ = Vue.prototype._;
@@ -31,7 +32,7 @@
 		}
 		, data() {
 			return {
-				model: cloneDeep(this.target)
+				model: this.target ? cloneDeep(this.target) : schemaUtils.createDefaultObject(this.schema.form)
 				, options: {}
 			};
 		}
@@ -64,7 +65,8 @@
 				}
 			}
 			, onCancel() {
-
+				this.$emit("close"); 
+				this.popCrumb();
 			}
 		}
 		, created() {
@@ -72,7 +74,7 @@
 				this.$emit("close"); 
 				this.popCrumb();
 			});
-			this.pushCrumb({ id: this._uid, name: this.target.name });
+			this.pushCrumb({ id: this._uid, name: (this.target ? this.target.name : "新規作成") });
 		}
 	}
 </script>

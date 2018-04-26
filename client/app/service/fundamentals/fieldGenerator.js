@@ -1,6 +1,7 @@
 import Vue from "vue";
 import moment from "moment";
-import { taskTypes, taskProperties } from "../constants";
+import constants from "../constants";
+import { projectTypes, taskTypes, taskProperties } from "../constants";
 import { validators } from "vue-form-generator";
 import { cloneDeep, isObject, isNil, isArray } from "lodash";
 
@@ -9,7 +10,6 @@ const _ = Vue.prototype._;
 const fields = {
 	code: {
 		label: _("ID")
-		, model: "code"
 		, table: {
 			align: "left"
 			, formatter(value, model) {
@@ -32,7 +32,6 @@ const fields = {
 	}
 	, root: {
 		label: _("Projects") 
-		, model: "root"
 		, table: {
 			formatter(value, model, col) {
 				return isObject(value) ? value.name : "-";
@@ -44,9 +43,25 @@ const fields = {
 			, values: []
 		}
 	}
+	, projectType: {
+		label: _("ProjectType")
+		, table: {
+			formatter(value) {
+				let type = find(constants.projectTypes, (type) => type.id == value);
+				return type ? type.name : value;
+			}
+		}
+		, form: {
+			type: "select"
+			, required: true
+			, values: constants.projectTypes
+			, default: constants.projectTypes[0].id
+			, validator: validators.required
+			//, validator: validators.required
+		}
+	}
 	, type: {
 		label: _("TaskType")
-		, model: "type"
 		, table: {
 			formatter(value) {
 				let type = find(taskTypes, (type) => type.id == value);
@@ -68,7 +83,6 @@ const fields = {
 	}
 	, properties: {
 		label: _("TaskProperties")
-		, model: "properties"
 		, table: {
 			formatter(value) {
 				let type = find(taskProperties, (type) => type.id == value);
@@ -84,7 +98,6 @@ const fields = {
 	}
 	, name: {
 		label: _("Name")
-		, model: "name"
 		, table: {
 			align: "left"
 		}
@@ -99,7 +112,6 @@ const fields = {
 	}
 	, shortname: {
 		label: _("ShortName")
-		, model: "shortname"
 		, table: {
 			formatter(value, model, col) {
 				return isObject(value) ? value.shortname : "-";
@@ -116,7 +128,6 @@ const fields = {
 	}
 	, purpose: {
 		label: _("Purpose")
-		, model: "purpose"
 		, table: {
 			align: "left"
 		}
@@ -131,7 +142,6 @@ const fields = {
 	}
 	, goal: {
 		label: _("Goal")
-		, model: "goal"
 		, table: {
 			align: "left"
 		}
@@ -145,7 +155,6 @@ const fields = {
 	}
 	, description: {
 		label: _("Description")
-		, model: "description"
 		, table: {
 			align: "left"
 		}
@@ -161,7 +170,6 @@ const fields = {
 	}
 	, deadline: {
 		label: _("Deadline")
-		, model: "deadline"
 		, table: {}
 		, form: {
 			type: "myDateTimePicker"
@@ -184,7 +192,6 @@ const fields = {
 	}
 	, timeframe: {
 		label: _("Timeframe")
-		, model: "timeframe"
 		, table: {}
 		, form: {
 			type: "rangeSlider"
@@ -195,7 +202,6 @@ const fields = {
 	}
 	, closingComment: {
 		label: _("ClosingComment")
-		, model: "closingComment"
 		, table: {
 			align: "left"
 		}
@@ -212,7 +218,6 @@ const fields = {
 	}
 	, asignee : {
 		label: _("Asignee")
-		, model: "asignee"
 		, table: {
 			formatter(value, model, col) {
 				return (model.asignee) ? model.asignee.username : "-";
@@ -227,7 +232,6 @@ const fields = {
 	}
 	, assistants : {
 		label: _("Assistants")
-		, model: "assistants"
 		, table: {
 			formatter(value, model, col) {
 				return (model.assistants) ? model.assistants.username : "-";
@@ -235,14 +239,12 @@ const fields = {
 			, align: "center"
 		}
 		, form: {
-			model: "assistants"
-			, type: "tagsInput"
+			type: "tagsInput"
 			, values: []
 		}
 	}
 	, author : {
 		label: _("Author")
-		, model: "author"
 		, table: {
 			formatter(value, model, col) {
 				return model.author.username;
@@ -256,7 +258,6 @@ const fields = {
 	}
 	, lastCommunication: {
 		label: _("LastCommunication")
-		, model: "lastCommunication"
 		, table: {
 			formatter(value) {
 				return moment(value).fromNow();
@@ -269,7 +270,6 @@ const fields = {
 	}
 	, status: {
 		label: _("Status")
-		, model: "status"
 		, table: {
 			formatter(value, model, col) {
 				return value ? "<i class='fa fa-check'/>" : "<i class='fa fa-ban'/>";
@@ -289,7 +289,6 @@ const fields = {
 	// proejctSeelctor向け
 	, project: {
 		label: _("Project")
-		, model: "code"
 		, table: {}
 		, form: {
 			type: "select"
@@ -304,7 +303,6 @@ export const componentTypes = {
 };
 
 export const generate = (componentType, fieldSet) => {
-	console.log("componentTypes", componentTypes);
 	if (componentType == componentTypes.form) {
 		if (!isArray(fieldSet)) {
 			return {
@@ -313,11 +311,11 @@ export const generate = (componentType, fieldSet) => {
 						legend : _(key)
 						, fields: fieldSet[key].map(f => { 
 							let field = cloneDeep(fields[f]);
-							if (field.form.label == undefined) {
+							if (field.form.label === undefined) {
 								field.form.label = field.label;
 							}
-							if (field.form.model == undefined) {
-								field.form.model = field.model;
+							if (field.form.model === undefined) {
+								field.form.model = f;
 							}
 							return field.form; 
 						})
@@ -328,11 +326,11 @@ export const generate = (componentType, fieldSet) => {
 			return {
 				fields: fieldSet.map(f => { 
 					let field = cloneDeep(fields[f]);
-					if (field.form.label == undefined) {
+					if (field.form.label === undefined) {
 						field.form.label = field.label;
 					}
-					if (field.form.model == undefined) {
-						field.form.model = field.model;
+					if (field.form.model === undefined) {
+						field.form.model = f;
 					}
 					return field.form; 
 				})
@@ -341,11 +339,11 @@ export const generate = (componentType, fieldSet) => {
 	} else {
 		return fieldSet.map(f => { 
 			let field = cloneDeep(fields[f]);
-			if (field.table.title == undefined) {
+			if (field.table.title === undefined) {
 				field.table.title = field.label;
 			}
-			if (field.table.field == undefined) {
-				field.table.field = field.model;
+			if (field.table.field === undefined) {
+				field.table.field = f;
 			}
 			return field.table; 
 		});

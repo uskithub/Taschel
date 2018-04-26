@@ -2,7 +2,12 @@ import Vue from "vue";
 const _ = Vue.prototype._;
 
 export default {
-	taskTypes: [
+	projectTypes: [
+		{ id: "individual", name: _("Individual") }
+		, { id: "organization-public", name: _("OrganizationPublic") }
+		, { id: "organization-closed", name: _("OrganizationClosed") }
+	]
+	, taskTypes: [
 		// { id: "project", name: _("Project") }
 		{ id: "subproject", name: _("Subproject") }
 		, { id: "milestone", name: _("Milestone") }
@@ -27,4 +32,4 @@ export default {
 		, { id: "daily", name: _("Daily") }
 		
 	]
-}
+};

@@ -23,7 +23,7 @@ module.exports = {
 	, form : (() => {
 		let _form = generate(
 			componentTypes.form
-			, ["name", "shortname", "purpose", "goal", "description"]
+			, [ "projectType", "name", "shortname", "purpose", "goal", "description"]
 		);
 		console.log(_form);
 		return { 

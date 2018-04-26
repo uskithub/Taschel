@@ -1,5 +1,11 @@
 <template lang="pug">
 	section
+		.flex.align-center.justify-space-around
+			.left
+				button.button.is-primary(@click="onAddProject")
+					i.icon.fa.fa-plus 
+					| {{ _("AddProject") }}
+			.right
 		editing(v-if="isEditing", :target="currentTask", :schema="schema" @save="onSave" @close="onClose")
 		data-table(v-else, :schema="schema.table", :rows="tasks", :order="order", :selectedRows="[currentTask]" @select="onSelect")
 </template> 
@@ -49,6 +55,9 @@
 				this.selectTask(row);
 				this.isEditing = true;
 			}
+			, onAddProject() {
+				this.isEditing = true;
+			}
 			, onSave() {
 				this.isEditing = false;
 				this.$nextTick(() => {
@@ -57,6 +66,9 @@
 			}
 			, onClose() {
 				this.isEditing = false;
+				this.$nextTick(() => {
+					this.clearSelection();
+				});
 			}
 		}
 		, created() {
