@@ -7,7 +7,7 @@ let logger    		= require("../../../../core/logger");
 let db	    		= require("../../../../core/mongo");
 let mongoose 		= require("mongoose");
 let Schema 			= mongoose.Schema;
-let hashids 		= require("../../../../libs/hashids")("orgnizations");
+let hashids 		= require("../../../../libs/hashids")("organizations");
 let autoIncrement 	= require("mongoose-auto-increment");
 
 let schemaOptions = {
@@ -33,11 +33,10 @@ let OrganizationSchema = new Schema({
 		type: Number
 		, ref: "Task"
 	}]
-	, author : {
+	, administrators : [{
 		type: Number,
-		required: "Please fill in an author ID",
 		ref: "User"
-	}
+	}]
 	, metadata: {}
 
 }, schemaOptions);
@@ -47,7 +46,7 @@ OrganizationSchema.virtual("code").get(function() {
 });
 
 OrganizationSchema.plugin(autoIncrement.plugin, {
-	model: "Orgnization",
+	model: "Organization",
 	startAt: 1
 });
 
@@ -61,6 +60,6 @@ OrganizationSchema.methods.decodeID = function(code) {
 	return hashids.decodeHex(code);
 };
 
-let Review = mongoose.model("Orgnization", OrganizationSchema);
+let Organization = mongoose.model("Organization", OrganizationSchema);
 
-module.exports = Orgnization;
+module.exports = Organization;
