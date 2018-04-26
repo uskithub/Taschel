@@ -20,9 +20,9 @@
 	export default {
 		name: "PageHeader"
         , components: {
-			Logo,
-			SearchBox,
-			UserBox
+			Logo
+			, SearchBox
+			, UserBox
 		},
 
 		props: [

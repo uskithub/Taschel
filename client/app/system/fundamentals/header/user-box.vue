@@ -6,16 +6,16 @@
 			.username {{ me.fullName }}
 			i.fa.fa-chevron-down
 
-		user-dropdown(:visible="expandedUserMenu")
+		user-dropdown(:visible="expandedUserMenu" @select="onSelectUserDropbown")
 
 		.notification-box.right
 			ul.icons
-				li(@click="toggleNotifications()", :class=" { active: notifications.length > 0 }")
+				li(@click="toggleNotifications()", :class="{ active: notifications.length > 0 }")
 					i.fa.fa-bell-o
 					span {{ notifications.length }}
 					.ring
 
-				li(@click="toggleMessages()", :class=" { active: messages.length > 0 }")
+				li(@click="toggleMessages()", :class="{ active: messages.length > 0 }")
 					i.fa.fa-envelope-o
 					span {{ messages.length }}
 					.ring
@@ -36,53 +36,48 @@
 	export default {
 		name: "UserBox"
         , computed: mapGetters("session", [
-			"me",
-			"notifications",
-			"messages"
-		]),
-
-		components: {
-			UserDropdown,
-			NotificationsDropdown,
-			MessagesDropdown
-		},
-
-		data() {
+			"me"
+			, "notifications"
+			, "messages"
+		])
+		, components: {
+			UserDropdown
+			, NotificationsDropdown
+			, MessagesDropdown
+		}
+		, data() {
 			return {
-				expandedUserMenu: false,
-				expandedNotifications: false,
-				expandedMessages: false
+				expandedUserMenu: false
+				, expandedNotifications: false
+				, expandedMessages: false
 			};
-		},
-
-		methods: {
-
+		}
+		, methods: {
 			toggleUserMenu() {
 				this.expandedUserMenu = !this.expandedUserMenu;
 				if (this.expandedUserMenu) {
 					this.expandedMessages = false;
 					this.expandedNotifications = false;
 				}
-			},
-
-			toggleMessages() {
+			}
+			, toggleMessages() {
 				this.expandedMessages = !this.expandedMessages;
 				if (this.expandedMessages) {
 					this.expandedUserMenu = false;
 					this.expandedNotifications = false;
 				}
-			},
-
-			toggleNotifications() {
+			}
+			, toggleNotifications() {
 				this.expandedNotifications = !this.expandedNotifications;
 				if (this.expandedNotifications) {
 					this.expandedMessages = false;
 					this.expandedUserMenu = false;
 				}
 			}
-
+			, onSelectUserDropbown(e, menu) {
+				this.toggleUserMenu();
+			}
 		}
-
 	};
 	
 </script>

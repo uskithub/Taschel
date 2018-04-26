@@ -1,12 +1,12 @@
 <template lang="pug">
 	ul.dropdown-menu.user-menu(:class="{ 'visible': visible }")
-		router-link(tag="li", to="/profile")
+		router-link(tag="li", to="/profile" @click.native="$emit('select', $event, 'profile')")
 			a
 				.icon
 					i.fa.fa-user
 				| {{ "MyAccount" | i18n }}
 				
-		router-link(tag="li", to="/settings")
+		router-link(tag="li", to="/settings" @click.native="$emit('select', $event, 'settings')")
 			a
 				.icon
 					i.fa.fa-cog

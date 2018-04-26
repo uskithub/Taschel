@@ -10,7 +10,7 @@
 <script>
 	import Vue from "vue";
 
-	import PageHeader from "../core/components/header/index";
+	import PageHeader from "./fundamentals/header/index";
 	import Sidebar from "./fundamentals/sidebar/index";
 	import Navigator from "./fundamentals/navigator/index";
 	import Service from "./service";

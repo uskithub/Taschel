@@ -13,13 +13,12 @@
         , computed: {
 			...mapGetters("session", [
 				"searchText"
-			]),
-			text: {
+			])
+			, text: {
 				get() {
 					return this.searchText;
-				},
-
-				set(value) {
+				}
+				, set(value) {
 					this.searching(value);
 				}
 			}
