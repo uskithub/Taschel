@@ -12,12 +12,16 @@ export default {
 		multiSelect : true
 		, columns : generate(
 			componentTypes.table
-			, [ "type", "shortname", "name", "purpose", "goal", "author", "lastCommunication"]
+			, [ "organizationName", "organizationType", "role" ]
 		)
 		, rowClasses : function (model) {
 			return {
 				// inactive: !model.status
 			};
 		}
+		, stab : [
+			{ organizationName : "JIBUNSTYLE", organizationType : "enterprize", role : "admin" }
+			, { organizationName : "折詰め会", organizationType : "normal", role : "member" }
+		]
 	}
 };

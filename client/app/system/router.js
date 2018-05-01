@@ -15,7 +15,7 @@ import Gantt from "../modules/gantt";
 import Settings from "../modules/settings";
 import Debug from "../modules/debug";
 
-import Profile from "../service/standards/profile/index";
+import Profile from "../service/standards/profile/interface/index";
 import MyTasks2 from "../service/standards/myTasks/interface/index";
 import Projects2 from "../service/standards/projects/interface/index";
 import DailyLoop from "../service/plugins/dailyLoop/interface/index";

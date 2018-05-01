@@ -1,13 +1,14 @@
 <template lang="pug">
-	section
-		.flex.align-center.justify-space-around
-			.left
-				button.button.is-primary(@click="onAddProject")
-					i.icon.fa.fa-plus 
-					| {{ _("AddProject") }}
-			.right
+	.container
 		editing(v-if="isEditing", :target="currentTask", :schema="schema" @save="onSave" @close="onClose")
-		data-table(v-else, :schema="schema.table", :rows="tasks", :order="order", :selectedRows="[currentTask]" @select="onSelect")
+		div(v-else)
+			.flex.align-center.justify-space-around
+				.left
+					button.button.is-primary(@click="onAddProject")
+						i.icon.fa.fa-plus 
+						| {{ _("AddProject") }}
+				.right
+			data-table(:schema="schema.table", :rows="tasks", :order="order", :selectedRows="[currentTask]" @select="onSelect")
 </template> 
 
 <script>

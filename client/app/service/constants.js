@@ -25,11 +25,17 @@ export default {
 		, { id: "requirement", name: _("Requirement") }
 		, { id: "way", name: _("Way") }
 	]
-
 	, groupTypes: [
 		{ id: "kanban", name: _("Kanban") }
 		, { id: "weekly", name: _("Weekly") }
-		, { id: "daily", name: _("Daily") }
-		
+		, { id: "daily", name: _("Daily") }	
+	]
+	, organizationType: [
+		{ id: "normal", name: _("Normal") }
+		, { id: "enterprize", name: _("Enterprize") }
+	]
+	, roles: [
+		{ id: "administrator", name: _("Administrator") }
+		, { id: "member", name: _("Member") }
 	]
 };

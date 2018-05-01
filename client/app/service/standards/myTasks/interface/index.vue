@@ -38,14 +38,12 @@
 			...mapActions("task", {
 				readTasks : "readTasks"
 			})
-			
-				, onSelect(e, row) {
-					console.log(e, row);
-				}
-				, onSelectAll(e) {
-					console.log(e);
-				}
-			
+			, onSelect(e, row) {
+				console.log(e, row);
+			}
+			, onSelectAll(e) {
+				console.log(e);
+			}
 		}
 		, created() {
 			if (this.me) {

@@ -6,18 +6,15 @@
 			.details.flex-item-1
 				.name {{ profile.fullName }}
 					span.text-muted.username ({{ profile.username }})
-
 				.tags
 					.tag.primary !Role name!
 					.tag.danger !Administrator!
 					.tag.success !Online!
-
 				.description
 					.info-row(v-if="profile.profile && profile.profile.location")
 						i.fa.fa-map-marker
 						span.caption Location:
 						span.value {{ profile.profile.location }}
-
 					.info-row
 						i.fa.fa-clock-o
 						span.caption Last login:
@@ -25,25 +22,49 @@
 					.info-row
 						i.fa.fa-calendar
 						span.caption Joined:
-						span.value {{ profile.createdAt | ago }}							
-
+						span.value {{ profile.createdAt | ago }}
 				hr.full
-		pre(v-html="this.$options.filters.prettyJSON(profile)")
 		button.button.primary(@click="enableCalendar") Enable Calendar
+		editing(v-if="isEditing", :target="currentOrganization", :schema="schema" @save="onSave" @close="onClose")
+		div(v-else)
+			.flex.align-center.justify-space-around
+				.left
+					button.button.is-primary(@click="onJoinOrganization")
+						i.icon.fa.fa-plus 
+						| {{ _("JoinOrganization") }}
+			data-table(:schema="schema.table", :rows="schema.table.stab", :order="order", :selectedRows="[]" @select="onSelect")
 </template>
 
 <script>
-    import Service from "../../../system/service";
-
+	import Vue from "vue";
+	import Base from "../../../fundamentals/mixins/base";
+	import DataTable from "../../../fundamentals/components/table";
+	import Editing from "./editing"
+	import schema from "./schema";
 	import { mapGetters, mapActions } from "vuex";
+	const _ = Vue.prototype._;
 
 	export default {
-		computed: mapGetters("profile", [
-			"profile"
-		])
+		mixins : [ Base ]
+		, components : {
+			DataTable
+			, Editing
+		}
+		, computed: {
+			...mapGetters("profile", [
+				"profile"
+			])
+		}
+		, data() {
+			return {
+				isEditing: false
+				, schema
+				, order : {}
+				, options: {}
+			};
+		}
 		, watch : {
 			profile(newProfile) {
-				console.log("● newProfile", newProfile);
 				if (newProfile.googleAuthUrl) {
 					window.location.href = newProfile.googleAuthUrl;
 				}
@@ -57,12 +78,16 @@
 			, enableCalendar() {
 				this.updateProfile({ model: this.profile, mutation: "UPDATE" });
 			}
+			, onJoinOrganization() {
+				// TODO
+			}
+			, onSelect() {
+				// TODO
+			}
 		}
-		, created() {
-			//this.$service = new Service("profile", this); 
-			
+		, sessionEnsured(me) {
 			// Get my profile
-			this.getProfile(); 
+			this.getProfile({ options: { userCode: me.code } }); 
 		}
 	};
 
@@ -70,8 +95,8 @@
 
 <style lang="scss" scoped>
 
-	@import "../../../../scss/themes/blurred/variables";
-	@import "../../../../scss/common/mixins";
+	@import "../../../../../scss/themes/blurred/variables";
+	@import "../../../../../scss/common/mixins";
 
 	.container {
 		padding: 1rem;

@@ -2,8 +2,8 @@ import Vue from "vue";
 import Vuex from "vuex";
 
 import session from "../service/fundamentals/stores/session";
+import profile from "../service/fundamentals/stores/profile";
 import task from "../service/fundamentals/stores/task";
-
 import shared from "../modules/common/store";
 
 import ganttPage from "../modules/gantt/store";
@@ -16,14 +16,14 @@ import dailyPage from "../modules/daily/store";
 import dailyReviewPage from "../modules/daily-review/store";
 import debugPage from "../modules/debug/store";
 
-import profile from "../modules/profile/store";
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
 	modules: {
 		session
-		, task 
+		, profile
+		, task
 		, shared
 		, ganttPage
 		, kanbanPage
@@ -34,6 +34,5 @@ export default new Vuex.Store({
 		, dailyPage
 		, dailyReviewPage
 		, debugPage
-		, profile
 	}
 });

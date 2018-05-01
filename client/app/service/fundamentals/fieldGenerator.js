@@ -1,7 +1,7 @@
 import Vue from "vue";
 import moment from "moment";
 import constants from "../constants";
-import { projectTypes, taskTypes, taskProperties } from "../constants";
+import { projectTypes, taskTypes, taskProperties, organizationType, roles } from "../constants";
 import { validators } from "vue-form-generator";
 import { cloneDeep, isObject, isNil, isArray } from "lodash";
 
@@ -286,13 +286,59 @@ const fields = {
 			, valueOff: 0
 		}
 	}
-	// proejctSeelctor向け
+	// proejctSelector向け
 	, project: {
 		label: _("Project")
 		, table: {}
 		, form: {
 			type: "select"
 			, values: [] // DefaultTaskPage.vueにて後から設定している
+		}
+	}
+	, organizationName: {
+		label: _("OrganizationName")
+		, table: {
+			align: "left"
+		}
+		, form: {
+			type: "input"
+			, inputType: "text"
+			, featured: true
+			, required: true
+			, placeholder: _("TaskNamePlaceholder")
+			, validator: validators.string
+		}
+	}
+	, organizationType: {
+		label: _("OrganizationType")
+		, table: {
+			formatter(value) {
+				let type = find(organizationType, (type) => type.id == value);
+				return type ? type.name : value;
+			}
+		}
+		, form: {
+			type: "select"
+			, required: true
+			, values: organizationType
+			, default: "normal"
+			, validator: validators.required
+		}
+	}
+	, role: {
+		label: _("Role")
+		, table: {
+			formatter(value) {
+				let type = find(roles, (type) => type.id == value);
+				return type ? type.name : value;
+			}
+		}
+		, form: {
+			type: "select"
+			, required: true
+			, values: roles
+			, default: "member"
+			, validator: validators.required
 		}
 	}
 };
@@ -310,6 +356,11 @@ export const generate = (componentType, fieldSet) => {
 					return {
 						legend : _(key)
 						, fields: fieldSet[key].map(f => { 
+							if ( fields[f] === undefined ) {
+								throw new Error(`Missing the definition about "${f}" in filed at fieldGenerator!`);
+							} else if ( fields[f].form === undefined ) {
+								throw new Error(`Missing the definition about "${f}.form" in filed at fieldGenerator!`);
+							}
 							let field = cloneDeep(fields[f]);
 							if (field.form.label === undefined) {
 								field.form.label = field.label;
@@ -324,7 +375,12 @@ export const generate = (componentType, fieldSet) => {
 			};
 		} else {
 			return {
-				fields: fieldSet.map(f => { 
+				fields: fieldSet.map(f => {
+					if ( fields[f] === undefined ) {
+						throw new Error(`Missing the definition about "${f}" in filed at fieldGenerator!`);
+					} else if ( fields[f].form === undefined ) {
+						throw new Error(`Missing the definition about "${f}.form" in filed at fieldGenerator!`);
+					}
 					let field = cloneDeep(fields[f]);
 					if (field.form.label === undefined) {
 						field.form.label = field.label;
@@ -337,7 +393,12 @@ export const generate = (componentType, fieldSet) => {
 			};
 		}
 	} else {
-		return fieldSet.map(f => { 
+		return fieldSet.map(f => {
+			if ( fields[f] === undefined ) {
+				throw new Error(`Missing the definition about "${f}" in filed at fieldGenerator!`);
+			} else if ( fields[f].form === undefined ) {
+				throw new Error(`Missing the definition about "${f}.table" in filed at fieldGenerator!`);
+			}
 			let field = cloneDeep(fields[f]);
 			if (field.table.title === undefined) {
 				field.table.title = field.label;
