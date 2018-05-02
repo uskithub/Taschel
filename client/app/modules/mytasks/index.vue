@@ -284,8 +284,9 @@
 				// F5リロード時など、meがundefinedの場合があるので、その場合、meの更新を監視してtaskを更新する
 				this.$store.subscribe((mutation, state) => {
 					if (mutation.type == `environment/session/${SET_USER}`) {
+						const me = state.environment.session.me;
 						this.getTasks({ 
-							options: { user : this.me.code }
+							options: { user : me.code }
 							, mutation: `mytasksPage/${LOAD}`
 						});
 					}

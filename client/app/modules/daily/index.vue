@@ -326,20 +326,21 @@
 					// F5リロード時など、meがundefinedの場合があるので、その場合、meの更新を監視してtaskを更新する
 					this.$store.subscribe((mutation, state) => {
 						if (mutation.type == `environment/session/${SET_USER}`) {
-							this.setCurrentUser(this.me.code);
+							const me = state.environment.session.me;
+							this.setCurrentUser(me.code);
 
 							this.getAssignedInWeeklyTasks({
-								options: { user_code : this.me.code, daily : this.currentWeek }
+								options: { user_code : me.code, daily : this.currentWeek }
 								, mutation: LOAD
 							});
 
 							this.readWorks({ 
-								options: { user_code : this.me.code, week : this.currentWeek }
+								options: { user_code : me.code, week : this.currentWeek }
 								, mutation: `dailyPage/${LOAD_WORKS}`
 							});
 
 							this.readReviews({
-								options: { user_code : this.me.code, week : this.currentWeek }
+								options: { user_code : me.code, week : this.currentWeek }
 								, mutation: LOAD_REVIEWS
 							});
 						}
