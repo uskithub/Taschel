@@ -12,12 +12,12 @@
 	export default {
 		name : "Navigator"
 		, computed : {
-			...mapGetters("session", [
+			...mapGetters("environment/session", [
 				"breadcrumb"
 			])
 		}
 		, methods : {
-			...mapMutations("session", {
+			...mapMutations("environment/session", {
 				clearCrumb : CLEAR_CRUKB
 			})
 			, onClick(e, crumb) {

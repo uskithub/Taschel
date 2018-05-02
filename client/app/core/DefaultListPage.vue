@@ -83,7 +83,7 @@
 		}
 
 		, computed: {
-			...mapGetters("session", {
+			...mapGetters("environment/session", {
 				search: "searchText"
 			})
 			, options() { return this.schema.popupForm.options || {}; }

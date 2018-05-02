@@ -1,6 +1,6 @@
 import Vue from "vue";
 import { METHOD, api } from "../../../system/fundamentals/api";
-import { ADD_MESSAGE, ADD_NOTIFICATION, SET_USER, SEARCH, PUSH_CRUMB, POP_CRUMB, SET_WAY_BACK, CLEAR_CRUKB } from "../mutationTypes";
+import { ADD_MESSAGE, ADD_NOTIFICATION, SET_USER, SEARCH, PUSH_CRUMB, POP_CRUMB, SET_WAY_BACK, CLEAR_CRUKB, LOAD_PROJECTS, SELECT_PROJECT, CLEAR_SELECTION } from "../mutationTypes";
 
 const NAMESPACE= "/api/session";
 
@@ -12,6 +12,7 @@ const state = {
 	, messages: []
 	, searchText: ""
 	, breadcrumb: []
+	, projects: []
 	// user.code
 	, currentUser: null
 	// YYYY-MM-DD（moment().day(1).format("YYYY-MM-DD")）
@@ -26,6 +27,7 @@ const getters = {
 	, messages(state) { return state.messages; }
 	, searchText(state) { return state.searchText; }
 	, breadcrumb(state) { return state.breadcrumb; }
+	, projects(state) { return state.projects; }
 	, currentUser(state) { return state.currentUser; }
 	, currentWeek(state) { return state.currentWeek; }
 	, currentProject(state) { return state.currentProject; }
@@ -75,6 +77,16 @@ const mutations = {
 	}
 	, [CLEAR_CRUKB] (state) {
 		state.breadcrumb.splice(0);
+	}
+	, [LOAD_PROJECTS] (state, models) {
+		state.projects.splice(0);
+		state.projects.push(...models);
+	}
+	, [SELECT_PROJECT] (state, row) {
+		state.currentProject = row;
+	}
+	, [CLEAR_SELECTION] (state) {
+		state.currentProject = null;
 	}
 };
 

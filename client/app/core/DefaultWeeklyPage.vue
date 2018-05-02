@@ -111,7 +111,7 @@
             };
         }
 		, computed: {
-			...mapGetters("session", {
+			...mapGetters("environment/session", {
 				search: "searchText"
 			})
 			, options() { 

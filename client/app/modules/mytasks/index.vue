@@ -283,7 +283,7 @@
 			} else {
 				// F5リロード時など、meがundefinedの場合があるので、その場合、meの更新を監視してtaskを更新する
 				this.$store.subscribe((mutation, state) => {
-					if (mutation.type == `session/${SET_USER}`) {
+					if (mutation.type == `environment/session/${SET_USER}`) {
 						this.getTasks({ 
 							options: { user : this.me.code }
 							, mutation: `mytasksPage/${LOAD}`

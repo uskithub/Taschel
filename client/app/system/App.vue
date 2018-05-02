@@ -107,7 +107,7 @@
 		}
 
 		, methods: {
-			...mapActions("session", [
+			...mapActions("environment/session", [
 				"getSessionUser"
 			])
 

@@ -19,7 +19,7 @@
 			DataTable
 		}
 		, computed : {
-			...mapGetters("task", [
+			...mapGetters("environment/task", [
 				"tasks"
 				, "currentTask"
 			])
@@ -35,7 +35,7 @@
 			};
 		}
 		, methods : {
-			...mapActions("task", {
+			...mapActions("environment/task", {
 				readTasks : "readTasks"
 			})
 			, onSelect(e, row) {
@@ -49,15 +49,15 @@
 			if (this.me) {
 				this.readTasks({ 
 					options: { user : this.me.code }
-					, mutation: `task/${LOAD_TASKS}`
+					, mutation: `environment/task/${LOAD_TASKS}`
 				});
 			} else {
 				// F5リロード時など、meがundefinedの場合があるので、その場合、meの更新を監視してtaskを更新する
 				this.$store.subscribe((mutation, state) => {
-					if (mutation.type == `session/${SET_USER}`) {
+					if (mutation.type == `environment/session/${SET_USER}`) {
 						this.readTasks({ 
 							options: { user : this.me.code }
-							, mutation: `task/${LOAD_TASKS}`
+							, mutation: `environment/task/${LOAD_TASKS}`
 						});
 					}
 				});				

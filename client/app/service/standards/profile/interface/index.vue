@@ -51,7 +51,7 @@
 			, Editing
 		}
 		, computed: {
-			...mapGetters("profile", [
+			...mapGetters("environment/profile", [
 				"profile"
 			])
 		}
@@ -71,7 +71,7 @@
 			}
  		}
 		, methods: {
-			...mapActions("profile", [
+			...mapActions("environment/profile", [
 				"getProfile"
 				, "updateProfile"
 			])

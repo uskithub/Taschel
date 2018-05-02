@@ -40,7 +40,7 @@
 			isNewModel() { return this.model.code === undefined; }
 		}
 		, methods : {
-			...mapMutations("session", {
+			...mapMutations("environment/session", {
 				setWayBack : SET_WAY_BACK
 				, popCrumb : POP_CRUMB
 			})

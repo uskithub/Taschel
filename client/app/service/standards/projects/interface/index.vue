@@ -1,6 +1,6 @@
 <template lang="pug">
 	.container
-		editing(v-if="isEditing", :target="currentTask", :schema="schema" @save="onSave" @close="onClose")
+		editing(v-if="isEditing", :target="currentProject", :schema="schema" @save="onSave" @close="onClose")
 		div(v-else)
 			.flex.align-center.justify-space-around
 				.left
@@ -8,7 +8,7 @@
 						i.icon.fa.fa-plus 
 						| {{ _("AddProject") }}
 				.right
-			data-table(:schema="schema.table", :rows="tasks", :order="order", :selectedRows="[currentTask]" @select="onSelect")
+			data-table(:schema="schema.table", :rows="projects", :order="order", :selectedRows="[currentProject]" @select="onSelect")
 </template> 
 
 <script>
@@ -18,7 +18,7 @@
 	import Editing from "./editing";
 	import schema from "./schema";
 	import { mapGetters, mapMutations, mapActions } from "vuex";
-	import { LOAD_TASKS, SELECT_TASK, CLEAR_SELECTION } from "../../../fundamentals/mutationTypes";
+	import { LOAD_PROJECTS, SELECT_PROJECT, CLEAR_SELECTION } from "../../../fundamentals/mutationTypes";
 	const _ = Vue.prototype._;
 	
 	export default {
@@ -30,9 +30,9 @@
 			, Editing
 		}
 		, computed : {
-			...mapGetters("task", [
-				"tasks"
-				, "currentTask"
+			...mapGetters("environment/session", [
+				"projects"
+				, "currentProject"
 			])
 		}
 		, data() {
@@ -44,16 +44,16 @@
 			};
 		}
 		, methods : {
-			...mapMutations("task", {
-				selectTask : SELECT_TASK
+			...mapMutations("environment/session", {
+				selectProject : SELECT_PROJECT
 				, clearSelection : CLEAR_SELECTION
 			})
-			, ...mapActions("task", {
+			, ...mapActions("environment/session", {
 				readTasks : "readTasks"
 			})
 			, onSelect(e, row) {
 				console.log("onselect", row);
-				this.selectTask(row);
+				this.selectProject(row);
 				this.isEditing = true;
 			}
 			, onAddProject() {
@@ -77,7 +77,7 @@
 		, sessionEnsured(me) {
 			 this.readTasks({ 
 				options: { user : me.code }
-				, mutation: `task/${LOAD_TASKS}`
+				, mutation: `environment/session/${LOAD_PROJECTS}`
 			});
 		}
 	};
