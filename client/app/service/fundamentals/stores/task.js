@@ -13,12 +13,14 @@ const getters = {
 };
 
 const mutations = {
-	[LOAD_TASKS] (state, models) {
+	// DDD: "modelInstance" is an instance of the domain model.
+	
+	[LOAD_TASKS] (state, modelInstances) {
 		state.tasks.splice(0);
-		state.tasks.push(...models);
+		state.tasks.push(...modelInstances);
 	}
-	, [SELECT_TASK] (state, row) {
-		state.currentTask = row;
+	, [SELECT_TASK] (state, modelInstance) {
+		state.currentTask = modelInstance;
 	}
 	, [CLEAR_SELECTION] (state) {
 		state.currentTask = null;

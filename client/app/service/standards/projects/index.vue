@@ -53,7 +53,7 @@
 			, ...mapActions("environment/session", {
 				// DDD: Domain Service
 				// Name actions in accordance with their use-cases.
-				readTasks : "readTasks"
+				getUserProjectList : "getUserProjectList"
 			})
 			, onSelect(e, row) {
 				console.log("onselect", row);
@@ -79,7 +79,7 @@
 		, created() {
 		}
 		, sessionEnsured(me) {
-			 this.readTasks({ 
+			 this.getUserProjectList({ 
 				options: { user : me.code }
 				, mutation: `environment/session/${LOAD_PROJECTS}`
 			});

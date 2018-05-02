@@ -31,6 +31,8 @@ const getters = {
 };
 
 const mutations = {
+	// DDD: "modelInstance" is an instance of the domain model.
+
 	[ADD_MESSAGE] (state, item) {
 		state.messages.splice(0);
 		state.messages.push(item);
@@ -39,10 +41,10 @@ const mutations = {
 		state.notifications.splice(0);
 		state.notifications.push(item);
 	}
-	, [SET_USER] (state, user) {
-		state.user = user;
+	, [SET_USER] (state, modelInstance) {
+		state.user = modelInstance;
 		if (state.currentUser === null) {
-			state.currentUser = user.code;
+			state.currentUser = modelInstance.code;
 		}
 	}
 	, [SEARCH] (state, text) {
@@ -89,6 +91,7 @@ export default {
 		// DDD: Domain Service
 		// Name actions in accordance with their use-cases.
 		getCurrentSession : getSession
+		, getUserProjectList : readTasks
 	}
 	, mutations
 };
