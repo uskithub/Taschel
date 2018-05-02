@@ -1,8 +1,5 @@
 import Vue from "vue";
-import { METHOD, api } from "../../../system/fundamentals/api";
 import { ADD_MESSAGE, ADD_NOTIFICATION, SET_USER, SEARCH, PUSH_CRUMB, POP_CRUMB, SET_WAY_BACK, CLEAR_CRUKB, LOAD_PROJECTS, SELECT_PROJECT, CLEAR_SELECTION } from "../mutationTypes";
-
-const NAMESPACE= "/api/session";
 
 const state = {
 	user: null
@@ -31,15 +28,6 @@ const getters = {
 	, currentUser(state) { return state.currentUser; }
 	, currentWeek(state) { return state.currentWeek; }
 	, currentProject(state) { return state.currentProject; }
-};
-
-const actions = {
-	getSessionUser({ commit }) {
-		return api(METHOD.get, `${NAMESPACE}/me`)
-			.then(data => {
-				commit(SET_USER, data);
-			});
-	}
 };
 
 const mutations = {
@@ -90,10 +78,17 @@ const mutations = {
 	}
 };
 
+import { readTasks } from "./actions/rest/tasks";
+import { getSession } from "./actions/rest/sessions";
+
 export default {
 	namespaced: true
 	, state
 	, getters
-	, actions
+	, actions : {
+		// DDD: Domain Service
+		// Name actions in accordance with their use-cases.
+		getCurrentSession : getSession
+	}
 	, mutations
 };

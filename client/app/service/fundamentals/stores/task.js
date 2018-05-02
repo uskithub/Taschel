@@ -1,10 +1,6 @@
-import Vue from "vue";
-import { METHOD, api } from "../../../system/fundamentals/api";
 import { LOAD_TASKS, SELECT_TASK, CLEAR_SELECTION
 	//, ARRANGE_AVOBE, ARRANGE_INTO, ARRANGE_BELOW 
 } from "../mutationTypes";
-
-const NAMESPACE= "/api/tasks";
 
 const state = {
 	tasks: []
@@ -14,40 +10,6 @@ const state = {
 const getters = {
 	tasks(state) { return state.tasks; }
 	, currentTask(state) { return state.currentTask; }
-};
-
-const actions = {
-	// payload = {
-	// 	options : {	
-	//		taskType : "project"
-	//    	, user : People.code
-	//    	, root : Task.code
-	//    	, populateParent : true
-	// 	}
-	//	, mutation : "LOAD"
-	// }
-	readTasks({ commit }, { options, mutation }) {
-		let url = NAMESPACE;
-
-		if (options != undefined) {
-			if (options.taskType != undefined) {
-				url = `${url}?type=${options.taskType}`;
-			} else if (options.user != undefined) {
-				url = `${url}?user_code=${options.user}`;
-			} else if (options.root != undefined) {
-				url = `${url}?root_code=${options.root}`;
-			}
-		}
-
-		return api(METHOD.get, url)
-			.then(data => {
-				if (mutation)
-					commit(mutation
-						, (options && options.populateParent) ? data.map(d => recursiveSetParentReference(d)) : data
-						, { root : (mutation.indexOf("/") > -1) }
-					);
-			});
-	}
 };
 
 const mutations = {
@@ -91,10 +53,16 @@ const mutations = {
 	// }
 };
 
+import { readTasks } from "./actions/rest/tasks";
+
 export default {
 	namespaced: true
 	, state
 	, getters
-	, actions
+	, actions : {
+		// DDD: Domain Service
+		// Name actions in accordance with their use-cases.
+		getTaskList : readTasks
+	}
 	, mutations
 };

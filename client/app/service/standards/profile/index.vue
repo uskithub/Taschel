@@ -37,8 +37,8 @@
 
 <script>
 	import Vue from "vue";
-	import Base from "../../../fundamentals/mixins/base";
-	import DataTable from "../../../fundamentals/components/table";
+	import Base from "../../fundamentals/mixins/base";
+	import DataTable from "../../fundamentals/components/table";
 	import Editing from "./editing"
 	import schema from "./schema";
 	import { mapGetters, mapActions } from "vuex";
@@ -95,8 +95,8 @@
 
 <style lang="scss" scoped>
 
-	@import "../../../../../scss/themes/blurred/variables";
-	@import "../../../../../scss/common/mixins";
+	@import "../../../../scss/themes/blurred/variables";
+	@import "../../../../scss/common/mixins";
 
 	.container {
 		padding: 1rem;

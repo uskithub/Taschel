@@ -1,16 +1,18 @@
+<!-- // DDD: Presentation -->
 <template lang="pug">
 	section
 		h1 {{ _("V2 MyTasks") }}
 		data-table(:schema="schema.table", :rows="tasks", :order="order", :selectedRows="selectedRows" @select="onSelect" @selectAll="onSelectAll")
 </template>
 
+<!-- // DDD: Application Sevice -->
 <script>
 	import Vue from "vue";
-	import Base from "../../../fundamentals/mixins/base";
-	import DataTable from "../../../fundamentals/components/table";
+	import Base from "../../fundamentals/mixins/base";
+	import DataTable from "../../fundamentals/components/table";
 	import schema from "./schema";
 	import { mapGetters, mapMutations, mapActions } from "vuex";
-	import { SET_USER, LOAD_TASKS } from "../../../fundamentals/mutationTypes";
+	import { SET_USER, LOAD_TASKS } from "../../fundamentals/mutationTypes";
 	const _ = Vue.prototype._;
 	
 	export default {
@@ -36,7 +38,9 @@
 		}
 		, methods : {
 			...mapActions("environment/task", {
-				readTasks : "readTasks"
+				// DDD: Domain Service
+				// Name actions in accordance with their use-cases.
+				getMyTaskList : "getTaskList"
 			})
 			, onSelect(e, row) {
 				console.log(e, row);
@@ -46,23 +50,12 @@
 			}
 		}
 		, created() {
-			if (this.me) {
-				this.readTasks({ 
-					options: { user : this.me.code }
-					, mutation: `environment/task/${LOAD_TASKS}`
-				});
-			} else {
-				// F5リロード時など、meがundefinedの場合があるので、その場合、meの更新を監視してtaskを更新する
-				this.$store.subscribe((mutation, state) => {
-					if (mutation.type == `environment/session/${SET_USER}`) {
-						const me = state.environment.session.me;
-						this.readTasks({ 
-							options: { user : me.code }
-							, mutation: `environment/task/${LOAD_TASKS}`
-						});
-					}
-				});				
-			}
+		}
+		, sessionEnsured(me) {
+			this.getMyTaskList({ 
+				options: { user : me.code }
+				, mutation: `environment/task/${LOAD_TASKS}`
+			});
 		}
 	};
 </script>

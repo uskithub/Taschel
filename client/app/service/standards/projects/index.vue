@@ -1,3 +1,4 @@
+<!-- // DDD: Presentation -->
 <template lang="pug">
 	.container
 		editing(v-if="isEditing", :target="currentProject", :schema="schema" @save="onSave" @close="onClose")
@@ -11,14 +12,15 @@
 			data-table(:schema="schema.table", :rows="projects", :order="order", :selectedRows="[currentProject]" @select="onSelect")
 </template> 
 
+<!-- // DDD: Application Sevice -->
 <script>
 	import Vue from "vue";
-	import Base from "../../../fundamentals/mixins/base";
-	import DataTable from "../../../fundamentals/components/table";
+	import Base from "../../fundamentals/mixins/base";
+	import DataTable from "../../fundamentals/components/table";
 	import Editing from "./editing";
 	import schema from "./schema";
 	import { mapGetters, mapMutations, mapActions } from "vuex";
-	import { LOAD_PROJECTS, SELECT_PROJECT, CLEAR_SELECTION } from "../../../fundamentals/mutationTypes";
+	import { LOAD_PROJECTS, SELECT_PROJECT, CLEAR_SELECTION } from "../../fundamentals/mutationTypes";
 	const _ = Vue.prototype._;
 	
 	export default {
@@ -49,6 +51,8 @@
 				, clearSelection : CLEAR_SELECTION
 			})
 			, ...mapActions("environment/session", {
+				// DDD: Domain Service
+				// Name actions in accordance with their use-cases.
 				readTasks : "readTasks"
 			})
 			, onSelect(e, row) {
@@ -83,5 +87,4 @@
 	};
 </script>
 
-<style lang="scss" scoped>
-</style>
+<style lang="scss" scoped></style>

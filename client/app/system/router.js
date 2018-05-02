@@ -15,9 +15,10 @@ import Gantt from "../modules/gantt";
 import Settings from "../modules/settings";
 import Debug from "../modules/debug";
 
-import Profile from "../service/standards/profile/interface/index";
-import MyTasks2 from "../service/standards/myTasks/interface/index";
-import Projects2 from "../service/standards/projects/interface/index";
+import Profile from "../service/standards/profile/index";
+import MyTasks2 from "../service/standards/myTasks/index";
+import Projects2 from "../service/standards/projects/index";
+
 import DailyLoop from "../service/plugins/dailyLoop/interface/index";
 import Gantt2 from "../service/plugins/gantt/interface/index";
 import Kanban2 from "../service/plugins/kanban/interface/index";
