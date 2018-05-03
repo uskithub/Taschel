@@ -26,6 +26,7 @@ export default {
 		// DDD: Domain Service
 		// Name actions in accordance with their use-cases.
 		getOrganizationList : organizations.get
+		, createOrganization : organizations.post
 	}
 	, mutations
 };
