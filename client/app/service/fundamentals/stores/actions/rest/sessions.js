@@ -4,7 +4,7 @@ import { METHOD, api } from "../../../../../system/fundamentals/api";
 
 const NAMESPACE= "/api/sessions";
 
-export const getSession = ({ commit }, { mutation }) => {
+const get = ({ commit }, { mutation }) => {
 	return api(METHOD.get, `${NAMESPACE}/me`)
 		.then(data => {
 			if (mutation)
@@ -13,4 +13,8 @@ export const getSession = ({ commit }, { mutation }) => {
 					, { root : (mutation.indexOf("/") > -1) }
 				);
 		});
+};
+
+export default {
+	get
 };

@@ -4,8 +4,7 @@ import { METHOD, api } from "../../../../../system/fundamentals/api";
 
 const NAMESPACE= "/api/organizations";
 
-
-export const readOrganizations = ({ commit }, { options, mutation }) => {
+const get = ({ commit }, { options, mutation }) => {
 	let url = NAMESPACE;
 
 	if (options != undefined) {
@@ -22,4 +21,18 @@ export const readOrganizations = ({ commit }, { options, mutation }) => {
 					, { root : (mutation.indexOf("/") > -1) }
 				);
 		});
+};
+
+const post = ({ commit }, { entity, mutation }) => {
+	return api(METHOD.post, NAMESPACE, entity)
+		.then(data => {
+			if (mutation)
+				commit(mutation
+					, data
+					, { root : (mutation.indexOf("/") > -1) });
+		});
+};
+
+export default {
+	get, post
 };

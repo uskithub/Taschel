@@ -81,8 +81,8 @@ const mutations = {
 	}
 };
 
-import { readTasks } from "./actions/rest/tasks";
-import { getSession } from "./actions/rest/sessions";
+import tasks from "./actions/rest/tasks";
+import sessions from "./actions/rest/sessions";
 
 export default {
 	namespaced: true
@@ -91,8 +91,8 @@ export default {
 	, actions : {
 		// DDD: Domain Service
 		// Name actions in accordance with their use-cases.
-		getCurrentSession : getSession
-		, getUserProjectList : readTasks
+		getCurrentSession : sessions.get
+		, getUserProjectList : tasks.get
 	}
 	, mutations
 	, modules: {

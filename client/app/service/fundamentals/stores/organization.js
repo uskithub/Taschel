@@ -16,7 +16,7 @@ const mutations = {
 	}
 };
 
-import { readOrganizations } from "./actions/rest/organizations";
+import organizations from "./actions/rest/organizations";
 
 export default {
 	namespaced: true
@@ -25,7 +25,7 @@ export default {
 	, actions : {
 		// DDD: Domain Service
 		// Name actions in accordance with their use-cases.
-		getOrganizationList : readOrganizations
+		getOrganizationList : organizations.get
 	}
 	, mutations
 };

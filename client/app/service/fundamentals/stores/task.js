@@ -55,7 +55,7 @@ const mutations = {
 	// }
 };
 
-import { readTasks } from "./actions/rest/tasks";
+import tasks from "./actions/rest/tasks";
 
 export default {
 	namespaced: true
@@ -64,7 +64,7 @@ export default {
 	, actions : {
 		// DDD: Domain Service
 		// Name actions in accordance with their use-cases.
-		getTaskList : readTasks
+		getTaskList : tasks.get
 	}
 	, mutations
 };

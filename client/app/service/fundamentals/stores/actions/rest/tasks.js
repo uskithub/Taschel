@@ -14,7 +14,7 @@ const NAMESPACE= "/api/tasks";
 // 	}
 //	, mutation : "LOAD"
 // }
-export const readTasks = ({ commit }, { options, mutation }) => {
+const get = ({ commit }, { options, mutation }) => {
 	let url = NAMESPACE;
 
 	if (options != undefined) {
@@ -35,4 +35,8 @@ export const readTasks = ({ commit }, { options, mutation }) => {
 					, { root : (mutation.indexOf("/") > -1) }
 				);
 		});
+};
+
+export default {
+	get
 };
