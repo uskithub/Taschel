@@ -1,4 +1,5 @@
-import Vue from "vue";
+import profile from "./profile";
+import organization from "./organization";
 import { ADD_MESSAGE, ADD_NOTIFICATION, SET_USER, SEARCH, PUSH_CRUMB, POP_CRUMB, SET_WAY_BACK, CLEAR_CRUKB, LOAD_PROJECTS, SELECT_PROJECT, CLEAR_SELECTION } from "../mutationTypes";
 
 const state = {
@@ -94,4 +95,8 @@ export default {
 		, getUserProjectList : readTasks
 	}
 	, mutations
+	, modules: {
+		profile
+		, organization
+	}
 };

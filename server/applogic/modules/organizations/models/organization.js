@@ -25,7 +25,11 @@ let OrganizationSchema = new Schema({
 		type: String
 		, trim: true
 	}
-	, users : [{
+	, type : {
+		type: String
+		, trim: true
+	}
+	, members : [{
 		type: Number
 		, ref: "User"
 	}]
@@ -37,6 +41,11 @@ let OrganizationSchema = new Schema({
 		type: Number,
 		ref: "User"
 	}]
+	, isDeleted: {
+		// 0: not deleted yet, 1: deleted
+		type: Number
+		, "default": 0
+	}
 	, metadata: {}
 
 }, schemaOptions);

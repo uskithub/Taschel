@@ -1,20 +1,20 @@
 <template lang="pug">
 	.container
 		.profile.flex.row.align-stretch
-			img.avatar(:src="profile.avatar")
+			img.avatar(:src="sessionUserProfile.avatar")
 			
 			.details.flex-item-1
-				.name {{ profile.fullName }}
-					span.text-muted.username ({{ profile.username }})
+				.name {{ sessionUserProfile.fullName }}
+					span.text-muted.username ({{ sessionUserProfile.username }})
 				.tags
 					.tag.primary !Role name!
 					.tag.danger !Administrator!
 					.tag.success !Online!
 				.description
-					.info-row(v-if="profile.profile && profile.profile.location")
+					.info-row(v-if="sessionUserProfile.profile && sessionUserProfile.profile.location")
 						i.fa.fa-map-marker
 						span.caption Location:
-						span.value {{ profile.profile.location }}
+						span.value {{ sessionUserProfile.profile.location }}
 					.info-row
 						i.fa.fa-clock-o
 						span.caption Last login:
@@ -22,7 +22,7 @@
 					.info-row
 						i.fa.fa-calendar
 						span.caption Joined:
-						span.value {{ profile.createdAt | ago }}
+						span.value {{ sessionUserProfile.createdAt | ago }}
 				hr.full
 		button.button.primary(@click="enableCalendar") Enable Calendar
 		editing(v-if="isEditing", :target="currentOrganization", :schema="schema" @save="onSave" @close="onClose")
@@ -51,9 +51,12 @@
 			, Editing
 		}
 		, computed: {
-			...mapGetters("environment/profile", [
-				"profile"
-			])
+			...mapGetters("environment/session/profile", {
+				sessionUserProfile : "profile"
+			})
+			, ...mapGetters("environment/session/organization", {
+				organizations : "organizations"
+			})
 		}
 		, data() {
 			return {
@@ -64,30 +67,43 @@
 			};
 		}
 		, watch : {
-			profile(newProfile) {
+			sessionUserProfile(newProfile) {
 				if (newProfile.googleAuthUrl) {
 					window.location.href = newProfile.googleAuthUrl;
 				}
 			}
  		}
 		, methods: {
-			...mapActions("environment/profile", [
-				"getProfile"
-				, "updateProfile"
-			])
+			...mapActions("environment/session/profile", {
+				// DDD: Domain Service
+				// Name actions in accordance with their use-cases.
+				getSessionUserProfile : "getProfile"
+			})
+			, ...mapActions("environment/session/organization", {
+				// DDD: Domain Service
+				// Name actions in accordance with their use-cases.
+				getOrganizationList : "getOrganizationList"
+			})
 			, enableCalendar() {
-				this.updateProfile({ model: this.profile, mutation: "UPDATE" });
+				// this.updateProfile({ model: this.profile, mutation: "UPDATE" });
 			}
 			, onJoinOrganization() {
-				// TODO
+				this.isEditing = true;
 			}
 			, onSelect() {
+				// TODO
+			}
+			, onSave() {
+				// TODO
+			}
+			, onClose() {
 				// TODO
 			}
 		}
 		, sessionEnsured(me) {
 			// Get my profile
-			this.getProfile({ options: { userCode: me.code } }); 
+			this.getSessionUserProfile({ options: { userCode: me.code } });
+			this.getOrganizationList({ options: { userCode: me.code } }); 
 		}
 	};
 

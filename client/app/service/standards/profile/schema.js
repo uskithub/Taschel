@@ -24,4 +24,10 @@ export default {
 			, { organizationName : "折詰め会", organizationType : "normal", role : "member" }
 		]
 	}
+	, form : {
+		fields : generate(
+			componentTypes.form
+			, [ "organizationName", "organizationType" ]
+		)
+	}
 };

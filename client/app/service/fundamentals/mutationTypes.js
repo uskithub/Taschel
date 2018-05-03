@@ -16,3 +16,5 @@ export const LOAD_TASKS			= "LOAD_TASKS";
 export const SELECT_TASK		= "SELECT_TASK";
 export const CLEAR_SELECTION	= "CLEAR_SELECTION";
 
+// organizations
+export const LOAD_ORGANIZATIONS = "LOAD_ORGANIZATIONS";

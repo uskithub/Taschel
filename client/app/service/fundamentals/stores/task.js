@@ -3,27 +3,27 @@ import { LOAD_TASKS, SELECT_TASK, CLEAR_SELECTION
 } from "../mutationTypes";
 
 const state = {
-	tasks: []
-	, currentTask: null
+	entities: []
+	, current: null
 };
 
 const getters = {
-	tasks(state) { return state.tasks; }
-	, currentTask(state) { return state.currentTask; }
+	tasks(state) { return state.entities; }
+	, currentTask(state) { return state.current; }
 };
 
 const mutations = {
 	// DDD: "modelInstance" is an instance of the domain model.
-	
-	[LOAD_TASKS] (state, modelInstances) {
-		state.tasks.splice(0);
-		state.tasks.push(...modelInstances);
+
+	[LOAD_TASKS] (state, entities) {
+		state.entities.splice(0);
+		state.entities.push(...entities);
 	}
-	, [SELECT_TASK] (state, modelInstance) {
-		state.currentTask = modelInstance;
+	, [SELECT_TASK] (state, entity) {
+		state.current = entity;
 	}
 	, [CLEAR_SELECTION] (state) {
-		state.currentTask = null;
+		state.current = null;
 	}
 	// , [ADD_TASK] (state, models) {
 	// 	if (models.child) {
