@@ -33,7 +33,6 @@ const mutations = {
 	// 				assign(item, models.parent);
 	// 		});
 	// 		state.tasks.unshift(models.child);
-
 	// 	} else {
 	// 		let isNotUpdate = !find(state.tasks, (item) => item.code == models.code);
 	// 		if (isNotUpdate) {

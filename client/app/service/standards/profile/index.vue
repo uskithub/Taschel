@@ -32,7 +32,7 @@
 					button.button.is-primary(@click="onJoinOrganization")
 						i.icon.fa.fa-plus 
 						| {{ _("JoinOrganization") }}
-			data-table(:schema="schema.table", :rows="schema.table.stab", :order="order", :selectedRows="[]" @select="onSelect")
+			data-table(:schema="schema.table", :rows="organizations", :order="order", :selectedRows="[currentOrganization]" @select="onSelect")
 </template>
 
 <script>
@@ -41,7 +41,8 @@
 	import DataTable from "../../fundamentals/components/table";
 	import Editing from "./editing"
 	import schema from "./schema";
-	import { mapGetters, mapActions } from "vuex";
+	import { mapGetters, mapMutations, mapActions } from "vuex";
+	import { LOAD, ADD, SET_CURRENT, CLEAR_SELECTION } from "../../fundamentals/mutationTypes";
 	const _ = Vue.prototype._;
 
 	export default {
@@ -56,6 +57,7 @@
 			})
 			, ...mapGetters("environment/session/organization", {
 				organizations : "organizations"
+				, currentOrganization : "current"
 			})
 		}
 		, data() {
@@ -79,10 +81,17 @@
 				// Name actions in accordance with their use-cases.
 				getSessionUserProfile : "getProfile"
 			})
+			, ...mapMutations("environment/session/organization", {
+				// DDD: Domain Service
+				// Name mutations in accordance with their use-cases.
+				editOrganization : SET_CURRENT
+				, finishEditingOrganization : CLEAR_SELECTION
+			})
 			, ...mapActions("environment/session/organization", {
 				// DDD: Domain Service
 				// Name actions in accordance with their use-cases.
 				getOrganizationList : "getOrganizationList"
+				, createOrganization : "createOrganization"
 			})
 			, enableCalendar() {
 				// this.updateProfile({ model: this.profile, mutation: "UPDATE" });
@@ -90,20 +99,25 @@
 			, onJoinOrganization() {
 				this.isEditing = true;
 			}
-			, onSelect() {
-				// TODO
+			, onSelect(event, entity) {
+				this.editOrganization(entity);
+				this.isEditing = true;
 			}
-			, onSave() {
+			, onSave(newEntity) {
 				// TODO
+				this.createOrganization({ entity : newEntity, mutation : ADD })
 			}
 			, onClose() {
-				// TODO
+				this.isEditing = false;
+				this.$nextTick(() => {
+					this.finishEditingOrganization();
+				});
 			}
 		}
 		, sessionEnsured(me) {
 			// Get my profile
 			this.getSessionUserProfile({ options: { userCode: me.code } });
-			this.getOrganizationList({ options: { userCode: me.code } }); 
+			this.getOrganizationList({ options: { userCode: me.code }, mutation : LOAD }); 
 		}
 	};
 

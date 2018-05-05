@@ -33,13 +33,13 @@ let OrganizationSchema = new Schema({
 		type: Number
 		, ref: "User"
 	}]
-	, projects : [{
-		type: Number
-		, ref: "Task"
-	}]
 	, administrators : [{
 		type: Number,
 		ref: "User"
+	}]
+	, projects : [{
+		type: Number
+		, ref: "Task"
 	}]
 	, isDeleted: {
 		// 0: not deleted yet, 1: deleted

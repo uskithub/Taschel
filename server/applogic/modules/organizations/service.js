@@ -60,6 +60,8 @@ module.exports = {
 			let organization = new Organization({
 				type: ctx.params.type
 				, name: ctx.params.name
+				, members : [ ctx.user.id ]
+				, administrators : [ ctx.user.id ]
 			});
 
 			return organization.save()
@@ -170,7 +172,7 @@ module.exports = {
 		 */
 		validateParams(ctx, strictMode) {
 			if (strictMode || ctx.hasParam("name"))
-				ctx.validateParam("name").trim().notEmpty(ctx.t("app:TaskNameCannotBeBlank")).end();
+				ctx.validateParam("name").trim().notEmpty(ctx.t("app:OrganizationNameCannotBeBlank")).end();
 
 			if (ctx.hasValidationErrors())
 				throw ctx.errorBadRequest(C.ERR_VALIDATION_ERROR, ctx.validationErrors);			

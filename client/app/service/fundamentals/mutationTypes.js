@@ -9,7 +9,7 @@ export const POP_CRUMB			= "POP_CRUMB";
 export const SET_WAY_BACK		= "SET_WAY_BACK";
 export const CLEAR_CRUKB		= "CLEAR_CRUKB";
 export const LOAD_PROJECTS		= "LOAD_PROJECTS";
-export const SELECT_PROJECT		= "SELECT_PROJECT";
+export const SET_CURRENT_PROJECT		= "SET_CURRENT_PROJECT";
 
 // task
 export const LOAD_TASKS			= "LOAD_TASKS";
@@ -17,4 +17,6 @@ export const SELECT_TASK		= "SELECT_TASK";
 export const CLEAR_SELECTION	= "CLEAR_SELECTION";
 
 // organizations
-export const LOAD_ORGANIZATIONS = "LOAD_ORGANIZATIONS";
+export const LOAD 				= "LOAD";
+export const ADD				= "ADD";
+export const SET_CURRENT		= "SET_CURRENT";

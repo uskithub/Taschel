@@ -20,7 +20,7 @@
 	import Editing from "./editing";
 	import schema from "./schema";
 	import { mapGetters, mapMutations, mapActions } from "vuex";
-	import { LOAD_PROJECTS, SELECT_PROJECT, CLEAR_SELECTION } from "../../fundamentals/mutationTypes";
+	import { LOAD_PROJECTS, SET_CURRENT_PROJECT, CLEAR_SELECTION } from "../../fundamentals/mutationTypes";
 	const _ = Vue.prototype._;
 	
 	export default {
@@ -47,7 +47,9 @@
 		}
 		, methods : {
 			...mapMutations("environment/session", {
-				selectProject : SELECT_PROJECT
+				// DDD: Domain Service
+				// Name mutations in accordance with their use-cases.
+				editProject : SET_CURRENT_PROJECT
 				, clearSelection : CLEAR_SELECTION
 			})
 			, ...mapActions("environment/session", {
@@ -55,9 +57,9 @@
 				// Name actions in accordance with their use-cases.
 				getUserProjectList : "getUserProjectList"
 			})
-			, onSelect(e, row) {
-				console.log("onselect", row);
-				this.selectProject(row);
+			, onSelect(event, entity) {
+				console.log("onselect", entity);
+				this.editProject(entity);
 				this.isEditing = true;
 			}
 			, onAddProject() {

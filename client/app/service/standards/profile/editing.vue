@@ -1,6 +1,6 @@
 <template lang="pug">
 	.form
-		vue-form-generator(:schema="schema.form", :model="model", :options="options", :is-new-model="isNewModel" ref="form")
+		vue-form-generator(:schema="schema.form", :model="entity", :options="options", :is-new-model="isNewEntity" ref="form")
 		.buttons.flex.justify-space-around
 			button.button.primary(@click="onSave")
 				i.icon.fa.fa-save 
@@ -31,13 +31,14 @@
 			}
 		}
 		, data() {
+			console.log("fkgfeg", this.target);
 			return {
-				model: this.target ? cloneDeep(this.target) : schemaUtils.createDefaultObject(this.schema.form)
+				entity: this.target ? cloneDeep(this.target) : schemaUtils.createDefaultObject(this.schema.form)
 				, options: {}
 			};
 		}
 		, computed: {
-			isNewModel() { return this.model.code === undefined; }
+			isNewEntity() { return this.entity.code === undefined; }
 		}
 		, methods : {
 			...mapMutations("environment/session", {
@@ -59,7 +60,7 @@
 			}
 			, onSave() {
 				if (this.validate()) {
-					this.$emit("save", this.model);
+					this.$emit("save", this.entity);
 				} else {
 					// Validation error
 				}

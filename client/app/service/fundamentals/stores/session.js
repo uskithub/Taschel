@@ -1,6 +1,6 @@
 import profile from "./profile";
 import organization from "./organization";
-import { ADD_MESSAGE, ADD_NOTIFICATION, SET_USER, SEARCH, PUSH_CRUMB, POP_CRUMB, SET_WAY_BACK, CLEAR_CRUKB, LOAD_PROJECTS, SELECT_PROJECT, CLEAR_SELECTION } from "../mutationTypes";
+import { ADD_MESSAGE, ADD_NOTIFICATION, SET_USER, SEARCH, PUSH_CRUMB, POP_CRUMB, SET_WAY_BACK, CLEAR_CRUKB, LOAD_PROJECTS, SET_CURRENT_PROJECT, CLEAR_SELECTION } from "../mutationTypes";
 
 const state = {
 	user: null
@@ -73,7 +73,7 @@ const mutations = {
 		state.projects.splice(0);
 		state.projects.push(...models);
 	}
-	, [SELECT_PROJECT] (state, row) {
+	, [SET_CURRENT_PROJECT] (state, row) {
 		state.currentProject = row;
 	}
 	, [CLEAR_SELECTION] (state) {

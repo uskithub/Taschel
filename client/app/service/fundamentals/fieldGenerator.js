@@ -1,7 +1,6 @@
 import Vue from "vue";
 import moment from "moment";
-import constants from "../constants";
-import { projectTypes, taskTypes, taskProperties, organizationType, roles } from "../constants";
+import { projectTypes, taskTypes, taskProperties, organizationTypes, roles } from "../constants";
 import { validators } from "vue-form-generator";
 import { cloneDeep, isObject, isNil, isArray } from "lodash";
 
@@ -12,8 +11,8 @@ const fields = {
 		label: _("ID")
 		, table: {
 			align: "left"
-			, formatter(value, model) {
-				return model ? model.code : "";
+			, formatter(value, entity) {
+				return entity ? entity.code : "";
 			}
 		}
 		, form: {
@@ -22,9 +21,9 @@ const fields = {
 			, readonly: true
 			, disabled: true
 			, multi: false
-			, get(model) {
-				if (model.code)
-					return model.code;
+			, get(entity) {
+				if (entity.code)
+					return entity.code;
 				else
 					return _("AutomaticNumbering");
 			}
@@ -33,7 +32,7 @@ const fields = {
 	, root: {
 		label: _("Projects") 
 		, table: {
-			formatter(value, model, col) {
+			formatter(value, entity, col) {
 				return isObject(value) ? value.name : "-";
 			}
 		}
@@ -47,15 +46,15 @@ const fields = {
 		label: _("ProjectType")
 		, table: {
 			formatter(value) {
-				let type = find(constants.projectTypes, (type) => type.id == value);
+				let type = find(projectTypes, (type) => type.id == value);
 				return type ? type.name : value;
 			}
 		}
 		, form: {
 			type: "select"
 			, required: true
-			, values: constants.projectTypes
-			, default: constants.projectTypes[0].id
+			, values: projectTypes
+			, default: projectTypes[0].id
 			, validator: validators.required
 			//, validator: validators.required
 		}
@@ -113,7 +112,7 @@ const fields = {
 	, shortname: {
 		label: _("ShortName")
 		, table: {
-			formatter(value, model, col) {
+			formatter(value, entity, col) {
 				return isObject(value) ? value.shortname : "-";
 			}
 		}
@@ -181,8 +180,8 @@ const fields = {
 			}
 			, validator: [
 				// validators.date
-				(value, field, model) => {
-					if (model.type == "milestone" && (isNil(value) || value === "")) {
+				(value, field, entity) => {
+					if (entity.type == "milestone" && (isNil(value) || value === "")) {
 						return [ _("MilestoneRequiresDeadline") ];
 					}
 					return [];
@@ -219,8 +218,8 @@ const fields = {
 	, asignee : {
 		label: _("Asignee")
 		, table: {
-			formatter(value, model, col) {
-				return (model.asignee) ? model.asignee.username : "-";
+			formatter(value, entity, col) {
+				return (entity.asignee) ? entity.asignee.username : "-";
 			}
 			, align: "center"
 		}
@@ -233,8 +232,8 @@ const fields = {
 	, assistants : {
 		label: _("Assistants")
 		, table: {
-			formatter(value, model, col) {
-				return (model.assistants) ? model.assistants.username : "-";
+			formatter(value, entity, col) {
+				return (entity.assistants) ? entity.assistants.username : "-";
 			}
 			, align: "center"
 		}
@@ -246,8 +245,8 @@ const fields = {
 	, author : {
 		label: _("Author")
 		, table: {
-			formatter(value, model, col) {
-				return model.author.username;
+			formatter(value, entity, col) {
+				return entity.author.username;
 			}
 			, align: "center"
 		}
@@ -265,13 +264,13 @@ const fields = {
 		}
 		, form: {
 			type: "label"
-			, get(model) { return model && model.lastCommunication ? moment(model.lastCommunication).fromNow() : "-"; }
+			, get(entity) { return entity && entity.lastCommunication ? moment(entity.lastCommunication).fromNow() : "-"; }
 		}
 	}
 	, status: {
 		label: _("Status")
 		, table: {
-			formatter(value, model, col) {
+			formatter(value, entity, col) {
 				return value ? "<i class='fa fa-check'/>" : "<i class='fa fa-ban'/>";
 			}
 			, align: "center"
@@ -298,10 +297,12 @@ const fields = {
 	, organizationName: {
 		label: _("OrganizationName")
 		, table: {
-			align: "left"
+			field: "name"
+			, align: "left"
 		}
 		, form: {
-			type: "input"
+			model: "name"
+			, type: "input"
 			, inputType: "text"
 			, featured: true
 			, required: true
@@ -312,15 +313,17 @@ const fields = {
 	, organizationType: {
 		label: _("OrganizationType")
 		, table: {
-			formatter(value) {
-				let type = find(organizationType, (type) => type.id == value);
+			field: "type"
+			, formatter(value) {
+				let type = find(organizationTypes, (type) => type.id == value);
 				return type ? type.name : value;
 			}
 		}
 		, form: {
-			type: "select"
+			model: "type"
+			, type: "select"
 			, required: true
-			, values: organizationType
+			, values: organizationTypes
 			, default: "normal"
 			, validator: validators.required
 		}
@@ -328,9 +331,9 @@ const fields = {
 	, role: {
 		label: _("Role")
 		, table: {
-			formatter(value) {
-				let type = find(roles, (type) => type.id == value);
-				return type ? type.name : value;
+			formatter(value, entity, col) {
+				// TODO: entity.administrators の中にユーザのcodeがあるかで判別
+				return "admin";
 			}
 		}
 		, form: {
@@ -374,23 +377,21 @@ export const generate = (componentType, fieldSet) => {
 				})
 			};
 		} else {
-			return {
-				fields: fieldSet.map(f => {
-					if ( fields[f] === undefined ) {
-						throw new Error(`Missing the definition about "${f}" in filed at fieldGenerator!`);
-					} else if ( fields[f].form === undefined ) {
-						throw new Error(`Missing the definition about "${f}.form" in filed at fieldGenerator!`);
-					}
-					let field = cloneDeep(fields[f]);
-					if (field.form.label === undefined) {
-						field.form.label = field.label;
-					}
-					if (field.form.model === undefined) {
-						field.form.model = f;
-					}
-					return field.form; 
-				})
-			};
+			return fieldSet.map(f => {
+				if ( fields[f] === undefined ) {
+					throw new Error(`Missing the definition about "${f}" in filed at fieldGenerator!`);
+				} else if ( fields[f].form === undefined ) {
+					throw new Error(`Missing the definition about "${f}.form" in filed at fieldGenerator!`);
+				}
+				let field = cloneDeep(fields[f]);
+				if (field.form.label === undefined) {
+					field.form.label = field.label;
+				}
+				if (field.form.model === undefined) {
+					field.form.model = f;
+				}
+				return field.form; 
+			});
 		}
 	} else {
 		return fieldSet.map(f => {
