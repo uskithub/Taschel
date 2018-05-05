@@ -1,34 +1,27 @@
-import { METHOD, api } from "../../../system/fundamentals/api";
-const NAMESPACE = "/api/profile";
+import { LOAD } from "../mutationTypes";
 
 const state = {
-	profile: {}
+	profile: null
 };
 
 const getters = {
 	profile(state) { return state.profile; }
 };
 
-const actions = {
-	getProfile({ commit }, { options }) {
-		let url = `${NAMESPACE}/${options.userCode}`;
-		return api(METHOD.get, url)
-			.then(data => {
-				commit("UPDATE", data);
-			});
+const mutations = {
+	[LOAD] (state, entity) {
+		state.profile = entity;
 	}
 };
 
-const mutations = {
-	["UPDATE"] (state, profile) {
-		state.profile = profile;
-	}
-};
+import profiles from "./actions/rest/profiles";
 
 export default {
 	namespaced: true
 	, state
 	, getters
-	, actions
+	, actions : {
+		getProfile : profiles.get
+	}
 	, mutations
 };

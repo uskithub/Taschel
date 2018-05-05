@@ -53,12 +53,15 @@
 		}
 		, computed: {
 			...mapGetters("environment/session/profile", {
-				sessionUserProfile : "profile"
+				_sessionUserProfile : "profile"
 			})
 			, ...mapGetters("environment/session/organization", {
 				organizations : "organizations"
 				, currentOrganization : "current"
 			})
+			, sessionUserProfile() {
+				return this._sessionUserProfile || {};
+			}
 		}
 		, data() {
 			return {
@@ -116,7 +119,7 @@
 		}
 		, sessionEnsured(me) {
 			// Get my profile
-			this.getSessionUserProfile({ options: { userCode: me.code } });
+			this.getSessionUserProfile({ options: { userCode: me.code }, mutation : LOAD }); 
 			this.getOrganizationList({ options: { userCode: me.code }, mutation : LOAD }); 
 		}
 	};

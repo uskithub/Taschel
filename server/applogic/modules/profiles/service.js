@@ -10,9 +10,9 @@ let User 		= require("./models/user");
 
 module.exports = {
 	settings: {
-		name: "profile",
+		name: "profiles",
 		version: 1,
-		namespace: "profile",
+		namespace: "profiles",
 		rest: true,
 		ws: true,
 		graphql: true,
