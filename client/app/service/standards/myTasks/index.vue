@@ -12,7 +12,7 @@
 	import DataTable from "../../fundamentals/components/table";
 	import schema from "./schema";
 	import { mapGetters, mapMutations, mapActions } from "vuex";
-	import { SET_USER, LOAD_TASKS } from "../../fundamentals/mutationTypes";
+	import { SET_USER } from "../../fundamentals/mutationTypes";
 	const _ = Vue.prototype._;
 	
 	export default {
@@ -57,7 +57,6 @@
 		, sessionEnsured(me) {
 			this.getMyTaskList({ 
 				options: { user : me.code }
-				, mutation: `environment/task/${LOAD_TASKS}`
 			});
 		}
 	};

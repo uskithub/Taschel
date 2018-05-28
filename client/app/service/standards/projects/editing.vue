@@ -1,11 +1,11 @@
 <template lang="pug">
 	.form
-		vue-form-generator(:schema="schema.form", :model="entity", :options="options", :is-new-model="isNewEntity" ref="form")
+		vue-form-generator(:schema="schema.form", :model="rawValues", :options="options", :is-new-model="isNewEntity" ref="form")
 		.buttons.flex.justify-space-around
-			button.button.primary(@click="onSave")
+			button.button.primary(@click="saveProject")
 				i.icon.fa.fa-save 
 				| {{ _("Save") }}
-			button.button.outline(@click="onCancel")
+			button.button.outline(@click="cancel")
 				i.icon.fa.fa-close
 				| {{ _("Cancel") }}
 </template>
@@ -14,7 +14,7 @@
 	import Base from "../../fundamentals/mixins/base";
 	import { mapGetters, mapMutations, mapActions } from "vuex";
 	import { schema as schemaUtils } from "vue-form-generator";
-	import { LOAD_TASKS, SELECT_TASK, SET_WAY_BACK, POP_CRUMB } from "../../fundamentals/mutationTypes";
+	import { SET_WAY_BACK, POP_CRUMB } from "../../fundamentals/mutationTypes";
 	import { cloneDeep } from "lodash";
 	const _ = Vue.prototype._;
 
@@ -32,7 +32,7 @@
 		}
 		, data() {
 			return {
-				projectData: this.entity ? this.entity.rawData : schemaUtils.createDefaultObject(this.schema.form)
+				rawValues: this.entity ? this.entity.rawValues : schemaUtils.createDefaultObject(this.schema.form)
 				, options: {}
 			};
 		}
@@ -44,6 +44,20 @@
 				setWayBack : SET_WAY_BACK
 				, popCrumb : POP_CRUMB
 			})
+			// Usecase: a user complets editing or adding a project.
+			, saveProject() {
+				if (this.validate()) {
+					this.$emit("save", this.rawValues);
+				} else {
+					// Validation error
+				}
+			}
+			// Usecase: a user cancels editing or adding a project.
+			, cancel() {
+				this.$emit("close"); 
+				this.popCrumb();
+			}
+			// Application Service:
 			, validate() {
 				let res = this.$refs.form.validate();
 
@@ -56,17 +70,6 @@
 					});
 				}
 				return res;	
-			}
-			, onSave() {
-				if (this.validate()) {
-					this.$emit("save", this.projectData);
-				} else {
-					// Validation error
-				}
-			}
-			, onCancel() {
-				this.$emit("close"); 
-				this.popCrumb();
 			}
 		}
 		, created() {

@@ -20,7 +20,7 @@
 	import Editing from "./editing";
 	import schema from "./schema";
 	import { mapGetters, mapMutations, mapActions } from "vuex";
-	import { LOAD_PROJECTS, SET_CURRENT_PROJECT, CLEAR_SELECTION } from "../../fundamentals/mutationTypes";
+	import { SET_CURRENT_PROJECT, CLEAR_SELECTION } from "../../fundamentals/mutationTypes";
 	const _ = Vue.prototype._;
 	
 	export default {
@@ -47,24 +47,24 @@
 		}
 		, methods : {
 			...mapMutations("environment/session", {
-				// DDD: Domain Service
-				// Name mutations in accordance with their use-cases.
-				editProject : SET_CURRENT_PROJECT
+				setCurrentProject : SET_CURRENT_PROJECT
 				, clearSelection : CLEAR_SELECTION
 			})
 			, ...mapActions("environment/session", {
-				// usecase
+				// Usecase: a user watches the list of the projects that he/she is owner or joins.
 				getUserProjectList : "getUserProjectList"
 			})
+			// Usecase: a user selects a project for editing.
 			, onSelect(event, entity) {
 				console.log("onselect", entity);
-				this.editProject(entity);
+				this.setCurrentProject(entity);
 				this.isEditing = true;
 			}
 			, onAddProject() {
 				this.isEditing = true;
 			}
-			, onSave() {
+			, onSave(rawValues) {
+				// TODO 
 				this.isEditing = false;
 				this.$nextTick(() => {
 					this.clearSelection();
@@ -80,10 +80,7 @@
 		, created() {
 		}
 		, sessionEnsured(me) {
-			 this.getUserProjectList({ 
-				options: { user : me.code }
-				, mutation: `environment/session/${LOAD_PROJECTS}`
-			});
+			 this.getUserProjectList({ options: { user : me.code } });
 		}
 	};
 </script>

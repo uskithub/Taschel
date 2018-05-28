@@ -1,7 +1,7 @@
 // DDD: Infrastracture
 
 import { METHOD, api } from "../../../../../system/fundamentals/api";
-
+import { assign } from "lodash";
 const NAMESPACE= "/api/tasks";
 
 
@@ -14,10 +14,12 @@ const NAMESPACE= "/api/tasks";
 // 	}
 //	, mutation : "LOAD"
 // }
-const get = ({ commit }, { options, mutation }) => {
-	let url = NAMESPACE;
+const curriedGet = ({ preservedOptions, preservedMutation } = {}) => {
+	// currying
+	return ({ commit }, { options, mutation = preservedMutation }) => {
+		let url = NAMESPACE;
+		options = assign(preservedOptions || {}, options);
 
-	if (options != undefined) {
 		if (options.taskType != undefined) {
 			url = `${url}?type=${options.taskType}`;
 		} else if (options.user != undefined) {
@@ -25,18 +27,31 @@ const get = ({ commit }, { options, mutation }) => {
 		} else if (options.root != undefined) {
 			url = `${url}?root_code=${options.root}`;
 		}
-	}
 
-	return api(METHOD.get, url)
-		.then(data => {
-			if (mutation)
-				commit(mutation
-					, (options && options.populateParent) ? data.map(d => recursiveSetParentReference(d)) : data
-					, { root : (mutation.indexOf("/") > -1) }
-				);
-		});
+		return api(METHOD.get, url)
+			.then(data => {
+				if (mutation)
+					commit(mutation
+						// , (options && options.populateParent) ? data.map(d => recursiveSetParentReference(d)) : data
+						, data
+						, { root : (mutation.indexOf("/") > -1) }
+					);
+			});
+	};
+};
+
+const curriedPut = ({ preservedMutation } = {}) => {
+	// currying
+	return ({ commit }, { rawValues, mutation = preservedMutation }) => {
+		return api(METHOD.put, NAMESPACE + "/" + rawValues.code, rawValues)
+			.then(data => {
+				if (mutation)
+					commit(mutation, data, { root : (mutation.indexOf("/") > -1) });
+			});
+	};
 };
 
 export default {
-	get
+	curriedGet
+	, curriedPut
 };

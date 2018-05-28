@@ -63,7 +63,7 @@ export default {
 	, state
 	, getters
 	, actions : {
-		getTaskList : tasks.get
+		getTaskList : tasks.curriedGet({ preservedMutation: LOAD_TASKS })
 	}
 	, mutations
 };
