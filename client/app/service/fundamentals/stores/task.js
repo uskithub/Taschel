@@ -1,8 +1,10 @@
+import Task from "../entities/task";
 import { LOAD_TASKS, SELECT_TASK, CLEAR_SELECTION
 	//, ARRANGE_AVOBE, ARRANGE_INTO, ARRANGE_BELOW 
 } from "../mutationTypes";
 
 const state = {
+	// DDD: Entities
 	entities: []
 	, current: null
 };
@@ -13,11 +15,11 @@ const getters = {
 };
 
 const mutations = {
-	// DDD: "modelInstance" is an instance of the domain model.
-
-	[LOAD_TASKS] (state, entities) {
+	[LOAD_TASKS] (state, rawValuesArr) {
 		state.entities.splice(0);
-		state.entities.push(...entities);
+		state.entities.push(...rawValuesArr.map(rawValues => {
+			return new Task(rawValues);
+		}));
 	}
 	, [SELECT_TASK] (state, entity) {
 		state.current = entity;
@@ -61,8 +63,6 @@ export default {
 	, state
 	, getters
 	, actions : {
-		// DDD: Domain Service
-		// Name actions in accordance with their use-cases.
 		getTaskList : tasks.get
 	}
 	, mutations

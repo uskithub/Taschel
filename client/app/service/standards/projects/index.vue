@@ -1,7 +1,7 @@
 <!-- // DDD: Presentation -->
 <template lang="pug">
 	.container
-		editing(v-if="isEditing", :target="currentProject", :schema="schema" @save="onSave" @close="onClose")
+		editing(v-if="isEditing", :entity="currentProject", :schema="schema" @save="onSave" @close="onClose")
 		div(v-else)
 			.flex.align-center.justify-space-around
 				.left
@@ -53,8 +53,7 @@
 				, clearSelection : CLEAR_SELECTION
 			})
 			, ...mapActions("environment/session", {
-				// DDD: Domain Service
-				// Name actions in accordance with their use-cases.
+				// usecase
 				getUserProjectList : "getUserProjectList"
 			})
 			, onSelect(event, entity) {

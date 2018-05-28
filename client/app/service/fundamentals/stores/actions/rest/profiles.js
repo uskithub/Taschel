@@ -1,4 +1,5 @@
 // DDD: Infrastracture
+// These methods of this file behave like the repository.
 
 import { METHOD, api } from "../../../../../system/fundamentals/api";
 

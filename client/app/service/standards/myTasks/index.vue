@@ -2,7 +2,7 @@
 <template lang="pug">
 	section
 		h1 {{ _("V2 MyTasks") }}
-		data-table(:schema="schema.table", :rows="tasks", :order="order", :selectedRows="selectedRows" @select="onSelect" @selectAll="onSelectAll")
+		data-table(:schema="schema.table", :rows="taskRawValuesArr", :order="order", :selectedRows="selectedRows" @select="onSelect" @selectAll="onSelectAll")
 </template>
 
 <!-- // DDD: Application Sevice -->
@@ -25,6 +25,9 @@
 				"tasks"
 				, "currentTask"
 			])
+			, taskRawValuesArr() {
+				return this.tasks.map( t => { return t.rawValues; });
+			}
 			, selectedRows() {
 				return (this.currentTask) ? [ this.currentTask ] : [];
 			}
@@ -38,10 +41,10 @@
 		}
 		, methods : {
 			...mapActions("environment/task", {
-				// DDD: Domain Service
-				// Name actions in accordance with their use-cases.
+				// usecase: a user watches the list of his/her tasks.
 				getMyTaskList : "getTaskList"
 			})
+			// usecase: a user selects a task for editing.
 			, onSelect(e, row) {
 				console.log(e, row);
 			}

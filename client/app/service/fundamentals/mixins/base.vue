@@ -16,7 +16,7 @@
 				, "breadcrumb"
 				, "currentProject"
 				, "currentWeek"
-				, "currentUser"
+				, "currentUserId"
 			])
 		}
 		, methods : {

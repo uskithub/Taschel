@@ -1,8 +1,11 @@
+import User from "../entities/user";
 import profile from "./profile";
 import organization from "./organization";
 import { ADD_MESSAGE, ADD_NOTIFICATION, SET_USER, SEARCH, PUSH_CRUMB, POP_CRUMB, SET_WAY_BACK, CLEAR_CRUKB, LOAD_PROJECTS, SET_CURRENT_PROJECT, CLEAR_SELECTION } from "../mutationTypes";
 
+// DDD: 集約ルート
 const state = {
+	// DDD: Entities
 	user: null
 	, notifications: [
 		// { id: 1, text: "Something happened!", time: 1, user: null }
@@ -12,7 +15,7 @@ const state = {
 	, breadcrumb: []
 	, projects: []
 	// user.code
-	, currentUser: null
+	, currentUserId: null
 	// YYYY-MM-DD（moment().day(1).format("YYYY-MM-DD")）
 	, currentWeek: null
 	// task.code 
@@ -26,14 +29,12 @@ const getters = {
 	, searchText(state) { return state.searchText; }
 	, breadcrumb(state) { return state.breadcrumb; }
 	, projects(state) { return state.projects; }
-	, currentUser(state) { return state.currentUser; }
+	, currentUserId(state) { return state.currentUserId; }
 	, currentWeek(state) { return state.currentWeek; }
 	, currentProject(state) { return state.currentProject; }
 };
 
 const mutations = {
-	// DDD: "modelInstance" is an instance of the domain model.
-
 	[ADD_MESSAGE] (state, item) {
 		state.messages.splice(0);
 		state.messages.push(item);
@@ -42,10 +43,10 @@ const mutations = {
 		state.notifications.splice(0);
 		state.notifications.push(item);
 	}
-	, [SET_USER] (state, modelInstance) {
-		state.user = modelInstance;
+	, [SET_USER] (state, userRawValues) {
+		state.user = new User(userRawValues);
 		if (state.currentUser === null) {
-			state.currentUser = modelInstance.code;
+			state.currentUser = state.user.id;
 		}
 	}
 	, [SEARCH] (state, text) {
@@ -89,8 +90,6 @@ export default {
 	, state
 	, getters
 	, actions : {
-		// DDD: Domain Service
-		// Name actions in accordance with their use-cases.
 		getCurrentSession : sessions.get
 		, getUserProjectList : tasks.get
 	}

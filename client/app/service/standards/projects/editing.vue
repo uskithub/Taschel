@@ -21,7 +21,7 @@
 	export default {
 		mixins : [ Base ]
 		, props : {
-			target : {
+			entity : {
 				type: Object
 				, validator: (value) => { return true; } // TODO
 			}
@@ -32,12 +32,12 @@
 		}
 		, data() {
 			return {
-				entity: this.target ? cloneDeep(this.target) : schemaUtils.createDefaultObject(this.schema.form)
+				projectData: this.entity ? this.entity.rawData : schemaUtils.createDefaultObject(this.schema.form)
 				, options: {}
 			};
 		}
 		, computed: {
-			isNewEntity() { return this.entity.code === undefined; }
+			isNewEntity() { return this.entity === undefined; }
 		}
 		, methods : {
 			...mapMutations("environment/session", {
@@ -59,7 +59,7 @@
 			}
 			, onSave() {
 				if (this.validate()) {
-					this.$emit("save", this.entity);
+					this.$emit("save", this.projectData);
 				} else {
 					// Validation error
 				}
@@ -74,7 +74,7 @@
 				this.$emit("close"); 
 				this.popCrumb();
 			});
-			this.pushCrumb({ id: this._uid, name: (this.target ? this.target.name : "新規作成") });
+			this.pushCrumb({ id: this._uid, name: (this.entity ? this.entity.name : "新規作成") });
 		}
 	}
 </script>
