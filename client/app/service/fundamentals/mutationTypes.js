@@ -9,6 +9,7 @@ export const POP_CRUMB			= "POP_CRUMB";
 export const SET_WAY_BACK		= "SET_WAY_BACK";
 export const CLEAR_CRUKB		= "CLEAR_CRUKB";
 export const LOAD_PROJECTS		= "LOAD_PROJECTS";
+export const UPDATE_PROJECT		= "UPDATE_PROJECT";
 export const SET_CURRENT_PROJECT		= "SET_CURRENT_PROJECT";
 
 // task

@@ -27,5 +27,4 @@ export default class Project {
 
 	get description() { return this._rawValues.description; }
 	set description(description) { return this._rawValues.description = description; }
-
 }

@@ -29,7 +29,7 @@ const mutations = {
 	}
 };
 
-import organizations from "./actions/rest/organizations";
+import organizations from "../repositories/rest/organizations";
 
 export default {
 	namespaced: true

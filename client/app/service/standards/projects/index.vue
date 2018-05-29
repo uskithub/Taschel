@@ -1,7 +1,7 @@
 <!-- // DDD: Presentation -->
 <template lang="pug">
 	.container
-		editing(v-if="isEditing", :entity="currentProject", :schema="schema" @save="onSave" @close="onClose")
+		editing(v-if="isEditing", :entity="entity", :schema="schema" @close="onClose")
 		div(v-else)
 			.flex.align-center.justify-space-around
 				.left
@@ -9,10 +9,9 @@
 						i.icon.fa.fa-plus 
 						| {{ _("AddProject") }}
 				.right
-			data-table(:schema="schema.table", :rows="projects", :order="order", :selectedRows="[currentProject]" @select="onSelect")
+			data-table(:schema="schema.table", :rows="projects", :order="order", :selectedRows="[entity]" @select="onSelect")
 </template> 
 
-<!-- // DDD: Application Sevice -->
 <script>
 	import Vue from "vue";
 	import Base from "../../fundamentals/mixins/base";
@@ -40,24 +39,21 @@
 		, data() {
 			return {
 				isEditing: false
+				, entity: null
 				, schema
 				, options: {}
 				, order: {}
 			};
 		}
 		, methods : {
-			...mapMutations("environment/session", {
-				setCurrentProject : SET_CURRENT_PROJECT
-				, clearSelection : CLEAR_SELECTION
-			})
-			, ...mapActions("environment/session", {
-				// Usecase: a user watches the list of the projects that he/she is owner or joins.
-				getUserProjectList : "getUserProjectList"
-			})
-			// Usecase: a user selects a project for editing.
-			, onSelect(event, entity) {
+			...mapActions("environment/session", [
+				// Usecases
+				"getUserProjectList"
+				, "selectProject"
+			])
+			, onSelect(entity) {
 				console.log("onselect", entity);
-				this.setCurrentProject(entity);
+				this.entity = entity;
 				this.isEditing = true;
 			}
 			, onAddProject() {
@@ -67,13 +63,14 @@
 				// TODO 
 				this.isEditing = false;
 				this.$nextTick(() => {
-					this.clearSelection();
+					// nextTickの中でentityをnullにすることで、
+					this.entity = null;
 				});
 			}
 			, onClose() {
 				this.isEditing = false;
 				this.$nextTick(() => {
-					this.clearSelection();
+					this.entity = null;
 				});
 			}
 		}

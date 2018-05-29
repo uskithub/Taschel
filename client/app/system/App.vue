@@ -16,7 +16,6 @@
 	import Service from "./service";
 
 	import { mapActions, mapGetters } from "vuex";
-	import { SET_USER } from "../service/fundamentals/mutationTypes";
 
 	/*
 		// Fix Facebook not showing index
@@ -108,11 +107,9 @@
 		}
 
 		, methods: {
-			...mapActions("environment/session", {
-				// DDD: Domain Service
-				// Name actions in accordance with their use-cases.
-				getCurrentSession : "getCurrentSession"
-			})
+			...mapActions("environment/session", [
+				"getCurrentSession"
+			])
 
 			, update(vm) {
 				if (vm == null)
@@ -139,8 +136,7 @@
 		, created() {
 			console.log("App started!");
 			window.app = this;
-
-			this.getCurrentSession({ mutation: `environment/session/${SET_USER}`});
+			this.getCurrentSession();
 		}
 	};
 </script>

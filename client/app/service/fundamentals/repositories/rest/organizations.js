@@ -1,6 +1,6 @@
 // DDD: Infrastracture
 
-import { METHOD, api } from "../../../../../system/fundamentals/api";
+import { METHOD, api } from "../../../../system/fundamentals/api";
 
 const NAMESPACE= "/api/organizations";
 

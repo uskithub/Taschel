@@ -14,7 +14,7 @@ const mutations = {
 	}
 };
 
-import profiles from "./actions/rest/profiles";
+import profiles from "../repositories/rest/profiles";
 
 export default {
 	namespaced: true

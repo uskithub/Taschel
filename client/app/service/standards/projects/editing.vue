@@ -2,7 +2,7 @@
 	.form
 		vue-form-generator(:schema="schema.form", :model="rawValues", :options="options", :is-new-model="isNewEntity" ref="form")
 		.buttons.flex.justify-space-around
-			button.button.primary(@click="saveProject")
+			button.button.primary(@click="onClickSaveButton")
 				i.icon.fa.fa-save 
 				| {{ _("Save") }}
 			button.button.outline(@click="cancel")
@@ -44,10 +44,23 @@
 				setWayBack : SET_WAY_BACK
 				, popCrumb : POP_CRUMB
 			})
-			// Usecase: a user complets editing or adding a project.
-			, saveProject() {
+			, ...mapActions("environment/session", [
+				// Usecases
+				"createProject"
+				, "updateProject"
+			])
+			, onClickSaveButton() {
 				if (this.validate()) {
-					this.$emit("save", this.rawValues);
+					return Promise.resolve().then(() => {
+						if ( this.entity.code ) {
+							return this.updateProject(this.rawValues);
+						} else {
+							return this.createProject(this.rawValues);
+						}
+					}).then(() => {
+						this.$emit("close", this.rawValues);
+					});
+					
 				} else {
 					// Validation error
 				}
