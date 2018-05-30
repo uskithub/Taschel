@@ -23,13 +23,14 @@
 	const _ = Vue.prototype._;
 	
 	export default {
-		mixins : [ Base ]
+		name : "MyTask"
+		, mixins : [ Base ]
 		, components : {
 			DataTable
 			, Editing
 		}
 		, computed : {
-			...mapGetters("task", [
+			...mapGetters([
 				"tasks"
 			])
 		}
@@ -43,7 +44,7 @@
 			};
 		}
 		, methods : {
-			...mapActions("task", [
+			...mapActions([
 				// Usecases
 				"getMyTaskList"
 			])

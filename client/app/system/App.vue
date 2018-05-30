@@ -107,7 +107,7 @@
 		}
 
 		, methods: {
-			...mapActions("session", [
+			...mapActions([
 				"getCurrentSession"
 			])
 

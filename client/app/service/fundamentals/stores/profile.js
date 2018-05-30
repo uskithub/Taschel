@@ -1,4 +1,4 @@
-import { LOAD } from "../mutationTypes";
+import { INITIALIZE, LOAD } from "../mutationTypes";
 
 const state = {
 	profile: null
@@ -9,7 +9,11 @@ const getters = {
 };
 
 const mutations = {
-	[LOAD] (state, entity) {
+	[INITIALIZE] (state) {
+		console.log("ほら呼ばれた");
+		state.profile = null;
+	}
+	, [LOAD] (state, entity) {
 		state.profile = entity;
 	}
 };
@@ -17,8 +21,7 @@ const mutations = {
 import profiles from "../repositories/rest/profiles";
 
 export default {
-	namespaced: true
-	, state
+	state
 	, getters
 	, actions : {
 		getProfile : profiles.get

@@ -160,7 +160,7 @@ import { readTasks } from "./actions/tasks";
 export default {
 	namespaced : true
 	, state
-    , getters
-    , actions : { readUsers, readTasks }
+	, getters
+	, actions : { readUsers, readTasks }
 	, mutations
 };

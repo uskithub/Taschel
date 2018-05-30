@@ -1,13 +1,12 @@
 import Task from "../entities/task";
-import { LOAD_TASKS, SELECT_TASK, CLEAR_SELECTION
+import { INITIALIZE, LOAD_TASKS, SELECT_TASK, CLEAR_SELECTION
 	//, ARRANGE_AVOBE, ARRANGE_INTO, ARRANGE_BELOW 
 } from "../mutationTypes";
 import { assign } from "lodash";
 import tasks from "../repositories/rest/tasks";
 
 export default {
-	namespaced: true
-	, state : {
+	state : {
 		// DDD: Entities
 		entities: []
 		, current: null
@@ -19,7 +18,11 @@ export default {
 	// DDD: Usecases
 	// Vuex: Mutations can change states. It must run synchronously.
 	, mutations : {
-		[LOAD_TASKS] (state, entities) {
+		[INITIALIZE] (state) {
+			state.entities.splice(0);
+			state.current = null;
+		}
+		, [LOAD_TASKS] (state, entities) {
 			state.entities.splice(0);
 			state.entities.push(...entities);
 		}
@@ -35,8 +38,12 @@ export default {
 	// Vuex: Actions can execute asynchronous transactions.
 	, actions : {
 		// Usecase: a user watches a list of tasks.
-		getMyTaskList : ({ dispatch, commit, getters, rootGetters }) => {
-			let user = rootGetters["session/me"];
+		getMyTaskList : ({ commit, getters }) => {
+			// TODO: module分割して疎結合にすべきなのに、globalで見えるmeを（このmoduleは知らないのに）使っているのがキモチワルイ
+			// 引数でComponent側から渡すべきか？
+			// StoreはDDD的にはApplicationServiceに当たると思うので、ユースケースをactionで表現したい
+			// userが誰か知らないのもおかしい気がする
+			let user = getters.me;
 			let options = { user : user.code };
 			return tasks.get(options)
 				.then(data => {

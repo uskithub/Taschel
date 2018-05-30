@@ -1,31 +1,33 @@
 <template lang="pug">
 	.navigator
-		span(v-for="crumb in breadcrumb", :key="crumb.id" @click="onClick($event, crumb)") {{ crumb.name }} &nbsp;&gt;&nbsp;
+		span(v-for="crumb in breadcrumb", :key="crumb.id" @click="didPushCrumb(crumb)") {{ crumb.name }} &nbsp;&gt;&nbsp;
 </template>
 
 <script>
 	import Vue from "vue";
-	import { mapGetters, mapMutations } from "vuex";
+	import { mapGetters, mapActions } from "vuex";
 	import { CLEAR_CRUKB } from "../../../service/fundamentals/mutationTypes";
 	const _ = Vue.prototype._;
 
 	export default {
 		name : "Navigator"
 		, computed : {
-			...mapGetters("session", [
+			...mapGetters([
 				"breadcrumb"
 			])
 		}
 		, methods : {
-			...mapMutations("session", {
-				clearCrumb : CLEAR_CRUKB
-			})
-			, onClick(e, crumb) {
+			...mapActions([
+				"popCrumb"
+				, "clearCrumb"
+			])
+			, didPushCrumb(crumb) {
 				if (crumb.back) {
 					crumb.back();
 				} else {
 					console.log("backがない", crumb);
 				}
+				this.popCrumb();
 			}
 		}
 		, created() {

@@ -4,25 +4,24 @@
 	import { cloneDeep, isObject, isArray } from "lodash";
 	import moment from "moment";
 
-	import { mapGetters, mapMutations, mapActions } from "vuex";
-	import { SET_USER, PUSH_CRUMB } from "../../fundamentals/mutationTypes";
+	import { mapGetters, mapActions } from "vuex";
+	import { SET_USER } from "../../fundamentals/mutationTypes";
 
 	const _ = Vue.prototype._;
 
 	export default {
 		computed : {
-			...mapGetters("session", [
+			...mapGetters([
 				"me"
-				, "breadcrumb"
 				, "currentProject"
 				, "currentWeek"
 				, "currentUserId"
 			])
 		}
 		, methods : {
-			...mapMutations("session", {
-				pushCrumb : PUSH_CRUMB
-			})
+			...mapActions([
+				"pushCrumb"
+			])
 		}
 		, created() {
 			if (this.$options.name) {

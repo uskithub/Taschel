@@ -2,7 +2,9 @@ import User from "../entities/user";
 import Project from "../entities/project";
 import profile from "./profile";
 import organization from "./organization";
-import { ADD_MESSAGE, ADD_NOTIFICATION, SET_USER, SEARCH, PUSH_CRUMB, POP_CRUMB, SET_WAY_BACK, CLEAR_CRUKB, LOAD_PROJECTS, UPDATE_PROJECT, SET_CURRENT_PROJECT, CLEAR_SELECTION } from "../mutationTypes";
+import breadcrumb from "./breadcrumb";
+import task from "./task";
+import { INITIALIZE, ADD_MESSAGE, ADD_NOTIFICATION, SET_USER, SEARCH, PUSH_CRUMB, POP_CRUMB, SET_WAY_BACK, CLEAR_CRUMB, LOAD_PROJECTS, UPDATE_PROJECT, SET_CURRENT_PROJECT, CLEAR_SELECTION } from "../mutationTypes";
 import { assign } from "lodash";
 
 import tasks from "../repositories/rest/tasks";
@@ -10,21 +12,28 @@ import sessions from "../repositories/rest/sessions";
 
 // DDD: Application Service
 export default {
-	namespaced: true
-	, modules: {
-		profile
+	modules: {
+		// for Application
+		task
+		, profile
 		, organization
+
+		// for Presentation
+		, breadcrumb
 	}
 	, state : {
 		// DDD: Entities
 		user: null
+		, projects: []
+
+
+
 		, notifications: [
 			// { id: 1, text: "Something happened!", time: 1, user: null }
 		]
 		, messages: []
 		, searchText: ""
-		, breadcrumb: []
-		, projects: []
+		
 		// user.code
 		, currentUserId: null
 		// YYYY-MM-DD（moment().day(1).format("YYYY-MM-DD")）
@@ -37,7 +46,6 @@ export default {
 		, notifications(state) { return state.notifications; }
 		, messages(state) { return state.messages; }
 		, searchText(state) { return state.searchText; }
-		, breadcrumb(state) { return state.breadcrumb; }
 		, projects(state) { return state.projects; }
 		, currentUserId(state) { return state.currentUserId; }
 		, currentWeek(state) { return state.currentWeek; }
@@ -46,7 +54,12 @@ export default {
 	// DDD: Usecases
 	// Vuex: Mutations can change states. It must run synchronously.
 	, mutations :  {
-		[SET_USER] (state, user) {
+		// Vuex: Don't use namespaced option with true, and must implement [INITIALIZE] mutation in each stores.
+		[INITIALIZE] (state) {
+			state.user = null;
+			state.projects.splice(0);
+		}
+		, [SET_USER] (state, user) {
 			state.user = user;
 			if (state.currentUser === null) {
 				state.currentUser = state.user.code;
@@ -74,25 +87,6 @@ export default {
 		, [SEARCH] (state, text) {
 			state.searchText = text;
 		}
-		, [PUSH_CRUMB] (state, crumb) {
-			state.breadcrumb.push(crumb);
-			console.log("crumb", state.breadcrumb);
-		}
-		, [POP_CRUMB] (state) {
-			return state.breadcrumb.pop();
-		}
-		, [SET_WAY_BACK] (state, func) {
-			if (state.breadcrumb.length > 0) {
-				state.breadcrumb[state.breadcrumb.length-1].back = () => {
-					func();
-					state.breadcrumb[state.breadcrumb.length-1].back = null;
-				};
-			}
-		}
-		, [CLEAR_CRUKB] (state) {
-			state.breadcrumb.splice(0);
-		}
-		
 		, [SET_CURRENT_PROJECT] (state, entity) {
 			state.currentProject = entity;
 		}
@@ -104,7 +98,11 @@ export default {
 	// DDD: Usecases
 	// Vuex: Actions can execute asynchronous transactions.
 	, actions : {
-		getCurrentSession : ({ commit }) => {
+		// This action calls all modules INITIALIZE mutations.
+		initialize : ({ commit }) => {
+			commit(INITIALIZE);
+		}
+		, getCurrentSession : ({ commit }) => {
 			return sessions.get()
 				.then(data => {
 					let user = new User(data);
@@ -127,7 +125,7 @@ export default {
 		, selectProject : ({ commit }, project) => {
 			commit(SET_CURRENT_PROJECT, project);
 		}
-
+		
 		// Usecase: a user completes adding a new project.
 		, createProject : ({ commit }, rawValues) => {
 			// TODO

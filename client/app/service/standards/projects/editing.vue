@@ -40,11 +40,11 @@
 			isNewEntity() { return this.entity === undefined; }
 		}
 		, methods : {
-			...mapMutations("session", {
+			...mapMutations({
 				setWayBack : SET_WAY_BACK
 				, popCrumb : POP_CRUMB
 			})
-			, ...mapActions("session", [
+			, ...mapActions([
 				// Usecases
 				"createProject"
 				, "updateProject"
@@ -52,17 +52,18 @@
 			, didPushSaveButton() {
 				if (this.validate()) {
 					return Promise.resolve().then(() => {
-						if ( this.entity.code ) {
+						if ( this.isNewEntity ) {
 							return this.updateProject(this.rawValues);
 						} else {
 							return this.createProject(this.rawValues);
 						}
 					}).then(() => {
 						this.$emit("close", this.rawValues);
+						this.popCrumb();
 					});
 					
 				} else {
-					// Validation error
+					// TODO: Validation error
 				}
 			}
 			// Usecase: a user cancels editing or adding a project.
@@ -88,7 +89,6 @@
 		, created() {
 			this.setWayBack(() => { 
 				this.$emit("close"); 
-				this.popCrumb();
 			});
 			this.pushCrumb({ id: this._uid, name: (this.entity ? this.entity.name : "新規作成") });
 		}

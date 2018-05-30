@@ -35,7 +35,7 @@
 
 	export default {
 		name: "UserBox"
-        , computed: mapGetters("session", [
+        , computed: mapGetters([
 			"me"
 			, "notifications"
 			, "messages"

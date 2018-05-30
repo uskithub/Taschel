@@ -31,7 +31,7 @@
 			, Editing
 		}
 		, computed : {
-			...mapGetters("session", [
+			...mapGetters([
 				"projects"
 			])
 		}
@@ -45,7 +45,7 @@
 			};
 		}
 		, methods : {
-			...mapActions("session", [
+			...mapActions([
 				// Usecases
 				"getUserProjectList"
 				, "selectProject"
@@ -67,7 +67,7 @@
 		, created() {
 		}
 		, sessionEnsured(me) {
-			 this.getUserProjectList({ options: { user : me.code } });
+			this.getUserProjectList({ options: { user : me.code } });
 		}
 	};
 </script>

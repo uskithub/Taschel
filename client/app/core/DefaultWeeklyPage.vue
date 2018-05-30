@@ -111,7 +111,7 @@
             };
         }
 		, computed: {
-			...mapGetters("session", {
+			...mapGetters({
 				search: "searchText"
 			})
 			, options() { 
