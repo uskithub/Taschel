@@ -19,7 +19,7 @@
 	import DataTable from "../../fundamentals/components/table";
 	import Editing from "./editing";
 	import schema from "./schema";
-	import { mapGetters, mapMutations, mapActions } from "vuex";
+	import { mapGetters, mapActions } from "vuex";
 	const _ = Vue.prototype._;
 	
 	export default {

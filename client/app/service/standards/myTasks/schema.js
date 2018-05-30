@@ -23,7 +23,7 @@ export default {
 	, form : { 
 		fields : generate(
 			componentTypes.form
-			, [ "type", "name", "shortname", "purpose", "goal"]
+			, [ "type", "name", "purpose", "goal"]
 		)
 	}
 };

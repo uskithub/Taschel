@@ -18,8 +18,7 @@
 	import DataTable from "../../fundamentals/components/table";
 	import Editing from "./editing";
 	import schema from "./schema";
-	import { mapGetters, mapMutations, mapActions } from "vuex";
-	import { SET_CURRENT_PROJECT, CLEAR_SELECTION } from "../../fundamentals/mutationTypes";
+	import { mapGetters, mapActions } from "vuex";
 	const _ = Vue.prototype._;
 	
 	export default {
@@ -67,7 +66,7 @@
 		, created() {
 		}
 		, sessionEnsured(me) {
-			this.getUserProjectList({ options: { user : me.code } });
+			this.getUserProjectList();
 		}
 	};
 </script>

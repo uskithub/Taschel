@@ -18,6 +18,7 @@ export const SET_CURRENT_PROJECT		= "SET_CURRENT_PROJECT";
 // task
 export const LOAD_TASKS			= "LOAD_TASKS";
 export const SELECT_TASK		= "SELECT_TASK";
+export const UPDATE_TASK		= "UPDATE_TASK";
 export const CLEAR_SELECTION	= "CLEAR_SELECTION";
 
 // organizations

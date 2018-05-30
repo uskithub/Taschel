@@ -1,5 +1,5 @@
 import Task from "../entities/task";
-import { INITIALIZE, LOAD_TASKS, SELECT_TASK, CLEAR_SELECTION
+import { INITIALIZE, LOAD_TASKS, SELECT_TASK, UPDATE_TASK, CLEAR_SELECTION
 	//, ARRANGE_AVOBE, ARRANGE_INTO, ARRANGE_BELOW 
 } from "../mutationTypes";
 import { assign } from "lodash";
@@ -29,6 +29,13 @@ export default {
 		, [SELECT_TASK] (state, entity) {
 			state.current = entity;
 		}
+		, [UPDATE_TASK] (state, entity) {
+			state.entities.forEach(e => {
+				if (e.code === entity.code) {
+					assign(e, entity);
+				}
+			});
+		}
 		, [CLEAR_SELECTION] (state) {
 			state.current = null;
 		}
@@ -51,6 +58,13 @@ export default {
 						return new Task(rawValues);
 					});
 					commit(LOAD_TASKS, tasks);
+				});
+		}
+		, updateTask : ({ commit }, rawValues) => {
+			return tasks.put(rawValues)
+				.then(data => {
+					let task = new Task(rawValues);
+					commit(UPDATE_TASK, task);
 				});
 		}
 	}

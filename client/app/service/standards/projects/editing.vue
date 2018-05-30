@@ -14,7 +14,6 @@
 	import Base from "../../fundamentals/mixins/base";
 	import { mapGetters, mapMutations, mapActions } from "vuex";
 	import { schema as schemaUtils } from "vue-form-generator";
-	import { SET_WAY_BACK, POP_CRUMB } from "../../fundamentals/mutationTypes";
 	import { cloneDeep } from "lodash";
 	const _ = Vue.prototype._;
 
@@ -40,14 +39,15 @@
 			isNewEntity() { return this.entity === undefined; }
 		}
 		, methods : {
-			...mapMutations({
-				setWayBack : SET_WAY_BACK
-				, popCrumb : POP_CRUMB
-			})
-			, ...mapActions([
+			...mapActions([
 				// Usecases
 				"createProject"
 				, "updateProject"
+
+				// for Presentation
+				, "setWayBackOnPreviousCrumb"
+				, "pushCrumb"
+				, "popCrumb"
 			])
 			, didPushSaveButton() {
 				if (this.validate()) {
@@ -87,7 +87,7 @@
 			}
 		}
 		, created() {
-			this.setWayBack(() => { 
+			this.setWayBackOnPreviousCrumb(() => { 
 				this.$emit("close"); 
 			});
 			this.pushCrumb({ id: this._uid, name: (this.entity ? this.entity.name : "新規作成") });

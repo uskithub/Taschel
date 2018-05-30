@@ -111,8 +111,9 @@ export default {
 		}
 
 		// Usecase: a user watches the list of the projects that he/she is owner or joins.
-		, getUserProjectList : ({ commit }, { options }) => {
-			options = assign({ taskType : "project" }, options);
+		, getUserProjectList : ({ commit, getters }, { options } = {}) => {
+			let user = getters.me;
+			options = assign({ taskType : "project", user : user.code }, options);
 			return tasks.get(options)
 				.then(data => {
 					let projects = data.map(rawValues => {

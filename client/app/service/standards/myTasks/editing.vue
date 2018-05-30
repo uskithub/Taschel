@@ -41,8 +41,8 @@
 		, methods : {
 			...mapActions([
 				// Usecases
-				"createProject"
-				, "updateProject"
+				"createTask"
+				, "updateTask"
 				
 				// for Presentation
 				, "setWayBackOnPreviousCrumb"
@@ -52,10 +52,10 @@
 			, didPushSaveButton() {
 				if (this.validate()) {
 					return Promise.resolve().then(() => {
-						if ( this.entity.code ) {
-							return this.updateProject(this.rawValues);
+						if ( this.isNewEntity ) {
+							return this.updateTask(this.rawValues);
 						} else {
-							return this.createProject(this.rawValues);
+							return this.createTask(this.rawValues);
 						}
 					}).then(() => {
 						this.$emit("close", this.rawValues);
