@@ -1,15 +1,15 @@
 <!-- // DDD: Presentation -->
 <template lang="pug">
 	.container
-		editing(v-if="isEditing", :entity="entity", :schema="schema" @close="onClose")
+		editing(v-if="isEditing", :entity="entity", :schema="schema" @close="didReceiveCloseEvent")
 		div(v-else)
 			.flex.align-center.justify-space-around
 				.left
-					button.button.is-primary(@click="onAddProject")
+					button.button.is-primary(@click="didPushAddButton")
 						i.icon.fa.fa-plus 
 						| {{ _("AddProject") }}
 				.right
-			data-table(:schema="schema.table", :rows="projects", :order="order", :selectedRows="[entity]" @select="onSelect")
+			data-table(:schema="schema.table", :rows="projects", :order="order", :selectedRows="[entity]" @select="didSelectRow")
 </template> 
 
 <script>
@@ -31,9 +31,8 @@
 			, Editing
 		}
 		, computed : {
-			...mapGetters("environment/session", [
+			...mapGetters("session", [
 				"projects"
-				, "currentProject"
 			])
 		}
 		, data() {
@@ -46,28 +45,19 @@
 			};
 		}
 		, methods : {
-			...mapActions("environment/session", [
+			...mapActions("session", [
 				// Usecases
 				"getUserProjectList"
 				, "selectProject"
 			])
-			, onSelect(entity) {
-				console.log("onselect", entity);
+			, didSelectRow(entity) {
 				this.entity = entity;
 				this.isEditing = true;
 			}
-			, onAddProject() {
+			, didPushAddButton() {
 				this.isEditing = true;
 			}
-			, onSave(rawValues) {
-				// TODO 
-				this.isEditing = false;
-				this.$nextTick(() => {
-					// nextTickの中でentityをnullにすることで、
-					this.entity = null;
-				});
-			}
-			, onClose() {
+			, didReceiveCloseEvent() {
 				this.isEditing = false;
 				this.$nextTick(() => {
 					this.entity = null;

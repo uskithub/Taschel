@@ -11,7 +11,7 @@
 	export default {
 		name: "SearchBox"
         , computed: {
-			...mapGetters("environment/session", [
+			...mapGetters("session", [
 				"searchText"
 			])
 			, text: {
@@ -25,7 +25,7 @@
 		},
 
 		methods: {
-			...mapActions("environment/session", [
+			...mapActions("session", [
 				"searching"
 			])
 		}

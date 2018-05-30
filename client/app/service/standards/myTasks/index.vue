@@ -1,8 +1,15 @@
 <!-- // DDD: Presentation -->
 <template lang="pug">
-	section
-		h1 {{ _("V2 MyTasks") }}
-		data-table(:schema="schema.table", :rows="taskRawValuesArr", :order="order", :selectedRows="selectedRows" @select="onSelect" @selectAll="onSelectAll")
+	.container
+		editing(v-if="isEditing", :entity="entity", :schema="schema" @close="didReceiveCloseEvent")
+		div(v-else)
+			.flex.align-center.justify-space-around
+				.left
+					button.button.is-primary(@click="didPushAddButton")
+						i.icon.fa.fa-plus 
+						| {{ _("AddProject") }}
+				.right
+			data-table(:schema="schema.table", :rows="tasks", :order="order", :selectedRows="[entity]" @select="didSelectRow")
 </template>
 
 <!-- // DDD: Application Sevice -->
@@ -10,54 +17,55 @@
 	import Vue from "vue";
 	import Base from "../../fundamentals/mixins/base";
 	import DataTable from "../../fundamentals/components/table";
+	import Editing from "./editing";
 	import schema from "./schema";
 	import { mapGetters, mapMutations, mapActions } from "vuex";
-	import { SET_USER } from "../../fundamentals/mutationTypes";
 	const _ = Vue.prototype._;
 	
 	export default {
 		mixins : [ Base ]
 		, components : {
 			DataTable
+			, Editing
 		}
 		, computed : {
-			...mapGetters("environment/task", [
+			...mapGetters("task", [
 				"tasks"
-				, "currentTask"
 			])
-			, taskRawValuesArr() {
-				return this.tasks.map( t => { return t.rawValues; });
-			}
-			, selectedRows() {
-				return (this.currentTask) ? [ this.currentTask ] : [];
-			}
 		}
 		, data() {
 			return {
-				schema
+				isEditing: false
+				, entity: null
+				, schema
 				, order : {}
 				, options: {}
 			};
 		}
 		, methods : {
-			...mapActions("environment/task", {
-				// usecase: a user watches the list of his/her tasks.
-				getMyTaskList : "getTaskList"
-			})
+			...mapActions("task", [
+				// Usecases
+				"getMyTaskList"
+			])
 			// usecase: a user selects a task for editing.
-			, onSelect(e, row) {
-				console.log(e, row);
+			, didSelectRow(entity) {
+				this.entity = entity;
+				this.isEditing = true;
 			}
-			, onSelectAll(e) {
-				console.log(e);
+			, didPushAddButton() {
+				this.isEditing = true;
+			}
+			, didReceiveCloseEvent() {
+				this.isEditing = false;
+				this.$nextTick(() => {
+					this.entity = null;
+				});
 			}
 		}
 		, created() {
 		}
 		, sessionEnsured(me) {
-			this.getMyTaskList({ 
-				options: { user : me.code }
-			});
+			this.getMyTaskList();
 		}
 	};
 </script>

@@ -19,7 +19,7 @@
 				, "currentWeek"
 				, "currentUser"
 			])
-			, ...mapGetters("environment/session", [
+			, ...mapGetters("session", [
 				"me"
 			])
 		}
@@ -33,7 +33,7 @@
 				getUsers : "readUsers"
 				, getProjects : "readTasks"
 			})
-			// , ...mapActions("environment/session", [
+			// , ...mapActions("session", [
 			// 	"getSessionUser"
 			// ])
 			// setup projectSelector dynamically.

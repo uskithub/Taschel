@@ -41,7 +41,7 @@
 			isNewEntity() { return this.entity.code === undefined; }
 		}
 		, methods : {
-			...mapMutations("environment/session", {
+			...mapMutations("session", {
 				setWayBack : SET_WAY_BACK
 				, popCrumb : POP_CRUMB
 			})

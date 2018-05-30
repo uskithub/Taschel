@@ -325,8 +325,8 @@
 				} else {
 					// F5リロード時など、meがundefinedの場合があるので、その場合、meの更新を監視してtaskを更新する
 					this.$store.subscribe((mutation, state) => {
-						if (mutation.type == `environment/session/${SET_USER}`) {
-							const me = state.environment.session.me;
+						if (mutation.type === `session/${SET_USER}`) {
+							const me = state.session.me;
 							this.setCurrentUser(me.code);
 
 							this.getAssignedInWeeklyTasks({

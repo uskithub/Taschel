@@ -288,14 +288,14 @@
 			}
 			// projectの選択が変わったら、初期値を変える
 			this.$store.subscribe((mutation, state) => {
-				if (mutation.type == `shared/${SET_CURRENT_WEEK}`) {
+				if (mutation.type === `shared/${SET_CURRENT_WEEK}`) {
 					this.getGroups({
 						options: { weekly : this.currentWeek, user_code : this.currentUser }
 						, mutation: LOAD
 					});
 				}
 
-				if (mutation.type == `shared/${LOAD_USERS}`) {
+				if (mutation.type === `shared/${LOAD_USERS}`) {
 					this.schema = this.setupUserSelector(this.schema);
 				}
 			});
@@ -306,8 +306,8 @@
 				} else {
 					// F5リロード時など、meがundefinedの場合があるので、その場合、meの更新を監視してtaskを更新する
 					this.$store.subscribe((mutation, state) => {
-						if (mutation.type == `environment/session/${SET_USER}`) {
-							const me = state.environment.session.me;
+						if (mutation.type === `session/${SET_USER}`) {
+							const me = state.session.me;
 							this.setCurrentUser(me.code);
 						}
 					});	

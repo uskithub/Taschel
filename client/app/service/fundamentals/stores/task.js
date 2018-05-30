@@ -2,7 +2,7 @@ import Task from "../entities/task";
 import { LOAD_TASKS, SELECT_TASK, CLEAR_SELECTION
 	//, ARRANGE_AVOBE, ARRANGE_INTO, ARRANGE_BELOW 
 } from "../mutationTypes";
-
+import { assign } from "lodash";
 import tasks from "../repositories/rest/tasks";
 
 export default {
@@ -34,7 +34,10 @@ export default {
 	// DDD: Usecases
 	// Vuex: Actions can execute asynchronous transactions.
 	, actions : {
-		getTaskList : ({ commit }, { options }) => {
+		// Usecase: a user watches a list of tasks.
+		getMyTaskList : ({ dispatch, commit, getters, rootGetters }) => {
+			let user = rootGetters["session/me"];
+			let options = { user : user.code };
 			return tasks.get(options)
 				.then(data => {
 					let tasks = data.map(rawValues => {

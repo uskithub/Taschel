@@ -94,7 +94,7 @@
 			};
 		}
 		, computed: {
-			...mapGetters("environment/session", {
+			...mapGetters("session", {
 				search: "searchText"
 			})
 			, options() { return this.schema.popupForm.options || {}; }

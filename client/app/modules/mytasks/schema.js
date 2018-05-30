@@ -28,7 +28,7 @@ module.exports = {
 		, form : generate(
 			areaTypes.form
 			, {
-				TaskDetail : [ "root", "type", "name", "purpose", "goal", "description"]
+				TaskDetail : [ "root", "type", "name", "purpose", "goal", "description", "assistants"]
 				, Closing : [ "closingComment"]
 			}
 		)

@@ -52,10 +52,10 @@
 			, Editing
 		}
 		, computed: {
-			...mapGetters("environment/session/profile", {
+			...mapGetters("session/profile", {
 				_sessionUserProfile : "profile"
 			})
-			, ...mapGetters("environment/session/organization", {
+			, ...mapGetters("session/organization", {
 				organizations : "organizations"
 				, currentOrganization : "current"
 			})
@@ -79,18 +79,18 @@
 			}
  		}
 		, methods: {
-			...mapActions("environment/session/profile", {
+			...mapActions("session/profile", {
 				// DDD: Domain Service
 				// Name actions in accordance with their use-cases.
 				getSessionUserProfile : "getProfile"
 			})
-			, ...mapMutations("environment/session/organization", {
+			, ...mapMutations("session/organization", {
 				// DDD: Domain Service
 				// Name mutations in accordance with their use-cases.
 				editOrganization : SET_CURRENT
 				, finishEditingOrganization : CLEAR_SELECTION
 			})
-			, ...mapActions("environment/session/organization", {
+			, ...mapActions("session/organization", {
 				// DDD: Domain Service
 				// Name actions in accordance with their use-cases.
 				getOrganizationList : "getOrganizationList"
