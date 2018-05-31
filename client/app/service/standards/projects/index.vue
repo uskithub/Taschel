@@ -58,6 +58,7 @@
 			}
 			, didReceiveCloseEvent() {
 				this.isEditing = false;
+				this.popCrumb();
 				this.$nextTick(() => {
 					this.entity = null;
 				});

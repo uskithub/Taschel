@@ -43,11 +43,6 @@
 				// Usecases
 				"createTask"
 				, "updateTask"
-				
-				// for Presentation
-				, "setWayBackOnPreviousCrumb"
-				, "pushCrumb"
-				, "popCrumb"
 			])
 			, didPushSaveButton() {
 				if (this.validate()) {
@@ -59,7 +54,6 @@
 						}
 					}).then(() => {
 						this.$emit("close", this.rawValues);
-						this.popCrumb();
 					});
 					
 				} else {
@@ -69,7 +63,6 @@
 			// Usecase: a user cancels editing or adding a project.
 			, didPushCancelButton() {
 				this.$emit("close"); 
-				this.popCrumb();
 			}
 			// Application Service:
 			, validate() {

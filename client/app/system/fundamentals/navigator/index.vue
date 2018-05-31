@@ -1,6 +1,11 @@
 <template lang="pug">
 	.navigator
-		span(v-for="crumb in breadcrumb", :key="crumb.id" @click="didPushCrumb(crumb)") {{ crumb.name }} &nbsp;&gt;&nbsp;
+		span(v-for="(crumb, idx) in breadcrumb", :key="crumb.id" @click="didPushCrumb(crumb)")
+			span(v-if="idx < breadcrumb.length-1")
+				a.link {{ crumb.name }}  
+				span &nbsp;&gt;&nbsp;
+			span(v-else)
+				span {{ crumb.name }}  
 </template>
 
 <script>
@@ -18,16 +23,12 @@
 		}
 		, methods : {
 			...mapActions([
-				"popCrumb"
-				, "clearCrumb"
+				"clearCrumb"
 			])
 			, didPushCrumb(crumb) {
 				if (crumb.back) {
 					crumb.back();
-				} else {
-					console.log("backがない", crumb);
 				}
-				this.popCrumb();
 			}
 		}
 		, created() {
