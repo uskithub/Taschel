@@ -1,7 +1,6 @@
 import Vue from "vue";
 import moment from "moment";
 import { validators } from "vue-form-generator";
-import { componentTypes, generate } from "../../fundamentals/fieldGenerator";
 
 import { find } from "lodash";
 

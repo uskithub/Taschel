@@ -3,7 +3,7 @@ import moment from "moment";
 import { cloneDeep, isObject, isArray } from "lodash";
 import { validators } from "vue-form-generator";
 
-import { projectTypes, taskProperties } from "../../constants";
+import { taskProperties } from "../../constants";
 
 const _ = Vue.prototype._;
 

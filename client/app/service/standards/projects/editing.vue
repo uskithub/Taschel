@@ -1,6 +1,6 @@
 <template lang="pug">
 	.form
-		vue-form-generator(:schema="schema.form", :model="rawValues", :options="options", :is-new-model="isNewEntity" ref="form")
+		vue-form-generator(:schema="schema", :model="rawValues", :options="options", :is-new-model="isNewEntity" ref="form")
 		.buttons.flex.justify-space-around
 			button.button.primary(@click="didPushSaveButton")
 				i.icon.fa.fa-save 
@@ -31,7 +31,7 @@
 		}
 		, data() {
 			return {
-				rawValues: this.entity ? this.entity.rawValues : schemaUtils.createDefaultObject(this.schema.form)
+				rawValues: this.entity ? this.entity.rawValues : schemaUtils.createDefaultObject(this.schema)
 				, options: {}
 			};
 		}

@@ -1,7 +1,7 @@
 <!-- // DDD: Presentation -->
 <template lang="pug">
 	.container
-		editing(v-if="isEditing", :entity="entity", :schema="schema" @close="didReceiveCloseEvent")
+		editing(v-if="isEditing", :entity="entity", :schema="formSchema" @close="didReceiveCloseEvent")
 		div(v-else)
 			.flex.align-center.justify-space-around
 				.left
@@ -9,13 +9,14 @@
 						i.icon.fa.fa-plus 
 						| {{ _("AddProject") }}
 				.right
-			data-table(:schema="schema.table", :rows="projects", :order="order", :selectedRows="[entity]" @select="didSelectRow")
+			data-table(:schema="tableSchema", :rows="projects", :order="order", :selectedRows="[entity]" @select="didSelectRow")
 </template> 
 
 <script>
 	import Vue from "vue";
 	import Base from "../../fundamentals/mixins/base";
 	import DataTable from "../../fundamentals/components/table";
+	import Project from "../../fundamentals/entities/project";
 	import Editing from "./editing";
 	import schema from "./schema";
 	import { mapGetters, mapActions } from "vuex";
@@ -35,10 +36,14 @@
 			])
 		}
 		, data() {
+			schema.table.columns = Project.createTableSchema(schema.table.columns);
+			schema.form.fields = Project.createFormSchema(schema.form.fields);
+
 			return {
 				isEditing: false
 				, entity: null
-				, schema
+				, tableSchema : schema.table
+				, formSchema : schema.form
 				, options: {}
 				, order: {}
 			};

@@ -12,7 +12,6 @@
 			data-table(:schema="tableSchema", :rows="tasks", :order="order", :selectedRows="[entity]" @select="didSelectRow")
 </template>
 
-<!-- // DDD: Application Sevice -->
 <script>
 	import Vue from "vue";
 	import Base from "../../fundamentals/mixins/base";
