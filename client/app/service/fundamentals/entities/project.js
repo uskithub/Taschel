@@ -251,9 +251,9 @@ export default class Project {
 	static createTableSchema(fieldSet) {
 		return fieldSet.map(f => {
 			if ( _fields[f] === undefined ) {
-				throw new Error(`Missing the definition about "${f}" in filed at fieldGenerator!`);
+				throw new Error(`Missing the definition about "${f}" in filed at Project class!`);
 			} else if ( _fields[f].table === undefined ) {
-				throw new Error(`Missing the definition about "${f}.table" in filed at fieldGenerator!`);
+				throw new Error(`Missing the definition about "${f}.table" in filed at Project class!`);
 			}
 			let field = cloneDeep(_fields[f]);
 			if (field.table.title === undefined) {
@@ -274,9 +274,9 @@ export default class Project {
 						legend : _(key)
 						, fields: fieldSet[key].map(f => { 
 							if ( _fields[f] === undefined ) {
-								throw new Error(`Missing the definition about "${f}" in filed at fieldGenerator!`);
+								throw new Error(`Missing the definition about "${f}" in filed at Project class!`);
 							} else if ( _fields[f].form === undefined ) {
-								throw new Error(`Missing the definition about "${f}.form" in filed at fieldGenerator!`);
+								throw new Error(`Missing the definition about "${f}.form" in filed at Project class!`);
 							}
 							let field = cloneDeep(_fields[f]);
 							if (field.form.label === undefined) {
@@ -293,9 +293,9 @@ export default class Project {
 		} else {
 			return fieldSet.map(f => {
 				if ( _fields[f] === undefined ) {
-					throw new Error(`Missing the definition about "${f}" in filed at fieldGenerator!`);
+					throw new Error(`Missing the definition about "${f}" in filed at Project class!`);
 				} else if ( _fields[f].form === undefined ) {
-					throw new Error(`Missing the definition about "${f}.form" in filed at fieldGenerator!`);
+					throw new Error(`Missing the definition about "${f}.form" in filed at Project class!`);
 				}
 				let field = cloneDeep(_fields[f]);
 				if (field.form.label === undefined) {

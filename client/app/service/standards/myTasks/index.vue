@@ -21,6 +21,9 @@
 	import schema from "./schema";
 	import { mapGetters, mapActions } from "vuex";
 	const _ = Vue.prototype._;
+
+	schema.table.columns = Task.createTableSchema(schema.table.columns);
+	schema.form.fields = Task.createFormSchema(schema.form.fields);
 	
 	export default {
 		name : "MyTask"
@@ -35,9 +38,6 @@
 			])
 		}
 		, data() {
-			schema.table.columns = Task.createTableSchema(schema.table.columns);
-			schema.form.fields = Task.createFormSchema(schema.form.fields);
-			
 			return {
 				isEditing: false
 				, entity: null

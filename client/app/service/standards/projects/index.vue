@@ -20,7 +20,12 @@
 	import Editing from "./editing";
 	import schema from "./schema";
 	import { mapGetters, mapActions } from "vuex";
+	import { cloneDeep } from "lodash";
+
 	const _ = Vue.prototype._;
+
+	schema.table.columns = Project.createTableSchema(schema.table.columns);
+	schema.form.fields = Project.createFormSchema(schema.form.fields);
 	
 	export default {
 		// using name for breadcrumb at create()
@@ -36,9 +41,6 @@
 			])
 		}
 		, data() {
-			schema.table.columns = Project.createTableSchema(schema.table.columns);
-			schema.form.fields = Project.createFormSchema(schema.form.fields);
-
 			return {
 				isEditing: false
 				, entity: null
