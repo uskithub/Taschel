@@ -10,10 +10,7 @@ const _ = Vue.prototype._;
 export default {
 	table: {
 		multiSelect : true
-		, columns : generate(
-			componentTypes.table
-			, [ "type", "shortname", "name", "purpose", "goal", "author", "lastCommunication"]
-		)
+		, columns : [ "type", "shortname", "name", "purpose", "goal", "author", "lastCommunication"]
 		, rowClasses : function (model) {
 			return {
 				// inactive: !model.status
@@ -21,9 +18,6 @@ export default {
 		}
 	}
 	, form : { 
-		fields : generate(
-			componentTypes.form
-			, [ "type", "name", "purpose", "goal"]
-		)
+		fields : [ "type", "name", "purpose", "goal"]
 	}
 };

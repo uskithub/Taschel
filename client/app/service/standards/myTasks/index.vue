@@ -9,7 +9,7 @@
 						i.icon.fa.fa-plus 
 						| {{ _("AddProject") }}
 				.right
-			data-table(:schema="schema.table", :rows="tasks", :order="order", :selectedRows="[entity]" @select="didSelectRow")
+			data-table(:schema="tableSchema", :rows="tasks", :order="order", :selectedRows="[entity]" @select="didSelectRow")
 </template>
 
 <!-- // DDD: Application Sevice -->
@@ -35,10 +35,14 @@
 			])
 		}
 		, data() {
+			schema.table.columns = Task.createTableSchema(schema.table.columns);
+			schema.form.fields = Task.createFormSchema(schema.form.fields);
+			
 			return {
 				isEditing: false
 				, entity: null
-				, schema
+				, tableSchema : schema.table
+				, formSchema : schema.form
 				, order : {}
 				, options: {}
 			};
