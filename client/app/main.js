@@ -13,8 +13,8 @@ import VueI18Next from "./system/i18next.js";
 import VueFormGenerator from "vue-form-generator";
 import VueWebsocket from "vue-websocket";
 
-import fieldMyDateTimePicker from "./core/components/customField/dateTimePicker/index";
-import fieldTagsInput from "./core/components/customField/tagsInput/index";
+import fieldMyDateTimePicker from "./system/fundamentals/customField/dateTimePicker/index";
+import fieldTagsInput from "./system/fundamentals/customField/tagsInput/index";
 
 import dailyLoopPlugin from "./service/plugins/dailyLoop/index";
 import GanttPlugin from "./service/plugins/gantt/index";

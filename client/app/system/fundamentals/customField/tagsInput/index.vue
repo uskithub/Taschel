@@ -34,11 +34,10 @@
 	};
 </script>
 
-
 <style lang="scss">
 
-.autocomplete {
-	color: #000;
-}
+	.autocomplete {
+		color: #000;
+	}
 
 </style>

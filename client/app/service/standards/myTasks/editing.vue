@@ -14,7 +14,7 @@
 	import Base from "../../fundamentals/mixins/base";
 	import { mapGetters, mapMutations, mapActions } from "vuex";
 	import { schema as schemaUtils } from "vue-form-generator";
-	import { cloneDeep } from "lodash";
+	import { cloneDeep, isArray } from "lodash";
 	const _ = Vue.prototype._;
 
 	export default {
@@ -30,8 +30,13 @@
 			}
 		}
 		, data() {
+			let _rawValues = this.entity ? this.entity.rawValues : schemaUtils.createDefaultObject(this.schema.form);
+			if (!isArray(_rawValues.type)) {
+				_rawValues.type = [ _rawValues.type ];
+			}
+
 			return {
-				rawValues: this.entity ? this.entity.rawValues : schemaUtils.createDefaultObject(this.schema.form)
+				rawValues: _rawValues
 				, options: {}
 			};
 		}

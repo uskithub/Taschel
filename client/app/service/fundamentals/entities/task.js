@@ -1,5 +1,5 @@
 import moment from "moment";
-import { cloneDeep } from "lodash";
+import { cloneDeep, isArray } from "lodash";
 
 export default class Task {
 
@@ -13,7 +13,10 @@ export default class Task {
 
 	get code() { return this._rawValues.code; }
 
-	get type() { return this._rawValues.type; }
+	get type() { 
+		let type = this._rawValues.type;
+		return isArray(type) ? type : [type];
+	}
 	set type(type) { return this._rawValues.type = type; }
 
 	get shortname() { return this._rawValues.shortname; }
