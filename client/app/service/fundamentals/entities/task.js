@@ -237,6 +237,24 @@ export default class Task {
 	get lastCommunication() { return this._rawValues.lastCommunication; }
 
 	static createTableSchema(fieldSet) {
+		return fieldSet.map(f => {
+			if ( _fields[f] === undefined ) {
+				throw new Error(`Missing the definition about "${f}" in filed at fieldGenerator!`);
+			} else if ( _fields[f].table === undefined ) {
+				throw new Error(`Missing the definition about "${f}.table" in filed at fieldGenerator!`);
+			}
+			let field = cloneDeep(_fields[f]);
+			if (field.table.title === undefined) {
+				field.table.title = field.label;
+			}
+			if (field.table.field === undefined) {
+				field.table.field = f;
+			}
+			return field.table; 
+		});
+	}
+
+	static createFormSchema(fieldSet) {
 		if (!isArray(fieldSet)) {
 			return {
 				groups : Object.keys(fieldSet).map(key => {
@@ -278,23 +296,4 @@ export default class Task {
 			});
 		}
 	}
-
-	static createFormSchema(fieldSet) {
-		return fieldSet.map(f => {
-			if ( _fields[f] === undefined ) {
-				throw new Error(`Missing the definition about "${f}" in filed at fieldGenerator!`);
-			} else if ( _fields[f].table === undefined ) {
-				throw new Error(`Missing the definition about "${f}.table" in filed at fieldGenerator!`);
-			}
-			let field = cloneDeep(_fields[f]);
-			if (field.table.title === undefined) {
-				field.table.title = field.label;
-			}
-			if (field.table.field === undefined) {
-				field.table.field = f;
-			}
-			return field.table; 
-		});
-	}
-
 }

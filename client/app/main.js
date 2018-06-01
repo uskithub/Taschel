@@ -19,7 +19,6 @@ import fieldTagsInput from "./system/fundamentals/customField/tagsInput/index";
 import dailyLoopPlugin from "./service/plugins/dailyLoop/index";
 import GanttPlugin from "./service/plugins/gantt/index";
 
-import store from "./system/store";
 import App from "./system/App";
 
 Vue.use(Filters);
@@ -36,6 +35,7 @@ Vue.use(VueWebsocket);
 // wait it before start the application!
 Vue.use(VueI18Next, (i18next) => {
 	let router = require("./system/router").default; // Load only after i18next initialized
+	let store = require("./system/store").default; // Load only after i18next initialized
 
 	new Vue({
 		el: "#app"

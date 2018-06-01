@@ -1,7 +1,7 @@
 <!-- // DDD: Presentation -->
 <template lang="pug">
 	.container
-		editing(v-if="isEditing", :entity="entity", :schema="schema" @close="didReceiveCloseEvent")
+		editing(v-if="isEditing", :entity="entity", :schema="formSchema" @close="didReceiveCloseEvent")
 		div(v-else)
 			.flex.align-center.justify-space-around
 				.left
@@ -17,6 +17,7 @@
 	import Vue from "vue";
 	import Base from "../../fundamentals/mixins/base";
 	import DataTable from "../../fundamentals/components/table";
+	import Task from "../../fundamentals/entities/task";
 	import Editing from "./editing";
 	import schema from "./schema";
 	import { mapGetters, mapActions } from "vuex";

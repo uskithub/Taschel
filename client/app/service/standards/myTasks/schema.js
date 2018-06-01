@@ -10,7 +10,7 @@ const _ = Vue.prototype._;
 export default {
 	table: {
 		multiSelect : true
-		, columns : [ "type", "shortname", "name", "purpose", "goal", "author", "lastCommunication"]
+		, columns : [ "properties", "name", "purpose", "goal", "author", "lastCommunication"]
 		, rowClasses : function (model) {
 			return {
 				// inactive: !model.status
@@ -18,6 +18,6 @@ export default {
 		}
 	}
 	, form : { 
-		fields : [ "type", "name", "purpose", "goal"]
+		fields : [ "properties", "name", "purpose", "goal"]
 	}
 };
