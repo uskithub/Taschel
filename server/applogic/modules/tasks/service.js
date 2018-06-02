@@ -17,17 +17,17 @@ const DEFAULT_KANBAN_GROUPS = [
 
 module.exports = {
 	settings: {
-		name: "tasks",
-		version: 1,
-		namespace: "tasks",
-		rest: true,
-		ws: true,
-		graphql: true,
-		permission: C.PERM_LOGGEDIN,
-		role: "user",
-		collection: Task,
+		name: "tasks"
+		, version: 1
+		, namespace: "tasks"
+		, rest: true
+		, ws: true
+		, graphql: true
+		, permission: C.PERM_LOGGEDIN
+		, role: "user"
+		, collection: Task
 		
-		modelPropFilter: "code type properties purpose name shortname goal description deadline timeframe root parent children works status closingComment author asignee isDeleted lastCommunication createdAt updatedAt"
+		, modelPropFilter: "code projectType type properties purpose name shortname goal description deadline timeframe root parent children works status closingComment author asignee isDeleted lastCommunication createdAt updatedAt"
 
 		// TODO: populateModelsを改造すれば、下にのみpopulate、上にのみpopulateもできる
 		, modelPopulates: {
@@ -179,7 +179,6 @@ module.exports = {
 
 			return this.collection.findById(ctx.modelID).exec()
 				.then(doc => {
-
 					if (ctx.params.purpose != null)
 						doc.purpose = ctx.params.purpose;
 
@@ -191,6 +190,12 @@ module.exports = {
 
 					if (ctx.params.type != null)
 						doc.type = ctx.params.type;
+
+					if (ctx.params.projectType != null)
+						doc.projectType = ctx.params.projectType;
+
+					if (ctx.params.properties != null)
+						doc.properties = ctx.params.properties;
 
 					if (ctx.params.name != null)
 						doc.name = ctx.params.name;

@@ -48,9 +48,9 @@
 				if (this.validate()) {
 					return Promise.resolve().then(() => {
 						if ( this.isNewEntity ) {
-							return this.updateProject(this.rawValues);
-						} else {
 							return this.createProject(this.rawValues);
+						} else {
+							return this.updateProject(this.rawValues);
 						}
 					}).then(() => {
 						this.$emit("close", this.rawValues);

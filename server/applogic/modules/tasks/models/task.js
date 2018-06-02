@@ -21,7 +21,11 @@ let schemaOptions = {
 };
 
 let TaskSchema = new Schema({
-	type: {
+	projectType: {
+		type: String
+		, trim: true
+	}
+	, type: {
 		type: String
 		, trim: true
 	}
