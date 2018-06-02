@@ -33,9 +33,24 @@ const _fields = {
 	, properties: {
 		label: _("TaskProperties")
 		, table: {
-			formatter(value) {
-				let type = find(taskProperties, (type) => type.id == value);
-				return type ? type.name : value;
+			values: taskProperties
+			, formatter(value, model) {
+				// If you don't implement formatter, table.vue displays values of the array.
+				return "";
+			}
+			, labels(value, model, col) {
+				console.log("****", value, model, col);
+				if (value == null || value.length === 0) return [];
+				return value.reduce((arr, property) => {
+					let tag = col.values.find(tag => tag.id === property);
+					if (tag) {
+						arr.push({
+							className: "tag outline"
+							, caption: tag.name
+						});
+					}
+					return arr;
+				}, []);
 			}
 		}
 		, form: {
@@ -220,6 +235,9 @@ export default class Task {
 		return isArray(type) ? type : [type];
 	}
 	set type(type) { return this._rawValues.type = type; }
+
+	get properties() { return this._rawValues.properties; }
+	set properties(properties) { return this._rawValues.properties = properties; }
 
 	get shortname() { return this._rawValues.shortname; }
 

@@ -53,9 +53,9 @@
 				if (this.validate()) {
 					return Promise.resolve().then(() => {
 						if ( this.isNewEntity ) {
-							return this.updateTask(this.rawValues);
-						} else {
 							return this.createTask(this.rawValues);
+						} else {
+							return this.updateTask(this.rawValues);
 						}
 					}).then(() => {
 						this.$emit("close", this.rawValues);

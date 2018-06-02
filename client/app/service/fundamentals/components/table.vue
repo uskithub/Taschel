@@ -13,7 +13,9 @@
 				td(v-for="col in schema.columns", :class="getCellClasses(row, col)") 
 					span(v-html="getCellValue(row, col)")
 					span.labels(v-if="col.labels != null")
-						.label(v-for="label in col.labels(row)", :class="'label-' + label.type") {{ label.caption }}
+						.label(v-for="label in getCellLabels(row, col)", :class="label.className") {{ label.caption }}
+					span.controls(v-if="col.controls != null")
+						button(v-for="control in col.controls(row)", :class="control.className", @click.stop.prevent="onClick($event, row, control.click)") {{ control.title }}
 		tfoot
 			tr
 				td(v-if="schema.multiSelect")
@@ -105,6 +107,17 @@
 				
 				return this.tableFormatter(row, col, value);
 			}
+			, getCellLabels(row, col) {
+				if (!col.labels || !isFunction(col.labels)) return [];
+
+				let value;
+				if (!col.field && isFunction(col.get))
+					value = col.get(row);
+				else 
+					value = get(row, col.field);
+				
+				return col.labels(value, row, col);
+			}
 
 			/**
 			 * Format the cell value by schema
@@ -186,6 +199,12 @@
 			 */
 			, isSelected(row) {
 				return this.selectedRows.indexOf(row) != -1;
+			}
+			, onClick(event, row, handler) {
+				event.stopPropagation();
+				if (isFunction(handler)) {
+					handler(this, event, row);
+				}
 			}
 		}
 	};
