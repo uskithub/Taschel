@@ -194,10 +194,7 @@ const _fields = {
 	, author : {
 		label: _("Author")
 		, table: {
-			formatter(value, entity, col) {
-				return entity.author.username;
-			}
-			, align: "center"
+			align: "center"
 		}
 		, form: {
 			type: "select"
