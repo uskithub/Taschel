@@ -11,9 +11,13 @@ export const PUSH_CRUMB			= "PUSH_CRUMB";
 export const POP_CRUMB			= "POP_CRUMB";
 export const SET_WAY_BACK		= "SET_WAY_BACK";
 export const CLEAR_CRUMB		= "CLEAR_CRUMB";
-export const LOAD_PROJECTS		= "LOAD_PROJECTS";
-export const UPDATE_PROJECT		= "UPDATE_PROJECT";
 export const SET_CURRENT_PROJECT		= "SET_CURRENT_PROJECT";
+
+// project in session
+export const LOAD_PROJECTS		= "LOAD_PROJECTS";
+export const ADD_PROJECT        = "ADD_PROJECT";
+export const UPDATE_PROJECT		= "UPDATE_PROJECT";
+
 
 // task
 export const LOAD_TASKS			= "LOAD_TASKS";

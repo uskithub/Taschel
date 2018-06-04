@@ -4,7 +4,7 @@ import profile from "./profile";
 import organization from "./organization";
 import breadcrumb from "./breadcrumb";
 import task from "./task";
-import { INITIALIZE, ADD_MESSAGE, ADD_NOTIFICATION, SET_USER, SEARCH, PUSH_CRUMB, POP_CRUMB, SET_WAY_BACK, CLEAR_CRUMB, LOAD_PROJECTS, UPDATE_PROJECT, SET_CURRENT_PROJECT, CLEAR_SELECTION } from "../mutationTypes";
+import { INITIALIZE, ADD_MESSAGE, ADD_NOTIFICATION, SET_USER, SEARCH, PUSH_CRUMB, POP_CRUMB, SET_WAY_BACK, CLEAR_CRUMB, LOAD_PROJECTS, ADD_PROJECT, UPDATE_PROJECT, SET_CURRENT_PROJECT, CLEAR_SELECTION } from "../mutationTypes";
 import { assign } from "lodash";
 
 import tasks from "../repositories/rest/tasks";
@@ -69,6 +69,12 @@ export default {
 			state.projects.splice(0);
 			state.projects.push(...projects);
 		}
+		, [ADD_PROJECT] (state, project) {
+			let isFound = state.projects.find(p => p.code === project.code);
+			if (!isFound) {
+				state.projects.push(project);
+			}
+		}
 		, [UPDATE_PROJECT] (state, project) {
 			state.projects.forEach(p => {
 				if (p.code === project.code) {
@@ -128,9 +134,14 @@ export default {
 		}
 		
 		// Usecase: a user completes adding a new project.
-		, createProject : ({ commit }, rawValues) => {
-			// TODO
-			return Promise.resolve();
+		, createProject : ({ commit, getters }, rawValues) => {
+			let user = getters.me;
+			rawValues = assign({ type: "project", author : user.code }, rawValues);
+			return tasks.post(rawValues)
+				.then(data => {
+					let project = new Project(rawValues);
+					commit(ADD_PROJECT, project);
+				});
 		}
 		
 		// Usecase: a user completes editing a project.

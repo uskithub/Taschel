@@ -113,10 +113,11 @@ module.exports = {
 			
 			let task = new Task({
 				type: ctx.params.type
+				, projectType: ctx.params.projectType 
 				, properties: ctx.params.properties
 				, name: ctx.params.name
 				, shortname: ctx.params.shortname
-                , purpose: ctx.params.purpose
+				, purpose: ctx.params.purpose
 				, goal: ctx.params.goal
 				, description: ctx.params.description
 				, status: ctx.params.status
@@ -124,7 +125,7 @@ module.exports = {
 				, timeframe: (ctx.params.timeframe != undefined) ? ctx.params.timeframe : -1
 				, root: (ctx.params.root_code != undefined) ? this.decodeID(ctx.params.root_code) : -1
 				, parent: (ctx.params.parent_code != undefined) ? this.decodeID(ctx.params.parent_code) : -1
-				, author : ctx.user.id
+				, author : (ctx.params.author != undefined) ? this.personService.decodeID(ctx.params.author) : ctx.user.id
 				, asignee : (ctx.params.asignee_code != undefined) ? this.personService.decodeID(ctx.params.asignee_code) : -1
 			});
 
