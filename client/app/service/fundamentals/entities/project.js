@@ -63,9 +63,7 @@ const _fields = {
 	, shortname: {
 		label: _("ShortName")
 		, table: {
-			formatter(value, entity, col) {
-				return isObject(value) ? value.shortname : "-";
-			}
+			align: "center"
 		}
 		, form: {
 			type: "input"
