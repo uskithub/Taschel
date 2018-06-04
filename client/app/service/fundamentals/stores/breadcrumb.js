@@ -10,11 +10,9 @@ export default {
 	, mutations : {
 		[PUSH_CRUMB] (state, crumb) {
 			state.breadcrumb.push(crumb);
-			console.log("goTo", state.breadcrumb);
 		}
 		, [POP_CRUMB] (state) {
 			let returnFrom = state.breadcrumb.pop();
-			console.log("returnFrom: ", returnFrom);
 		}
 		, [SET_WAY_BACK] (state, func) {
 			if (state.breadcrumb.length > 0) {

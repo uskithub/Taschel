@@ -39,7 +39,6 @@ const _fields = {
 				return "";
 			}
 			, labels(value, model, col) {
-				console.log("****", value, model, col);
 				if (value == null || value.length === 0) return [];
 				return value.reduce((arr, property) => {
 					let tag = col.values.find(tag => tag.id === property);
