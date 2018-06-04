@@ -18,20 +18,71 @@
 					i.icon.fa.fa-arrow-right
 		br
 		kanban-board.weekly-grid(:boardGroups="boardGroups", @arrange="arrange" @select="select")
-
-		popup-form(v-if="isEditing", :schema="schema.popupForm", :template="model"
-			@save="save"
-			@close="close"
-			@clone="clone"
-			@breakdown="breakdown"
-			@remove="remove"
-			@cancel="cancel"
-		)
 </template>
 
+<script>
+	import Vue from "vue";
+	import Base from "../../fundamentals/mixins/base";
+	import Task from "../../fundamentals/entities/task";
+	// import schema from "./schema";
+	import { mapGetters, mapActions } from "vuex";
+	const _ = Vue.prototype._;
+
+	// schema.table.columns = Task.createTableSchema(schema.table.columns);
+	// schema.form.fields = Task.createFormSchema(schema.form.fields);
+	
+	export default {
+		name : "Weekly"
+		, mixins : [ Base ]
+		, components : {
+		}
+		, computed : {
+			...mapGetters([
+				"tasks"
+			])
+		}
+		, data() {
+			return {
+				isEditing: false
+				, entity: null
+				// , tableSchema : schema.table
+				// , formSchema : schema.form
+				, order : {}
+				, options: {}
+			};
+		}
+		, methods : {
+			...mapActions([
+				// Usecases
+				"getMyTaskList"
+			])
+			// usecase: a user selects a task for editing.
+			, didSelectRow(entity) {
+				this.entity = entity;
+				this.isEditing = true;
+			}
+			, didPushAddButton() {
+				this.isEditing = true;
+			}
+			, didReceiveCloseEvent() {
+				this.isEditing = false;
+				this.popCrumb();
+				this.$nextTick(() => {
+					this.entity = null;
+				});
+			}
+		}
+		, created() {
+		}
+		, sessionEnsured(me) {
+			this.getMyTaskList();
+		}
+	};
+</script>
+
 <style lang="scss">
-	@import "../../scss/common/mixins";
-	@import "../../scss/taschel/kanban";
+	@import "../../../../scss/common/mixins";
+	@import "../../../../scss/taschel/kanban";
 
 	// @see https://www.webcreatorbox.com/tech/css-flexbox-cheat-sheet
 	.kanban-system-container {

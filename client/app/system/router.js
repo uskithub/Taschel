@@ -18,6 +18,7 @@ import Debug from "../modules/debug";
 import Profile from "../service/standards/profile/index";
 import MyTasks2 from "../service/standards/myTasks/index";
 import Projects2 from "../service/standards/projects/index";
+import Weekly2 from "../service/standards/weekly/index";
 
 import DailyLoop from "../service/plugins/dailyLoop/interface/index";
 import Gantt2 from "../service/plugins/gantt/interface/index";
@@ -44,9 +45,10 @@ export default new VueRouter({
 		// , { path: "*", component: NotFound }
 		, { path: "/profile", component: Profile }
 		
-		, { path: "/v2/", component: MyTasks2 }
+		, { path: "/v2/", name: Projects2.name, component: MyTasks2 }
 		, { path: "/v2/dailyLoop", component: DailyLoop }
 		, { path: "/v2/projects", name: Projects2.name, component: Projects2 }
+		, { path: "/v2/weekly", name: Weekly2.name, component: Weekly2 }
 		, { path: "/v2/gantt", component: Gantt2 }
 		, { path: "/v2/kanban", component: Kanban2 }
 	]
