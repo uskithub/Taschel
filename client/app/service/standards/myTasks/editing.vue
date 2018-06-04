@@ -41,7 +41,7 @@
 			};
 		}
 		, computed: {
-			isNewEntity() { return this.entity === undefined; }
+			isNewEntity() { return this.entity === null; }
 		}
 		, methods : {
 			...mapActions([
