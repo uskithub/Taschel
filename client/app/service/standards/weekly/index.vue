@@ -74,8 +74,12 @@
 			}
 		}
 		, created() {
-			this.setSelectorOnLastCrumb(() => { 
-				console.log("ouou"); 
+			this.setSelectorOnLastCrumb([
+				"thoge1"
+				, "hoge2"
+				, "hoge3"
+			], (item) => { 
+				console.log(item);
 			});
 			this.pushCrumb({ id: this._uid, name: this.currentWeek });
 		}

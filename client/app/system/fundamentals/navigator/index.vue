@@ -1,16 +1,14 @@
 <template lang="pug">
-	.navigator
-		span(v-for="(crumb, idx) in breadcrumb", :key="crumb.id" @click="didPushCrumb(crumb)")
-			span(v-if="idx < breadcrumb.length-1")
-				a.link {{ crumb.name }}
-				span &nbsp;&gt;&nbsp;
-			span(v-else)
-				span {{ crumb.name }}
-		div(v-if="true")
-			ul.menu
-				li hoge
-				li hoge
-				li hoge
+	nav
+		ul
+			li(v-for="(crumb, idx) in breadcrumb", :key="crumb.id" @click="didPushCrumb(crumb)")
+				span(v-if="idx < breadcrumb.length-1")
+					a.link {{ crumb.name }}
+					span.gt &nbsp;&gt;&nbsp;
+				span(v-else)
+					span {{ crumb.name }}
+				ul(v-if="crumb.items")
+					li(v-for="item in crumb.items" @click="crumb.itemDidPush(item)") {{ item }}
 </template>
 
 <script>
@@ -52,46 +50,60 @@
 </script>
 
 <style lang="scss" scoped>
-	.navigator {
+
+	nav {
+		position: relative;
 		margin: 1em;
 		padding-left: 0.5em;
 		border-left: 3px solid #fff;
-	}
 
-	.menu {
-		position: relative;
-  		margin: 0;
-  		padding: 0;
-  		list-style: none;
+		ul {
+			margin: 0;
+			padding: 0;
+			list-style: none;
 
-		li {
-  			position: relative;
-	  		float: left;
-  			border: 2px solid #fff;
+			li {
+				position: relative;
+				float: left;
+				margin: 0 0.25em;
 
-		  a {
-				display: inline-block;
-				padding: 1em 4em;
-				color: #fff;
-				line-height: 1;
-				text-align: center;
-				text-decoration: none;
-				white-space: nowrap;
+				.gt {
+					margin-left: 0.5em;
+				}
+			}
+
+			li:hover {
+				& > ul {
+					display: block;
+				}
+			}
+
+			ul {
+				position: absolute;
+				display: none;
+				top: 100%;
+				left: -2px;
+
+				li {
+					float: none;
+					margin: 0;
+					border: 2px solid #fff;
+				}
+
+				ul {
+					position: absolute;
+					display: none;
+					top: -2px;
+					left: 100%;
+				}
 			}
 		}
-		li:not(:first-child) {
-			border-left: none;
-		}
-		li:hover {
-			background-color: rgba(255,255,255,.3);
+
+		ul::after {
+			display: block;
+			clear: both;
+			content: '';
 		}
 	}
-
-	.menu::after {
-  		display: block;
-  		clear: both;
-  		content: '';
-	}
-
 	
 </style>

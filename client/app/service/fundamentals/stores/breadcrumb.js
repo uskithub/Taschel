@@ -23,12 +23,11 @@ export default {
 				};
 			}
 		}
-		, [SET_SELECTOR] (state, func) {
+		, [SET_SELECTOR] (state, items, itemDidPush) {
 			if (state.breadcrumb.length > 0) {
 				const idx = state.breadcrumb.length-1;
-				state.breadcrumb[idx].didPush = () => {
-					func();
-				};
+				state.breadcrumb[idx].itemDidPush = itemDidPush;
+				state.breadcrumb[idx].items = items;
 			}
 		}
 		, [CLEAR_CRUMB] (state) {
@@ -45,8 +44,9 @@ export default {
 		, setWayBackOnLastCrumb : ({ commit }, func) => {
 			commit(SET_WAY_BACK, func);
 		}
-		, setSelectorOnLastCrumb : ({ commit }, func) => {
-			commit(SET_SELECTOR, func);
+		, setSelectorOnLastCrumb : ({ commit }, items, itemDidPush) => {
+			itemDidPush("hoge567890-");
+			commit(SET_SELECTOR, items, itemDidPush);
 		}
 		, clearCrumb : ({ commit }) => {
 			commit(CLEAR_CRUMB);
