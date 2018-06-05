@@ -3,9 +3,9 @@
 	.container
 		.flex.align-center.justify-space-around
 			.left(v-if="isAddButtonEnable")
-				button.button.is-primary(@click="buttonAddDidPush")
+				button.button.is-primary(@click="didPushAddButton")
 					i.icon.fa.fa-plus 
-					| {{ schema.resources.addCaption || _("Add") }}
+					| {{ _("AddTdask") }}
 			.center
 				.form
 					vue-form-generator(:schema="schema.userSelector", :model="modelUserSelector" ref="userSelector" @model-updated="selectUser")
