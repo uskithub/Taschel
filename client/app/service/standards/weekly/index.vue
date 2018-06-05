@@ -39,6 +39,7 @@
 		, computed : {
 			...mapGetters([
 				"tasks"
+				, "currentWeek"
 			])
 		}
 		, data() {
@@ -73,6 +74,10 @@
 			}
 		}
 		, created() {
+			this.setSelectorOnLastCrumb(() => { 
+				console.log("ouou"); 
+			});
+			this.pushCrumb({ id: this._uid, name: this.currentWeek });
 		}
 		, sessionEnsured(me) {
 			this.getMyTaskList();

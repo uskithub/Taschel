@@ -21,7 +21,8 @@
 		, methods : {
 			...mapActions([
 				// for Presentation
-				"setWayBackOnPreviousCrumb"
+				"setWayBackOnLastCrumb"
+				, "setSelectorOnLastCrumb"
 				, "pushCrumb"
 				, "popCrumb"
 			])

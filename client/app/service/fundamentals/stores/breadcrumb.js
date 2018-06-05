@@ -1,4 +1,4 @@
-import { INITIALIZE, PUSH_CRUMB, POP_CRUMB, SET_WAY_BACK, CLEAR_CRUMB } from "../mutationTypes";
+import { INITIALIZE, PUSH_CRUMB, POP_CRUMB, SET_WAY_BACK, SET_SELECTOR, CLEAR_CRUMB } from "../mutationTypes";
 
 export default {
 	state : {
@@ -17,9 +17,17 @@ export default {
 		, [SET_WAY_BACK] (state, func) {
 			if (state.breadcrumb.length > 0) {
 				const idx = state.breadcrumb.length-1;
-				state.breadcrumb[idx].back = () => {
+				state.breadcrumb[idx].didPush = () => {
 					func();
-					state.breadcrumb[idx].back = null;
+					state.breadcrumb[idx].didPush = null;
+				};
+			}
+		}
+		, [SET_SELECTOR] (state, func) {
+			if (state.breadcrumb.length > 0) {
+				const idx = state.breadcrumb.length-1;
+				state.breadcrumb[idx].didPush = () => {
+					func();
 				};
 			}
 		}
@@ -34,8 +42,11 @@ export default {
 		, popCrumb : ({ commit }) => {
 			commit(POP_CRUMB);
 		}
-		, setWayBackOnPreviousCrumb : ({ commit }, func) => {
+		, setWayBackOnLastCrumb : ({ commit }, func) => {
 			commit(SET_WAY_BACK, func);
+		}
+		, setSelectorOnLastCrumb : ({ commit }, func) => {
+			commit(SET_SELECTOR, func);
 		}
 		, clearCrumb : ({ commit }) => {
 			commit(CLEAR_CRUMB);

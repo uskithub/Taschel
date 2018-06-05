@@ -5,6 +5,7 @@ import organization from "./organization";
 import breadcrumb from "./breadcrumb";
 import task from "./task";
 import { INITIALIZE, ADD_MESSAGE, ADD_NOTIFICATION, SET_USER, SEARCH, PUSH_CRUMB, POP_CRUMB, SET_WAY_BACK, CLEAR_CRUMB, LOAD_PROJECTS, ADD_PROJECT, UPDATE_PROJECT, SET_CURRENT_PROJECT, CLEAR_SELECTION } from "../mutationTypes";
+import moment from "moment";
 import { assign } from "lodash";
 
 import tasks from "../repositories/rest/tasks";
@@ -26,6 +27,8 @@ export default {
 		user: null
 		, projects: []
 
+		// YYYY-MM-DD（moment().day(1).format("YYYY-MM-DD")）
+		, currentWeek: (() => { return moment().day(1).format("YYYY-MM-DD"); })()
 
 
 		, notifications: [
@@ -36,19 +39,18 @@ export default {
 		
 		// user.code
 		, currentUserId: null
-		// YYYY-MM-DD（moment().day(1).format("YYYY-MM-DD")）
-		, currentWeek: null
 		// current project entity
 		, currentProject: null
 	}
 	, getters : {
 		me(state) { return state.user; }
+		, projects(state) { return state.projects; }
+		, currentWeek(state) { return state.currentWeek; }
+
 		, notifications(state) { return state.notifications; }
 		, messages(state) { return state.messages; }
 		, searchText(state) { return state.searchText; }
-		, projects(state) { return state.projects; }
 		, currentUserId(state) { return state.currentUserId; }
-		, currentWeek(state) { return state.currentWeek; }
 		, currentProject(state) { return state.currentProject; }
 	}
 	// DDD: Usecases
