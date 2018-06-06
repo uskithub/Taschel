@@ -74,12 +74,15 @@
 			}
 		}
 		, created() {
-			this.setSelectorOnLastCrumb([
-				"thoge1"
-				, "hoge2"
-				, "hoge3"
-			], (item) => { 
-				console.log(item);
+			this.setSelectorOnLastCrumb({ 
+				items:[
+					{ id: "hoge1", name: "ajgoi;reagoi;" }
+					, { id: "hoge2", name: "vf,l;geajg" }
+					, { id: "hoge3", name: "vfald;gjejgo" }
+				]
+				, itemDidPush: (item) => { 
+					console.log(item);
+				}
 			});
 			this.pushCrumb({ id: this._uid, name: this.currentWeek });
 		}

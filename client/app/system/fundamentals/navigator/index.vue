@@ -8,7 +8,7 @@
 				span(v-else)
 					span {{ crumb.name }}
 				ul(v-if="crumb.items")
-					li(v-for="item in crumb.items" @click="crumb.itemDidPush(item)") {{ item }}
+					li(v-for="item in crumb.items" @click="crumb.itemDidPush(item)") {{ item.name }}
 </template>
 
 <script>
@@ -70,31 +70,37 @@
 				.gt {
 					margin-left: 0.5em;
 				}
+
+				& > ul {
+					position: absolute;
+					display: none;
+					top: 100%;
+
+					li {
+						float: none;
+						margin: 0;
+						padding: 0.5em;
+						background: #c0c0c0;
+						border-bottom: 1px solid #fff;
+						cursor: pointer;
+					}
+
+					li:last-child {
+						border-bottom: none;
+					}
+
+					ul {
+						position: absolute;
+						display: none;
+						top: -2px;
+						left: 100%;
+					}
+				}
 			}
 
 			li:hover {
 				& > ul {
 					display: block;
-				}
-			}
-
-			ul {
-				position: absolute;
-				display: none;
-				top: 100%;
-				left: -2px;
-
-				li {
-					float: none;
-					margin: 0;
-					border: 2px solid #fff;
-				}
-
-				ul {
-					position: absolute;
-					display: none;
-					top: -2px;
-					left: 100%;
 				}
 			}
 		}
