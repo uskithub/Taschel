@@ -28,6 +28,10 @@ export const SELECT_TASK		= "SELECT_TASK";
 export const UPDATE_TASK		= "UPDATE_TASK";
 export const CLEAR_SELECTION	= "CLEAR_SELECTION";
 
+// group
+export const LOAD_WEEKLY_GROUPS	= "LOAD_WEEKLY_GROUPS";
+
+
 // organizations
 export const LOAD 				= "LOAD";
 export const ADD				= "ADD";

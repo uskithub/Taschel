@@ -50,8 +50,8 @@ export default {
 			// 引数でComponent側から渡すべきか？
 			// StoreはDDD的にはApplicationServiceに当たると思うので、ユースケースをactionで表現したい
 			// userが誰か知らないのもおかしい気がする
-			let user = getters.me;
-			let options = { user : user.code };
+			const user = getters.me;
+			const options = { user : user.code };
 			return tasks.get(options)
 				.then(data => {
 					let tasks = data.map(rawValues => {

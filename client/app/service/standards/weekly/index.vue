@@ -1,8 +1,7 @@
 <!-- // DDD: Presentation -->
 <template lang="pug">
 	.container
-		.taskPicker
-		.matrix
+		kanban-board.weekly-grid(:boardGroups="boardGroups")
 </template>
 
 <script>
@@ -80,16 +79,35 @@
 
 <style lang="scss" scoped>
 
-	.container {
-		display: flex;
+	@import "../../../../scss/common/mixins";
+	@import "../../../../scss/taschel/kanban";
 
-		.taskPicker {
-			flex-grow: 1;
-			background: rgba(black, 0.2);
-		}
+	.kanban-system-container {
+		&.weekly-grid {
+			display: flex;
+			.kanban-board-container {
+				&.content {
+					&.card-columns {
+						flex-grow: 1;
 
-		.matrix {
-			flex-grow: 2;
+						&:nth-child(2) {
+							flex-grow: 2;
+							display: flex;
+							flex-direction: row-reverse;
+							flex-wrap: wrap;
+							align-items: stretch;
+							align-content: flex-start;
+
+							.kanban-board {
+								flex: inherit;
+								flex-grow: inherit;
+								width: 48%;
+								margin: 0 1% 1% 1%;
+							}
+						}
+					}
+				}
+			}
 		}
 	}
 </style>

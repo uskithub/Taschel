@@ -4,6 +4,7 @@ import profile from "./profile";
 import organization from "./organization";
 import breadcrumb from "./breadcrumb";
 import task from "./task";
+import weekly from "./weekly";
 import { INITIALIZE, ADD_MESSAGE, ADD_NOTIFICATION, SET_USER, SEARCH, PUSH_CRUMB, POP_CRUMB, SET_WAY_BACK, CLEAR_CRUMB, LOAD_PROJECTS, ADD_PROJECT, UPDATE_PROJECT, SET_CURRENT_PROJECT, CLEAR_SELECTION } from "../mutationTypes";
 import moment from "moment";
 import { assign } from "lodash";
@@ -16,6 +17,7 @@ export default {
 	modules: {
 		// for Application
 		task
+		, weekly
 		, profile
 		, organization
 
