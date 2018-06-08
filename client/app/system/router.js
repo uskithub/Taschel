@@ -45,7 +45,7 @@ export default new VueRouter({
 		// , { path: "*", component: NotFound }
 		, { path: "/profile", component: Profile }
 		
-		, { path: "/v2/", name: Projects2.name, component: MyTasks2 }
+		, { path: "/v2/", name: MyTasks2.name, component: MyTasks2 }
 		, { path: "/v2/dailyLoop", component: DailyLoop }
 		, { path: "/v2/projects", name: Projects2.name, component: Projects2 }
 		, { path: "/v2/weekly", name: Weekly2.name, component: Weekly2 }
