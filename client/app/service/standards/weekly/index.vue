@@ -1,7 +1,7 @@
 <!-- // DDD: Presentation -->
 <template lang="pug">
 	.container
-		board.weekly-grid(:boards="groups")
+		board.weekly-grid(:boards="groups" @arrange="didArrangeTask")
 </template>
 
 <script>
@@ -9,6 +9,7 @@
 	import Board from "../../fundamentals/components/board"
 	import Base from "../../fundamentals/mixins/base";
 	import Task from "../../fundamentals/entities/task";
+
 	// import schema from "./schema";
 	import { mapGetters, mapActions } from "vuex";
 	const _ = Vue.prototype._;
@@ -42,8 +43,13 @@
 			...mapActions([
 				// Usecases
 				"getMyWeeklyTasks"
+				, "arrangeTasks"
 			])
-			// usecase: a user selects a task for editing.
+			, didArrangeTask({ kanban, from, to, index }) {
+				this.arrangeTasks({ task: kanban, from, to, index });
+			}
+
+
 			, didSelectRow(entity) {
 				this.entity = entity;
 				this.isEditing = true;
@@ -60,7 +66,6 @@
 			}
 		}
 		, created() {
-
 			this.setSelectorOnLastCrumb({ 
 				items:[
 					{ id: "hoge1", name: "ajgoi;reagoi;" }

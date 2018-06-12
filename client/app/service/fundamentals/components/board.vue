@@ -1,11 +1,12 @@
+// TODO: このcomponentでtaskが出てくるのはおかしい → なくす
 <template lang="pug">
 	ul.kanban-board-container.content.card-columns
 		li.kanban-board(v-for="board in boards", :key="board.code")
 			span.kanban-board-header
 				legend {{ board.name }}
 			div.drag-options
-			ul.kanban-list.draggable(:data-code="board.code")
-				kanban(v-for="task in board.tasks", :task="task", :key="task.code", :isDisplayShortname="true", :isDraggable="board.type=='kanban'||board.code=='UNCLASSIFIED'")
+			ul.kanban-list.draggable(:data-code="board.code" data-type="board")
+				kanban(v-for="task in board.tasks", :kanban="task", :key="task.code", :isDisplayShortname="true", :isDraggable="board.type=='kanban'||board.code=='UNCLASSIFIED'")
 </template>
 <script>
 	import Kanban from "./kanban.vue";
@@ -59,17 +60,17 @@
 				
 				drake = dragula(kanbanList)
 					.on("drag", (el, source) => {
-						console.log("● draggin ", el);
+						console.log("● draggin ", el, source);
 						el.classList.add("is-moving");
 					})
 					.on("drop", (el, target, source, sibling) => {
 						let index = 0;
-						for (; index < target.tasks.length; index += 1) {
-							if (target.tasks[index].classList.contains("is-moving")) 
-								break;
+						for (; index < target.children.length; index += 1) {
+							if (target.children[index].classList.contains("is-moving")) break;
 						}
-						console.log("● dropped", el.dataset.code, target.dataset.code, source.dataset.code, index)
-						this.$emit("arrange", { moving: { type: "task", code: el.dataset.code }
+						console.log(`● dropped [kanban]${el.dataset.code} to [${target.dataset.type}]${target.dataset.code} from [${source.dataset.type}]${source.dataset.code} at ${index}`);
+						this.$emit("arrange", {
+							kanban: { type: "kanban", code: el.dataset.code }
 							, from: { type: source.dataset.type, code: source.dataset.code }
 							, to: { type: target.dataset.type, code: target.dataset.code }
 							, index: index 

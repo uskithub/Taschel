@@ -2,6 +2,7 @@ import Group from "../entities/group";
 import { INITIALIZE, LOAD_WEEKLY_GROUPS } from "../mutationTypes";
 import { assign } from "lodash";
 import groups from "../repositories/rest/groups";
+import domainGlue from "../domainGlue";
 
 export default {
 	state : {
@@ -39,6 +40,19 @@ export default {
 					});
 					commit(LOAD_WEEKLY_GROUPS, groups);
 				});
+		}
+		// Usecase: a user arrange a task from a group or another task to another group or task.
+		, arrangeTasks : ({ commit, getters }, { task, from, to, index }) => {
+			console.log(task, from, to, index);
+
+			const groups = getters.groups;
+
+			if (domainGlue.validateArrange(groups, task, from, to, index)) {
+				// OK
+			} else {
+				// NG
+				// TODO; 再描画
+			}
 		}
 	}
 };
