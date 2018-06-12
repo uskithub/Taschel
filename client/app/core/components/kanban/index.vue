@@ -28,12 +28,12 @@
 		, computed: {
 		}
 		, updated() {
-			this.$nextTick(function () {
+			this.$nextTick(() => {
 				this.makeDraggable();
 			});
 		}
 		, mounted() {
-			this.$nextTick(function () {
+			this.$nextTick(() => {
 				this.makeDraggable();
 			});
 		}
@@ -57,7 +57,6 @@
 					drake.destroy();
 				}
 				let kanbanList = Array.from(document.querySelectorAll(".kanban-list.draggable"), el => { return el; });
-				
 				drake = dragula(kanbanList)
 					.on("drag", (el, source) => {
 						console.log("● draggin ", el);

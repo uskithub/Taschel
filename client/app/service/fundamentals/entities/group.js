@@ -24,7 +24,7 @@ export default class Group {
 	get name() { return this._rawValues.name; }
 	get purpose() { return this._rawValues.purpose; }
 	get author() { return this._rawValues.author.username; }
-
+	get tasks() { return this._tasks; }
 
 
 }

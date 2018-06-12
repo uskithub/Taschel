@@ -1,40 +1,38 @@
 <template lang="pug">
-    ul.kanban-board-container.content.card-columns
-        li.kanban-board(v-for="board in boards", :key="board.code")
-            span.kanban-board-header
-                legend {{ board.name }}
-            div.drag-options
-            ul.kanban-list.draggable(:data-code="board.code")
-                kanban(v-for="task in board.children", :task="task", :key="task.code", :isDisplayShortname="true", :isDraggable="board.type=='kanban'||board.code=='UNCLASSIFIED'")
+	ul.kanban-board-container.content.card-columns
+		li.kanban-board(v-for="board in boards", :key="board.code")
+			span.kanban-board-header
+				legend {{ board.name }}
+			div.drag-options
+			ul.kanban-list.draggable(:data-code="board.code")
+				kanban(v-for="task in board.tasks", :task="task", :key="task.code", :isDisplayShortname="true", :isDraggable="board.type=='kanban'||board.code=='UNCLASSIFIED'")
 </template>
-
 <script>
-
 	import Kanban from "./kanban.vue";
 	import dragula from "dragula";
 
     let drake = null;
 
 	export default {
-		name: "KanbanBoard"
+		name: "Board"
 		, components: {
 			Kanban
 		}
         , props: {
 			boards : {
 				type: Array
-				, validator: function(value) { return true; } // TODO
+				, validator: (value) => { return true; } // TODO
 			}
 		}
 		, computed: {
 		}
 		, updated() {
-			this.$nextTick(function () {
+			this.$nextTick(() => {
 				this.makeDraggable();
 			});
 		}
 		, mounted() {
-			this.$nextTick(function () {
+			this.$nextTick(() => {
 				this.makeDraggable();
 			});
 		}
@@ -66,8 +64,8 @@
 					})
 					.on("drop", (el, target, source, sibling) => {
 						let index = 0;
-						for (; index < target.children.length; index += 1) {
-							if (target.children[index].classList.contains("is-moving")) 
+						for (; index < target.tasks.length; index += 1) {
+							if (target.tasks[index].classList.contains("is-moving")) 
 								break;
 						}
 						console.log("● dropped", el.dataset.code, target.dataset.code, source.dataset.code, index)
@@ -94,6 +92,6 @@
 	};
 </script>
 
-<style lang="scss">
-    @import "../../../../scss/v2/kanban";
+<style lang="scss" scoped>
+	@import "../../../../scss/v2/kanban";
 </style>

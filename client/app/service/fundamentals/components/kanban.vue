@@ -1,11 +1,11 @@
 <template lang="pug">
-	li.kanban(:data-code="task.code", :key="task.code" @click="$emit('click', $event, task)")
+	li.kanban-item(:data-code="task.code", :key="task.code" @click="$emit('click', $event, task)")
 		slot(:name="task.name")
 			.media-content
 				.tag(v-if="isDisplayTag") {{ task.root.shortname }}
 				strong  {{ task.name }}
-				ul.kanban-list(v-if="task.children.length > 0" data-type="task", :class="{'draggable':isDraggable}", :data-code="task.code")
-					kanban(v-for="child in task.children", :task="child", :key="child.code")
+				ul.kanban-list(v-if="task.tasks.length > 0" data-type="task", :class="{'draggable':isDraggable}", :data-code="task.code")
+					kanban(v-for="child in task.tasks", :task="child", :key="child.code")
 			.media-right(v-if="!isDraggable")
 				a.close(title="Close" @click="$emit('close', $event, task)")
 </template>
@@ -25,7 +25,7 @@
         , props: {
 			task: {
 				type: Object
-				, validator: function(value) { return true; } // TODO
+				, validator: (value) => { return true; } // TODO
 			}
 			, isDisplayShortname: {
 				type: Boolean

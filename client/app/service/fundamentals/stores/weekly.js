@@ -39,7 +39,6 @@ export default {
 					});
 					commit(LOAD_WEEKLY_GROUPS, groups);
 				});
-			
 		}
 	}
 };

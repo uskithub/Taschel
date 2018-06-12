@@ -19,13 +19,13 @@ const get = options => {
 
 	if (options.parent != undefined) {
 		url = `${url}?parent_code=${options.parent}`;
-	} else if (options.weekly != undefined) {
-		url = `${url}?weekly=${options.weekly}`;
+	} else if (options.week != undefined) {
+		url = `${url}?week=${options.week}`;
 		if (options.user != undefined) {
 			url = `${url}&user_code=${options.user}`;
 		}
-	} else if (options.daily != undefined) {
-		url = `${url}?daily=${options.daily}`;
+	} else if (options.day != undefined) {
+		url = `${url}?day=${options.day}`;
 		if (options.user != undefined) {
 			url = `${url}&user_code=${options.user}`;
 		}

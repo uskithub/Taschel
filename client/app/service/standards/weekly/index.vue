@@ -1,11 +1,12 @@
 <!-- // DDD: Presentation -->
 <template lang="pug">
 	.container
-		kanban-board.weekly-grid(:boardGroups="boardGroups")
+		board.weekly-grid(:boards="groups")
 </template>
 
 <script>
 	import Vue from "vue";
+	import Board from "../../fundamentals/components/board"
 	import Base from "../../fundamentals/mixins/base";
 	import Task from "../../fundamentals/entities/task";
 	// import schema from "./schema";
@@ -19,10 +20,11 @@
 		name : "Weekly"
 		, mixins : [ Base ]
 		, components : {
+			Board
 		}
 		, computed : {
 			...mapGetters([
-				"tasks"
+				"groups"
 				, "currentWeek"
 			])
 		}
@@ -39,7 +41,7 @@
 		, methods : {
 			...mapActions([
 				// Usecases
-				"getMyTaskList"
+				"getMyWeeklyTasks"
 			])
 			// usecase: a user selects a task for editing.
 			, didSelectRow(entity) {
@@ -72,7 +74,7 @@
 			this.pushCrumb({ id: "week", name: this.currentWeek });
 		}
 		, sessionEnsured(me) {
-			this.getMyTaskList();
+			this.getMyWeeklyTasks();
 		}
 	};
 </script>
@@ -80,34 +82,77 @@
 <style lang="scss" scoped>
 
 	@import "../../../../scss/common/mixins";
-	@import "../../../../scss/taschel/kanban";
 
-	.kanban-system-container {
-		&.weekly-grid {
-			display: flex;
-			.kanban-board-container {
-				&.content {
-					&.card-columns {
-						flex-grow: 1;
+    $on-hold: #FB7D44;
+    $in-progress: #2A92BF;
+    $needs-review: #F4CE46;
+    $approved: #00B961;
 
-						&:nth-child(2) {
-							flex-grow: 2;
-							display: flex;
-							flex-direction: row-reverse;
-							flex-wrap: wrap;
-							align-items: stretch;
-							align-content: flex-start;
+    .drag-column {
+        &-on-hold {
+            .drag-column-header,
+            .is-moved,
+            .drag-options {
+                background: $on-hold;
+            }
+        }
 
-							.kanban-board {
-								flex: inherit;
-								flex-grow: inherit;
-								width: 48%;
-								margin: 0 1% 1% 1%;
-							}
-						}
-					}
-				}
-			}
+        &-in-progress {
+            .drag-column-header,
+            .is-moved,
+            .drag-options {
+                background: $in-progress;
+            }
+        }
+
+        &-needs-review {
+            .drag-column-header,
+            .is-moved,
+            .drag-options{
+                background: $needs-review;
+            }
+        }
+
+        &-approved {
+            .drag-column-header,
+            .is-moved,
+            .drag-options {
+                background: $approved;
+            }
+        }
+	}
+	
+ 	.section {
+    	padding: 20px;
+    	text-align: center;
+
+    	a {
+    		color: white;
+    		text-decoration: none;
+    		font-weight: 300;
+    	}
+
+    	h4 {
+    		font-weight: 400;
+    		a {
+    			font-weight: 600;
+    		}
+    	}
+    }
+
+	.container {
+		padding: 1rem;
+	}
+
+	.form {
+		margin: 1rem 0;
+
+		@include bgTranslucentDark(0.2);
+		border-radius: 8px;
+
+		.buttons {
+			padding: 0.5em;
 		}
+
 	}
 </style>

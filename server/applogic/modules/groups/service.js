@@ -157,7 +157,9 @@ module.exports = {
 						});
 					});
 
-				} else if (ctx.params.weekly != undefined) {
+				} else if (ctx.params.weekly != undefined || ctx.params.week != undefined) {
+					let week = ctx.params.weekly || ctx.params.week
+
 					// 1) read groups
 					// 2a) if groups.length == 0
 					//		read tasks and make them an unclassified group
@@ -167,7 +169,7 @@ module.exports = {
 					//		2b-2) make an unclassified group
 					//			exclude what is descendant of the other task.
 					//		2b-3) delete classified children in the classified group
-					let type = `weekly_${ctx.params.weekly}`;
+					let type = `weekly_${week}`;
 					let userId = (ctx.params.user_code) ? this.personService.decodeID(ctx.params.user_code) : ctx.user.id;
 					let filter = {
 						$and : [ 
@@ -282,7 +284,7 @@ module.exports = {
 
 								let unclassifiedGroup = {
 									code: UNCLASSIFIED
-									, type: `weekly_${ctx.params.weekly}`
+									, type: `weekly_${week}`
 									, name: "unclassified"
 									, purpose: "for_classify"
 									, children: unclassifiedTaskJsons

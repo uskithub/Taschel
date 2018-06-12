@@ -218,6 +218,9 @@ export default class Task {
 
 	constructor(rawValues) {
 		this._rawValues = rawValues;
+		this._tasks = rawValues.children.map(task => {
+			return new Task(task);
+		});
 	}
 
 	get rawValues() {
@@ -247,6 +250,8 @@ export default class Task {
 	set goal(goal) { return this._rawValues.goal = goal; }
 
 	get author() { return this._rawValues.author.username; }
+
+	get tasks() { return this._tasks; }
 
 	get lastCommunication() { return this._rawValues.lastCommunication; }
 
