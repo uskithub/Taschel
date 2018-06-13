@@ -249,6 +249,8 @@ export default class Task {
 	get goal() { return this._rawValues.goal; }
 	set goal(goal) { return this._rawValues.goal = goal; }
 
+	get parent() { return this._rawValues.parent; }
+
 	get author() { return this._rawValues.author.username; }
 
 	get tasks() { return this._tasks; }

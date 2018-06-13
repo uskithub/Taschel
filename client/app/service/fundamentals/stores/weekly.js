@@ -49,9 +49,11 @@ export default {
 
 			if (domainGlue.validateArrange(groups, task, from, to, index)) {
 				// OK
+				console.log("validae OK");
 			} else {
 				// NG
-				// TODO; 再描画
+				// TODO: 再描画
+				console.log("validae NG");
 			}
 		}
 	}

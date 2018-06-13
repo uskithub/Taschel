@@ -46,9 +46,11 @@
 				, "arrangeTasks"
 			])
 			, didArrangeTask({ kanban, from, to, index }) {
+				kanban.type = "task";
+				from.type = from.type === "kanban" ? "task" : "group";
+				to.type = to.type === "kanban" ? "task" : "group";
 				this.arrangeTasks({ task: kanban, from, to, index });
 			}
-
 
 			, didSelectRow(entity) {
 				this.entity = entity;
