@@ -44,12 +44,37 @@ export default {
 		// Usecase: a user arrange a task from a group or another task to another group or task.
 		, arrangeTasks : ({ commit, getters }, { task, from, to, index }) => {
 			console.log(task, from, to, index);
+			const _groups = getters.groups;
 
-			const groups = getters.groups;
-
-			if (domainGlue.validateArrange(groups, task, from, to, index)) {
+			if (domainGlue.validateArrange(_groups, task, from, to, index)) {
 				// OK
 				console.log("validae OK");
+
+				return Promise.resolve()
+					.then(() => {
+						// you must execute adding before removing because of the index problem.
+						if (to.type === "group" && to.code !== "UNCLASSIFIED") {
+							// adding to "to" if "to" is not "UNCLASSIFIED".
+							return groups.put(to.code, task.code, true, index);
+						}
+						return null;
+					})
+					.then(data => {
+						if (from.type === "group" && from.code !== "UNCLASSIFIED") {
+							// removing from "from"  if "from" is not "UNCLASSIFIED".
+							return groups.put(to.code, task.code, false);
+						}
+						return data;
+					})
+					.then(data => {
+						if (data) {
+							let _groups = data.map(rawValues => {
+								return new Group(rawValues);
+							});
+							commit(LOAD_WEEKLY_GROUPS, _groups);
+						}
+					});
+
 			} else {
 				// NG
 				// TODO: 再描画

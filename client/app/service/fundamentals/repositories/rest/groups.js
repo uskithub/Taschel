@@ -38,12 +38,16 @@ const post = rawValues => {
 	return api(METHOD.post, NAMESPACE, rawValues);
 };
 
-// const put = rawValues => {
-// 	return api(METHOD.put, NAMESPACE + "/" + rawValues.code, rawValues);
-// };
+const put = (group, task, isAdding, index) => {
+	let url = `${NAMESPACE}/${group}?task=${task}&isAdding=${isAdding}`;
+	if (isAdding) {
+		url = `${url}&index=${index}`;
+	}
+	return api(METHOD.put, url);
+};
 
 export default {
 	get
 	, post
-	// , put
+	, put
 };

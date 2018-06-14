@@ -403,6 +403,20 @@ module.exports = {
 			ctx.assertModelIsExist(ctx.t("app:GroupNotFound"));
 			this.validateParams(ctx);
 
+			if (ctx.params.isAdding !== undefined) {
+				let taskId = this.taskService.decodeID(ctx.params.task);
+				let index = ctx.params.index;
+				console.log("● v2:update", ctx.modelID, taskId, index);
+				if (ctx.params.isAdding) {
+					// add
+
+				} else {
+					// remove
+
+				}
+				return;
+			}
+
 			let movingId = this.taskService.decodeID(ctx.params.task);
 			let index = ctx.params.index;
 
