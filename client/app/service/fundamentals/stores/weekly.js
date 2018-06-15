@@ -62,17 +62,21 @@ export default {
 					.then(data => {
 						if (from.type === "group" && from.code !== "UNCLASSIFIED") {
 							// removing from "from"  if "from" is not "UNCLASSIFIED".
-							return groups.put(to.code, task.code, false);
+							return groups.put(from.code, task.code, false);
 						}
 						return data;
 					})
 					.then(data => {
-						if (data) {
-							let _groups = data.map(rawValues => {
-								return new Group(rawValues);
+						const user = getters.me;
+						const currentWeek = getters.currentWeek;
+						const options = { user: user.code, week: currentWeek };
+						return groups.get(options)
+							.then(data => {
+								let groups = data.map(rawValues => {
+									return new Group(rawValues);
+								});
+								commit(LOAD_WEEKLY_GROUPS, groups);
 							});
-							commit(LOAD_WEEKLY_GROUPS, _groups);
-						}
 					});
 
 			} else {

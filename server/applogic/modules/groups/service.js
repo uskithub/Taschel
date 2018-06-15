@@ -403,20 +403,36 @@ module.exports = {
 			ctx.assertModelIsExist(ctx.t("app:GroupNotFound"));
 			this.validateParams(ctx);
 
+			// for v2
 			if (ctx.params.isAdding !== undefined) {
-				let taskId = this.taskService.decodeID(ctx.params.task);
+				let taskId = Number(this.taskService.decodeID(ctx.params.task));
 				let index = ctx.params.index;
-				console.log("● v2:update", ctx.modelID, taskId, index);
-				if (ctx.params.isAdding) {
+				
+				if (ctx.params.isAdding === "true") {
 					// add
-
+					return this.collection.findById(ctx.modelID).exec()
+						.then(doc => {
+							doc.children.splice(index, 0, taskId);
+							return doc.save();
+						})
+						.then(json => {
+							return this.populateModels(json);
+						});
 				} else {
 					// remove
-
+					return this.collection.findById(ctx.modelID).exec()
+						.then(doc => {
+							doc.children = doc.children.filter(tid => tid !== taskId);
+							return doc.save();
+						})
+						.then(json => {
+							return this.populateModels(json);
+						});
 				}
-				return;
 			}
 
+			// TODO: delete below
+			// for v1
 			let movingId = this.taskService.decodeID(ctx.params.task);
 			let index = ctx.params.index;
 
