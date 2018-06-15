@@ -406,7 +406,7 @@ module.exports = {
 			// for v2
 			if (ctx.params.isAdding !== undefined) {
 				let taskId = Number(this.taskService.decodeID(ctx.params.task));
-				let index = ctx.params.index;
+				let index = Number(ctx.params.index);
 				
 				if (ctx.params.isAdding === "true") {
 					// add
@@ -422,7 +422,7 @@ module.exports = {
 					// remove
 					return this.collection.findById(ctx.modelID).exec()
 						.then(doc => {
-							doc.children = doc.children.filter(tid => tid !== taskId);
+							doc.children = doc.children.filter((tid, idx) => tid !== taskId && idx !== index);
 							return doc.save();
 						})
 						.then(json => {

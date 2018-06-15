@@ -52,17 +52,17 @@ export default {
 
 				return Promise.resolve()
 					.then(() => {
-						// you must execute adding before removing because of the index problem.
-						if (to.type === "group" && to.code !== "UNCLASSIFIED") {
-							// adding to "to" if "to" is not "UNCLASSIFIED".
-							return groups.put(to.code, task.code, true, index);
+						// you must execute removing before adding because of the index problem.
+						if (from.type === "group" && from.code !== "UNCLASSIFIED") {
+							// removing from "from"  if "from" is not "UNCLASSIFIED".
+							return groups.put(from.code, task.code, false);
 						}
 						return null;
 					})
 					.then(data => {
-						if (from.type === "group" && from.code !== "UNCLASSIFIED") {
-							// removing from "from"  if "from" is not "UNCLASSIFIED".
-							return groups.put(from.code, task.code, false);
+						if (to.type === "group" && to.code !== "UNCLASSIFIED") {
+							// adding to "to" if "to" is not "UNCLASSIFIED".
+							return groups.put(to.code, task.code, true, index);
 						}
 						return data;
 					})
