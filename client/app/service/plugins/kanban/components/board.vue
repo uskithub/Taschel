@@ -3,8 +3,8 @@
 		li.kanban-board(v-for="board in boards", :key="board.id")
 			span.kanban-board-header
 				legend {{ board.name }}
-			div.drag-options
-			ul.kanban-list(data-type="board" ,:data-id="board.id"
+			.drag-options
+			ul.kanban-list(data-type="board", :data-id="board.id"
 				@dragenter="ondragenter($event, board)"
 			)
 				kanban(v-for="kanban in board.kanbans", :kanban="kanban", :key="kanban.id"

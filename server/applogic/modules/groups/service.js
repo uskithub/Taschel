@@ -157,8 +157,8 @@ module.exports = {
 						});
 					});
 
-				} else if (ctx.params.weekly != undefined || ctx.params.week != undefined) {
-					let week = ctx.params.weekly || ctx.params.week
+				} else if (ctx.params.weekly !== undefined || ctx.params.week !== undefined) {
+					const week = ctx.params.weekly || ctx.params.week;
 
 					// 1) read groups
 					// 2a) if groups.length == 0
@@ -294,11 +294,12 @@ module.exports = {
 							}
 						});
 					});
-				} else if (ctx.params.daily != undefined) {
+				} else if (ctx.params.daily !== undefined || ctx.params.day !== undefined) {
 					//
 					// weeklyのgroupにアサインされているtaskをがっちゃんこして返す
 					//
-					let type = `weekly_${ctx.params.daily}`;
+					const day = ctx.params.daily || ctx.params.day;
+					let type = `weekly_${day}`;
 					let userId = (ctx.params.user_code) ? this.personService.decodeID(ctx.params.user_code) : ctx.user.id;
 					let filter = {
 						$and : [ 

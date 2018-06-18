@@ -1,5 +1,5 @@
 import Group from "../entities/group";
-import { INITIALIZE, LOAD_WEEKLY_GROUPS } from "../mutationTypes";
+import { INITIALIZE, LOAD_WEEKLY_GROUPS, LOAD_CURRENTWEEK_TASK_GROUP } from "../mutationTypes";
 import { assign } from "lodash";
 import groups from "../repositories/rest/groups";
 import domainGlue from "../domainGlue";
@@ -8,9 +8,11 @@ export default {
 	state : {
 		// DDD: Entities
 		entities: []
+		, currentweekTaskGroup: null
 	}
 	, getters : {
 		groups(state) { return state.entities; }
+		, currentweekTaskGroup(state) { return state.currentweekTaskGroup; }
 	}
 	// DDD: Usecases
 	// Vuex: Mutations can change states. It must run synchronously.
@@ -21,6 +23,9 @@ export default {
 		, [LOAD_WEEKLY_GROUPS] (state, entities) {
 			state.entities.splice(0);
 			state.entities.push(...entities);
+		}
+		, [LOAD_CURRENTWEEK_TASK_GROUP] (state, entity) {
+			state.currentweekTaskGroup = entity;
 		}
 	}
 
@@ -84,6 +89,21 @@ export default {
 				// TODO: 再描画
 				console.log("validae NG");
 			}
+		}
+
+		// Usecase
+		, getCurrentWeekTasks : ({ commit, getters }) => {
+			const user = getters.me;
+			const currentWeek = getters.currentWeek;
+			const options = { user: user.code, day: currentWeek };
+			return groups.get(options)
+				.then(data => {
+					if (data.length > 0) {
+						commit(LOAD_CURRENTWEEK_TASK_GROUP, new Group(data[0]));
+					} else {
+						commit(LOAD_CURRENTWEEK_TASK_GROUP, null);
+					}
+				});
 		}
 	}
 };

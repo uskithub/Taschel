@@ -1,6 +1,6 @@
 
 <template lang="pug">
-	li.kanban-item(draggable="true", :key="kanban.id" 
+	li.kanban-item(:draggable="draggable", :key="kanban.id" 
 		@click="$emit('click', $event, kanban)"
 		@dragstart="$emit('dragstart', $event, kanban)"
 		@dragend="$emit('dragend', $event, kanban)"
@@ -34,6 +34,10 @@
 					if (value.name === undefined || value.id === undefined) return false;
 					return true; 
 				}
+			}
+			, draggable: {
+				type: Boolean
+				, default: true
 			}
 		}
         , methods: {

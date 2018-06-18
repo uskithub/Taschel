@@ -21,6 +21,12 @@
 							i.fa.fa-home
 						span.label {{ "Weekly2" | i18n }}
 
+				router-link(tag="li", to="/v2/dailyLoop")
+					a(:title="_('DailyLoop')")
+						span.icon
+							i.fa.fa-home
+						span.label {{ "DailyLoop" | i18n }}
+
 				router-link(tag="li", to="/")
 					a(:title="_('Home')")
 						span.icon

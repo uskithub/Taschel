@@ -8,24 +8,11 @@
 	import Vue from "vue";
 	import Base from "../../fundamentals/mixins/base";
 	import Task from "../../fundamentals/entities/task";
+	import Board from "../../plugins/kanban/board";
+	import Kanban from "../../plugins/kanban/kanban";
 
 	import { mapGetters, mapActions } from "vuex";
 	const _ = Vue.prototype._;
-
-	class Board {
-		constructor(group) { this._group = group; }
-		get id() { return this._group.code; }
-		get name() { return this._group.name; }
-		get kanbans() { return this._group.tasks.map( t => new Kanban(t)); }
-	}
-
-	class Kanban {
-		constructor(task) { this._task = task; }
-		get id() { return this._task.code; }
-		get name() { return this._task.name; }
-		get kanbans() { return this._task.tasks.map( t => new Kanban(t)); }
-		get task() { return this._task; }
-	}
 	
 	export default {
 		name : "Weekly"

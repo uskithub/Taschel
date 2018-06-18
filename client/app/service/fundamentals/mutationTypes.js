@@ -30,6 +30,7 @@ export const CLEAR_SELECTION	= "CLEAR_SELECTION";
 
 // group
 export const LOAD_WEEKLY_GROUPS	= "LOAD_WEEKLY_GROUPS";
+export const LOAD_CURRENTWEEK_TASK_GROUP	= "LOAD_CURRENTWEEK_TASK_GROUP";
 
 
 // organizations
