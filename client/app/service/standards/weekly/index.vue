@@ -1,33 +1,43 @@
 <!-- // DDD: Presentation -->
 <template lang="pug">
 	.container
-		board.weekly-grid(:boards="groups" @arrange="didArrangeTask")
+		board.weekly-grid(:boards="boards" @arrange="didArrangeTask")
 </template>
 
 <script>
 	import Vue from "vue";
-	import Board from "../../fundamentals/components/board"
 	import Base from "../../fundamentals/mixins/base";
 	import Task from "../../fundamentals/entities/task";
 
-	// import schema from "./schema";
 	import { mapGetters, mapActions } from "vuex";
 	const _ = Vue.prototype._;
 
-	// schema.table.columns = Task.createTableSchema(schema.table.columns);
-	// schema.form.fields = Task.createFormSchema(schema.form.fields);
+	class Board {
+		constructor(group) { this._group = group; }
+		get id() { return this._group.code; }
+		get name() { return this._group.name; }
+		get kanbans() { return this._group.tasks.map( t => new Kanban(t)); }
+	}
+
+	class Kanban {
+		constructor(task) { this._task = task; }
+		get id() { return this._task.code; }
+		get name() { return this._task.name; }
+		get kanbans() { return this._task.tasks.map( t => new Kanban(t)); }
+		get task() { return this._task; }
+	}
 	
 	export default {
 		name : "Weekly"
 		, mixins : [ Base ]
-		, components : {
-			Board
-		}
 		, computed : {
 			...mapGetters([
 				"groups"
 				, "currentWeek"
 			])
+			, boards() {
+				return this.groups.map( g => new Board(g) );
+			}
 		}
 		, data() {
 			return {
@@ -46,10 +56,12 @@
 				, "arrangeTasks"
 			])
 			, didArrangeTask({ kanban, from, to, index }) {
-				kanban.type = "task";
+				// console.log(kanban, from, to, index);
+				from.code = from.id;
+				to.code = to.id;
 				from.type = from.type === "kanban" ? "task" : "group";
 				to.type = to.type === "kanban" ? "task" : "group";
-				this.arrangeTasks({ task: kanban, from, to, index });
+				this.arrangeTasks({ task: kanban.task, from, to, index });
 			}
 
 			, didSelectRow(entity) {

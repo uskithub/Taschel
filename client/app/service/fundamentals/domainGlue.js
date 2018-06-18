@@ -45,10 +45,8 @@ const validateArrange = (groups, task, from, to, index) => {
 			return false;
 		}).length > 0;
 		
-	} else {
-		// 4) task ---> task
-		return false;
 	}
+	// 4) task ---> task
 	return false;
 };
 
