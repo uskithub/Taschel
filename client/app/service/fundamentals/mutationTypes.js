@@ -35,6 +35,7 @@ export const LOAD_CURRENTWEEK_TASK_GROUP	= "LOAD_CURRENTWEEK_TASK_GROUP";
 // work
 export const LOAD_WEEKLY_WORKS	= "LOAD_WEEKLY_WORKS";
 export const ADD_WORK       	= "ADD_WORK";
+export const UPDATE_WORK       	= "UPDATE_WORK";
 
 
 // organizations

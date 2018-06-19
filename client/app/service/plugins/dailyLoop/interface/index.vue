@@ -130,7 +130,26 @@
 			}
 		}
 		, data() {
-			schema.fullCalendar.drop = (date, jqEvent, ui, resourceId) => {
+			schema.fullCalendar.drop = this.didDropTask;
+			schema.fullCalendar.eventDrop = this.didRelocateEvent;
+			schema.fullCalendar.eventResize = this.didResizeEvent;
+			schema.fullCalendar.eventClick = this.didClickEvent;
+			schema.fullCalendar.viewRender = this.didChangeWeek;
+
+			return {
+				fullcalendarSchema: schema.fullCalendar
+			};
+		}
+		, methods : {
+			...mapActions([
+				// Usecases
+				"getCurrentWeekTasks"
+				, "getCurrentWeekWorks"
+				, "addWork"
+				, "editWork"
+			])
+			// Interfacial operations
+			, didDropTask(date, jqEvent, ui, resourceId) {
 				console.log("drop");
 				// ignore dropped at all-day slot.
 				if (!date.hasTime()) { return; }
@@ -146,38 +165,23 @@
 					, author: this.me.code
 				};
 				this.addWork(work);
-			};
-
-			// for user's dragging and dropping events
-			schema.fullCalendar.eventDrop = (event, delta, revertFunc, jqEvent, ui, view) => {
-				console.log("eventDrop");
-			};
-
-			// for user's expanding events.
-			schema.fullCalendar.eventResize = (event, delta, revertFunc, jqEvent, ui, view) => {
+			}
+			, didRelocateEvent(event, delta, revertFunc, jqEvent, ui, view) {
+				const code = event.id;
+				const start = moment(event.start).format();
+				const end = moment(event.end).format();
+				console.log("eventDrop", code, start, end);
+				this.editWork({ code, start, end });
+			}
+			, didResizeEvent(event, delta, revertFunc, jqEvent, ui, view) {
 				console.log("eventResize");
-			};
-
-			// for user's editing with popupForm
-			schema.fullCalendar.eventClick = (event, jqEvent, view) => {
+			}
+			, didClickEvent(event, jqEvent, view) {
 				console.log("eventClick");
-			};
-
-			schema.fullCalendar.viewRender = (view, elem) => {
+			}
+			, didChangeWeek(view, elem) {
 				console.log("viewRender", view.start.format("YYYY-MM-DD"));
-			};
-
-			return {
-				fullcalendarSchema: schema.fullCalendar
-			};
-		}
-		, methods : {
-			...mapActions([
-				// Usecases
-				"getCurrentWeekTasks"
-				, "getCurrentWeekWorks"
-				, "addWork"
-			])
+			}
 		}
 		, created() {
 			this.pushCrumb({ id: "week", name: this.currentWeek });

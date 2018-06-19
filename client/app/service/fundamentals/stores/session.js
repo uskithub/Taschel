@@ -3,8 +3,8 @@ import Project from "../entities/project";
 import profile from "./profile";
 import organization from "./organization";
 import breadcrumb from "./breadcrumb";
-import task from "./task";
-import weekly from "./weekly";
+import backlog from "./backlog";
+import pdca from "./pdca";
 import { INITIALIZE, ADD_MESSAGE, ADD_NOTIFICATION, SET_USER, SEARCH, PUSH_CRUMB, POP_CRUMB, SET_WAY_BACK, CLEAR_CRUMB, LOAD_PROJECTS, ADD_PROJECT, UPDATE_PROJECT, SET_CURRENT_PROJECT, CLEAR_SELECTION } from "../mutationTypes";
 import moment from "moment";
 import { assign } from "lodash";
@@ -16,8 +16,8 @@ import sessions from "../repositories/rest/sessions";
 export default {
 	modules: {
 		// for Application
-		task
-		, weekly
+		backlog
+		, pdca
 		, profile
 		, organization
 

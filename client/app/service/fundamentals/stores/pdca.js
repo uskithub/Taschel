@@ -1,6 +1,6 @@
 import Group from "../entities/group";
 import Work from "../entities/work";
-import { INITIALIZE, LOAD_WEEKLY_GROUPS, LOAD_CURRENTWEEK_TASK_GROUP, LOAD_WEEKLY_WORKS, ADD_WORK } from "../mutationTypes";
+import { INITIALIZE, LOAD_WEEKLY_GROUPS, LOAD_CURRENTWEEK_TASK_GROUP, LOAD_WEEKLY_WORKS, ADD_WORK, UPDATE_WORK } from "../mutationTypes";
 import { assign } from "lodash";
 import groups from "../repositories/rest/groups";
 import works from "../repositories/rest/works";
@@ -40,6 +40,13 @@ export default {
 			if (!isFound) {
 				state.currentWeekWorks.push(entity);
 			}
+		}
+		, [UPDATE_WORK] (state, entity) {
+			state.currentWeekWorks.forEach(w => {
+				if (w.code === entity.code) {
+					assign(w, entity);
+				}
+			});
 		}
 	}
 
@@ -118,7 +125,7 @@ export default {
 					}
 				});
 		}
-		// Usecase:
+		// Usecase: a user watches works that the user scheduled to do in the current week.
 		, getCurrentWeekWorks: ({ commit, getters }) => {
 			const user = getters.me;
 			const currentWeek = getters.currentWeek;
@@ -131,7 +138,7 @@ export default {
 					commit(LOAD_WEEKLY_WORKS, works);
 				});
 		}
-		// Ssecase:
+		// Usecase: a user add new work.
 		, addWork: ({ commit }, rawValues) => {
 			return works.post(rawValues)
 				.then(data => {
@@ -139,5 +146,13 @@ export default {
 					commit(ADD_WORK, work);
 				});
 		}
+		// Usecase:
+		, editWork: ({ commit }, rawValues) => {
+			return works.put(rawValues)
+				.then(data => {
+					let work = new Work(data);
+					commit(UPDATE_WORK, work);
+				});
+		} 
 	}
 };
