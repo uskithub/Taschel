@@ -62,6 +62,7 @@
     "express-validator": "^4.3.0",
     "fakerator": "0.3.0",
     "fecha": "^2.3.2",
+    "fullcalendar-scheduler": "^1.9.4",
     "glob": "7.1.2",
     "google-auth-library": "^1.0.0",
     "googleapis": "^25.0.0",

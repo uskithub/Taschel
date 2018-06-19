@@ -21,15 +21,16 @@ export default {
 		, droppable: true
 		, editable: true
 		, selectable: true
-		, defaultView: "agendaWeek"
+		, defaultView: "timelineYear"
 		// , events: {
 		// 	// 公開設定にすればできる
 		//     googleCalendarId: "yusuke.saito@jibunstyle.com"
 		// }
+		, resourceGroupField: "building"
 		, header : {
-			left:   "title"
-			, center: ""
-			, right:  "prev, next"
+			left:   "today prev,next"
+			, center: "title"
+			, right:  "timelineThreeMonths,timelineYear"
 		}
 		, businessHours: {
 			// days of week. an array of zero-based day of week integers (0=Sunday)
@@ -38,30 +39,33 @@ export default {
 			, end: "18:00"
 		}
 		// , dayNames : [_("Sunday"), _("Monday"), _("Tuesday"), _("Wednesday"), _("Thursday"), _("Friday"), _("Saturday")]
-		, weekends: true
+		, weekends: false
 		, aspectRatio: 1.5
 		, views: {
 			basic: {
 				// options apply to basicWeek and basicDay views
 			}
 			, agenda: {
-				// options apply to agendaWeek and agendaDay views
-				
+				// options apply to agendaWeek and agendaDay views	
+			}
+			, timelineThreeMonths: {
+				type: "timeline"
+				, duration: { months: 3 }
 			}
 			, month: { // name of view
 				titleFormat: "YYYY, MM, DD"
 				// other view-specific options here
 			}
-			, week: {
-				// options apply to basicWeek and agendaWeek views
-				allDaySlot : true
-				, allDayText: _("Review")
-				, scrollTime : "8:00"
-				, minTime : "6:00"
-				, maxTime : "22:00"
-				, timeFormat: "HH:mm"
-				, snapDuration: "00:15:00"
-			}
+			// , week: {
+			// 	// options apply to basicWeek and agendaWeek views
+			// 	allDaySlot : true
+			// 	, allDayText: _("Review")
+			// 	, scrollTime : "8:00"
+			// 	, minTime : "6:00"
+			// 	, maxTime : "22:00"
+			// 	, timeFormat: "HH:mm"
+			// 	, snapDuration: "00:15:00"
+			// }
 			, day: {
 				// options apply to basicDay and agendaDay views
 			}

@@ -1,3 +1,5 @@
+import ganttchart from "./components/ganttchart";
+
 const plugin = {
 	// @see https://jp.vuejs.org/v2/guide/plugins.html
 	install (Vue, options) {
@@ -10,7 +12,7 @@ const plugin = {
 		// strategies.googleMapsAPIsLoaded = strategies.created;
 
 		// componentの追加
-		// Vue.component("fullcalendar", fullcalendar);
+		Vue.component("ganttchart", ganttchart);
 
 		// maps.googleapiのロード
 		// if (finalOptions.load) {
