@@ -1,4 +1,6 @@
 import ganttchart from "./components/ganttchart";
+import treelist from "./components/treelist";
+import treenode from "./components/treenode";
 
 const plugin = {
 	// @see https://jp.vuejs.org/v2/guide/plugins.html
@@ -13,6 +15,8 @@ const plugin = {
 
 		// componentの追加
 		Vue.component("ganttchart", ganttchart);
+		Vue.component("treelist", treelist);
+		Vue.component("treenode", treenode);
 
 		// maps.googleapiのロード
 		// if (finalOptions.load) {

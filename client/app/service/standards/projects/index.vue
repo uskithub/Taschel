@@ -54,8 +54,8 @@
 			...mapActions([
 				// Usecases
 				"getUserProjectList"
-				, "selectProject"
 			])
+			// Interfacial Operations
 			, didSelectRow(entity) {
 				this.entity = entity;
 				this.isEditing = true;

@@ -1,6 +1,7 @@
 <template lang="pug">
 	section
-		ganttchart(:options="fullcalendarSchema", :currentWeek="currentWeek")
+		treelist(:treelists="treelists")
+		// ganttchart(:options="fullcalendarSchema", :currentWeek="currentWeek")
 </template>
 
 <script>
@@ -15,6 +16,18 @@
 	import "jquery-ui/ui/widgets/resizable"; // なくても動くがrequirementなので
 
 	const _ = Vue.prototype._;
+
+	class Treelist {
+		constructor(task) {
+			console.log("###", task);
+			this._task = task;
+			this._tasks = task.tasks.map(t => new Treelist(t));
+		}
+		get id() { return this._task.code; }
+		get name() { return this._task.name; }
+		get subtree() { return this._tasks; }
+		get task() { return this._task; }
+	}
 
 	const resources = [
 		{ id: 'a', building: '460 Bryant', title: 'Auditorium A' },
@@ -50,16 +63,31 @@
 		, mixins : [ Base ]
 		, computed : {
 			...mapGetters([
-				"currentWeek"
-				, "currentweekTaskGroup"
-				, "currentWeekWorks"
+				"projects"
+				, "currentProject"
 			])
+			, treelists() {
+				if (this.projects.length > 0) {
+					return this.projects[0].tasks.map(t => new Treelist(t));
+				} else {
+					return [];
+				}
+			}
 		}
 		, data() {
 			schema.fullCalendar.resources = resources;
 			return {
 				fullcalendarSchema: schema.fullCalendar
 			};
+		}
+		, methods : {
+			...mapActions([
+				// Usecases
+				"getUserProjectList"
+			])
+		}
+		, sessionEnsured(me) {
+			this.getUserProjectList();
 		}
 	};
 </script>

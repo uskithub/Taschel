@@ -1,14 +1,14 @@
 <template lang="pug">
-	li.kanban-item(:draggable="draggable", :key="kanban.id", :data-id="kanban.id"
-		@click="$emit('click', $event, kanban)"
-		@dragstart="$emit('dragstart', $event, kanban)"
-		@dragend="$emit('dragend', $event, kanban)"
+	li.treenode(:draggable="draggable", :key="treenode.id", :data-id="treenode.id"
+		@click="$emit('click', $event, treenode)"
+		@dragstart="$emit('dragstart', $event, treenode)"
+		@dragend="$emit('dragend', $event, treenode)"
 	)
-		slot(:name="kanban.name")
+		slot(:name="treenode.name")
 			.media-content
-				strong  {{ kanban.name }}
-				ul.kanban-list(v-if="kanban.kanbans !== undefined && kanban.kanbans.length > 0" data-type="kanban", :data-id="kanban.id")
-					kanban(v-for="child in kanban.kanbans", :kanban="child", :key="child.id"
+				strong  {{ treenode.name }}
+				ul.treelist(v-if="treenode.treelist !== undefined && treenode.treelist.length > 0" data-type="treenode", :data-id="treenode.id")
+					treenode(v-for="childnode in treenode.subtree", :kanban="childnode", :key="childnode.id"
 						@dragstart="ondragstart"
 						@dragend="ondragend"
 					)
@@ -25,9 +25,9 @@
 	//  - kanban emits click events with the task.
 
 	export default {
-		name: "Kanban"
+		name: "Treenode"
         , props: {
-			kanban: {
+			treenode: {
 				type: Object
 				, validator: (value) => {
 					if (value.name === undefined || value.id === undefined) return false;

@@ -1,4 +1,5 @@
 import Vue from "vue";
+import Task from "./task";
 import { cloneDeep, isObject, isArray } from "lodash";
 import { validators } from "vue-form-generator";
 
@@ -222,6 +223,7 @@ export default class Project {
 
 	constructor(rawValues) {
 		this._rawValues = rawValues;
+		this._tasks = rawValues.children.map(t => new Task(t));
 	}
 
 	get rawValues() { return cloneDeep(this._rawValues); }
@@ -245,6 +247,8 @@ export default class Project {
 
 	get description() { return this._rawValues.description; }
 	set description(description) { return this._rawValues.description = description; }
+
+	get tasks() { return this._tasks; }
 
 	static createTableSchema(fieldSet) {
 		return fieldSet.map(f => {
