@@ -18,6 +18,11 @@
 				, "currentUserId"
 			])
 		}
+		, data() {
+			return {
+				isSessionReady: false
+			}
+		}
 		, methods : {
 			...mapActions([
 				// for Presentation
@@ -33,6 +38,7 @@
 			}
 
 			if (this.me) {
+				this.isSessionReady = true;
 				const impls = this.$options.sessionEnsured;
 				if (impls) {
 					if (isArray(impls)) {
@@ -44,9 +50,11 @@
 					}
 				}
 			} else {
+				this.isSessionReady = false;
 				// F5リロード時など、meがundefinedの場合があるので、その場合、meの更新を監視してtaskを更新する
 				this.$store.subscribe((mutation, state) => {
 					if (mutation.type === SET_USER) {
+						this.isSessionReady = true;
 						const me = state.session.user;
 						const impls = this.$options.sessionEnsured;
 						if (me && impls) {
