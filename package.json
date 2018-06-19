@@ -1,5 +1,5 @@
 {
-  "name": "Taschel",
+  "name": "taschel",
   "version": "0.9.0",
   "title": "Taschel",
   "description": "",
@@ -62,7 +62,6 @@
     "express-validator": "^4.3.0",
     "fakerator": "0.3.0",
     "fecha": "^2.3.2",
-    "fullcalendar": "^3.8.0",
     "glob": "7.1.2",
     "google-auth-library": "^1.0.0",
     "googleapis": "^25.0.0",
@@ -144,6 +143,7 @@
     "eslint-plugin-html": "^4.0.1",
     "extract-text-webpack-plugin": "^3.0.2",
     "file-loader": "^1.1.6",
+    "fullcalendar": "3.9.0",
     "graphql-tag": "^2.6.1",
     "i18next-browser-languagedetector": "^2.1.0",
     "i18next-xhr-backend": "^1.5.1",

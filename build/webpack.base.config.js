@@ -17,6 +17,7 @@ module.exports = {
 			"moment",
 			"jquery",
 			"jquery-ui",
+			"fullcalendar",
 			"bootstrap",
 			"eonasdan-bootstrap-datetimepicker",
 			"axios",

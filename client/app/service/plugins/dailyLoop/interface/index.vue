@@ -38,8 +38,8 @@
 			$(t).draggable({
 				zIndex: 999
 				, containment: ".kanban-system-container"
-				, revert: true      // immediately snap back to original position
-				, revertDuration: 0 //
+				, revert: true	// immediately snap back to original position
+				, revertDuration: 0
 				, start: e => {
 					// $(this).addClass("is-moving");
 				}
@@ -88,7 +88,7 @@
 			};
 
 			schema.fullCalendar.viewRender = (view, elem) => {
-				console.log("viewRender");
+				console.log("viewRender", view.start.format("YYYY-MM-DD"));
 			};
 
 			return {
@@ -130,6 +130,7 @@
 	}
 </style>
 <style lang="scss">
+	// TODO: なんでscopedだとダメなんだろう
 	.fc-divider.fc-widget-header { 
         width: 100%; 
 	}

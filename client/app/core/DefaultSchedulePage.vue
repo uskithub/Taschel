@@ -18,7 +18,7 @@
 				.form
 					vue-form-generator(:schema="schema.userSelector", :model="modelUserSelector" ref="userSelector" @model-updated="selectUser")
 
-		div.kanban-system-container
+		.kanban-system-container
 			ul.kanban-board-container
 				li.kanban-board.kanban-board-weekly-tasks(key="weekly")
 					span.kanban-board-header
