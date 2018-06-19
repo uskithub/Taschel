@@ -19,7 +19,8 @@
                 fc.fullCalendar("refetchEvents");
             }
             , currentWeek(newWeek) {
-                console.log("● newWeek", newWeek);
+                const fc = $(this.$el);
+                fc.fullCalendar("gotoDate", newWeek);
             }
         }
         , methods: {
@@ -32,5 +33,10 @@
         }
     }
 </script>
-
-<style src="fullcalendar/dist/fullcalendar.css"></style>
+<style>
+    @import "fullcalendar/dist/fullcalendar.css";
+	
+    .fc-divider.fc-widget-header { 
+        width: 100%; 
+	}
+</style>

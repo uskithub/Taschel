@@ -50,6 +50,23 @@
 			});
 		});
 	};
+
+	// finding the task object has the code from the objects in the array.
+	// recursivly finding its children.
+	const findTask = (code, taskArr) => {
+		for (let i in taskArr) {
+			let t = taskArr[i];
+			if (t.code === code) {
+				return t;
+			} else if (t.tasks.length > 0) {
+				let result = findTask(code, t.tasks);
+				if (result) {
+					return result;
+				}
+			}
+		}
+		return null;
+	};
 	
 	export default {
 		name : "DailyLoop"
@@ -70,6 +87,20 @@
 		, data() {
 			schema.fullCalendar.drop = (date, jqEvent, ui, resourceId) => {
 				console.log("drop");
+				// ignore dropped at all-day slot.
+				if (!date.hasTime()) { return; }
+
+				const code = $(jqEvent.target).data("id");
+				const task = findTask(code, this.currentweekTaskGroup.tasks);
+				const newModel = {
+					title : task.name
+					, start : date.utc().format()
+					, end : date.add(1, "h").utc().format()
+					, parent_code : task.code
+					, week : this.currentWeek
+				};
+
+				console.log("drop", newModel);
 			};
 
 			// for user's dragging and dropping events
@@ -127,11 +158,5 @@
 		.kanban-board {
 			overflow: visible;
 		}
-	}
-</style>
-<style lang="scss">
-	// TODO: なんでscopedだとダメなんだろう
-	.fc-divider.fc-widget-header { 
-        width: 100%; 
 	}
 </style>
