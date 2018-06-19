@@ -8,6 +8,7 @@ export const ADD_NOTIFICATION	= "ADD_NOTIFICATION";
 export const SET_USER			= "SET_USER";
 export const SEARCH				= "SEARCH";
 export const SET_CURRENT_PROJECT		= "SET_CURRENT_PROJECT";
+export const SET_CURRENT_WEEK	= "SET_CURRENT_WEEK";
 
 // breadcrumb in session
 export const PUSH_CRUMB			= "PUSH_CRUMB";

@@ -147,6 +147,7 @@
 				, "getCurrentWeekWorks"
 				, "addWork"
 				, "editWork"
+				, "changeWeek"
 			])
 			// Interfacial operations
 			, didDropTask(date, jqEvent, ui, resourceId) {
@@ -183,7 +184,15 @@
 				console.log("eventClick");
 			}
 			, didChangeWeek(view, elem) {
-				console.log("viewRender", view.start.format("YYYY-MM-DD"));
+				const week = view.start.format("YYYY-MM-DD");
+				console.log("viewRender", week);
+				this.changeWeek(week)
+					.then(() => {
+						this.popCrumb();
+						this.pushCrumb({ id: "week", name: this.currentWeek });
+						this.getCurrentWeekTasks();
+						this.getCurrentWeekWorks();
+					});
 			}
 		}
 		, created() {

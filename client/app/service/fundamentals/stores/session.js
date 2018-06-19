@@ -5,7 +5,7 @@ import organization from "./organization";
 import breadcrumb from "./breadcrumb";
 import backlog from "./backlog";
 import pdca from "./pdca";
-import { INITIALIZE, ADD_MESSAGE, ADD_NOTIFICATION, SET_USER, SEARCH, PUSH_CRUMB, POP_CRUMB, SET_WAY_BACK, CLEAR_CRUMB, LOAD_PROJECTS, ADD_PROJECT, UPDATE_PROJECT, SET_CURRENT_PROJECT, CLEAR_SELECTION } from "../mutationTypes";
+import { INITIALIZE, ADD_MESSAGE, ADD_NOTIFICATION, SET_USER, SEARCH, SET_CURRENT_WEEK, LOAD_PROJECTS, ADD_PROJECT, UPDATE_PROJECT, SET_CURRENT_PROJECT, CLEAR_SELECTION } from "../mutationTypes";
 import moment from "moment";
 import { assign } from "lodash";
 
@@ -100,6 +100,9 @@ export default {
 		, [SET_CURRENT_PROJECT] (state, entity) {
 			state.currentProject = entity;
 		}
+		, [SET_CURRENT_WEEK] (state, entity) {
+			state.currentWeek = entity;
+		}
 		, [CLEAR_SELECTION] (state) {
 			state.currentProject = null;
 		}
@@ -109,19 +112,25 @@ export default {
 	// Vuex: Actions can execute asynchronous transactions.
 	, actions : {
 		// This action calls all modules INITIALIZE mutations.
-		initialize : ({ commit }) => {
+		initialize({ commit }) {
 			commit(INITIALIZE);
 		}
-		, getCurrentSession : ({ commit }) => {
+		, getCurrentSession({ commit }) {
 			return sessions.get()
 				.then(data => {
 					let user = new User(data);
 					commit(SET_USER, user);
 				});
 		}
-
+		// Usecase:
+		, changeWeek({ commit }, week) {
+			return Promise.resolve()
+				.then(() => {
+					commit(SET_CURRENT_WEEK, week);
+				});
+		}
 		// Usecase: a user watches the list of the projects that he/she is owner or joins.
-		, getUserProjectList : ({ commit, getters }, { options } = {}) => {
+		, getUserProjectList({ commit, getters }, { options } = {}) {
 			let user = getters.me;
 			options = assign({ taskType : "project", user : user.code }, options);
 			return tasks.get(options)
@@ -133,12 +142,11 @@ export default {
 				});
 		}
 		// Usecase: a user selects a project for editing.
-		, selectProject : ({ commit }, project) => {
+		, selectProject({ commit }, project) {
 			commit(SET_CURRENT_PROJECT, project);
 		}
-		
 		// Usecase: a user completes adding a new project.
-		, createProject : ({ commit, getters }, rawValues) => {
+		, createProject({ commit, getters }, rawValues) {
 			let user = getters.me;
 			rawValues = assign({ type: "project", author : user.code }, rawValues);
 			return tasks.post(rawValues)
@@ -147,9 +155,8 @@ export default {
 					commit(ADD_PROJECT, project);
 				});
 		}
-		
 		// Usecase: a user completes editing a project.
-		, updateProject : ({ commit }, rawValues) => {
+		, updateProject({ commit }, rawValues) {
 			return tasks.put(rawValues)
 				.then(data => {
 					let project = new Project(rawValues);

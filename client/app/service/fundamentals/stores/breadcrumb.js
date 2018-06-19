@@ -35,19 +35,19 @@ export default {
 		}
 	}
 	, actions : {
-		pushCrumb : ({ commit }, crumb) => {
+		pushCrumb({ commit }, crumb) {
 			commit(PUSH_CRUMB, crumb);
 		}
-		, popCrumb : ({ commit }) => {
+		, popCrumb({ commit }) {
 			commit(POP_CRUMB);
 		}
-		, setWayBackOnLastCrumb : ({ commit }, func) => {
+		, setWayBackOnLastCrumb({ commit }, func) {
 			commit(SET_WAY_BACK, func);
 		}
-		, setSelectorOnLastCrumb : ({ commit }, itemsAndHandler) => {
+		, setSelectorOnLastCrumb({ commit }, itemsAndHandler) {
 			commit(SET_SELECTOR, itemsAndHandler);
 		}
-		, clearCrumb : ({ commit }) => {
+		, clearCrumb({ commit }) {
 			commit(CLEAR_CRUMB);
 		}
 	}

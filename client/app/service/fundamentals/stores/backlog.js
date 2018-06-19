@@ -45,7 +45,7 @@ export default {
 	// Vuex: Actions can execute asynchronous transactions.
 	, actions : {
 		// Usecase: a user watches a list of tasks.
-		getMyTaskList : ({ commit, getters }) => {
+		getMyTaskList({ commit, getters }) {
 			// TODO: module分割して疎結合にすべきなのに、globalで見えるmeを（このmoduleは知らないのに）使っているのがキモチワルイ
 			// 引数でComponent側から渡すべきか？
 			// StoreはDDD的にはApplicationServiceに当たると思うので、ユースケースをactionで表現したい
@@ -60,7 +60,7 @@ export default {
 					commit(LOAD_TASKS, tasks);
 				});
 		}
-		, updateTask : ({ commit }, rawValues) => {
+		, updateTask ({ commit }, rawValues) {
 			return tasks.put(rawValues)
 				.then(data => {
 					let task = new Task(rawValues);

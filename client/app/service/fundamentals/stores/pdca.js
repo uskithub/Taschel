@@ -55,7 +55,7 @@ export default {
 	, actions : {
 
 		// Usecase: a user watches tasks that the user do or did in the current week.
-		getMyWeeklyTasks: ({ commit, getters }) => {
+		getMyWeeklyTasks({ commit, getters }) {
 			const user = getters.me;
 			const currentWeek = getters.currentWeek;
 			const options = { user: user.code, week: currentWeek };
@@ -68,7 +68,7 @@ export default {
 				});
 		}
 		// Usecase: a user arrange a task from a group or another task to another group or task.
-		, arrangeTasks: ({ commit, getters }, { task, from, to, index }) => {
+		, arrangeTasks({ commit, getters }, { task, from, to, index }) {
 			console.log(task, from, to, index);
 			const _groups = getters.groups;
 
@@ -112,7 +112,7 @@ export default {
 			}
 		}
 		// Usecase: a user watches tasks that the user decided to do in the current week.
-		, getCurrentWeekTasks: ({ commit, getters }) => {
+		, getCurrentWeekTasks({ commit, getters }) {
 			const user = getters.me;
 			const currentWeek = getters.currentWeek;
 			const options = { user: user.code, day: currentWeek };
@@ -126,7 +126,7 @@ export default {
 				});
 		}
 		// Usecase: a user watches works that the user scheduled to do in the current week.
-		, getCurrentWeekWorks: ({ commit, getters }) => {
+		, getCurrentWeekWorks({ commit, getters }) {
 			const user = getters.me;
 			const currentWeek = getters.currentWeek;
 			const options = { user: user.code, week: currentWeek };
@@ -139,7 +139,7 @@ export default {
 				});
 		}
 		// Usecase: a user add new work.
-		, addWork: ({ commit }, rawValues) => {
+		, addWork({ commit }, rawValues) {
 			return works.post(rawValues)
 				.then(data => {
 					let work = new Work(data);
@@ -147,7 +147,7 @@ export default {
 				});
 		}
 		// Usecase:
-		, editWork: ({ commit }, rawValues) => {
+		, editWork({ commit }, rawValues) {
 			return works.put(rawValues)
 				.then(data => {
 					let work = new Work(data);
