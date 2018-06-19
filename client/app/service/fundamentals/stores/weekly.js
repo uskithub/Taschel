@@ -1,7 +1,9 @@
 import Group from "../entities/group";
-import { INITIALIZE, LOAD_WEEKLY_GROUPS, LOAD_CURRENTWEEK_TASK_GROUP } from "../mutationTypes";
+import Work from "../entities/work";
+import { INITIALIZE, LOAD_WEEKLY_GROUPS, LOAD_CURRENTWEEK_TASK_GROUP, LOAD_WEEKLY_WORKS, ADD_WORK } from "../mutationTypes";
 import { assign } from "lodash";
 import groups from "../repositories/rest/groups";
+import works from "../repositories/rest/works";
 import domainGlue from "../domainGlue";
 
 export default {
@@ -9,10 +11,12 @@ export default {
 		// DDD: Entities
 		entities: []
 		, currentweekTaskGroup: null
+		, currentWeekWorks: []
 	}
 	, getters : {
 		groups(state) { return state.entities; }
 		, currentweekTaskGroup(state) { return state.currentweekTaskGroup; }
+		, currentWeekWorks(state) { return state.currentWeekWorks; }
 	}
 	// DDD: Usecases
 	// Vuex: Mutations can change states. It must run synchronously.
@@ -27,14 +31,24 @@ export default {
 		, [LOAD_CURRENTWEEK_TASK_GROUP] (state, entity) {
 			state.currentweekTaskGroup = entity;
 		}
+		, [LOAD_WEEKLY_WORKS] (state, entities) {
+			state.currentWeekWorks.splice(0);
+			state.currentWeekWorks.push(...entities);
+		}
+		, [ADD_WORK] (state, entity) {
+			let isFound = state.currentWeekWorks.find(w => w.code === entity.code);
+			if (!isFound) {
+				state.currentWeekWorks.push(entity);
+			}
+		}
 	}
 
 	// DDD: Usecases
 	// Vuex: Actions can execute asynchronous transactions.
 	, actions : {
 
-		// Usecase: a user watches tasks that the user do or did in a week.
-		getMyWeeklyTasks : ({ commit, getters }) => {
+		// Usecase: a user watches tasks that the user do or did in the current week.
+		getMyWeeklyTasks: ({ commit, getters }) => {
 			const user = getters.me;
 			const currentWeek = getters.currentWeek;
 			const options = { user: user.code, week: currentWeek };
@@ -47,7 +61,7 @@ export default {
 				});
 		}
 		// Usecase: a user arrange a task from a group or another task to another group or task.
-		, arrangeTasks : ({ commit, getters }, { task, from, to, index }) => {
+		, arrangeTasks: ({ commit, getters }, { task, from, to, index }) => {
 			console.log(task, from, to, index);
 			const _groups = getters.groups;
 
@@ -90,9 +104,8 @@ export default {
 				console.log("validae NG");
 			}
 		}
-
-		// Usecase
-		, getCurrentWeekTasks : ({ commit, getters }) => {
+		// Usecase: a user watches tasks that the user decided to do in the current week.
+		, getCurrentWeekTasks: ({ commit, getters }) => {
 			const user = getters.me;
 			const currentWeek = getters.currentWeek;
 			const options = { user: user.code, day: currentWeek };
@@ -103,6 +116,27 @@ export default {
 					} else {
 						commit(LOAD_CURRENTWEEK_TASK_GROUP, null);
 					}
+				});
+		}
+		// Usecase:
+		, getCurrentWeekWorks: ({ commit, getters }) => {
+			const user = getters.me;
+			const currentWeek = getters.currentWeek;
+			const options = { user: user.code, week: currentWeek };
+			return works.get(options)
+				.then(data => {
+					let works = data.map(rawValues => {
+						return new Work(rawValues);
+					});
+					commit(LOAD_WEEKLY_WORKS, works);
+				});
+		}
+		// Ssecase:
+		, addWork: ({ commit }, rawValues) => {
+			return works.post(rawValues)
+				.then(data => {
+					let work = new Work(data);
+					commit(ADD_WORK, work);
 				});
 		}
 	}

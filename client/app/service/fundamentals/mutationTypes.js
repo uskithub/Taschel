@@ -32,6 +32,10 @@ export const CLEAR_SELECTION	= "CLEAR_SELECTION";
 export const LOAD_WEEKLY_GROUPS	= "LOAD_WEEKLY_GROUPS";
 export const LOAD_CURRENTWEEK_TASK_GROUP	= "LOAD_CURRENTWEEK_TASK_GROUP";
 
+// work
+export const LOAD_WEEKLY_WORKS	= "LOAD_WEEKLY_WORKS";
+export const ADD_WORK       	= "ADD_WORK";
+
 
 // organizations
 export const LOAD 				= "LOAD";

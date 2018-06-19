@@ -19,12 +19,42 @@
 	import Kanban from "../../kanban/kanban";
 	import { mapGetters, mapActions } from "vuex";
 	import schema from "./schema";
+	import moment from "moment";
 
 	import $ from "jquery";
 	import "jquery-ui/ui/widgets/draggable";
 	import "jquery-ui/ui/widgets/resizable"; // なくても動くがrequirementなので
 
 	const _ = Vue.prototype._;
+
+	const closedEventColor = schema.fullCalendar.closedEventColor;
+	const googleCalendarEventColor = schema.fullCalendar.googleCalendarEventColor;
+
+	const convertWork2Event = work => {
+		const isGoogleCalendar = (work.code === "GOOGLE_CALENDAR");
+		return {
+			id: work.code
+			, title: work.title
+			// , allDay: ???
+			, start: work.start
+			, end: work.end
+			// , url: ???
+			// , className: ???
+			, editable: !isGoogleCalendar
+			// , startEditable: ???
+			, durationEditable: !isGoogleCalendar
+			// , resourceEditable: ???
+			// , rendering: ???
+			// , overlap: ???
+			// , constraint: ???
+			// , source: ???
+			, color: isGoogleCalendar ? googleCalendarEventColor.color : (work.status < 0 ? closedEventColor.color : null)
+			// , backgroundColor: ???
+			// , borderColor: ???
+			, textColor: isGoogleCalendar ? googleCalendarEventColor.textColor : (work.status < 0 ? closedEventColor.textColor : null)
+				
+		};
+	};
 
 	const makeDraggable = () => {
 		const kanbanItems = Array.from(document.querySelectorAll(".kanban-item"), el => { 
@@ -75,10 +105,25 @@
 			...mapGetters([
 				"currentWeek"
 				, "currentweekTaskGroup"
+				, "currentWeekWorks"
 			])
 			, kanbans() {
 				if (this.currentweekTaskGroup) {
 					return (new Board(this.currentweekTaskGroup)).kanbans;
+				} else {
+					return [];
+				}
+			}
+			, events() {
+				// the first day of currentWeek(mon), tue, wed, thu, fri, sat, sun
+				let days = [0, 1, 2, 3, 4, 5].reduce((arr, i) => {
+					arr.push(moment(arr[i]).add(1, "d").format("YYYY-MM-DD"));
+					return arr;
+				}, [this.currentWeek]);
+
+				if (this.currentWeekWorks) {
+					//return this.currentWeekWorks.map(w => new Event(w));
+					return this.currentWeekWorks.map(convertWork2Event);
 				} else {
 					return [];
 				}
@@ -92,15 +137,15 @@
 
 				const code = $(jqEvent.target).data("id");
 				const task = findTask(code, this.currentweekTaskGroup.tasks);
-				const newModel = {
-					title : task.name
-					, start : date.utc().format()
-					, end : date.add(1, "h").utc().format()
-					, parent_code : task.code
-					, week : this.currentWeek
+				const work = {
+					title: task.name
+					, start: date.utc().format()
+					, end: date.add(1, "h").utc().format()
+					, parent_code: task.code
+					, week: this.currentWeek
+					, author: this.me.code
 				};
-
-				console.log("drop", newModel);
+				this.addWork(work);
 			};
 
 			// for user's dragging and dropping events
@@ -123,14 +168,15 @@
 			};
 
 			return {
-				events: []
-				, fullcalendarSchema: schema.fullCalendar
+				fullcalendarSchema: schema.fullCalendar
 			};
 		}
 		, methods : {
 			...mapActions([
 				// Usecases
 				"getCurrentWeekTasks"
+				, "getCurrentWeekWorks"
+				, "addWork"
 			])
 		}
 		, created() {
@@ -148,6 +194,7 @@
 		}
 		, sessionEnsured(me) {
 			this.getCurrentWeekTasks();
+			this.getCurrentWeekWorks();
 		}
 	};
 </script>
