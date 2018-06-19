@@ -174,7 +174,10 @@
 				this.editWork({ code, start, end });
 			}
 			, didResizeEvent(event, delta, revertFunc, jqEvent, ui, view) {
+				const code = event.id;
+				const end = moment(event.end).format();
 				console.log("eventResize");
+				this.editWork({ code, end });
 			}
 			, didClickEvent(event, jqEvent, view) {
 				console.log("eventClick");
