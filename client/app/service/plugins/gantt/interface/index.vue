@@ -19,14 +19,15 @@
 
 	class Treelist {
 		constructor(task) {
-			console.log("###", task);
 			this._task = task;
-			this._tasks = task.tasks.map(t => new Treelist(t));
+			this._subtree = task.tasks.map(t => new Treelist(t));
 		}
+		get task() { return this._task; }
 		get id() { return this._task.code; }
 		get name() { return this._task.name; }
-		get subtree() { return this._tasks; }
-		get task() { return this._task; }
+		get subtree() {
+			return this._subtree;
+		}
 	}
 
 	const resources = [
@@ -68,7 +69,9 @@
 			])
 			, treelists() {
 				if (this.projects.length > 0) {
-					return this.projects[0].tasks.map(t => new Treelist(t));
+					return this.projects[0].tasks.map(t => {
+						return new Treelist(t);
+					});
 				} else {
 					return [];
 				}

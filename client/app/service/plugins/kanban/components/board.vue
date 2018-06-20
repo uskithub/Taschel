@@ -14,6 +14,40 @@
 </template>
 <script>
 
+	const isNotAncestor = (target, el) => {
+		if (target == el) {
+			return false;
+		}
+		if (target.childNodes) {
+			for (let i in target.childNodes) {
+				let child = target.childNodes[i];
+				if (child instanceof HTMLElement && !isNotAncestor(child, el)) {
+					return false;
+				}
+			}
+			return true;
+		} else {
+			return true;
+		}
+	};
+
+	const getInsertingIntersiblings = (newParent, x, y) => {
+		const len = newParent.children.length;
+		for (let i=0; i < len; i++) {
+			let child = newParent.children[i];
+			let rect = child.getBoundingClientRect();
+			if ((rect.top + rect.height / 2) > y) {
+				if (i > 0) {
+					let before = newParent.children[i-1];
+					return [before, child];
+				} else {
+					return [null, child];
+				}
+			}
+		}
+		return [newParent.children[len-1], null];
+	};
+
 	export default {
 		name: "Board"
         , props: {
@@ -161,40 +195,6 @@
 				}
 			}
 		}
-	};
-
-	const isNotAncestor = (target, el) => {
-		if (target == el) {
-			return false;
-		}
-		if (target.childNodes) {
-			for (let i in target.childNodes) {
-				let child = target.childNodes[i];
-				if (child instanceof HTMLElement && !isNotAncestor(child, el)) {
-					return false;
-				}
-			}
-			return true;
-		} else {
-			return true;
-		}
-	};
-
-	const getInsertingIntersiblings = (newParent, x, y) => {
-		const len = newParent.children.length;
-		for (let i=0; i < len; i++) {
-			let child = newParent.children[i];
-			let rect = child.getBoundingClientRect();
-			if ((rect.top + rect.height / 2) > y) {
-				if (i > 0) {
-					let before = newParent.children[i-1];
-					return [before, child];
-				} else {
-					return [null, child];
-				}
-			}
-		}
-		return [newParent.children[len-1], null];
 	};
 
 </script>

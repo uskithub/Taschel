@@ -7,8 +7,8 @@
 		slot(:name="treenode.name")
 			.media-content
 				strong  {{ treenode.name }}
-				ul.treelist(v-if="treenode.treelist !== undefined && treenode.treelist.length > 0" data-type="treenode", :data-id="treenode.id")
-					treenode(v-for="childnode in treenode.subtree", :kanban="childnode", :key="childnode.id"
+				ul.treelist(v-if="treenode.subtree !== undefined && treenode.subtree.length > 0" data-type="treenode", :data-id="treenode.id")
+					treenode(v-for="childnode in treenode.subtree", :treenode="childnode", :key="childnode.id"
 						@dragstart="ondragstart"
 						@dragend="ondragend"
 					)
@@ -40,12 +40,12 @@
 			}
 		}
         , methods: {
-            ondragstart(e, kanban) {
-				this.$emit("dragstart", e, kanban);
+            ondragstart(e, treenode) {
+				this.$emit("dragstart", e, treenode);
 				e.stopPropagation();
 			}
-			, ondragend(e, kanban) {
-				this.$emit("dragend", e, kanban);
+			, ondragend(e, treenode) {
+				this.$emit("dragend", e, treenode);
 				e.stopPropagation();
 			}
         }

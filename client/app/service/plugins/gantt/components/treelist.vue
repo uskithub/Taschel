@@ -14,6 +14,40 @@
 </template>
 <script>
 
+	const isNotAncestor = (target, el) => {
+		if (target == el) {
+			return false;
+		}
+		if (target.childNodes) {
+			for (let i in target.childNodes) {
+				let child = target.childNodes[i];
+				if (child instanceof HTMLElement && !isNotAncestor(child, el)) {
+					return false;
+				}
+			}
+			return true;
+		} else {
+			return true;
+		}
+	};
+
+	const getInsertingIntersiblings = (newParent, x, y) => {
+		const len = newParent.children.length;
+		for (let i=0; i < len; i++) {
+			let child = newParent.children[i];
+			let rect = child.getBoundingClientRect();
+			if ((rect.top + rect.height / 2) > y) {
+				if (i > 0) {
+					let before = newParent.children[i-1];
+					return [before, child];
+				} else {
+					return [null, child];
+				}
+			}
+		}
+		return [newParent.children[len-1], null];
+	};
+
 	export default {
 		name: "Treelist"
         , props: {
@@ -31,7 +65,7 @@
 			}
 		}
 		, methods : {
-            ondragstart(e, kanban) {
+            ondragstart(e, treenode) {
 				const elem = e.target
 					, mirage = elem.cloneNode(true)
 					;
@@ -40,17 +74,17 @@
 
 				this.dragging = {
 					elem: elem
-					, kanban: kanban
+					, treenode: treenode
 					, mirage: mirage
 				};
 			}
-			, ondragend(e, kanban) {
+			, ondragend(e, treenode) {
 				const elem = e.target;
 				elem.classList.remove("dragging");
 
 				if (this.dragging && this.dragging.mirage.parentNode) {
 					// kaban, from ,to
-					const kanban = this.dragging.kanban;
+					const treenode = this.dragging.treenode;
 					const exParent = elem.parentNode;
 					const newParent = this.draggingOn.elem;
 					const mirage = this.dragging.mirage;
@@ -63,7 +97,7 @@
 					}
 
 					this.$emit("arrange", {
-						kanban: kanban
+						treenode: treenode
 						, from: { type: exParent.dataset.type, id: exParent.dataset.id }
 						, to: { type: this.draggingOn.type, id: this.draggingOn.id }
 						, index: index 
@@ -98,7 +132,7 @@
 					;
 
 				if (type === undefined) return;
-				if (type === "kanban" && this.dragging.elem.dataset.id === id) return;
+				if (type === "treenode" && this.dragging.elem.dataset.id === id) return;
 				if (!isNotAncestor(this.dragging.elem, elem)) return;
 				if (!isNotAncestor(this.dragging.mirage, elem)) return;
 
@@ -141,7 +175,7 @@
 					;
 
 				if (type === undefined) return;
-				if (type === "kanban" && this.dragging.elem.dataset.id === id) return;
+				if (type === "treenode" && this.dragging.elem.dataset.id === id) return;
 				if (!isNotAncestor(this.dragging.elem, elem)) return;
 				if (!isNotAncestor(this.dragging.mirage, elem)) return;
 
@@ -161,40 +195,6 @@
 				}
 			}
 		}
-	};
-
-	const isNotAncestor = (target, el) => {
-		if (target == el) {
-			return false;
-		}
-		if (target.childNodes) {
-			for (let i in target.childNodes) {
-				let child = target.childNodes[i];
-				if (child instanceof HTMLElement && !isNotAncestor(child, el)) {
-					return false;
-				}
-			}
-			return true;
-		} else {
-			return true;
-		}
-	};
-
-	const getInsertingIntersiblings = (newParent, x, y) => {
-		const len = newParent.children.length;
-		for (let i=0; i < len; i++) {
-			let child = newParent.children[i];
-			let rect = child.getBoundingClientRect();
-			if ((rect.top + rect.height / 2) > y) {
-				if (i > 0) {
-					let before = newParent.children[i-1];
-					return [before, child];
-				} else {
-					return [null, child];
-				}
-			}
-		}
-		return [newParent.children[len-1], null];
 	};
 
 </script>

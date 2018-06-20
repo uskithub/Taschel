@@ -1,22 +1,17 @@
 @charset "utf-8";
 
 .treelist-board-container {
-    display: flex;
-    align-items: flex-start;
     list-style-type: none;
     margin: 0;
     padding: 0;
 
     .treelist-board {
-        flex: 1;
-        align-items: flex-start;
         margin: 0 0.5em;
         position: relative;
         background: rgba(black, 0.2);
         overflow: hidden;
 
         .kanban-board-header {
-            display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 10px;
