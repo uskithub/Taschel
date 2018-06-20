@@ -7,7 +7,7 @@
 		slot(:name="treenode.name")
 			.media-content
 				strong  {{ treenode.name }}
-				ul.treelist(v-if="treenode.subtree !== undefined && treenode.subtree.length > 0" data-type="treenode", :data-id="treenode.id")
+				ul.treelist(data-type="treenode", :data-id="treenode.id")
 					treenode(v-for="childnode in treenode.subtree", :treenode="childnode", :key="childnode.id"
 						@dragstart="ondragstart"
 						@dragend="ondragend"

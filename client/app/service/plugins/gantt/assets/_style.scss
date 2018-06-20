@@ -6,10 +6,19 @@
     padding: 0;
 
     .treelist-board {
-        margin: 0 0.5em;
+		margin: 0 0 0 0.5em;
+		padding: 0.5em 0 0 0.5em;
         position: relative;
-        background: rgba(black, 0.2);
-        overflow: hidden;
+		background: rgba(black, 0.2);
+		min-height: 3em;
+		border-top: 1px solid #000;
+		border-right: 1px solid #000;
+		border-left: 1px solid #000;
+		overflow: hidden;
+		
+		&:last-child {
+			border-bottom: 1px solid #000;
+		}
 
         .kanban-board-header {
             align-items: center;
@@ -19,27 +28,30 @@
         .treelist {
             list-style-type: none;
             margin: 0;
-            padding: 0.5em 0;
-            min-height: 100px;
+            padding: 0;
             color: white;
-            border: 1px solid transparent;
+			border-top: 1px solid transparent;
+			border-right: 1px solid transparent;
+			border-left: 1px solid transparent;
 
             &.drop-target {
                 border: 1px dashed #000;
             }
 
             .treenode {
-                margin: 0.5em;
-                padding: 0.5em;
+                margin: 0;
+                padding: 0.5em 0 0 0.5em;
                 background: rgba(black, 0.4);
-                border: 1px solid #000;
+				border-top: 1px solid #000;
+				border-right: 1px solid #000;
+				border-left: 1px solid #000;
+
+				&:first-child {
+					margin: 0.5em 0 0 0;
+				}
             
                 &.dragging {
                     opacity: 0.5;
-                }
-
-                .treenode {
-                    margin: 0.5em 0 0 0;
                 }
             }
         }

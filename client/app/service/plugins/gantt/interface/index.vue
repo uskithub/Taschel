@@ -25,9 +25,7 @@
 		get task() { return this._task; }
 		get id() { return this._task.code; }
 		get name() { return this._task.name; }
-		get subtree() {
-			return this._subtree;
-		}
+		get subtree() { return this._subtree; }
 	}
 
 	const resources = [
