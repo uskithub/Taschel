@@ -6,20 +6,14 @@
     padding: 0;
 
     .treelist-board {
-		margin: 0 0 0 0.5em;
+		margin: 0;
 		padding: 0.5em 0 0 0.5em;
         position: relative;
 		background: rgba(black, 0.2);
-		min-height: 3em;
-		border-top: 1px solid #000;
-		border-right: 1px solid #000;
-		border-left: 1px solid #000;
+		min-height: 2.5em;
+		border-bottom: 1px solid #000;
 		overflow: hidden;
 		
-		&:last-child {
-			border-bottom: 1px solid #000;
-		}
-
         .kanban-board-header {
             align-items: center;
             justify-content: space-between;
@@ -29,9 +23,9 @@
             list-style-type: none;
             margin: 0;
             padding: 0;
-            color: white;
+			color: white;
+			min-height: 0.5em;
 			border-top: 1px solid transparent;
-			border-right: 1px solid transparent;
 			border-left: 1px solid transparent;
 
             &.drop-target {
@@ -43,7 +37,6 @@
                 padding: 0.5em 0 0 0.5em;
                 background: rgba(black, 0.4);
 				border-top: 1px solid #000;
-				border-right: 1px solid #000;
 				border-left: 1px solid #000;
 
 				&:first-child {
@@ -52,7 +45,64 @@
             
                 &.dragging {
                     opacity: 0.5;
-                }
+				}
+            }
+        }
+    }
+}
+
+.gantt-container {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+
+    .treelist-board {
+		margin: 0;
+		padding: 0.5em 0 0 0;
+        position: relative;
+		background: rgba(black, 0.2);
+		min-height: 2.5em;
+		border-bottom: 1px solid #000;
+		overflow: hidden;
+
+		span {
+			legend {
+				min-height: 1.5em;
+			}
+		}
+		
+        .kanban-board-header {
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px;
+        }
+        .treelist {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+			color: white;
+			min-height: 0.5em;
+			border-top: 1px solid transparent;
+
+            &.drop-target {
+                border: 1px dashed #000;
+            }
+
+            .treenode {
+                margin: 0;
+                padding: 0.5em 0 0 0;
+                background: rgba(black, 0.4);
+				border-top: 1px solid #000;
+
+				.media-content {
+					legend {
+						min-height: 1.5em;
+					}
+				}
+
+				&:first-child {
+					margin: 0.5em 0 0 0;
+				}
             }
         }
     }

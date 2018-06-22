@@ -6,9 +6,9 @@
 	)
 		slot(:name="treenode.name")
 			.media-content
-				legend  {{ treenode.name }}
+				legend 
 				ul.treelist(data-type="treenode", :data-id="treenode.id")
-					treenode(v-for="childnode in treenode.subtree", :treenode="childnode", :key="childnode.id"
+					timeframe(v-for="childnode in treenode.subtree", :treenode="childnode", :key="childnode.id"
 						@dragstart="ondragstart"
 						@dragend="ondragend"
 					)

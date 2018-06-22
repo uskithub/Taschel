@@ -53,6 +53,7 @@
     "cookie-parser": "1.4.3",
     "cross-env": "^5.0.0",
     "csurf": "1.9.0",
+    "date-fns": "^1.29.0",
     "dragula": "uskithub/dragula",
     "express": "^4.16.2",
     "express-flash": "0.0.2",

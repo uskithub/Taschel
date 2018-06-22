@@ -1,6 +1,13 @@
 <template lang="pug">
 	section
-		treelist(:treelists="treelists")
+		gantt(:data="mock", :treelists="treelists")
+		// table
+		// 	tbody
+		// 		tr
+		// 			td
+		// 				treelist(:treelists="treelists")
+		// 			td
+		// 				treelist(:treelists="treelists")
 		// ganttchart(:options="fullcalendarSchema", :currentWeek="currentWeek")
 </template>
 
@@ -79,6 +86,7 @@
 			schema.fullCalendar.resources = resources;
 			return {
 				fullcalendarSchema: schema.fullCalendar
+				, mock : schema.data
 			};
 		}
 		, methods : {

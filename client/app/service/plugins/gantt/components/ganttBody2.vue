@@ -1,13 +1,13 @@
 <template lang="pug">
-	ul.treelist-board-container
+	ul.gantt-container
 		li.treelist-board(v-for="treelist in treelists", :key="treelist.id")
 			span.treelist-board-header
-				legend {{ treelist.name }}
+				legend 
 			.drag-options
 			ul.treelist(data-type="treelist", :data-id="treelist.id"
 				@dragenter="ondragenter($event, treelist)"
 			)
-				treenode(v-for="treenode in treelist.subtree", :treenode="treenode", :key="treenode.id"
+				timeframe(v-for="treenode in treelist.subtree", :treenode="treenode", :key="treenode.id", :draggable="false"
 					@dragstart="ondragstart"
 					@dragend="ondragend"
 				)
@@ -207,34 +207,4 @@
 	@import "../assets/style";
 </style>
 <style lang="scss" scoped>
-
-	.vue-gantt-legend {
-		flex-shrink: 0;
-		width: 225px;
-		overflow: hidden;
-		box-sizing: border-box;
-		border: 1px solid #DDD;
-		border-bottom: none;
-		position: relative;
-		z-index: 20;
-
-		.title {
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			height: 72px;
-			box-sizing: border-box;
-			border-bottom: 1px solid #DDD;
-		}
-
-		.task {
-			box-sizing: border-box;
-			width: 100%;
-
-			.task-name {
-				font-weight: bold;
-				padding: 0 10px;
-			}
-		}
-	}
 </style>
