@@ -1,19 +1,23 @@
 <template lang="pug">
 	ul.treelist-board-container
-		li.treelist-board(v-for="(treelist, idx) in treelists", :key="treelist.id")
-			span.icon(v-if="treelist.subtree.length > 0" @click.prevent.stop="caratDidClick($event, idx)")
-				i.fa(:class="{ 'fa-caret-down' : isOpeningArr[idx], 'fa-caret-right': !isOpeningArr[idx] }")
+		li.treelist-board(v-for="treelist in treelists", :key="treelist.id")
+			span.icon(v-if="treelist.subtree.length > 0" @click.prevent.stop="caratDidClick($event, treelist.id)")
+				i.fa(:class="{ 'fa-caret-down': isOpeningMap[treelist.id], 'fa-caret-right': !isOpeningMap[treelist.id] }")
 			span.treelist-board-header {{ treelist.name }}
+			div.operation
 			.drag-options
-			ul.treelist(v-show="isOpeningArr[idx]" data-type="treelist", :data-id="treelist.id"
+			ul.treelist(v-show="isOpeningMap[treelist.id]" data-type="treelist", :data-id="treelist.id"
 				@dragenter="ondragenter($event, treelist)"
 			)
-				treenode(v-for="treenode in treelist.subtree", :treenode="treenode", :key="treenode.id"
+				treenode(v-for="treenode in treelist.subtree", :treenode="treenode", :isOpeningMap="isOpeningMap", :key="treenode.id"
 					@dragstart="ondragstart"
 					@dragend="ondragend"
+					@toggle-caret="caratDidClick"
 				)
 </template>
 <script>
+
+	import Vue from "vue";
 
 	const isNotAncestor = (target, el) => {
 		if (target == el) {
@@ -61,13 +65,26 @@
 				, default: "hoge"
     		}
 		}
-		, computed: {
-		}
 		, data() {
 			return {
-				isOpeningArr: this.treelists.map(t => true)
+				isOpeningMap: {}
 				, dragging: null
 				, draggingOn : null
+			}
+		}
+		, watch: {
+			treelists(newValue) {
+				const checkIsOpeningRecursively = list => {
+					list.forEach(item => {
+						if (this.isOpeningMap[item.id] === undefined) {
+							Vue.set(this.isOpeningMap, item.id, true);
+						}
+						if (item.subtree && item.subtree.length > 0) {
+							checkIsOpeningRecursively(item.subtree);
+						}
+					});
+				};
+				checkIsOpeningRecursively(newValue);
 			}
 		}
 		, methods : {
@@ -200,8 +217,8 @@
 					}
 				}
 			}
-			, caratDidClick(e, idx) {
-				this.isOpeningArr.splice(idx, 1, !this.isOpeningArr[idx]);
+			, caratDidClick(e, id) {
+				Vue.set(this.isOpeningMap, id, !this.isOpeningMap[id]);
 			}
 		}
 	};

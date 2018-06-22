@@ -6,13 +6,14 @@
 	)
 		slot(:name="treenode.name")
 			.media-content
-				span.icon(v-if="treenode.subtree.length > 0" @click.prevent.stop="caratDidClick")
-					i.fa(:class="{ 'fa-caret-down' : isOpening, 'fa-caret-right': !isOpening }")
+				span.icon(v-if="treenode.subtree.length > 0" @click.prevent.stop="$emit('toggle-caret', $event, treenode.id)")
+					i.fa(:class="{ 'fa-caret-down': isOpeningMap[treenode.id], 'fa-caret-right': !isOpeningMap[treenode.id] }")
 				span.treelist-node-header  {{ treenode.name }}
-				ul.treelist(v-show="isOpening" data-type="treenode", :data-id="treenode.id")
-					treenode(v-for="childnode in treenode.subtree", :treenode="childnode", :key="childnode.id"
+				ul.treelist(v-show="isOpeningMap[treenode.id]" data-type="treenode", :data-id="treenode.id")
+					treenode(v-for="childnode in treenode.subtree", :treenode="childnode", :isOpeningMap="isOpeningMap", :key="childnode.id"
 						@dragstart="ondragstart"
 						@dragend="ondragend"
+						@toggle-caret="caratDidClick"
 					)
 </template>
 
@@ -36,15 +37,13 @@
 					return true; 
 				}
 			}
+			, isOpeningMap: {
+				type: Object
+			}
 			, draggable: {
 				type: Boolean
 				, default: true
 			}
-		}
-		, data() {
-			return {
-				isOpening: true
-			};
 		}
         , methods: {
             ondragstart(e, treenode) {
@@ -55,8 +54,9 @@
 				this.$emit("dragend", e, treenode);
 				e.stopPropagation();
 			}
-			, caratDidClick(e) {
-				this.isOpening = !this.isOpening;
+			, caratDidClick(e, id) {
+				this.$emit("toggle-carat", e, id);
+				e.stopPropagation();
 			}
         }
 	};
