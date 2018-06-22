@@ -15,6 +15,9 @@
 	import { mapGetters, mapMutations, mapActions } from "vuex";
 	import { schema as schemaUtils } from "vue-form-generator";
 	import { cloneDeep } from "lodash";
+
+	import { projectTypes } from "../../constants";
+
 	const _ = Vue.prototype._;
 
 	export default {
@@ -30,8 +33,14 @@
 			}
 		}
 		, data() {
+			// MIGRATION v1->2
+			let rawValues = this.entity ? this.entity.rawValues : schemaUtils.createDefaultObject(this.schema);
+			if (rawValues.projectType === undefined) {
+				rawValues.projectType = projectTypes[1].id;
+			}
+
 			return {
-				rawValues: this.entity ? this.entity.rawValues : schemaUtils.createDefaultObject(this.schema)
+				rawValues: rawValues
 				, options: {}
 			};
 		}

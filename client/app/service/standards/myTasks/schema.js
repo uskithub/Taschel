@@ -1,8 +1,4 @@
 import Vue from "vue";
-import moment from "moment";
-import { validators } from "vue-form-generator";
-
-import { find } from "lodash";
 
 const _ = Vue.prototype._;
 

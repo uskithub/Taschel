@@ -43,7 +43,10 @@
 		}
 
 		&[disabled] {
-			cursor: not-allowed;	
+			cursor: not-allowed;
+			border: none;
+			background: none;
+			box-shadow: none; 	
 		}
 
 		@include setFocusHighLight($secondColor);

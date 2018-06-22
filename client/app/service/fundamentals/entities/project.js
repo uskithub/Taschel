@@ -42,9 +42,10 @@ const _fields = {
 			type: "select"
 			, required: true
 			, values: projectTypes
-			, default: projectTypes[0].id
+			, default: projectTypes[1].id
+			, readonly: true
+			, disabled: true
 			, validator: validators.required
-			//, validator: validators.required
 		}
 	}
 	, name: {
