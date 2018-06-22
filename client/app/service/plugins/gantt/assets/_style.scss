@@ -21,6 +21,16 @@
                 min-width: 1em;
             }
         }
+
+        .operation {
+            .icon {
+                padding-left: 0.5em;
+
+                &:hover {
+                    color: #ff0000;
+                }
+            }
+        }
 		
         .kanban-board-header {
             align-items: center;
@@ -57,6 +67,7 @@
             }
         }
     }
+
 }
 
 .gantt-container {

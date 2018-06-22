@@ -1,6 +1,6 @@
 <template lang="pug">
 	section
-		gantt(:data="mock", :treelists="treelists")
+		gantt(:data="mock", :treenodes="treenodes")
 		// table
 		// 	tbody
 		// 		tr
@@ -14,7 +14,7 @@
 <script>
 	import Vue from "vue";
 	import Base from "../../../fundamentals/mixins/base";
-	import Treelist from "../treelist";
+	import Treenode from "../treenode";
 	import { mapGetters, mapActions } from "vuex";
 	import schema from "./schema";
 	import moment from "moment";
@@ -62,10 +62,10 @@
 				"projects"
 				, "currentProject"
 			])
-			, treelists() {
+			, treenodes() {
 				if (this.projects.length > 0) {
 					return this.projects[0].tasks.map(t => {
-						return new Treelist(t);
+						return new Treenode(t);
 					});
 				} else {
 					return [];

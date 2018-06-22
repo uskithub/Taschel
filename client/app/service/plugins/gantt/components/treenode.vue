@@ -1,5 +1,7 @@
 <template lang="pug">
 	li.treenode(:draggable="draggable", :key="treenode.id", :data-id="treenode.id"
+		@mouseover.prevent.stop="onmouseover"
+		@mouseout.prevent.stop="onmouseout"
 		@click="$emit('click', $event, treenode)"
 		@dragstart="$emit('dragstart', $event, treenode)"
 		@dragend="$emit('dragend', $event, treenode)"
@@ -9,8 +11,12 @@
 				span.icon(v-if="treenode.subtree.length > 0" @click.prevent.stop="$emit('toggle-caret', $event, treenode.id)")
 					i.fa(:class="{ 'fa-caret-down': isOpeningMap[treenode.id], 'fa-caret-right': !isOpeningMap[treenode.id] }")
 				span.treelist-node-header  {{ treenode.name }}
+				span.operation(v-show="isHovering")
+					span.icon(@click.prevent.stop="$emit('click', $event, treenode)")
+						i.fa.fa-plus
 				ul.treelist(v-show="isOpeningMap[treenode.id]" data-type="treenode", :data-id="treenode.id")
 					treenode(v-for="childnode in treenode.subtree", :treenode="childnode", :isOpeningMap="isOpeningMap", :key="childnode.id"
+						@click="onclick"
 						@dragstart="ondragstart"
 						@dragend="ondragend"
 						@toggle-caret="caratDidClick"
@@ -45,8 +51,23 @@
 				, default: true
 			}
 		}
+		, data() {
+			return {
+				isHovering: false
+			}
+		}
         , methods: {
-            ondragstart(e, treenode) {
+            onmouseover(e) {
+				this.isHovering = true;
+			}
+			, onmouseout(e) {
+				this.isHovering = false;
+			}
+			, onclick(e, treenode) {
+				this.$emit("click", e, treenode);
+				e.stopPropagation();
+			}
+            , ondragstart(e, treenode) {
 				this.$emit("dragstart", e, treenode);
 				e.stopPropagation();
 			}

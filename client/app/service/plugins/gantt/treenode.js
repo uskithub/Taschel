@@ -1,7 +1,7 @@
-export default class Treelist {
+export default class Treenode {
 	constructor(task) {
 		this._task = task;
-		this._subtree = task.tasks.map(t => new Treelist(t));
+		this._subtree = task.tasks.map(t => new Treenode(t));
 	}
 	get task() { return this._task; }
 	get id() { return this._task.code; }

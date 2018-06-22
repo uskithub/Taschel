@@ -3,12 +3,12 @@
 		.gantt-row
 			.vue-gantt-legend
 				.title(:title="legendHelp") Legend (?)
-				treelist(:treelists="treelists" ref="legend")
+				treelist(:treenodes="treenodes" ref="legend")
 				// gantt-legend(:rows="tasks", :legendHelp="legendHelp" ref="legend" @task-click="handleTaskClick")
 			.gantt-column(@wheel.prevent="handleWheel", :style="{ width: cellsCount * 24 }")
 				gantt-header(:rows="header" @header-click="handleHeaderClick")
 				// .vue-gantt-body
-				gantt-body(:treelists="treelists")
+				gantt-body(:treelists="treenodes")
 				// gantt-body(:tasks="body")
 		gantt-footer(:scales="scales", :selected="selectedScaleIdx", :startDate="min", :endDate="max", :step="msInCell", :period="viewportStart"
 			@scale-change="handleScaleChange"
@@ -58,10 +58,10 @@
       data: {
         type: Object,
         required: true,
-	  }
-	  , treelists: {
-		  type: Array
-	  }
+      }
+      , treenodes: {
+        type: Array
+      }
 	  
     },
     mounted() {

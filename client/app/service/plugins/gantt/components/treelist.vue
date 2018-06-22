@@ -1,15 +1,18 @@
 <template lang="pug">
 	ul.treelist-board-container
-		li.treelist-board(v-for="treelist in treelists", :key="treelist.id")
-			span.icon(v-if="treelist.subtree.length > 0" @click.prevent.stop="caratDidClick($event, treelist.id)")
-				i.fa(:class="{ 'fa-caret-down': isOpeningMap[treelist.id], 'fa-caret-right': !isOpeningMap[treelist.id] }")
-			span.treelist-board-header {{ treelist.name }}
-			div.operation
+		li.treelist-board(v-for="treenode in treenodes", :key="treenode.id" @mouseover="onmouseover($event, treenode.id)" @mouseout="onmouseout($event, treenode.id)")
+			span.icon(v-if="treenode.subtree.length > 0" @click.prevent.stop="caratDidClick($event, treenode.id)")
+				i.fa(:class="{ 'fa-caret-down': isOpeningMap[treenode.id], 'fa-caret-right': !isOpeningMap[treenode.id] }")
+			span.treelist-board-header {{ treenode.name }}
+			span.operation(v-show="isHoveringMap[treenode.id]")
+				span.icon(@click="onclick($event, treenode)")
+					i.fa.fa-plus
 			.drag-options
-			ul.treelist(v-show="isOpeningMap[treelist.id]" data-type="treelist", :data-id="treelist.id"
-				@dragenter="ondragenter($event, treelist)"
+			ul.treelist(v-show="isOpeningMap[treenode.id]" data-type="treelist", :data-id="treenode.id"
+				@dragenter="ondragenter($event, treenode)"
 			)
-				treenode(v-for="treenode in treelist.subtree", :treenode="treenode", :isOpeningMap="isOpeningMap", :key="treenode.id"
+				treenode(v-for="childnode in treenode.subtree", :treenode="childnode", :isOpeningMap="isOpeningMap", :key="childnode.id"
+					@click="onclick"
 					@dragstart="ondragstart"
 					@dragend="ondragend"
 					@toggle-caret="caratDidClick"
@@ -56,7 +59,7 @@
 	export default {
 		name: "Treelist"
         , props: {
-			treelists : {
+			treenodes : {
 				type: Array
 				, validator: (value) => { return true; } // TODO
 			}
@@ -68,14 +71,15 @@
 		, data() {
 			return {
 				isOpeningMap: {}
+				, isHoveringMap: {}
 				, dragging: null
 				, draggingOn : null
 			}
 		}
 		, watch: {
-			treelists(newValue) {
-				const checkIsOpeningRecursively = list => {
-					list.forEach(item => {
+			treenodes(newValue) {
+				const checkIsOpeningRecursively = arr => {
+					arr.forEach(item => {
 						if (this.isOpeningMap[item.id] === undefined) {
 							Vue.set(this.isOpeningMap, item.id, true);
 						}
@@ -88,7 +92,16 @@
 			}
 		}
 		, methods : {
-            ondragstart(e, treenode) {
+			onmouseover(e, id) {
+				Vue.set(this.isHoveringMap, id, true);
+			}
+			, onmouseout(e, id) {
+				Vue.set(this.isHoveringMap, id, false);
+			}
+			, onclick(e, treenode) {
+				console.log("clicked!!", treenode.id);
+			}
+            , ondragstart(e, treenode) {
 				const elem = e.target
 					, mirage = elem.cloneNode(true)
 					;
