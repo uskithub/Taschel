@@ -16,6 +16,8 @@ import VueWebsocket from "vue-websocket";
 import fieldMyDateTimePicker from "./system/fundamentals/customField/dateTimePicker/index";
 import fieldTagsInput from "./system/fundamentals/customField/tagsInput/index";
 
+import fundamentals from "./service/fundamentals/index";
+
 import dailyLoopPlugin from "./service/plugins/dailyLoop/index";
 import GanttPlugin from "./service/plugins/gantt/index";
 import KanbanPlugin from "./service/plugins/kanban/index";
@@ -49,6 +51,7 @@ Vue.use(VueI18Next, (i18next) => {
 	});
 });
 
+Vue.use(fundamentals);
 Vue.use(dailyLoopPlugin);
 Vue.use(GanttPlugin);
 Vue.use(KanbanPlugin);

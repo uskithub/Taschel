@@ -1,6 +1,7 @@
 <script>
 	import Vue from "vue";
-	
+	import Popup from "../components/popup";
+
 	import { cloneDeep, isObject, isArray } from "lodash";
 	import moment from "moment";
 
@@ -8,6 +9,7 @@
 	import { SET_USER } from "../../fundamentals/mutationTypes";
 
 	const _ = Vue.prototype._;
+	const VuePopup = Vue.extend(Popup);
 
 	export default {
 		computed : {
@@ -21,6 +23,7 @@
 		, data() {
 			return {
 				isSessionReady: false
+				, popup: null
 			}
 		}
 		, methods : {
@@ -31,6 +34,22 @@
 				, "pushCrumb"
 				, "popCrumb"
 			])
+			, showPopup(propsData) {
+				// @see http://kitak.hatenablog.jp/entry/2017/04/04/044829
+				let popup = new VuePopup({ propsData: propsData }).$mount();
+				popup.$on("close", e => {
+					this.didClosePopup(e);
+				});
+				this.$el.appendChild(popup.$el);
+				this.popup = popup;
+			}
+			, didClosePopup(e) {
+				if (this.popup) {
+					this.$el.removeChild(this.popup.$el);
+					this.popup.$destroy();
+					this.popup = null;
+				}
+			}
 		}
 		, created() {
 			if (this.$options.name) {
