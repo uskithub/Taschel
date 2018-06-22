@@ -1,10 +1,11 @@
 <template lang="pug">
 	ul.treelist-board-container
-		li.treelist-board(v-for="treelist in treelists", :key="treelist.id")
-			span.treelist-board-header
-				legend {{ treelist.name }}
+		li.treelist-board(v-for="(treelist, idx) in treelists", :key="treelist.id")
+			span.icon(v-if="treelist.subtree.length > 0" @click.prevent.stop="caratDidClick($event, idx)")
+				i.fa(:class="{ 'fa-caret-down' : isOpeningArr[idx], 'fa-caret-right': !isOpeningArr[idx] }")
+			span.treelist-board-header {{ treelist.name }}
 			.drag-options
-			ul.treelist(data-type="treelist", :data-id="treelist.id"
+			ul.treelist(v-show="isOpeningArr[idx]" data-type="treelist", :data-id="treelist.id"
 				@dragenter="ondragenter($event, treelist)"
 			)
 				treenode(v-for="treenode in treelist.subtree", :treenode="treenode", :key="treenode.id"
@@ -64,7 +65,8 @@
 		}
 		, data() {
 			return {
-				dragging: null
+				isOpeningArr: this.treelists.map(t => true)
+				, dragging: null
 				, draggingOn : null
 			}
 		}
@@ -197,6 +199,9 @@
 						this.draggingOn.siblings = siblings;
 					}
 				}
+			}
+			, caratDidClick(e, idx) {
+				this.isOpeningArr.splice(idx, 1, !this.isOpeningArr[idx]);
 			}
 		}
 	};

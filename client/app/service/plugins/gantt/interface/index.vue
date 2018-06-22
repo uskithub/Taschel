@@ -14,6 +14,7 @@
 <script>
 	import Vue from "vue";
 	import Base from "../../../fundamentals/mixins/base";
+	import Treelist from "../treelist";
 	import { mapGetters, mapActions } from "vuex";
 	import schema from "./schema";
 	import moment from "moment";
@@ -23,17 +24,6 @@
 	import "jquery-ui/ui/widgets/resizable"; // なくても動くがrequirementなので
 
 	const _ = Vue.prototype._;
-
-	class Treelist {
-		constructor(task) {
-			this._task = task;
-			this._subtree = task.tasks.map(t => new Treelist(t));
-		}
-		get task() { return this._task; }
-		get id() { return this._task.code; }
-		get name() { return this._task.name; }
-		get subtree() { return this._subtree; }
-	}
 
 	const resources = [
 		{ id: 'a', building: '460 Bryant', title: 'Auditorium A' },

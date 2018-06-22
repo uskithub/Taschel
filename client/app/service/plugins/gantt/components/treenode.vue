@@ -6,8 +6,10 @@
 	)
 		slot(:name="treenode.name")
 			.media-content
-				legend  {{ treenode.name }}
-				ul.treelist(data-type="treenode", :data-id="treenode.id")
+				span.icon(v-if="treenode.subtree.length > 0" @click.prevent.stop="caratDidClick")
+					i.fa(:class="{ 'fa-caret-down' : isOpening, 'fa-caret-right': !isOpening }")
+				span.treelist-node-header  {{ treenode.name }}
+				ul.treelist(v-show="isOpening" data-type="treenode", :data-id="treenode.id")
 					treenode(v-for="childnode in treenode.subtree", :treenode="childnode", :key="childnode.id"
 						@dragstart="ondragstart"
 						@dragend="ondragend"
@@ -39,6 +41,11 @@
 				, default: true
 			}
 		}
+		, data() {
+			return {
+				isOpening: true
+			};
+		}
         , methods: {
             ondragstart(e, treenode) {
 				this.$emit("dragstart", e, treenode);
@@ -47,6 +54,9 @@
 			, ondragend(e, treenode) {
 				this.$emit("dragend", e, treenode);
 				e.stopPropagation();
+			}
+			, caratDidClick(e) {
+				this.isOpening = !this.isOpening;
 			}
         }
 	};

@@ -12,7 +12,15 @@
 		background: rgba(black, 0.2);
 		min-height: 2.5em;
 		border-bottom: 1px solid #000;
-		overflow: hidden;
+        overflow: hidden;
+        
+        .icon {
+            cursor: pointer;
+            
+            i {
+                min-width: 1em;
+            }
+        }
 		
         .kanban-board-header {
             align-items: center;
@@ -66,9 +74,7 @@
 		overflow: hidden;
 
 		span {
-			legend {
-				min-height: 1.5em;
-			}
+			min-height: 1.5em;
 		}
 		
         .kanban-board-header {
