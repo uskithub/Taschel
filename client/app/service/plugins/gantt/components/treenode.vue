@@ -76,7 +76,7 @@
 				e.stopPropagation();
 			}
 			, caratDidClick(e, id) {
-				this.$emit("toggle-carat", e, id);
+				this.$emit("toggle-caret", e, id);
 				e.stopPropagation();
 			}
         }
