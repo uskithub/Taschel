@@ -34,6 +34,16 @@
 				, "pushCrumb"
 				, "popCrumb"
 			])
+			// ,  showPopup(el) {
+			// 	// @see http://kitak.hatenablog.jp/entry/2017/04/04/044829
+			// 	let popup = new VuePopup().$mount();
+			// 	popup.$on("close", e => {
+			// 		this.didClosePopup(e);
+			// 	});
+			// 	popup.$el.appendChild(el);
+			// 	this.$el.appendChild(popup.$el);
+			// 	this.popup = popup;
+			// }
 			, showPopup(propsData) {
 				// @see http://kitak.hatenablog.jp/entry/2017/04/04/044829
 				let popup = new VuePopup({ propsData: propsData }).$mount();
@@ -42,12 +52,18 @@
 				});
 				this.$el.appendChild(popup.$el);
 				this.popup = popup;
+				
+				let html = document.querySelector("html");
+				html.classList.add("no-scroll");
 			}
 			, didClosePopup(e) {
 				if (this.popup) {
 					this.$el.removeChild(this.popup.$el);
 					this.popup.$destroy();
 					this.popup = null;
+
+					let html = document.querySelector("html");
+					html.classList.remove("no-scroll");
 				}
 			}
 		}
@@ -94,3 +110,9 @@
 		}
 	};
 </script>
+<style lang="scss">
+
+	.no-scroll {
+		overflow: hidden;
+	}
+</style>

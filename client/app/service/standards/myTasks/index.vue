@@ -16,8 +16,10 @@
 	import Vue from "vue";
 	import Base from "../../fundamentals/mixins/base";
 	import DataTable from "../../fundamentals/components/table";
+	import Test from "../../fundamentals/components/test";
 	import Task from "../../fundamentals/entities/task";
 	import Editing from "./editing";
+	import Projects from "../projects/index"
 	import schema from "./schema";
 	import { mapGetters, mapActions } from "vuex";
 	const _ = Vue.prototype._;
@@ -58,7 +60,8 @@
 				this.isEditing = true;
 			}
 			, didPushAddButton() {
-				this.isEditing = true;
+				this.showPopup({ component: Test, props: { title: "uyoo" } });
+				//this.isEditing = true;
 			}
 			, didReceiveCloseEvent() {
 				this.isEditing = false;
@@ -77,4 +80,7 @@
 </script>
 
 <style lang="scss" scoped>
+html, body, .nav {
+	overflow: hidden;
+}
 </style>
