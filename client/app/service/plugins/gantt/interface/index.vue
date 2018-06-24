@@ -1,6 +1,6 @@
 <template lang="pug">
 	section
-		gantt(:data="mock", :treenodes="treenodes")
+		gantt(:data="mock", :treenodes="treenodes" @addIconDidPush="addIconDidPush")
 		// table
 		// 	tbody
 		// 		tr
@@ -15,6 +15,7 @@
 	import Vue from "vue";
 	import Base from "../../../fundamentals/mixins/base";
 	import Treenode from "../treenode";
+	import Test from "../../../fundamentals/components/test";
 	import { mapGetters, mapActions } from "vuex";
 	import schema from "./schema";
 	import moment from "moment";
@@ -84,6 +85,10 @@
 				// Usecases
 				"getUserProjectList"
 			])
+			, addIconDidPush(e, treenode) {
+				console.log("clicked!!", treenode.id);
+				this.showPopup({ component: Test, props: { title: treenode.id } });
+			}
 		}
 		, sessionEnsured(me) {
 			this.getUserProjectList();

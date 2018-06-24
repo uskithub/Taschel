@@ -5,14 +5,14 @@
 				i.fa(:class="{ 'fa-caret-down': isOpeningMap[treenode.id], 'fa-caret-right': !isOpeningMap[treenode.id] }")
 			span.treelist-board-header {{ treenode.name }}
 			span.operation(v-show="isHoveringMap[treenode.id]")
-				span.icon(@click="onclick($event, treenode)")
+				span.icon(@click="addIconDidPush($event, treenode)")
 					i.fa.fa-plus
 			.drag-options
 			ul.treelist(v-show="isOpeningMap[treenode.id]" data-type="treelist", :data-id="treenode.id"
 				@dragenter="ondragenter($event, treenode)"
 			)
 				treenode(v-for="childnode in treenode.subtree", :treenode="childnode", :isOpeningMap="isOpeningMap", :key="childnode.id"
-					@click="onclick"
+					@addIconDidPush="addIconDidPush"
 					@dragstart="ondragstart"
 					@dragend="ondragend"
 					@toggle-caret="caratDidClick"
@@ -98,8 +98,8 @@
 			, onmouseout(e, id) {
 				Vue.set(this.isHoveringMap, id, false);
 			}
-			, onclick(e, treenode) {
-				console.log("clicked!!", treenode.id);
+			, addIconDidPush(e, treenode) {
+				this.$emit("addIconDidPush", e, treenode);
 			}
             , ondragstart(e, treenode) {
 				const elem = e.target

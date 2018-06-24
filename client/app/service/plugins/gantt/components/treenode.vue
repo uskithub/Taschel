@@ -12,11 +12,11 @@
 					i.fa(:class="{ 'fa-caret-down': isOpeningMap[treenode.id], 'fa-caret-right': !isOpeningMap[treenode.id] }")
 				span.treelist-node-header  {{ treenode.name }}
 				span.operation(v-show="isHovering")
-					span.icon(@click.prevent.stop="$emit('click', $event, treenode)")
+					span.icon(@click.prevent.stop="$emit('addIconDidPush', $event, treenode)")
 						i.fa.fa-plus
 				ul.treelist(v-show="isOpeningMap[treenode.id]" data-type="treenode", :data-id="treenode.id")
 					treenode(v-for="childnode in treenode.subtree", :treenode="childnode", :isOpeningMap="isOpeningMap", :key="childnode.id"
-						@click="onclick"
+						@addIconDidPush="addIconDidPush"
 						@dragstart="ondragstart"
 						@dragend="ondragend"
 						@toggle-caret="caratDidClick"
@@ -63,8 +63,8 @@
 			, onmouseout(e) {
 				this.isHovering = false;
 			}
-			, onclick(e, treenode) {
-				this.$emit("click", e, treenode);
+			, addIconDidPush(e, treenode) {
+				this.$emit("addIconDidPush", e, treenode);
 				e.stopPropagation();
 			}
             , ondragstart(e, treenode) {

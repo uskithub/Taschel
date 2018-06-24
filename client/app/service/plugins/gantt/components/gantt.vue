@@ -3,7 +3,7 @@
 		.gantt-row
 			.vue-gantt-legend
 				.title(:title="legendHelp") Legend (?)
-				treelist(:treenodes="treenodes" ref="legend")
+				treelist(:treenodes="treenodes" ref="legend" @addIconDidPush="addIconDidPush")
 				// gantt-legend(:rows="tasks", :legendHelp="legendHelp" ref="legend" @task-click="handleTaskClick")
 			.gantt-column(@wheel.prevent="handleWheel", :style="{ width: cellsCount * 24 }")
 				gantt-header(:rows="header" @header-click="handleHeaderClick")
@@ -178,7 +178,10 @@
       handleTaskClick(start) {
         const viewportStart = normalizeDate(start, this.scale, this.step);
         this.viewportStart = Math.min(viewportStart, this.max);
-      },
+      }
+      , addIconDidPush(e, treenode) {
+        this.$emit("addIconDidPush", e, treenode);
+      }
     },
   };
 </script>
