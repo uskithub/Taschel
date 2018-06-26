@@ -257,6 +257,14 @@ export default class Task {
 
 	get lastCommunication() { return this._rawValues.lastCommunication; }
 
+	childTaskFactory() {
+		let child = {
+			purpose: `${this.goal} にするため`
+			, children: []
+		};
+		return new Task(child);
+	}
+
 	static createTableSchema(fieldSet) {
 		return fieldSet.map(f => {
 			if ( _fields[f] === undefined ) {

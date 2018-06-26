@@ -1,22 +1,18 @@
 <template lang="pug">
 	.popup-container(@click="onclick")
 		.panel.popup.primary
-			.header Panel primary
+			.header  {{ title }}
 			.body 
 				component(:is="component", v-bind="props" ref="comp")
-		// test(title="hhhoooo")
-		// test
 </template>
 <script>
-	// import Test from "./test";
 
 	export default {
-		// components : {
-		// 	Test
-		// }
-		// , 
 		props: {
-			component: {
+			title: {
+				type: String
+			}
+			, component: {
 				
 			}
 			, props: {

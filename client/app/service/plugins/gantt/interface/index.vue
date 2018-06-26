@@ -92,9 +92,13 @@
 			, addIconDidPush(e, treenode) {
 				// create default values for new task according to its parent task.
 
-				this.showPopup({ 
-					component: "task-form"
-					, props: { schema: this.formSchema } 
+				this.showPopup({
+					title: `${treenode.name} をブレークダウンします`
+					, component: "task-form"
+					, props: { 
+						entity: treenode.task.childTaskFactory()
+						, schema: this.formSchema 
+					} 
 					, events: { "close" : e => {
 						this.didClosePopup(e);
 					} }
