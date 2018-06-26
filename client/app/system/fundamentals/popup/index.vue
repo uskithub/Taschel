@@ -1,6 +1,6 @@
 <template lang="pug">
-	.popup-container(@click="$emit('close', $event)")
-		.panel.popup.primary(@click.prevent.stop="")
+	.popup-container(@click="onclick")
+		.panel.popup.primary
 			.header Panel primary
 			.body 
 				component(:is="component", v-bind="props" ref="comp")
@@ -24,6 +24,11 @@
 			}
 			, events: {
 				type: Object
+			}
+		}
+		, methods : {
+			onclick(e) {
+				if (e.target.classList.contains("popup-container")) this.$emit("close", e);
 			}
 		}
 		, mounted() {

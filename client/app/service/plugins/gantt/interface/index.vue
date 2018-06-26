@@ -90,7 +90,8 @@
 			])
 			// Interfacial Operations
 			, addIconDidPush(e, treenode) {
-				console.log("clicked!!", treenode.id);
+				// create default values for new task according to its parent task.
+
 				this.showPopup({ 
 					component: "task-form"
 					, props: { schema: this.formSchema } 
