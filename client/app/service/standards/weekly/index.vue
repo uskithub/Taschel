@@ -42,6 +42,7 @@
 				"getMyWeeklyTasks"
 				, "arrangeTasks"
 			])
+			// Interfacial Operations
 			, didArrangeTask({ kanban, from, to, index }) {
 				// console.log(kanban, from, to, index);
 				from.code = from.id;
@@ -50,7 +51,6 @@
 				to.type = to.type === "kanban" ? "task" : "group";
 				this.arrangeTasks({ task: kanban.task, from, to, index });
 			}
-
 			, didSelectRow(entity) {
 				this.entity = entity;
 				this.isEditing = true;

@@ -14,8 +14,8 @@
 <script>
 	import Vue from "vue";
 	import Base from "../../../fundamentals/mixins/base";
+	import Task from "../../../fundamentals/entities/task";
 	import Treenode from "../treenode";
-	import Test from "../../../fundamentals/components/test";
 	import { mapGetters, mapActions } from "vuex";
 	import schema from "./schema";
 	import moment from "moment";
@@ -54,6 +54,8 @@
 		{ id: 'y', building: '101 Main St', title: 'Auditorium Y' },
 		{ id: 'z', building: '101 Main St', title: 'Auditorium Z' }
 	];
+
+	schema.form.fields = Task.createFormSchema(schema.form.fields);
 	
 	export default {
 		name : "GanttChart"
@@ -76,7 +78,8 @@
 		, data() {
 			schema.fullCalendar.resources = resources;
 			return {
-				fullcalendarSchema: schema.fullCalendar
+				formSchema : schema.form
+				, fullcalendarSchema: schema.fullCalendar
 				, mock : schema.data
 			};
 		}
@@ -85,9 +88,16 @@
 				// Usecases
 				"getUserProjectList"
 			])
+			// Interfacial Operations
 			, addIconDidPush(e, treenode) {
 				console.log("clicked!!", treenode.id);
-				this.showPopup({ component: Test, props: { title: treenode.id } });
+				this.showPopup({ 
+					component: "task-form"
+					, props: { schema: this.formSchema } 
+					, events: { "close" : e => {
+						this.didClosePopup(e);
+					} }
+				});
 			}
 		}
 		, sessionEnsured(me) {

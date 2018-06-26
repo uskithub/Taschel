@@ -15,7 +15,6 @@
 <script>
 	import Vue from "vue";
 	import Base from "../../fundamentals/mixins/base";
-	import DataTable from "../../fundamentals/components/table";
 	import Task from "../../fundamentals/entities/task";
 	import Editing from "./editing";
 	import Projects from "../projects/index"
@@ -30,8 +29,7 @@
 		name : "MyTask"
 		, mixins : [ Base ]
 		, components : {
-			DataTable
-			, Editing
+			Editing
 		}
 		, computed : {
 			...mapGetters([
@@ -53,7 +51,7 @@
 				// Usecases
 				"getMyTaskList"
 			])
-			// usecase: a user selects a task for editing.
+			// Interfacial Operations
 			, didSelectRow(entity) {
 				this.entity = entity;
 				this.isEditing = true;

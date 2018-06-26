@@ -3,7 +3,7 @@
 		.panel.popup.primary(@click.prevent.stop="")
 			.header Panel primary
 			.body 
-				component(:is="component", v-bind="props")
+				component(:is="component", v-bind="props" ref="comp")
 		// test(title="hhhoooo")
 		// test
 </template>
@@ -17,21 +17,22 @@
 		// , 
 		props: {
 			component: {
-				type: Object
+				
 			}
 			, props: {
 				type: Object
 			}
+			, events: {
+				type: Object
+			}
 		}
-		, computed : {
-			// component() {
-			// 	return Test;
-			// }
-		// 	props() {
-		// 		return {
-		// 			title: "yooohooo"
-		// 		}
-		// 	}
+		, mounted() {
+			if (this.events) {
+				const dynamicComponent = this.$refs.comp;
+				Object.keys(this.events).forEach(key => {
+					dynamicComponent.$on(key, this.events[key]);
+				});
+			}
 		}
 	}
 </script>
@@ -53,6 +54,7 @@
 			left: 0;
 			margin: 0 auto;
 			width: 90vw;
+			background-color: rgba(16, 67, 87, 0.8);
 		}
 	}
 </style>

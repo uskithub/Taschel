@@ -1,10 +1,9 @@
-import TaskForm from "./components/taskform";
-import Table from "./components/table";
+import Popup from "./popup/index";
 
 const plugin = {
 	// @see https://jp.vuejs.org/v2/guide/plugins.html
 	install (Vue, options) {
-		console.log("★★★ install service fundamentals ★★★");
+		console.log("★★★ install system fundamentals ★★★");
 		
 		const finalOptions = Object.assign({}, options);
 
@@ -13,8 +12,7 @@ const plugin = {
 		// strategies.googleMapsAPIsLoaded = strategies.created;
 
 		// componentの追加
-		Vue.component("task-form", TaskForm);
-		Vue.component("data-table", Table);
+		Vue.component("popup", Popup);
 		
 		// maps.googleapiのロード
 		// if (finalOptions.load) {

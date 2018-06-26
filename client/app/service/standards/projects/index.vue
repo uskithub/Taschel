@@ -15,7 +15,6 @@
 <script>
 	import Vue from "vue";
 	import Base from "../../fundamentals/mixins/base";
-	import DataTable from "../../fundamentals/components/table";
 	import Project from "../../fundamentals/entities/project";
 	import Editing from "./editing";
 	import schema from "./schema";
@@ -32,8 +31,7 @@
 		name : "Project"
 		, mixins : [ Base ]
 		, components : {
-			DataTable
-			, Editing
+			Editing
 		}
 		, computed : {
 			...mapGetters([

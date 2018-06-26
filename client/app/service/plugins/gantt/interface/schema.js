@@ -4,7 +4,10 @@ import Vue from "vue";
 const _ = Vue.prototype._;
 
 export default {
-	data : {
+	form : { 
+		fields : [ "properties", "name", "purpose", "goal"]
+	}
+	, data : {
 		"rows": [
 		  {
 			"name": "Шаг 1",
