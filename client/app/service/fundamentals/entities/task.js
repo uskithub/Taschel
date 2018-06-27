@@ -257,10 +257,14 @@ export default class Task {
 
 	get lastCommunication() { return this._rawValues.lastCommunication; }
 
-	childTaskFactory() {
+	childTaskFactory(author) {
 		let child = {
 			purpose: `${this.goal} にするため`
+			, root: this._rawValues.root
+			, parent: this.code
 			, children: []
+			, asignee: author.code 
+			, author: author.code
 		};
 		return new Task(child);
 	}

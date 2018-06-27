@@ -91,12 +91,15 @@
 			// Interfacial Operations
 			, addIconDidPush(e, treenode) {
 				// create default values for new task according to its parent task.
+				let parent = treenode.task;
+				let entity = parent.childTaskFactory(this.me);
 
 				this.showPopup({
 					title: `${treenode.name} をブレークダウンします`
 					, component: "task-form"
 					, props: { 
-						entity: treenode.task.childTaskFactory()
+						entity: entity
+						, parent: parent 
 						, schema: this.formSchema 
 					} 
 					, events: { "close" : e => {

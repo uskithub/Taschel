@@ -1,13 +1,27 @@
 <template lang="pug">
-	.form
-		vue-form-generator(:schema="schema", :model="rawValues", :options="options", :is-new-model="isNewEntity" ref="form")
-		.buttons.flex.justify-space-around
-			button.button.primary(@click="didPushSaveButton")
-				i.icon.fa.fa-save 
-				| {{ _("Save") }}
-			button.button.outline(@click="$emit('close', $event)")
-				i.icon.fa.fa-close
-				| {{ _("Cancel") }}
+	.container
+		.table(v-if="parent !== undefined")
+			span {{ _("Parent") }}
+			table
+				tbody
+					tr
+						th {{ _("Parent Name") }}
+						td {{ parent.name }}
+					tr
+						th {{ _("Parent Purpose") }}
+						td {{ parent.purpose }}
+					tr
+						th {{ _("Parent Goal") }}
+						td {{ parent.goal }}
+		.form
+			vue-form-generator(:schema="schema", :model="rawValues", :options="options", :is-new-model="isNewEntity" ref="form")
+			.buttons.flex.justify-space-around
+				button.button.primary(@click="didPushSaveButton")
+					i.icon.fa.fa-save 
+					| {{ _("Save") }}
+				button.button.outline(@click="$emit('close', $event)")
+					i.icon.fa.fa-close
+					| {{ _("Cancel") }}
 </template>
 <script>
 	import Vue from "vue";
@@ -20,6 +34,10 @@
 		name: "TaskFrom"
 		, props : {
 			entity : {
+				type: Object
+				, validator: (value) => { return true; } // TODO
+			}
+			, parent : {
 				type: Object
 				, validator: (value) => { return true; } // TODO
 			}
@@ -40,7 +58,7 @@
 			};
 		}
 		, computed: {
-			isNewEntity() { return this.entity === null; }
+			isNewEntity() { return this.entity.code === undefined; }
 		}
 		, methods : {
 			...mapActions([
