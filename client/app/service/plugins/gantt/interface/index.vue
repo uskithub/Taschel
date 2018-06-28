@@ -106,6 +106,14 @@
 						this.didClosePopup(e);
 					} }
 				});
+				// this.showPopup(`<task-form :entity="entity" :parent="parent" :schema="schema"></task-form>`
+				// 	, { TaskForm }
+				// 	, ["entity", "parent", "schema"]
+				// 	, { 
+				// 		entity: entity
+				// 		, parent: parent 
+				// 		, schema: this.formSchema 
+				// 	});
 			}
 		}
 		, sessionEnsured(me) {

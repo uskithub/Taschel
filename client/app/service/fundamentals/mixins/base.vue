@@ -33,19 +33,32 @@
 				, "pushCrumb"
 				, "popCrumb"
 			])
-			// ,  showPopup(el) {
-			// 	// @see http://kitak.hatenablog.jp/entry/2017/04/04/044829
-			// 	let popup = new VuePopup().$mount();
-			// 	popup.$on("close", e => {
-			// 		this.didClosePopup(e);
+			// ,  showPopup(el, components, props, propsData) {
+			// 	const _didClosePopup = this.didClosePopup;
+			// 	const PopupConstr = Vue.extend({
+  			// 		template: `
+  			// 			<popup @close="onclose">
+    		// 				${el}
+  			// 			</popup>
+			// 		  `
+			// 		, components
+			// 		, props : props
+			// 		, methods: {
+			// 			onclose(e) {
+			// 				_didClosePopup(e);
+			// 			}
+			// 		}
 			// 	});
-			// 	popup.$el.appendChild(el);
+			// 	let popup = new PopupConstr({ propsData: propsData }).$mount();
 			// 	this.$el.appendChild(popup.$el);
 			// 	this.popup = popup;
+				
+			// 	let html = document.querySelector("html");
+			// 	html.classList.add("no-scroll");
 			// }
 			, showPopup(propsData) {
 				// @see http://kitak.hatenablog.jp/entry/2017/04/04/044829
-				let popup = new Popup({ propsData: propsData }).$mount();
+				let popup = new Popup({ store: this.$store, propsData }).$mount();
 				popup.$on("close", e => {
 					this.didClosePopup(e);
 				});
