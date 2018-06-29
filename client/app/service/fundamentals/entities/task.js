@@ -249,6 +249,7 @@ export default class Task {
 	get goal() { return this._rawValues.goal; }
 	set goal(goal) { return this._rawValues.goal = goal; }
 
+	get root() { return this._rawValues.root; }
 	get parent() { return this._rawValues.parent; }
 
 	get author() { return this._rawValues.author.username; }
@@ -260,14 +261,14 @@ export default class Task {
 	// adding the task
 	addChild(task) {
 		this._tasks.push(task);
-		this._rawValues.children.push(task.rawValues)
+		this._rawValues.children.push(task.rawValues);
 	}
 
 	// return new child Task
 	childTaskFactory(author) {
 		let child = {
 			purpose: `${this.goal} にするため`
-			, root: this._rawValues.root
+			, root: this.root
 			, parent: this.code
 			, children: []
 			, asignee: author.code 
