@@ -58,6 +58,7 @@
 			// }
 			, showPopup(propsData) {
 				// @see http://kitak.hatenablog.jp/entry/2017/04/04/044829
+				// @see https://stackoverflow.com/questions/44463984/using-vuex-inside-a-manually-mounted-vue-component
 				let popup = new Popup({ store: this.$store, propsData }).$mount();
 				popup.$on("close", e => {
 					this.didClosePopup(e);

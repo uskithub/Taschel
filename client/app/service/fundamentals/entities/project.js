@@ -249,6 +249,7 @@ export default class Project {
 	get description() { return this._rawValues.description; }
 	set description(description) { return this._rawValues.description = description; }
 
+	get author() { return this._rawValues.author; }
 	get tasks() { return this._tasks; }
 
 	static createTableSchema(fieldSet) {

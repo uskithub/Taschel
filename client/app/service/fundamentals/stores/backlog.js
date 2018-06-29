@@ -1,5 +1,5 @@
 import Task from "../entities/task";
-import { INITIALIZE, LOAD_TASKS, SELECT_TASK, UPDATE_TASK, CLEAR_SELECTION
+import { INITIALIZE, LOAD_TASKS, SELECT_TASK, ADD_TASK, UPDATE_TASK, CLEAR_SELECTION
 	//, ARRANGE_AVOBE, ARRANGE_INTO, ARRANGE_BELOW 
 } from "../mutationTypes";
 import { assign } from "lodash";
@@ -28,6 +28,12 @@ export default {
 		}
 		, [SELECT_TASK] (state, entity) {
 			state.current = entity;
+		}
+		, [ADD_TASK] (state, entity) {
+			let isFound = state.entities.find(e => e.code === entity.code);
+			if (!isFound) {
+				state.entities.push(entity);
+			}
 		}
 		, [UPDATE_TASK] (state, entity) {
 			state.entities.forEach(e => {
@@ -60,10 +66,20 @@ export default {
 					commit(LOAD_TASKS, tasks);
 				});
 		}
-		, updateTask ({ commit }, rawValues) {
+		// Usecase:
+		, addTask({ commit }, rawValues) {
+			return tasks.post(rawValues)
+				.then(data => {
+					let task = new Task(data);
+					// TODO: 既存のtasksのどこに突っ込むか（ソート、フィルタとか）
+					commit(ADD_TASK, task);
+				});
+		}
+		// Usecase:
+		, editTask({ commit }, rawValues) {
 			return tasks.put(rawValues)
 				.then(data => {
-					let task = new Task(rawValues);
+					let task = new Task(data);
 					commit(UPDATE_TASK, task);
 				});
 		}

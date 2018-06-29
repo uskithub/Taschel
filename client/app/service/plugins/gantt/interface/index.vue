@@ -66,8 +66,8 @@
 				, "currentProject"
 			])
 			, treenodes() {
-				if (this.projects.length > 0) {
-					return this.projects[0].tasks.map(t => {
+				if (this.currentProject !== null) {
+					return this.currentProject.tasks.map(t => {
 						return new Treenode(t);
 					});
 				} else {
@@ -117,7 +117,13 @@
 			}
 		}
 		, sessionEnsured(me) {
-			this.getUserProjectList();
+			return this.getUserProjectList()
+				.then(() => {
+					this.pushCrumb({ 
+						id: "project"
+						, name: this.currentProject.name
+					});
+				});
 		}
 	};
 </script>

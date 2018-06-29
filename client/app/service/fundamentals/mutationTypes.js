@@ -21,11 +21,12 @@ export const CLEAR_CRUMB		= "CLEAR_CRUMB";
 export const LOAD_PROJECTS		= "LOAD_PROJECTS";
 export const ADD_PROJECT        = "ADD_PROJECT";
 export const UPDATE_PROJECT		= "UPDATE_PROJECT";
-
+export const ADD_TASK_TO_PROJECT	= "ADD_TASK_TO_PROJECT";
 
 // task
 export const LOAD_TASKS			= "LOAD_TASKS";
 export const SELECT_TASK		= "SELECT_TASK";
+export const ADD_TASK			= "ADD_TASK";
 export const UPDATE_TASK		= "UPDATE_TASK";
 export const CLEAR_SELECTION	= "CLEAR_SELECTION";
 

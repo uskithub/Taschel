@@ -51,7 +51,7 @@
 			...mapActions([
 				// Usecases
 				"createProject"
-				, "updateProject"
+				, "editProject"
 			])
 			, didPushSaveButton() {
 				if (this.validate()) {
@@ -59,7 +59,7 @@
 						if ( this.isNewEntity ) {
 							return this.createProject(this.rawValues);
 						} else {
-							return this.updateProject(this.rawValues);
+							return this.editProject(this.rawValues);
 						}
 					}).then(() => {
 						this.$emit("close", this.rawValues);

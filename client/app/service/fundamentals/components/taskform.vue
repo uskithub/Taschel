@@ -63,17 +63,17 @@
 		, methods : {
 			...mapActions([
 				// Usecases
-				"createTask"
-				, "updateTask"
+				"addTaskToProject"
+				, "editTask"
 			])
 			// Interfacial Operations
 			, didPushSaveButton() {
 				if (this.validate()) {
 					return Promise.resolve().then(() => {
 						if ( this.isNewEntity ) {
-							return this.createTask(this.rawValues);
+							return this.addTaskToProject(this.rawValues);
 						} else {
-							return this.updateTask(this.rawValues);
+							return this.editTask(this.rawValues);
 						}
 					}).then(() => {
 						this.$emit("close", this.rawValues);

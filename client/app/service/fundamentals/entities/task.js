@@ -257,6 +257,13 @@ export default class Task {
 
 	get lastCommunication() { return this._rawValues.lastCommunication; }
 
+	// adding the task
+	addChild(task) {
+		this._tasks.push(task);
+		this._rawValues.children.push(task.rawValues)
+	}
+
+	// return new child Task
 	childTaskFactory(author) {
 		let child = {
 			purpose: `${this.goal} にするため`

@@ -46,16 +46,16 @@
 		, methods : {
 			...mapActions([
 				// Usecases
-				"createTask"
-				, "updateTask"
+				"addTask"
+				, "editTask"
 			])
 			, didPushSaveButton() {
 				if (this.validate()) {
 					return Promise.resolve().then(() => {
 						if ( this.isNewEntity ) {
-							return this.createTask(this.rawValues);
+							return this.addTask(this.rawValues);
 						} else {
-							return this.updateTask(this.rawValues);
+							return this.editTask(this.rawValues);
 						}
 					}).then(() => {
 						this.$emit("close", this.rawValues);

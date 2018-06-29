@@ -110,7 +110,11 @@ module.exports = {
 
 		, create(ctx) {
 			this.validateParams(ctx, true);
-			
+
+			// MIGRATION: v1->v2
+			const parent = ctx.params.parent_code || ctx.params.parent;
+			const asignee = ctx.params.asignee_code || ctx.params.asignee;
+
 			let task = new Task({
 				type: ctx.params.type
 				, projectType: ctx.params.projectType 
@@ -124,9 +128,9 @@ module.exports = {
 				, deadline: ctx.params.deadline
 				, timeframe: (ctx.params.timeframe != undefined) ? ctx.params.timeframe : -1
 				, root: (ctx.params.root_code != undefined) ? this.decodeID(ctx.params.root_code) : -1
-				, parent: (ctx.params.parent_code != undefined) ? this.decodeID(ctx.params.parent_code) : -1
+				, parent: (parent !== undefined) ? this.decodeID(parent) : -1
 				, author : (ctx.params.author != undefined) ? this.personService.decodeID(ctx.params.author) : ctx.user.id
-				, asignee : (ctx.params.asignee_code != undefined) ? this.personService.decodeID(ctx.params.asignee_code) : -1
+				, asignee : (asignee !== undefined) ? this.personService.decodeID(asignee) : -1
 			});
 
 			return task.save()

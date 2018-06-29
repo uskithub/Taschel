@@ -1,11 +1,12 @@
 import User from "../entities/user";
 import Project from "../entities/project";
+import Task from "../entities/task";
 import profile from "./profile";
 import organization from "./organization";
 import breadcrumb from "./breadcrumb";
 import backlog from "./backlog";
 import pdca from "./pdca";
-import { INITIALIZE, ADD_MESSAGE, ADD_NOTIFICATION, SET_USER, SEARCH, SET_CURRENT_WEEK, LOAD_PROJECTS, ADD_PROJECT, UPDATE_PROJECT, SET_CURRENT_PROJECT, CLEAR_SELECTION } from "../mutationTypes";
+import { INITIALIZE, ADD_MESSAGE, ADD_NOTIFICATION, SET_USER, SEARCH, SET_CURRENT_WEEK, LOAD_PROJECTS, ADD_PROJECT, UPDATE_PROJECT, ADD_TASK_TO_PROJECT, SET_CURRENT_PROJECT, CLEAR_SELECTION } from "../mutationTypes";
 import moment from "moment";
 import { assign } from "lodash";
 
@@ -42,7 +43,7 @@ export default {
 		// user.code
 		, currentUserId: null
 		// current project entity
-		, currentProject: null
+		, currentProjectRef: null
 	}
 	, getters : {
 		me(state) { return state.user; }
@@ -53,7 +54,7 @@ export default {
 		, messages(state) { return state.messages; }
 		, searchText(state) { return state.searchText; }
 		, currentUserId(state) { return state.currentUserId; }
-		, currentProject(state) { return state.currentProject; }
+		, currentProject(state) { return state.currentProjectRef; }
 	}
 	// DDD: Usecases
 	// Vuex: Mutations can change states. It must run synchronously.
@@ -73,6 +74,9 @@ export default {
 			state.projects.splice(0);
 			state.projects.push(...projects);
 		}
+		, [SET_CURRENT_PROJECT] (state, entity) {
+			state.currentProjectRef = entity;
+		}
 		, [ADD_PROJECT] (state, project) {
 			let isFound = state.projects.find(p => p.code === project.code);
 			if (!isFound) {
@@ -86,6 +90,28 @@ export default {
 				}
 			});
 		}
+		, [ADD_TASK_TO_PROJECT] (state, task) {
+			const findParentRecursively = (targetTask, newTask) => {
+				console.log(targetTask);
+				if (targetTask.code === newTask.parent) {
+					console.log('WWW', targetTask)
+					targetTask.addChild(newTask);
+					return true;
+				} else {
+					let tasks = targetTask.tasks;
+					for (let i=0, len=tasks.length; i<len; i++) {
+						if (findParentRecursively(tasks[i], newTask)) {
+							return true;
+						}
+					}
+					return false;
+				}
+			};
+			
+			findParentRecursively(state.currentProjectRef, task);
+		}
+
+
 		, [ADD_MESSAGE] (state, item) {
 			state.messages.splice(0);
 			state.messages.push(item);
@@ -96,9 +122,6 @@ export default {
 		}
 		, [SEARCH] (state, text) {
 			state.searchText = text;
-		}
-		, [SET_CURRENT_PROJECT] (state, entity) {
-			state.currentProject = entity;
 		}
 		, [SET_CURRENT_WEEK] (state, entity) {
 			state.currentWeek = entity;
@@ -139,6 +162,18 @@ export default {
 						return new Project(rawValues);
 					});
 					commit(LOAD_PROJECTS, projects);
+				})
+				.then(() => {
+					if (getters.currentProject === null) {
+						for (let i=0, len = getters.projects.length; i<len; i++) {
+							let p = getters.projects[i];
+							if (p.author.code === user.code) {
+								commit(SET_CURRENT_PROJECT, p);
+								return;
+							}
+						}
+						commit(SET_CURRENT_PROJECT, getters.projects[0]);
+					}
 				});
 		}
 		// Usecase: a user selects a project for editing.
@@ -156,11 +191,20 @@ export default {
 				});
 		}
 		// Usecase: a user completes editing a project.
-		, updateProject({ commit }, rawValues) {
+		, editProject({ commit }, rawValues) {
 			return tasks.put(rawValues)
 				.then(data => {
 					let project = new Project(rawValues);
 					commit(UPDATE_PROJECT, project);
+				});
+		}
+		// Usecase:
+		, addTaskToProject({ commit }, rawValues) {
+			return tasks.post(rawValues)
+				.then(data => {
+					let task = new Task(data);
+					// TODO: 既存のtasksのどこに突っ込むか（ソート、フィルタとか）
+					commit(ADD_TASK_TO_PROJECT, task);
 				});
 		}
 	}

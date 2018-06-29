@@ -36,15 +36,15 @@ export default {
 			state.currentWeekWorks.push(...entities);
 		}
 		, [ADD_WORK] (state, entity) {
-			let isFound = state.currentWeekWorks.find(w => w.code === entity.code);
+			let isFound = state.currentWeekWorks.find(e => e.code === entity.code);
 			if (!isFound) {
 				state.currentWeekWorks.push(entity);
 			}
 		}
 		, [UPDATE_WORK] (state, entity) {
-			state.currentWeekWorks.forEach(w => {
-				if (w.code === entity.code) {
-					assign(w, entity);
+			state.currentWeekWorks.forEach(e => {
+				if (e.code === entity.code) {
+					assign(e, entity);
 				}
 			});
 		}
