@@ -3,7 +3,7 @@
 		.gantt-row
 			.vue-gantt-legend
 				.title(:title="legendHelp") Legend (?)
-				treelist(:treenodes="treenodes" ref="legend" @addIconDidPush="addIconDidPush")
+				treelist(:treenodes="treenodes" ref="legend" @arrange="didArrangeTask" @addIconDidPush="addIconDidPush")
 				// gantt-legend(:rows="tasks", :legendHelp="legendHelp" ref="legend" @task-click="handleTaskClick")
 			.gantt-column(@wheel.prevent="handleWheel", :style="{ width: cellsCount * 24 }")
 				gantt-header(:rows="header" @header-click="handleHeaderClick")
@@ -17,173 +17,175 @@
 </template>
 
 <script>
-  import {
-    calcBody,
-    calcHeader,
-    calcMaxScale,
-    calcViewport,
-    createOptions,
-    getEndOfScale,
-    getMsInScale,
-    getMinDate,
-    getMaxDate,
-    getViewportInMilliseconds,
-    normalizeDate,
-    transformInputValues,
-  } from '../helpers';
-  import GanttLegend from './ganttLegend';
-  import GanttHeader from './ganttHeader';
-  import GanttBody from './ganttBody2';
-  import GanttFooter from './ganttFooter';
+	import {
+		calcBody,
+		calcHeader,
+		calcMaxScale,
+		calcViewport,
+		createOptions,
+		getEndOfScale,
+		getMsInScale,
+		getMinDate,
+		getMaxDate,
+		getViewportInMilliseconds,
+		normalizeDate,
+		transformInputValues,
+	} from '../helpers';
+	import GanttLegend from './ganttLegend';
+	import GanttHeader from './ganttHeader';
+	import GanttBody from './ganttBody2';
+	import GanttFooter from './ganttFooter';
 
-  const defaultOptions = {
-    cellWidth: 24,
-    scales: [
-      { scale: 'months', steps: [1] },
-      { scale: 'days', steps: [1] },
-      { scale: 'hours', steps: [12, 8, 6, 3, 1] },
-      { scale: 'minutes', steps: [30, 15, 5, 1] },
-      { scale: 'seconds', steps: [30, 15, 5, 1] },
-    ],
-  };
+	const defaultOptions = {
+		cellWidth: 24
+		, scales: [
+			{ scale: 'months', steps: [1] }
+			, { scale: 'days', steps: [1] }
+			, { scale: 'hours', steps: [12, 8, 6, 3, 1] }
+			, { scale: 'minutes', steps: [30, 15, 5, 1] }
+			, { scale: 'seconds', steps: [30, 15, 5, 1] }
+		]
+	};
 
-  export default {
-    components: {
-      GanttLegend,
-      GanttHeader,
-      GanttBody,
-      GanttFooter,
-    },
-    props: {
-      data: {
-        type: Object,
-        required: true,
-      }
-      , treenodes: {
-        type: Array
-      }
-	  
-    },
-    mounted() {
-      window.addEventListener('resize', this.setCellsCount);
-      this.setCellsCount();
-      const maxScaleIdx = calcMaxScale(this.startDate, this.endDate, this.cellsCount, this.scales);
-      const [scale, step] = this.scales[maxScaleIdx].split(' ');
-      this.scale = scale;
-      this.step = step;
-      this.scales = this.scales.filter((_, idx) => idx >= maxScaleIdx);
-      this.viewportStart = this.min;
-    },
-    beforeDestroy() {
-      window.removeEventListener('resize', this.setCellsCount);
-    },
-    data() {
-      return {
-        viewportStart: 0,
-        cellsCount: 0,
-        scales: createOptions(defaultOptions.scales),
-        scale: defaultOptions.scales[0].scale,
-        step: defaultOptions.scales[0].steps[0],
-      };
-    },
-    computed: {
-      parsedProps() {
-        const { rows } = this.data;
-        return transformInputValues(rows);
-      },
-      legendHelp() {
-        return this.data.legendHelp;
-      },
-      startDate() {
-        return this.parsedProps.startDate;
-      },
-      endDate() {
-        return this.parsedProps.endDate;
-      },
-      values() {
-        return this.parsedProps.values.map(value => value.sort((a, b) => a.from - b.from));
-      },
-      tasks() {
-        return this.parsedProps.tasks;
-      },
-      body() {
-        return calcBody(this.viewport, this.values, this.msInCell, defaultOptions.cellWidth);
-      },
-      header() {
-        return calcHeader(this.viewport, this.scale, this.step, defaultOptions.cellWidth);
-      },
-      max() {
-        return getMaxDate(
-          getEndOfScale(this.scale, this.endDate)
-          - getViewportInMilliseconds(this.endDate, this.scale, this.step, this.cellsCount),
-          this.min, this.msInCell,
-        );
-      },
-      min() {
-        return getMinDate(this.startDate, this.scale);
-      },
-      msInCell() {
-        return getMsInScale(this.scale) * this.step;
-      },
-      viewport() {
-        return calcViewport(this.viewportStart, this.scale, this.step, this.cellsCount);
-      },
-      selectedScaleIdx() {
-        return this.scales.findIndex(el => el === `${this.scale} ${this.step}`);
-      },
-    },
-    methods: {
-      setCellsCount() {
-        this.cellsCount = Math.ceil((this.$el.clientWidth - this.$refs.legend.$el.clientWidth)
-          / defaultOptions.cellWidth);
-      },
-      handleScaleChange(e) {
-        const [scale, step] = e.target.value.split(' ');
-        if (this.scale !== scale) this.scale = scale;
-        if (this.step !== step) this.step = step;
-        this.viewportStart = normalizeDate(this.viewportStart, this.scale, this.step);
-        if (this.viewportStart < this.min) this.viewportStart = this.min;
-        if (this.viewportStart > this.max) this.viewportStart = this.max;
-      },
-      handlePeriodChange(e) {
-        this.viewportStart = parseInt(e.target.value, 10);
-      },
-      handleWheel(e) {
-        const newViewportStart = e.deltaY > 0
-          ? this.viewportStart + this.msInCell
-          : this.viewportStart - this.msInCell;
-        if (e.deltaY > 0) {
-          if (newViewportStart < this.max) {
-            this.viewportStart = newViewportStart;
-          } else {
-            this.viewportStart = this.max;
-          }
-        } else if (e.deltaY < 0) {
-          if (newViewportStart > this.min) {
-            this.viewportStart = newViewportStart;
-          } else {
-            this.viewportStart = this.min;
-          }
-        }
-      },
-      handleHeaderClick({ date, scale }) {
-        if (this.scales.includes(`${scale} 1`)) {
-          this.scale = scale;
-          this.step = 1;
-          if (date > this.max) this.viewportStart = this.max;
-          else if (date < this.min) this.viewportStart = this.min;
-          else this.viewportStart = date;
-        }
-      },
-      handleTaskClick(start) {
-        const viewportStart = normalizeDate(start, this.scale, this.step);
-        this.viewportStart = Math.min(viewportStart, this.max);
-      }
-      , addIconDidPush(e, treenode) {
-        this.$emit("addIconDidPush", e, treenode);
-      }
-    },
-  };
+	export default {
+		components: {
+			GanttLegend
+			, GanttHeader
+			, GanttBody
+			, GanttFooter
+		}
+		, props: {
+			data: {
+				type: Object
+				, required: true
+			}
+			, treenodes: {
+				type: Array
+			}
+		}
+		, data() {
+			return {
+				viewportStart: 0
+				, cellsCount: 0
+				, scales: createOptions(defaultOptions.scales)
+				, scale: defaultOptions.scales[0].scale
+				, step: defaultOptions.scales[0].steps[0]
+			};
+		}
+		, computed: {
+			parsedProps() {
+				const { rows } = this.data;
+				return transformInputValues(rows);
+			}
+			, legendHelp() {
+				return this.data.legendHelp;
+			}
+			, startDate() {
+				return this.parsedProps.startDate;
+			}
+			, endDate() {
+				return this.parsedProps.endDate;
+			}
+			, values() {
+				return this.parsedProps.values.map(value => value.sort((a, b) => a.from - b.from));
+			}
+			, tasks() {
+				return this.parsedProps.tasks;
+			}
+			, body() {
+				return calcBody(this.viewport, this.values, this.msInCell, defaultOptions.cellWidth);
+			}
+			, header() {
+				return calcHeader(this.viewport, this.scale, this.step, defaultOptions.cellWidth);
+			}
+			, max() {
+				return getMaxDate(
+					getEndOfScale(this.scale, this.endDate)
+					- getViewportInMilliseconds(this.endDate, this.scale, this.step, this.cellsCount),
+					this.min, this.msInCell,
+				);
+			}
+			, min() {
+				return getMinDate(this.startDate, this.scale);
+			}
+			, msInCell() {
+				return getMsInScale(this.scale) * this.step;
+			}
+			, viewport() {
+				return calcViewport(this.viewportStart, this.scale, this.step, this.cellsCount);
+			}
+			, selectedScaleIdx() {
+				return this.scales.findIndex(el => el === `${this.scale} ${this.step}`);
+			}
+		}
+		, methods: {
+			setCellsCount() {
+				this.cellsCount = Math.ceil((this.$el.clientWidth - this.$refs.legend.$el.clientWidth) / defaultOptions.cellWidth);
+			}
+			, handleScaleChange(e) {
+				const [scale, step] = e.target.value.split(' ');
+				if (this.scale !== scale) this.scale = scale;
+				if (this.step !== step) this.step = step;
+				this.viewportStart = normalizeDate(this.viewportStart, this.scale, this.step);
+				if (this.viewportStart < this.min) this.viewportStart = this.min;
+				if (this.viewportStart > this.max) this.viewportStart = this.max;
+			}
+			, handlePeriodChange(e) {
+				this.viewportStart = parseInt(e.target.value, 10);
+			}
+			, handleWheel(e) {
+				const newViewportStart = e.deltaY > 0
+					? this.viewportStart + this.msInCell
+					: this.viewportStart - this.msInCell;
+				if (e.deltaY > 0) {
+					if (newViewportStart < this.max) {
+					this.viewportStart = newViewportStart;
+					} else {
+					this.viewportStart = this.max;
+					}
+				} else if (e.deltaY < 0) {
+					if (newViewportStart > this.min) {
+					this.viewportStart = newViewportStart;
+					} else {
+					this.viewportStart = this.min;
+					}
+				}
+			}
+			, handleHeaderClick({ date, scale }) {
+				if (this.scales.includes(`${scale} 1`)) {
+					this.scale = scale;
+					this.step = 1;
+					if (date > this.max) this.viewportStart = this.max;
+					else if (date < this.min) this.viewportStart = this.min;
+					else this.viewportStart = date;
+				}
+			}
+			, handleTaskClick(start) {
+				const viewportStart = normalizeDate(start, this.scale, this.step);
+				this.viewportStart = Math.min(viewportStart, this.max);
+			}
+			// Interfacial Operations
+			, didArrangeTask({ treenode, from, to, index }) {
+				this.$emit("arrange", { treenode, from, to, index });
+			}
+			, addIconDidPush(e, treenode) {
+				this.$emit("addIconDidPush", e, treenode);
+			}
+		}
+		, mounted() {
+			window.addEventListener('resize', this.setCellsCount);
+			this.setCellsCount();
+			const maxScaleIdx = calcMaxScale(this.startDate, this.endDate, this.cellsCount, this.scales);
+			const [scale, step] = this.scales[maxScaleIdx].split(' ');
+			this.scale = scale;
+			this.step = step;
+			this.scales = this.scales.filter((_, idx) => idx >= maxScaleIdx);
+			this.viewportStart = this.min;
+		}
+		, beforeDestroy() {
+			window.removeEventListener('resize', this.setCellsCount);
+		}
+	};
 </script>
 <style lang="scss" scoped>
 	.vue-gantt {

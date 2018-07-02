@@ -197,6 +197,7 @@ export default {
 					commit(UPDATE_PROJECT, project);
 				});
 		}
+		// TODO: 以下をplanningとして切り出す
 		// Usecase:
 		, addTaskToProject({ commit }, rawValues) {
 			return tasks.post(rawValues)
@@ -205,6 +206,9 @@ export default {
 					// TODO: 既存のtasksのどこに突っ込むか（ソート、フィルタとか）
 					commit(ADD_TASK_TO_PROJECT, task);
 				});
+		}
+		, arrangeTasksInAnotherTask({ commit, getters }, { task, from, to, index }) {
+			console.log(task, from, to, index);
 		}
 	}
 };

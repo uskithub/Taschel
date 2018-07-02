@@ -68,7 +68,7 @@ export default {
 				});
 		}
 		// Usecase: a user arrange a task from a group or another task to another group or task.
-		, arrangeTasks({ commit, getters }, { task, from, to, index }) {
+		, arrangeTasksInGroups({ commit, getters }, { task, from, to, index }) {
 			console.log(task, from, to, index);
 			const _groups = getters.groups;
 

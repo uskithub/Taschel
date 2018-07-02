@@ -40,7 +40,7 @@
 			...mapActions([
 				// Usecases
 				"getMyWeeklyTasks"
-				, "arrangeTasks"
+				, "arrangeTasksInGroups"
 			])
 			// Interfacial Operations
 			, didArrangeTask({ kanban, from, to, index }) {
@@ -49,7 +49,7 @@
 				to.code = to.id;
 				from.type = from.type === "kanban" ? "task" : "group";
 				to.type = to.type === "kanban" ? "task" : "group";
-				this.arrangeTasks({ task: kanban.task, from, to, index });
+				this.arrangeTasksInGroups({ task: kanban.task, from, to, index });
 			}
 			, didSelectRow(entity) {
 				this.entity = entity;

@@ -1,6 +1,6 @@
 <template lang="pug">
 	section
-		gantt(:data="mock", :treenodes="treenodes" @addIconDidPush="addIconDidPush")
+		gantt(:data="mock", :treenodes="treenodes" @arrange="didArrangeTask" @addIconDidPush="addIconDidPush")
 		// table
 		// 	tbody
 		// 		tr
@@ -87,8 +87,15 @@
 			...mapActions([
 				// Usecases
 				"getUserProjectList"
+				, "arrangeTasksInAnotherTask"
 			])
 			// Interfacial Operations
+			, didArrangeTask({ treenode, from, to, index }) {
+				from.code = from.id;
+				to.code = to.id;
+				from.type = to.type = "task";
+				this.arrangeTasksInAnotherTask({ task: treenode.task, from, to, index });
+			}
 			, addIconDidPush(e, treenode) {
 				// create default values for new task according to its parent task.
 				let parent = treenode.task;
