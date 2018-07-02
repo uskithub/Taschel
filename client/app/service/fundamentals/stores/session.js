@@ -94,7 +94,6 @@ export default {
 			const findParentRecursively = (targetTask, newTask) => {
 				console.log(targetTask);
 				if (targetTask.code === newTask.parent) {
-					console.log('WWW', targetTask)
 					targetTask.addChild(newTask);
 					return true;
 				} else {
@@ -202,12 +201,6 @@ export default {
 		, addTaskToProject({ commit }, rawValues) {
 			return tasks.post(rawValues)
 				.then(data => {
-					let parentCode = rawValues.parent;
-					let childCode = data.code;
-					
-					// TODO: 親の更新
-					tasks.put()
-
 					let task = new Task(data);
 					// TODO: 既存のtasksのどこに突っ込むか（ソート、フィルタとか）
 					commit(ADD_TASK_TO_PROJECT, task);

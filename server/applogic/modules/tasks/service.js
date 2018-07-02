@@ -135,7 +135,6 @@ module.exports = {
 
 			return task.save()
 				.then(doc => {
-
 					if (ctx.params.type == "project") {
 						// kanbanを作る
 						// 配列の順番になるように、reduceで作っている
@@ -153,6 +152,7 @@ module.exports = {
 							});
 
 					} else {
+
 						return this.toJSON(doc);
 					}				
 				})
@@ -160,9 +160,9 @@ module.exports = {
 					return this.populateModels(json);
 				})
 				.then(json => {
-					if (ctx.params.parent_code != undefined) {
+					if (parent != undefined) {
 						// breakdownの場合
-						return this.actions.breakdown(ctx, json);
+						return this.actions.breakdown(ctx, parent, json);
 					} else {
 						this.notifyModelChanges(ctx, "created", json);
 						return json;
@@ -260,27 +260,29 @@ module.exports = {
 		}
 
 		// 子タスクのcreate時に、同時に親の方に子タスクを付け加える
-		, breakdown(ctx, childJson) {
-			// TODO: エラーコード／メッセージは見直すこと
-			if (ctx.params.parent_code === undefined)
-				throw this.errorBadRequest(C.ERR_MODEL_NOT_FOUND, ctx.t("app:TaskNotFound"));
-
-			let parentId = this.decodeID(ctx.params.parent_code);
+		, breakdown(ctx, parent, childJson) {
+			let parentId = this.decodeID(parent);
 			let childId = this.decodeID(childJson.code);
 
 			return this.collection.findById(parentId).exec()
-				.then((doc) => {
+				.then(doc => {
 					return Task.findByIdAndUpdate(doc.id, { $addToSet: { children: childId }}, { "new": true });
 				})
-				.then((doc) => {
+				.then(doc => {
 					return this.toJSON(doc);
 				})
-				.then((json) => {
+				.then(json => {
 					return this.populateModels(json);
 				})
-				.then((json) => {
-					this.notifyModelChanges(ctx, "brokedown", { parent : json, child : childJson });
-					return { parent : json, child : childJson };
+				.then(json => {
+					//this.notifyModelChanges(ctx, "brokedown", { parent : json, child : childJson });
+					
+					// MIGRATION: v1->v2
+					if (ctx.params.parent_code) {
+						return { parent : json, child : childJson };	
+					} else {
+						return childJson;
+					}
 				});
 		}
 
