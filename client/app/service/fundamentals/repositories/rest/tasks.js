@@ -15,15 +15,17 @@ const NAMESPACE = "/api/tasks";
 //	, mutation : "LOAD"
 // }
 const get = options => {
-	let url = NAMESPACE;
+	
+	let params = [];
 
-	if (options.taskType != undefined) {
-		url = `${url}?type=${options.taskType}`;
-	} else if (options.user != undefined) {
-		url = `${url}?user_code=${options.user}`;
-	} else if (options.root != undefined) {
-		url = `${url}?root_code=${options.root}`;
+	if (options.taskType !== undefined) {
+		params.push(`type=${options.taskType}`);
+	} 
+	if (options.user !== undefined) {
+		params.push(`user_code=${options.user}`);
 	}
+
+	let url = `${NAMESPACE}?${params.join("&")}`;
 
 	return api(METHOD.get, url);
 };
