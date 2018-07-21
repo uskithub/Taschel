@@ -153,8 +153,11 @@ export default {
 		}
 		// Usecase: a user watches the list of the projects that he/she is owner or joins.
 		, getUserProjectList({ commit, getters }, { options } = {}) {
+			const savedCurrentProject = getters.currentProject ? getters.currentProject.code : null;
+
 			let user = getters.me;
 			options = assign({ taskType : "project", user : user.code }, options);
+
 			return tasks.get(options)
 				.then(data => {
 					let projects = data.map(rawValues => {
@@ -163,7 +166,8 @@ export default {
 					commit(LOAD_PROJECTS, projects);
 				})
 				.then(() => {
-					if (getters.currentProject === null) {
+					// select current project
+					if (savedCurrentProject === null) {
 						for (let i=0, len = getters.projects.length; i<len; i++) {
 							let p = getters.projects[i];
 							if (p.author.code === user.code) {
@@ -172,6 +176,14 @@ export default {
 							}
 						}
 						commit(SET_CURRENT_PROJECT, getters.projects[0]);
+					} else {
+						for (let i=0, len = getters.projects.length; i<len; i++) {
+							let p = getters.projects[i];
+							if (p.code === savedCurrentProject) {
+								commit(SET_CURRENT_PROJECT, p);
+								return;
+							}
+						}
 					}
 				});
 		}
@@ -207,7 +219,7 @@ export default {
 					commit(ADD_TASK_TO_PROJECT, task);
 				});
 		}
-		, arrangeTasksInAnotherTask({ commit, getters }, { task, from, to, index }) {
+		, arrangeTasksInAnotherTask({ dispatch, commit, getters }, { task, from, to, index }) {
 			console.log(task, from, to, index);
 
 			return Promise.resolve()
@@ -236,9 +248,11 @@ export default {
 				.then(data => {
 					// modify parent
 					return tasks.patch({ code: task.code, parent: to.code });
+				})
+				.then(data => {
+					// refresh
+					return dispatch("getUserProjectList");
 				});
-
-				// TODO: refesh
 		}
 	}
 };
