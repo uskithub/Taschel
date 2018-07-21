@@ -7,9 +7,10 @@
 			ul.kanban-list(data-type="board", :data-id="board.id"
 				@dragenter="ondragenter($event, board)"
 			)
-				kanban(v-for="kanban in board.kanbans", :kanban="kanban", :key="kanban.id"
+				kanban(v-for="kanban in board.kanbans", :parent="board", :kanban="kanban", :key="kanban.id"
 					@dragstart="ondragstart"
 					@dragend="ondragend"
+					@dragenter="ondragenter"
 				)
 </template>
 <script>
@@ -65,7 +66,7 @@
 			}
 		}
 		, methods : {
-            ondragstart(e, kanban) {
+            ondragstart(e, parent, kanban) {
 				const elem = e.target
 					, mirage = elem.cloneNode(true)
 					;
@@ -74,6 +75,7 @@
 
 				this.dragging = {
 					elem: elem
+					, parent: parent
 					, kanban: kanban
 					, mirage: mirage
 				};
@@ -82,8 +84,16 @@
 				const elem = e.target;
 				elem.classList.remove("dragging");
 
+				// validation
+				if (this.dragging && kanban.id !== this.dragging.kanban.id) {
+					this.dragging = null;
+					this.draggingOn = null;
+					return;
+				}
+
 				if (this.dragging && this.dragging.mirage.parentNode) {
 					// kaban, from ,to
+					const from = this.dragging.parent;
 					const kanban = this.dragging.kanban;
 					const exParent = elem.parentNode;
 					const newParent = this.draggingOn.elem;
@@ -98,8 +108,8 @@
 
 					this.$emit("arrange", {
 						kanban: kanban
-						, from: { type: exParent.dataset.type, id: exParent.dataset.id }
-						, to: { type: this.draggingOn.type, id: this.draggingOn.id }
+						, from: { type: exParent.dataset.type, id: exParent.dataset.id, entity: from }
+						, to: { type: this.draggingOn.type, id: this.draggingOn.id, entity: this.draggingOn.entity }
 						, index: index 
 					});
 				}
@@ -149,6 +159,7 @@
 					elem: elem
 					, type: type // board or kanban
 					, id: id
+					, entity: board
 					, siblings: null
 				}
 

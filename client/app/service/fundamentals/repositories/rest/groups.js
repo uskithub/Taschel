@@ -46,8 +46,13 @@ const put = (group, task, isAdding, index) => {
 	return api(METHOD.put, url);
 };
 
+const patch = rawValues => {
+	return api(METHOD.patch, NAMESPACE, rawValues);
+};
+
 export default {
 	get
 	, post
 	, put
+	, patch
 };

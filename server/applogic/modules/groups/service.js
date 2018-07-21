@@ -405,31 +405,17 @@ module.exports = {
 			this.validateParams(ctx);
 
 			// for v2
-			if (ctx.params.isAdding !== undefined) {
-				let taskId = Number(this.taskService.decodeID(ctx.params.task));
-				let index = Number(ctx.params.index);
-				
-				if (ctx.params.isAdding === "true") {
-					// add
-					return this.collection.findById(ctx.modelID).exec()
-						.then(doc => {
-							doc.children.splice(index, 0, taskId);
-							return doc.save();
-						})
-						.then(json => {
-							return this.populateModels(json);
-						});
-				} else {
-					// remove
-					return this.collection.findById(ctx.modelID).exec()
-						.then(doc => {
-							doc.children = doc.children.filter((tid, idx) => tid !== taskId && idx !== index);
-							return doc.save();
-						})
-						.then(json => {
-							return this.populateModels(json);
-						});
-				}
+			if (ctx.req.method === "PATCH") {
+				return this.collection.findById(ctx.modelID).exec()
+					.then(doc => {
+						if (ctx.params.children) {
+							doc.children = ctx.params.children.map(code => { return Number(this.taskService.decodeID(code)); });
+						}
+						return doc.save();
+					})
+					.then(json => {
+						return this.populateModels(json);
+					});
 			}
 
 			// TODO: delete below

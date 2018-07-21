@@ -44,12 +44,24 @@
 			])
 			// Interfacial Operations
 			, didArrangeTask({ kanban, from, to, index }) {
-				// console.log(kanban, from, to, index);
-				from.code = from.id;
-				to.code = to.id;
-				from.type = from.type === "kanban" ? "task" : "group";
-				to.type = to.type === "kanban" ? "task" : "group";
-				this.arrangeTasksInGroups({ task: kanban.task, from, to, index });
+				console.log(kanban, from, to, index);
+				let _from = {};
+				if (from.type === "kanban") {
+					_from.type = "task";
+					_from.entity = from.entity.task;
+				} else {
+					_from.type = "group";
+					_from.entity = from.entity.group;
+				}
+				let _to = {};
+				if (to.type === "kanban") {
+					_to.type = "task";
+					_to.entity = to.entity.task;
+				} else {
+					_to.type = "group";
+					_to.entity = to.entity.group;
+				}
+				this.arrangeTasksInGroups({ task: kanban.task, from: _from, to: _to, index });
 			}
 			, didSelectRow(entity) {
 				this.entity = entity;

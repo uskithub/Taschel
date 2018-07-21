@@ -1,16 +1,19 @@
 <template lang="pug">
 	li.kanban-item(:draggable="draggable", :key="kanban.id", :data-id="kanban.id"
 		@click="$emit('click', $event, kanban)"
-		@dragstart="$emit('dragstart', $event, kanban)"
+		@dragstart="$emit('dragstart', $event, parent, kanban)"
 		@dragend="$emit('dragend', $event, kanban)"
 	)
 		slot(:name="kanban.name")
 			.media-content
 				strong  {{ kanban.name }}
-				ul.kanban-list(v-if="kanban.kanbans !== undefined && kanban.kanbans.length > 0" data-type="kanban", :data-id="kanban.id")
-					kanban(v-for="child in kanban.kanbans", :kanban="child", :key="child.id"
+				ul.kanban-list(v-if="kanban.kanbans !== undefined && kanban.kanbans.length > 0" data-type="kanban", :data-id="kanban.id"
+					@dragenter="ondragenter($event, kanban)"
+				)
+					kanban(v-for="child in kanban.kanbans", :parent="kanban", :kanban="child", :key="child.id"
 						@dragstart="ondragstart"
 						@dragend="ondragend"
+						@dragenter="ondragenter"
 					)
 </template>
 
@@ -27,7 +30,14 @@
 	export default {
 		name: "Kanban"
         , props: {
-			kanban: {
+			parent: {
+				type: Object
+				, validator: (value) => {
+					if (value.name === undefined || value.id === undefined) return false;
+					return true; 
+				}
+			}
+			, kanban: {
 				type: Object
 				, validator: (value) => {
 					if (value.name === undefined || value.id === undefined) return false;
@@ -40,12 +50,16 @@
 			}
 		}
         , methods: {
-            ondragstart(e, kanban) {
-				this.$emit("dragstart", e, kanban);
+            ondragstart(e, parent, kanban) {
+				this.$emit("dragstart", e, parent, kanban);
 				e.stopPropagation();
 			}
 			, ondragend(e, kanban) {
 				this.$emit("dragend", e, kanban);
+				e.stopPropagation();
+			}
+			, ondragenter(e, kanban) {
+				this.$emit("dragenter", e, kanban);
 				e.stopPropagation();
 			}
         }

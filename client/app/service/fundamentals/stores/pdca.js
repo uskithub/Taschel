@@ -78,21 +78,33 @@ export default {
 
 				return Promise.resolve()
 					.then(() => {
+						// Removing
 						// you must execute removing before adding because of the index problem.
-						if (from.type === "group" && from.code !== "UNCLASSIFIED") {
+						if (from.type === "group" && from.code !== "UNCLASSIFIED" && from.code !== to.code) {
 							// removing from "from"  if "from" is not "UNCLASSIFIED".
-							return groups.put(from.code, task.code, false);
+							let rawValues = from.entity.rawValues;
+							let newChildren = rawValues.children.map(child => { return child.code; })
+								.filter(code => { return code !== task.code; });
+
+							return groups.patch({ code: rawValues.code, children: newChildren });
 						}
 						return null;
 					})
 					.then(data => {
+						// Adding
 						if (to.type === "group" && to.code !== "UNCLASSIFIED") {
 							// adding to "to" if "to" is not "UNCLASSIFIED".
-							return groups.put(to.code, task.code, true, index);
+							let rawValues = to.entity.rawValues;
+							let newChildren = rawValues.children.map(child => { return child.code; })
+								.filter(code => { return code !== task.code; });
+							newChildren.splice(index, 0, task.code);
+
+							return groups.patch({ code: rawValues.code, children: newChildren });
 						}
 						return data;
 					})
 					.then(data => {
+						// Refresh
 						const user = getters.me;
 						const currentWeek = getters.currentWeek;
 						const options = { user: user.code, week: currentWeek };
