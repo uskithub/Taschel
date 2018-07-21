@@ -174,6 +174,24 @@ module.exports = {
 			ctx.assertModelIsExist(ctx.t("app:TaskNotFound"));
 			this.validateParams(ctx);
 
+			// for v2 arrange
+			if (ctx.req.method === "PATCH") {
+				return this.collection.findById(ctx.modelID).exec()
+					.then(doc => {
+						if (ctx.params.parent) {
+							doc.parent = Number(this.decodeID(ctx.params.parent));
+						}
+						if (ctx.params.children) {
+							doc.children = ctx.params.children.map(code => { return Number(this.decodeID(code)); });
+						}
+						return doc.save();
+					})
+					.then(json => {
+						return this.populateModels(json);
+					});
+			}
+
+			// for v1
 			if (ctx.params.arrange) {
 				return this.actions.arrange(ctx, ctx.params.arrange);
 			}

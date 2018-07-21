@@ -3,7 +3,7 @@
 		@mouseover.prevent.stop="onmouseover"
 		@mouseout.prevent.stop="onmouseout"
 		@click="$emit('click', $event, treenode)"
-		@dragstart="$emit('dragstart', $event, treenode)"
+		@dragstart="$emit('dragstart', $event, parent, treenode)"
 		@dragend="$emit('dragend', $event, treenode)"
 	)
 		slot(:name="treenode.name")
@@ -14,11 +14,14 @@
 				span.operation(v-show="isHovering")
 					span.icon(@click.prevent.stop="$emit('addIconDidPush', $event, treenode)")
 						i.fa.fa-plus
-				ul.treelist(v-show="isOpeningMap[treenode.id]" data-type="treenode", :data-id="treenode.id")
-					treenode(v-for="childnode in treenode.subtree", :treenode="childnode", :isOpeningMap="isOpeningMap", :key="childnode.id"
+				ul.treelist(v-show="isOpeningMap[treenode.id]" data-type="treenode", :data-id="treenode.id"
+					@dragenter="ondragenter($event, treenode)"
+				)
+					treenode(v-for="childnode in treenode.subtree", :parent="treenode", :treenode="childnode", :isOpeningMap="isOpeningMap", :key="childnode.id"
 						@addIconDidPush="addIconDidPush"
 						@dragstart="ondragstart"
 						@dragend="ondragend"
+						@dragenter="ondragenter"
 						@toggle-caret="caratDidClick"
 					)
 </template>
@@ -36,7 +39,14 @@
 	export default {
 		name: "Treenode"
         , props: {
-			treenode: {
+			parent: {
+				type: Object
+				, validator: (value) => {
+					if (value.name === undefined || value.id === undefined) return false;
+					return true; 
+				}
+			}
+			, treenode: {
 				type: Object
 				, validator: (value) => {
 					if (value.name === undefined || value.id === undefined) return false;
@@ -67,12 +77,16 @@
 				this.$emit("addIconDidPush", e, treenode);
 				e.stopPropagation();
 			}
-            , ondragstart(e, treenode) {
-				this.$emit("dragstart", e, treenode);
+            , ondragstart(e, parent, treenode) {
+				this.$emit("dragstart", e, parent, treenode);
 				e.stopPropagation();
 			}
 			, ondragend(e, treenode) {
 				this.$emit("dragend", e, treenode);
+				e.stopPropagation();
+			}
+			, ondragenter(e, treenode) {
+				this.$emit("dragenter", e, treenode);
 				e.stopPropagation();
 			}
 			, caratDidClick(e, id) {

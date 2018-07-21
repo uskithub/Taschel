@@ -209,6 +209,36 @@ export default {
 		}
 		, arrangeTasksInAnotherTask({ commit, getters }, { task, from, to, index }) {
 			console.log(task, from, to, index);
+
+			return Promise.resolve()
+				.then(() => {
+					// Removing
+					// you must execute removing before adding because of the index problem.
+					if (from.code !== to.code) {
+						let rawValues = from.entity.rawValues;
+						let newChildren = rawValues.children.map(child => { return child.code; })
+							.filter(code => { return code !== task.code; });
+
+						return tasks.patch({ code: rawValues.code, children: newChildren });
+					}
+					return null;
+				})
+				.then(data => {
+					// Adding
+					// adding to "to" if "to" is not "UNCLASSIFIED".
+					let rawValues = to.entity.rawValues;
+					let newChildren = rawValues.children.map(child => { return child.code; })
+						.filter(code => { return code !== task.code; });
+					newChildren.splice(index, 0, task.code);
+
+					return tasks.patch({ code: rawValues.code, children: newChildren });
+				})
+				.then(data => {
+					// modify parent
+					return tasks.patch({ code: task.code, parent: to.code });
+				});
+
+				// TODO: refesh
 		}
 	}
 };

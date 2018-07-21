@@ -11,10 +11,11 @@
 			ul.treelist(v-show="isOpeningMap[treenode.id]" data-type="treelist", :data-id="treenode.id"
 				@dragenter="ondragenter($event, treenode)"
 			)
-				treenode(v-for="childnode in treenode.subtree", :treenode="childnode", :isOpeningMap="isOpeningMap", :key="childnode.id"
+				treenode(v-for="childnode in treenode.subtree", :parent="treenode", :treenode="childnode", :isOpeningMap="isOpeningMap", :key="childnode.id"
 					@addIconDidPush="addIconDidPush"
 					@dragstart="ondragstart"
 					@dragend="ondragend"
+					@dragenter="ondragenter"
 					@toggle-caret="caratDidClick"
 				)
 </template>
@@ -101,7 +102,7 @@
 			, addIconDidPush(e, treenode) {
 				this.$emit("addIconDidPush", e, treenode);
 			}
-            , ondragstart(e, treenode) {
+            , ondragstart(e, parent, treenode) {
 				const elem = e.target
 					, mirage = elem.cloneNode(true)
 					;
@@ -110,16 +111,27 @@
 
 				this.dragging = {
 					elem: elem
+					, parent: parent
 					, treenode: treenode
 					, mirage: mirage
 				};
+
+				console.log("ondragstart", treenode);
 			}
 			, ondragend(e, treenode) {
 				const elem = e.target;
 				elem.classList.remove("dragging");
 
+				// validation
+				if (this.dragging && treenode.id !== this.dragging.treenode.id) {
+					this.dragging = null;
+					this.draggingOn = null;
+					return;
+				}
+
 				if (this.dragging && this.dragging.mirage.parentNode) {
-					// kaban, from ,to
+					// treenode, from ,to
+					const from = this.dragging.parent;
 					const treenode = this.dragging.treenode;
 					const exParent = elem.parentNode;
 					const newParent = this.draggingOn.elem;
@@ -134,8 +146,8 @@
 
 					this.$emit("arrange", {
 						treenode: treenode
-						, from: { type: exParent.dataset.type, id: exParent.dataset.id }
-						, to: { type: this.draggingOn.type, id: this.draggingOn.id }
+						, from: { type: exParent.dataset.type, id: exParent.dataset.id, entity: from }
+						, to: { type: this.draggingOn.type, id: this.draggingOn.id, entity: this.draggingOn.entity }
 						, index: index 
 					});
 				}
@@ -159,7 +171,7 @@
 					this.draggingOn = null;
 				}
 			}
-			, ondragenter(e, board) {
+			, ondragenter(e, treenode) {
 				const elem = e.target
 					, type = elem.dataset.type
 					, id = elem.dataset.id
@@ -183,8 +195,9 @@
 
 				this.draggingOn = {
 					elem: elem
-					, type: type // board or kanban
+					, type: type
 					, id: id
+					, entity: treenode
 					, siblings: null
 				}
 

@@ -91,10 +91,12 @@
 			])
 			// Interfacial Operations
 			, didArrangeTask({ treenode, from, to, index }) {
-				from.code = from.id;
-				to.code = to.id;
-				from.type = to.type = "task";
-				this.arrangeTasksInAnotherTask({ task: treenode.task, from, to, index });
+				console.log(treenode, from, to, index);
+
+				let _from = { type: "task", code: from.id, entity: from.entity.task };
+				let _to = { type: "task", code: to.id, entity: to.entity.task };
+
+				this.arrangeTasksInAnotherTask({ task: treenode.task, from: _from, to: _to, index });
 			}
 			, addIconDidPush(e, treenode) {
 				// create default values for new task according to its parent task.

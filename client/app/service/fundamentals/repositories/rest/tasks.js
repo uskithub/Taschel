@@ -32,12 +32,12 @@ const post = rawValues => {
 	return api(METHOD.post, NAMESPACE, rawValues);
 };
 
-const put = rawValues => {
-	return api(METHOD.put, NAMESPACE + "/" + rawValues.code, rawValues);
+const patch = rawValues => {
+	return api(METHOD.patch, NAMESPACE, rawValues);
 };
 
 export default {
 	get
 	, post
-	, put
+	, patch
 };
