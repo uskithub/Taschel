@@ -52,4 +52,4 @@ const validateArrange = (groups, task, from, to, index) => {
 
 export default {
 	validateArrange
-}
+};
