@@ -14,7 +14,7 @@
 	import Base from "../../fundamentals/mixins/base";
 	import { mapGetters, mapMutations, mapActions } from "vuex";
 	import { schema as schemaUtils } from "vue-form-generator";
-	import { LOAD_TASKS, SELECT_TASK, SET_WAY_BACK, POP_CRUMB } from "../../fundamentals/mutationTypes";
+	import { LOAD_TASKS, SET_WAY_BACK, POP_CRUMB } from "../../fundamentals/mutationTypes";
 	import { cloneDeep } from "lodash";
 	const _ = Vue.prototype._;
 

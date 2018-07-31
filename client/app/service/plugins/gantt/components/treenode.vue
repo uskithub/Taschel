@@ -8,6 +8,7 @@
 	)
 		slot(:name="treenode.name")
 			.media-content
+				input.checkbox(type="checkbox")
 				span.icon(v-if="treenode.subtree.length > 0" @click.prevent.stop="$emit('toggle-caret', $event, treenode.id)")
 					i.fa(:class="{ 'fa-caret-down': isOpeningMap[treenode.id], 'fa-caret-right': !isOpeningMap[treenode.id] }")
 				span.treelist-node-header  {{ treenode.name }}

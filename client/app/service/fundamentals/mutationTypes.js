@@ -25,10 +25,9 @@ export const ADD_TASK_TO_PROJECT	= "ADD_TASK_TO_PROJECT";
 
 // task
 export const LOAD_TASKS			= "LOAD_TASKS";
-export const SELECT_TASK		= "SELECT_TASK";
+export const LOAD_EDITING_TASK_TREE	= "LOAD_EDITING_TASK_TREE";
 export const ADD_TASK			= "ADD_TASK";
 export const UPDATE_TASK		= "UPDATE_TASK";
-export const CLEAR_SELECTION	= "CLEAR_SELECTION";
 
 // group
 export const LOAD_WEEKLY_GROUPS	= "LOAD_WEEKLY_GROUPS";
