@@ -1,5 +1,5 @@
 import Task from "../entities/task";
-import { INITIALIZE, LOAD_TASKS, SELECT_TASK, ADD_TASK, UPDATE_TASK, CLEAR_SELECTION
+import { INITIALIZE, LOAD_TASKS, ADD_TASK, UPDATE_TASK, LOAD_EDITING_TASK_TREE
 	//, ARRANGE_AVOBE, ARRANGE_INTO, ARRANGE_BELOW 
 } from "../mutationTypes";
 import { assign } from "lodash";
@@ -9,11 +9,11 @@ export default {
 	state : {
 		// DDD: Entities
 		entities: []
-		, current: null
+		, editingTaskTree: null
 	}
 	, getters : {
 		tasks(state) { return state.entities; }
-		, currentTask(state) { return state.current; }
+		, currentEditingTaskTree(state) { return state.editingTaskTree; }
 	}
 	// DDD: Usecases
 	// Vuex: Mutations can change states. It must run synchronously.
@@ -25,9 +25,6 @@ export default {
 		, [LOAD_TASKS] (state, entities) {
 			state.entities.splice(0);
 			state.entities.push(...entities);
-		}
-		, [SELECT_TASK] (state, entity) {
-			state.current = entity;
 		}
 		, [ADD_TASK] (state, entity) {
 			let isFound = state.entities.find(e => e.code === entity.code);
@@ -42,8 +39,8 @@ export default {
 				}
 			});
 		}
-		, [CLEAR_SELECTION] (state) {
-			state.current = null;
+		, [LOAD_EDITING_TASK_TREE] (state, entity) {
+			state.editingTaskTree = entity;
 		}
 	}
 
@@ -82,6 +79,17 @@ export default {
 					let task = new Task(data);
 					commit(UPDATE_TASK, task);
 				});
+		}
+		// Usecase: get an editing task's parent as detail if it has.
+		, getTaskDetail({ commit }, task) {
+			if (task.parent !== -1 ) {
+				return tasks.get({ code: task.parent })
+					.then(data => {
+						commit(LOAD_EDITING_TASK_TREE, new Task(data));
+					});
+			} else {
+				commit(LOAD_EDITING_TASK_TREE, task);
+			}
 		}
 	}
 };

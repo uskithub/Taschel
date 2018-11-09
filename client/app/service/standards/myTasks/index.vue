@@ -1,7 +1,7 @@
 <!-- // DDD: Presentation -->
 <template lang="pug">
 	.container
-		editing(v-if="isEditing", :entity="entity", :schema="formSchema" @close="didReceiveCloseEvent")
+		editing(v-if="isEditing", :entity="entity", :taskTree="taskTree" , :schema="formSchema" @close="didReceiveCloseEvent")
 		div(v-else)
 			.flex.align-center.justify-space-around
 				.left
@@ -16,6 +16,7 @@
 	import Vue from "vue";
 	import Base from "../../fundamentals/mixins/base";
 	import Task from "../../fundamentals/entities/task";
+	import Treenode from "../../plugins/gantt/treenode";
 	import Editing from "./editing";
 	import Projects from "../projects/index"
 	import schema from "./schema";
@@ -34,12 +35,14 @@
 		, computed : {
 			...mapGetters([
 				"tasks"
+				, "currentEditingTaskTree"
 			])
 		}
 		, data() {
 			return {
 				isEditing: false
 				, entity: null
+				, taskTree: null
 				, tableSchema : schema.table
 				, formSchema : schema.form
 				, order : {}
@@ -50,11 +53,21 @@
 			...mapActions([
 				// Usecases
 				"getMyTaskList"
+				, "getTaskDetail"
 			])
 			// Interfacial Operations
 			, didSelectRow(entity) {
 				this.entity = entity;
-				this.isEditing = true;
+				this.getTaskDetail(entity)
+					.then(() => {
+						console.log("ほげ");
+						if (this.currentEditingTaskTree !== null) {
+							this.taskTree = new Treenode(this.currentEditingTaskTree);
+						} else {
+							// TODO: エラー
+						}
+						this.isEditing = true;
+					});
 			}
 			, didPushAddButton() {
 				this.isEditing = true;

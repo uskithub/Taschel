@@ -9,13 +9,16 @@ const NAMESPACE = "/api/tasks";
 // 	options : {	
 //		taskType : "project"
 //    	, user : People.code
-//    	, root : Task.code
-//    	, populateParent : true
 // 	}
 //	, mutation : "LOAD"
 // }
 const get = options => {
-	
+
+	if (options.code) {
+		let url = `${NAMESPACE}/${options.code}`;
+		return api(METHOD.get, url);	
+	}
+
 	let params = [];
 
 	if (options.taskType !== undefined) {

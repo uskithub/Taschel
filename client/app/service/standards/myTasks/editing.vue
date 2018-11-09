@@ -8,10 +8,12 @@
 			button.button.outline(@click="didPushCancelButton")
 				i.icon.fa.fa-close
 				| {{ _("Cancel") }}
+		treelist(:treenodes="treenodes" ref="legend" @arrange="didArrangeTask" @addIconDidPush="addIconDidPush")
 </template>
 <script>
 	import Vue from "vue";
 	import Base from "../../fundamentals/mixins/base";
+	import Treenode from "../../plugins/gantt/treenode";
 	import { mapGetters, mapMutations, mapActions } from "vuex";
 	import { schema as schemaUtils } from "vue-form-generator";
 	import { cloneDeep, isArray } from "lodash";
@@ -21,6 +23,10 @@
 		mixins : [ Base ]
 		, props : {
 			entity : {
+				type: Object
+				, validator: (value) => { return true; } // TODO
+			}
+			, taskTree : {
 				type: Object
 				, validator: (value) => { return true; } // TODO
 			}
@@ -42,6 +48,7 @@
 		}
 		, computed: {
 			isNewEntity() { return this.entity === null; }
+			, treenodes() { return [this.taskTree]; }
 		}
 		, methods : {
 			...mapActions([
@@ -68,6 +75,12 @@
 			// Usecase: a user cancels editing or adding a project.
 			, didPushCancelButton() {
 				this.$emit("close"); 
+			}
+			, didArrangeTask() {
+				// TODO
+			}
+			, addIconDidPush() {
+				// TODO
 			}
 			// Application Service:
 			, validate() {

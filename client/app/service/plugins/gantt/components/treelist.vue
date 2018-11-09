@@ -1,6 +1,7 @@
 <template lang="pug">
 	ul.treelist-board-container
 		li.treelist-board(v-for="treenode in treenodes", :key="treenode.id" @mouseover="onmouseover($event, treenode.id)" @mouseout="onmouseout($event, treenode.id)")
+			input.checkbox(type="checkbox")
 			span.icon(v-if="treenode.subtree.length > 0" @click.prevent.stop="caratDidClick($event, treenode.id)")
 				i.fa(:class="{ 'fa-caret-down': isOpeningMap[treenode.id], 'fa-caret-right': !isOpeningMap[treenode.id] }")
 			span.treelist-board-header {{ treenode.name }}
@@ -78,18 +79,21 @@
 			}
 		}
 		, watch: {
-			treenodes(newValue) {
-				const checkIsOpeningRecursively = arr => {
-					arr.forEach(item => {
-						if (this.isOpeningMap[item.id] === undefined) {
-							Vue.set(this.isOpeningMap, item.id, true);
-						}
-						if (item.subtree && item.subtree.length > 0) {
-							checkIsOpeningRecursively(item.subtree);
-						}
-					});
-				};
-				checkIsOpeningRecursively(newValue);
+			treenodes : {
+				immediate: true // @see https://jp.vuejs.org/v2/api/index.html
+				, handler(newValue) {
+					const checkIsOpeningRecursively = arr => {
+						arr.forEach(item => {
+							if (this.isOpeningMap[item.id] === undefined) {
+								Vue.set(this.isOpeningMap, item.id, true);
+							}
+							if (item.subtree && item.subtree.length > 0) {
+								checkIsOpeningRecursively(item.subtree);
+							}
+						});
+					};
+					checkIsOpeningRecursively(newValue);
+				}
 			}
 		}
 		, methods : {
