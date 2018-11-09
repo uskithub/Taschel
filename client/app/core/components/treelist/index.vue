@@ -8,18 +8,18 @@
         )
 
         .media.gantt(:class="{'active': isDraggingIntoChild, 'milestone': node.type=='milestone', 'requirement': node.type=='requirement', 'way': node.type=='way', 'step': node.type=='step', 'todo': node.type=='todo'}")
-            div.tree-node(:id="node.code", :draggable="!isRoot && isDraggable"
+            .tree-node(:id="node.code" draggable="!isRoot && isDraggable", :draggable="!isRoot && isDraggable"
                 @click=""
                 @dragstart="dragstart"
                 @dragover="dragover"
-                @dragenter="dragenter"
+                @dragenter=""
                 @dragleave="dragleave"
                 @drop="drop"
                 @dragend="dragend"
                 @mouseover="mouseover"
                 @mouseout="mouseout"
             )
-                div.dummyHover
+                .dummyHover
                 span.icon-caret.icon.is-small(v-if="node.children && node.children.length > 0")
                     i.vue-tree-icon(:class="caretClass" @click.prevent.stop="toggle")
                 
@@ -27,9 +27,9 @@
                     i.vue-tree-icon.item-icon.icon-folder
 
                 //- div.node-content {{ `${node.name}(${node.code}) parent=${(node.parent instanceof Object) ? "obj" : node.parent}, children=[${(node.children) ? node.children.reduce((str, c) => { str += c.code + ", "; return str; }, "") : ""}]`}}
-                div.node-content {{ node.name }}
+                .node-content {{ node.name }}
 
-                div.operation(v-show="isHovering")
+                .operation(v-show="isHovering")
                     span(v-if="add != undefined" title="add tree node" @click.prevent.stop="add($event, node)")
                         slot(name="addTreeNode")
                             i.vue-tree-icon.icon-folder-plus-e
@@ -142,7 +142,10 @@
             }
 
             // ドラッグしている要素がドロップ領域に入った
-            , dragenterAbove(e) { this.isDraggingToGoUp = true; }
+            , dragenterAbove(e) { 
+                console.log("●来てるね");
+                this.isDraggingToGoUp = true; 
+            }
             , dragenter(e) { this.isDraggingIntoChild = true; }
             , dragenterBelow(e) { this.isDraggingToGoDown = true; }
 
@@ -153,7 +156,10 @@
             }
             
             // ドラッグしている要素がドロップ領域から出たとき
-            , dragleaveAbove (e) { this.isDraggingToGoUp = false; }
+            , dragleaveAbove (e) { 
+                console.log("●来てるね leave")
+                this.isDraggingToGoUp = false; 
+            }
             , dragleave (e) { this.isDraggingIntoChild = false; }
             , dragleaveBelow (e) { this.isDraggingToGoDown = false; }
 

@@ -2,7 +2,7 @@
 	ul.gantt-container
 		li.treelist-board(v-for="treelist in treelists", :key="treelist.id")
 			span.treelist-board-header
-				legend 
+				legend {{ treelist.name }}
 			.drag-options
 			ul.treelist(data-type="treelist", :data-id="treelist.id"
 				@dragenter="ondragenter($event, treelist)"

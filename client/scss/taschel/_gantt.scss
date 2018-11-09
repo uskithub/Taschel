@@ -94,8 +94,9 @@
 .border {
     height: 5px;
     &.up {
-        margin-top: -5px;
-        background-color: transparent;
+        z-index: 1000;
+        // margin-top: -5px;
+        // background-color: transparent;
     }
     &.bottom {
         // background-color: #c00;

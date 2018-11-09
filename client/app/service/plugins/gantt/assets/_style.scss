@@ -55,7 +55,7 @@
                 padding: 0.5em 0 0 0.5em;
                 background: rgba(black, 0.4);
 				border-top: 1px solid #000;
-				border-left: 1px solid #000;
+                border-left: 1px solid #000;
 
 				&:first-child {
 					margin: 0.5em 0 0 0;
@@ -109,7 +109,8 @@
                 margin: 0;
                 padding: 0.5em 0 0 0;
                 background: rgba(black, 0.4);
-				border-top: 1px solid #000;
+                border-top: 1px solid #000;
+                min-height: 1em;
 
 				.media-content {
 					legend {
