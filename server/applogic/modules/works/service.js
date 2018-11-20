@@ -13,6 +13,13 @@ let Work 		= require("./models/work");
 let Task 		= require("../tasks/models/task");
 let User 		= require("../persons/models/user");
 
+const clientID 		= config.authKeys.google.clientID;
+const clientSecret	= config.authKeys.google.clientSecret;
+const redirectUrl	= "/auth/google/callback";
+const OAuth2		= google.auth.OAuth2;
+
+
+
 module.exports = {
 	settings: {
 		name: "works",
@@ -84,12 +91,7 @@ module.exports = {
 									const max = week.add(5, "d").format();
 			
 									console.log(min, max);
-			
-									const clientID = config.authKeys.google.clientID;
-									const clientSecret = config.authKeys.google.clientSecret;
-									const redirectUrl = "/auth/google/callback";
-				
-									let OAuth2 = google.auth.OAuth2;
+
 									let oauth2Client = new OAuth2(clientID, clientSecret, redirectUrl);
 									oauth2Client.credentials = doc.credentials;
 				
@@ -99,6 +101,8 @@ module.exports = {
 									return new Promise((resolve, reject) => {
 		
 										calendar.events.list({
+											// Auth client or API Key for the request
+											// auth?: string|OAuth2Client|JWT|Compute|UserRefreshClient;
 											auth: oauth2Client
 											, calendarId: "primary"
 											, timeMax: max
@@ -111,11 +115,13 @@ module.exports = {
 											if (err) {
 												return reject(err);
 											}
-				
 											return resolve(response.data.items);
 										});
 									}).then(items => {
 										const events = items.map(item => {
+
+											//console.log("■", item);
+
 											return {
 												code: "GOOGLE_CALENDAR"
 												, title: item.summary
@@ -172,6 +178,58 @@ module.exports = {
 					}
 					taskDoc.save();
 				});
+
+				// Google Calendarに追加
+				const userId = ctx.user.id;
+
+				if (userId) {
+					// 本来Promiseだが、待つ必要がないので非同期処理
+					this.personService.collection.findById(userId).exec()
+					.then(doc => {
+						if (doc.credentials.access_token) {
+							let oauth2Client = new OAuth2(clientID, clientSecret, redirectUrl);
+							oauth2Client.credentials = doc.credentials;
+
+							let calendar = google.calendar("v3");
+							// @see https://github.com/google/google-api-nodejs-client/blob/master/src/apis/calendar/v3.ts#L3433
+			
+							return new Promise((resolve, reject) => {
+
+								console.log("****** 来てる", userId);
+
+
+								calendar.events.insert(
+								// params: Params$Resource$Events$Insert
+								{ 
+									// Auth client or API Key for the request
+									// auth?: string|OAuth2Client|JWT|Compute|UserRefreshClient;
+									auth: oauth2Client
+									, calendarId: "primary"
+									, resource: {
+										// required
+										start: { dateTime: ctx.params.start }
+										, end: { dateTime: ctx.params.end }
+										// optional
+										, id : "hogehoge"
+										, source : {
+											title : "taschel"
+										}
+									}
+								}
+								// callback: BodyResponseCallback<Schema$Event>
+								, (err, response) => {
+									if (err) {
+										console.log("●●●●●", err);
+										return reject(err);
+									}
+									console.log("●●◯●●", response.data.items);
+									return resolve(response.data.items);
+								});
+							});
+						}
+					});
+				}
+
 				// あくまでworkのdocを返すこと
 				return doc;
 			})
