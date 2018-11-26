@@ -182,7 +182,7 @@ module.exports = function(app, db) {
 		scope: [
 			"https://www.googleapis.com/auth/plus.login"
 			, "https://www.googleapis.com/auth/plus.profile.emails.read"
-			, "https://www.googleapis.com/auth/calendar.readonly"
+			, "https://www.googleapis.com/auth/calendar.events"
 		]
 		, accessType: "offline"
 		, prompt: "consent"

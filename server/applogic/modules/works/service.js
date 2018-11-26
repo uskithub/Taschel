@@ -6,7 +6,7 @@ let C 	 		= require("../../../core/constants");
 
 let _			= require("lodash");
 let moment 		= require("moment");
-
+let base32Encode	= require("base32-encode");
 let google		= require("googleapis");
 
 let Work 		= require("./models/work");
@@ -17,8 +17,6 @@ const clientID 		= config.authKeys.google.clientID;
 const clientSecret	= config.authKeys.google.clientSecret;
 const redirectUrl	= "/auth/google/callback";
 const OAuth2		= google.auth.OAuth2;
-
-
 
 module.exports = {
 	settings: {
@@ -185,10 +183,10 @@ module.exports = {
 				if (userId) {
 					// 本来Promiseだが、待つ必要がないので非同期処理
 					this.personService.collection.findById(userId).exec()
-					.then(doc => {
-						if (doc.credentials.access_token) {
+					.then(userDoc => {
+						if (userDoc.credentials.access_token) {
 							let oauth2Client = new OAuth2(clientID, clientSecret, redirectUrl);
-							oauth2Client.credentials = doc.credentials;
+							oauth2Client.credentials = userDoc.credentials;
 
 							let calendar = google.calendar("v3");
 							// @see https://github.com/google/google-api-nodejs-client/blob/master/src/apis/calendar/v3.ts#L3433
@@ -196,7 +194,6 @@ module.exports = {
 							return new Promise((resolve, reject) => {
 
 								console.log("****** 来てる", userId);
-
 
 								calendar.events.insert(
 								// params: Params$Resource$Events$Insert
@@ -210,10 +207,13 @@ module.exports = {
 										start: { dateTime: ctx.params.start }
 										, end: { dateTime: ctx.params.end }
 										// optional
-										, id : "hogehoge"
-										, source : {
-											title : "taschel"
-										}
+										, id : base32Encode(Uint8Array.from(Buffer.from(`taschel:${doc.id}`)), "RFC4648-HEX", { padding: false }).toLowerCase()
+										, summary : doc.title
+										// , description: ""
+										// , source : {
+										// 	title : "taschel"
+										// 	, url :  
+										// }
 									}
 								}
 								// callback: BodyResponseCallback<Schema$Event>
