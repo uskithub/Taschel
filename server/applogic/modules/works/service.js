@@ -7,6 +7,7 @@ let C 	 		= require("../../../core/constants");
 let _			= require("lodash");
 let moment 		= require("moment");
 let base32Encode	= require("base32-encode");
+let base32Decode	= require("base32-decode");
 let google		= require("googleapis");
 
 let Work 		= require("./models/work");
@@ -17,6 +18,9 @@ const clientID 		= config.authKeys.google.clientID;
 const clientSecret	= config.authKeys.google.clientSecret;
 const redirectUrl	= "/auth/google/callback";
 const OAuth2		= google.auth.OAuth2;
+
+const EVENT_ID_PREFIX = "taschel:";
+const CALENDAR_SOURCE_ID = "Taschel";
 
 module.exports = {
 	settings: {
@@ -116,19 +120,32 @@ module.exports = {
 											return resolve(response.data.items);
 										});
 									}).then(items => {
-										const events = items.map(item => {
+										// Taschelで追加したイベントが重複して表示されないようにしている
+										items.forEach(item => {
 
-											//console.log("■", item);
+											if (item.source && item.source.title == CALENDAR_SOURCE_ID) {
+												// an event is made by taschel.
+												let eventId = String.fromCharCode.apply("", new Uint8Array(base32Decode((item.id	).toUpperCase(), "RFC4648-HEX")))
+												let workId = eventId.replace(EVENT_ID_PREFIX, "");
 
-											return {
-												code: "GOOGLE_CALENDAR"
-												, title: item.summary
-												, start: item.start.dateTime
-												, end: item.end.dateTime
-												, week: ctx.params.week
-											};
+												// TODO: jsonの中身と比べて、Googleカレンダー側で更新されていたら、workを更新
+												let work = json.find(j => this.decodeID(j.code) == workId);
+												console.log("■□■", work, item);
+												
+											} else {
+												// TODO: Google Caldndarで追加したイベントにも振り返りを可能にする
+
+												// Google Calendarで作成した予定だけ追加
+												json.push({
+													code: "GOOGLE_CALENDAR"
+													, title: item.summary
+													, start: item.start.dateTime
+													, end: item.end.dateTime
+													, week: ctx.params.week
+												});
+											}
 										});
-										return json.concat(events);
+										return json;
 									});
 								} else {
 									return json;
@@ -193,7 +210,9 @@ module.exports = {
 			
 							return new Promise((resolve, reject) => {
 
-								console.log("****** 来てる", userId);
+								let idEncoded = base32Encode(Uint8Array.from(Buffer.from(`${EVENT_ID_PREFIX}${doc.id}`)), "RFC4648-HEX", { padding: false }).toLowerCase();
+
+								console.log("****** 来てる");
 
 								calendar.events.insert(
 								// params: Params$Resource$Events$Insert
@@ -207,13 +226,14 @@ module.exports = {
 										start: { dateTime: ctx.params.start }
 										, end: { dateTime: ctx.params.end }
 										// optional
-										, id : base32Encode(Uint8Array.from(Buffer.from(`taschel:${doc.id}`)), "RFC4648-HEX", { padding: false }).toLowerCase()
+										, id : idEncoded
 										, summary : doc.title
+										, colorId : "2"
 										// , description: ""
-										// , source : {
-										// 	title : "taschel"
-										// 	, url :  
-										// }
+										, source : {
+											title : CALENDAR_SOURCE_ID
+											, url : "https://taschel.com/"
+										}
 									}
 								}
 								// callback: BodyResponseCallback<Schema$Event>
