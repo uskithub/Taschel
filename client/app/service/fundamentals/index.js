@@ -1,5 +1,6 @@
 import TaskForm from "./components/taskform";
 import Table from "./components/table";
+import TimeLine from "./components/treebasedtimeline";
 
 const plugin = {
 	// @see https://jp.vuejs.org/v2/guide/plugins.html
@@ -15,6 +16,7 @@ const plugin = {
 		// componentの追加
 		Vue.component("task-form", TaskForm);
 		Vue.component("data-table", Table);
+		Vue.component("time-line", TimeLine);
 		
 		// maps.googleapiのロード
 		// if (finalOptions.load) {
