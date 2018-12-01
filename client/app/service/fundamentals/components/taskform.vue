@@ -31,7 +31,7 @@
 	const _ = Vue.prototype._;
 
 	export default {
-		name: "TaskFrom"
+		name: "TaskForm"
 		, props : {
 			entity : {
 				type: Object

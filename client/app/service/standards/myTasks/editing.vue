@@ -1,14 +1,26 @@
 <template lang="pug">
-	.form
-		vue-form-generator(:schema="schema", :model="rawValues", :options="options", :is-new-model="isNewEntity" ref="form")
-		.buttons.flex.justify-space-around
-			button.button.primary(@click="didPushSaveButton")
-				i.icon.fa.fa-save 
-				| {{ _("Save") }}
-			button.button.outline(@click="didPushCancelButton")
-				i.icon.fa.fa-close
-				| {{ _("Cancel") }}
-		treelist(:treenodes="treenodes" ref="legend" @arrange="didArrangeTask" @addIconDidPush="addIconDidPush")
+	fieldset
+		.panel
+			.header 概要
+			.body
+				.form
+					vue-form-generator(:schema="schema", :model="rawValues", :options="options", :is-new-model="isNewEntity" ref="form")
+					.buttons.flex.justify-end
+						button.button.outline(@click="didPushCancelButton")
+							i.icon.fa.fa-chevron-left
+							| {{ _("Back") }}
+						button.button.primary(@click="didPushSaveButton")
+							i.icon.fa.fa-save 
+							| {{ _("Save") }}
+		.panel
+			.header 親子関係
+			.body
+				treelist(:treenodes="treenodes" ref="legend" @arrange="didArrangeTask" @addIconDidPush="addIconDidPush")
+
+		.panel
+			.header Timeline
+			.body
+				time-line(:treenodes="treenodes" ref="legend" @arrange="didArrangeTask" @addIconDidPush="addIconDidPush")
 </template>
 <script>
 	import Vue from "vue";
@@ -105,4 +117,10 @@
 		}
 	}
 </script>
-<style lang="sass" scoped></style>
+<style lang="scss" scoped>
+
+	.panel {
+		margin-bottom: 20px;
+	}
+
+</style>
