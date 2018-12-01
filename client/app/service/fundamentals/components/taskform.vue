@@ -5,13 +5,13 @@
 			table
 				tbody
 					tr
-						th {{ _("Parent Name") }}
+						th.parentTaskLabel {{ _("Parent Name") }}
 						td {{ parent.name }}
 					tr
-						th {{ _("Parent Purpose") }}
+						th.parentTaskLabel {{ _("Parent Purpose") }}
 						td {{ parent.purpose }}
 					tr
-						th {{ _("Parent Goal") }}
+						th.parentTaskLabel {{ _("Parent Goal") }}
 						td {{ parent.goal }}
 		.form
 			vue-form-generator(:schema="schema", :model="rawValues", :options="options", :is-new-model="isNewEntity" ref="form")
@@ -103,4 +103,12 @@
 		}
 	}
 </script>
-<style lang="sass" scoped></style>
+<style lang="scss" scoped>
+
+	th.parentTaskLabel {
+		text-align: left;
+		text-decoration: underline;
+		color: #808080;
+	}
+
+</style>
