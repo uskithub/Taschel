@@ -88,6 +88,16 @@ task.chidlren = [task, [task, task], ...]
 
 task.dependOn = [task, task, ...]
 
+# Lifecycle
+
+- Base.vueのcreatedでsessionの準備を行う
+  - sessionの準備完了をsubscribe
+  - 必要な初期処理を行う
+    - getCurrentSession
+    - getUserProjectList
+    - 終わったら GET_READY を commit
+  - 終わったらsessionEnsuredを呼ぶ
+- BaseをMixinしているVueでsessionEnsuredが呼ばれる
 
 
 # Vue, Express, MongoDB full-stack JS Boilerplate

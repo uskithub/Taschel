@@ -59,10 +59,11 @@ export default {
 			const user = getters.me;
 			const currentWeek = getters.currentWeek;
 			const options = { user: user.code, week: currentWeek };
+			const projects = getters.projects;
 			return groups.get(options)
 				.then(data => {
 					let groups = data.map(rawValues => {
-						return new Group(rawValues);
+						return new Group(rawValues, projects);
 					});
 					commit(LOAD_WEEKLY_GROUPS, groups);
 				});
@@ -71,6 +72,7 @@ export default {
 		, arrangeTasksInGroups({ commit, getters }, { task, from, to, index }) {
 			console.log(task, from, to, index);
 			const _groups = getters.groups;
+			const projects = getters.projects;
 
 			if (domainGlue.validateArrange(_groups, task, from, to, index)) {
 				// OK
@@ -111,7 +113,7 @@ export default {
 						return groups.get(options)
 							.then(data => {
 								let groups = data.map(rawValues => {
-									return new Group(rawValues);
+									return new Group(rawValues, projects);
 								});
 								commit(LOAD_WEEKLY_GROUPS, groups);
 							});

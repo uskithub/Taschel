@@ -55,37 +55,41 @@ export default {
 			// userが誰か知らないのもおかしい気がする
 			const user = getters.me;
 			const options = { user : user.code };
+			const projects = getters.projects;
 			return tasks.get(options)
 				.then(data => {
 					let tasks = data.map(rawValues => {
-						return new Task(rawValues);
+						return new Task(rawValues, projects);
 					});
 					commit(LOAD_TASKS, tasks);
 				});
 		}
 		// Usecase:
-		, addTask({ commit }, rawValues) {
+		, addTask({ commit, getters }, rawValues) {
+			const projects = getters.projects;
 			return tasks.post(rawValues)
 				.then(data => {
-					let task = new Task(data);
+					let task = new Task(data, projects);
 					// TODO: 既存のtasksのどこに突っ込むか（ソート、フィルタとか）
 					commit(ADD_TASK, task);
 				});
 		}
 		// Usecase:
-		, editTask({ commit }, rawValues) {
+		, editTask({ commit, getters }, rawValues) {
+			const projects = getters.projects;
 			return tasks.put(rawValues)
 				.then(data => {
-					let task = new Task(data);
+					let task = new Task(data, projects);
 					commit(UPDATE_TASK, task);
 				});
 		}
 		// Usecase: get an editing task's parent as detail if it has.
-		, getTaskDetail({ commit }, task) {
+		, getTaskDetail({ commit, getters }, task) {
+			const projects = getters.projects;
 			if (task.parent !== -1 ) {
 				return tasks.get({ code: task.parent })
 					.then(data => {
-						commit(LOAD_EDITING_TASK_TREE, new Task(data));
+						commit(LOAD_EDITING_TASK_TREE, new Task(data, projects));
 					});
 			} else {
 				commit(LOAD_EDITING_TASK_TREE, task);

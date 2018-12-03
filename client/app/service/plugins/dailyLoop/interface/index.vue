@@ -184,7 +184,7 @@
 				console.log("eventClick");
 			}
 			, didChangeWeek(view, elem) {
-				if (!this.isSessionReady) return;
+				if (!this.isReady) return;
 				const week = view.start.format("YYYY-MM-DD");
 				console.log("viewRender", week);
 				this.changeWeek(week)

@@ -5,7 +5,7 @@
 	import moment from "moment";
 
 	import { mapGetters, mapActions } from "vuex";
-	import { SET_USER } from "../../fundamentals/mutationTypes";
+	import { GET_READY } from "../../fundamentals/mutationTypes";
 
 	const _ = Vue.prototype._;
 	const Popup = Vue.component("popup");
@@ -13,7 +13,8 @@
 	export default {
 		computed : {
 			...mapGetters([
-				"me"
+				"isReady"
+				, "me"
 				, "currentProject"
 				, "currentWeek"
 				, "currentUserId"
@@ -21,14 +22,16 @@
 		}
 		, data() {
 			return {
-				isSessionReady: false
-				, popup: null
+				popup: null
 			}
 		}
 		, methods : {
 			...mapActions([
+				"getCurrentSession"
+				, "getUserProjectList"
+
 				// for Presentation
-				"setWayBackOnLastCrumb"
+				, "setWayBackOnLastCrumb"
 				, "setSelectorOnLastCrumb"
 				, "pushCrumb"
 				, "popCrumb"
@@ -85,8 +88,9 @@
 				this.pushCrumb({ id: this._uid, name: this.$options.name });
 			}
 
-			if (this.me) {
-				this.isSessionReady = true;
+			if (this.isReady) {
+				console.log(this.$options.name, "is created. Required states are ready.");
+
 				const impls = this.$options.sessionEnsured;
 				if (impls) {
 					if (isArray(impls)) {
@@ -98,11 +102,13 @@
 					}
 				}
 			} else {
-				this.isSessionReady = false;
+				console.log(this.$options.name, "is created. Required states are not ready.");
 				// F5リロード時など、meがundefinedの場合があるので、その場合、meの更新を監視してtaskを更新する
+				// （meはApp.vue で getCurrentSession() して作られる）
 				this.$store.subscribe((mutation, state) => {
-					if (mutation.type === SET_USER) {
-						this.isSessionReady = true;
+					if (mutation.type === GET_READY) {
+						console.log("Observed getting ready for required states.");
+
 						const me = state.session.user;
 						const impls = this.$options.sessionEnsured;
 						if (me && impls) {
@@ -115,6 +121,14 @@
 							}
 						}
 					}
+				});
+
+				// Get ready for required states.
+				this.getCurrentSession()
+				.then(this.getUserProjectList)
+				.then(_ => {
+					// poised
+					this.$store.commit(GET_READY);
 				});
 			}
 		}

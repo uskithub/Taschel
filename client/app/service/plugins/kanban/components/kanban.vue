@@ -6,6 +6,7 @@
 	)
 		slot(:name="kanban.name")
 			.media-content
+				.tag(v-if="isDisplayTag") {{ kanban.task.root.shortname }}
 				strong  {{ kanban.name }}
 				ul.kanban-list(v-if="kanban.kanbans !== undefined && kanban.kanbans.length > 0" data-type="kanban", :data-id="kanban.id"
 					@dragenter="ondragenter($event, kanban)"
@@ -47,6 +48,17 @@
 			, draggable: {
 				type: Boolean
 				, default: true
+			}
+			, isDisplayShortname: {
+				type: Boolean
+				, default: true
+			}
+		}
+		, computed: {
+			isDisplayTag() {
+				//console.log("this.isDisplayShortname:", this.isDisplayShortname);
+				//console.log("this.kanban.task.root:", this.kanban.task.root);
+				return this.isDisplayShortname && this.kanban.task.root && this.kanban.task.root.shortname != null;
 			}
 		}
         , methods: {

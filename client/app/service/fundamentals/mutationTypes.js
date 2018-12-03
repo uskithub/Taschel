@@ -1,6 +1,7 @@
 
 // common
 export const INITIALIZE         = "INITIALIZE";
+export const GET_READY			= "GET_READY";
 
 // session
 export const ADD_MESSAGE		= "ADD_MESSAGE";

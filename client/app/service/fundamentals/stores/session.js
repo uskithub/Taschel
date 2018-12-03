@@ -6,7 +6,7 @@ import organization from "./organization";
 import breadcrumb from "./breadcrumb";
 import backlog from "./backlog";
 import pdca from "./pdca";
-import { INITIALIZE, ADD_MESSAGE, ADD_NOTIFICATION, SET_USER, SEARCH, SET_CURRENT_WEEK, LOAD_PROJECTS, ADD_PROJECT, UPDATE_PROJECT, ADD_TASK_TO_PROJECT, SET_CURRENT_PROJECT, CLEAR_SELECTION } from "../mutationTypes";
+import { INITIALIZE, GET_READY, ADD_MESSAGE, ADD_NOTIFICATION, SET_USER, SEARCH, SET_CURRENT_WEEK, LOAD_PROJECTS, ADD_PROJECT, UPDATE_PROJECT, ADD_TASK_TO_PROJECT, SET_CURRENT_PROJECT, CLEAR_SELECTION } from "../mutationTypes";
 import moment from "moment";
 import { assign } from "lodash";
 
@@ -26,8 +26,10 @@ export default {
 		, breadcrumb
 	}
 	, state : {
+		isReady: false
+
 		// DDD: Entities
-		user: null
+		, user: null
 		, projects: []
 
 		// YYYY-MM-DD（moment().day(1).format("YYYY-MM-DD")）
@@ -46,7 +48,9 @@ export default {
 		, currentProjectRef: null
 	}
 	, getters : {
-		me(state) { return state.user; }
+		isReady(state) { return state.isReady; }
+		
+		, me(state) { return state.user; }
 		, projects(state) { return state.projects; }
 		, currentWeek(state) { return state.currentWeek; }
 
@@ -63,6 +67,9 @@ export default {
 		[INITIALIZE] (state) {
 			state.user = null;
 			state.projects.splice(0);
+		}
+		, [GET_READY] (state) {
+			state.isReady = true;
 		}
 		, [SET_USER] (state, user) {
 			state.user = user;
@@ -211,10 +218,11 @@ export default {
 		}
 		// TODO: 以下をplanningとして切り出す
 		// Usecase:
-		, addTaskToProject({ commit }, rawValues) {
+		, addTaskToProject({ commit, getters }, rawValues) {
+			const projects = getters.projects;
 			return tasks.post(rawValues)
 				.then(data => {
-					let task = new Task(data);
+					let task = new Task(data, projects);
 					// TODO: 既存のtasksのどこに突っ込むか（ソート、フィルタとか）
 					commit(ADD_TASK_TO_PROJECT, task);
 				});

@@ -216,10 +216,26 @@ const _fields = {
 
 export default class Task {
 
-	constructor(rawValues) {
+	constructor(rawValues, projects) {
 		this._rawValues = rawValues;
+
+		if (projects && projects.length !== 0) {
+			const _projects = projects.reduce((result, p) => {
+				result[p.code] = p;
+				return result;
+			}, {});
+			
+			if (rawValues.root === "-1") {
+				this._root = null;
+			} else {
+				this._root = _projects[rawValues.root];
+			}
+		} else {
+			this._root = null;
+		}
+
 		this._tasks = rawValues.children.map(task => {
-			return new Task(task);
+			return new Task(task, projects);
 		});
 	}
 
@@ -249,7 +265,7 @@ export default class Task {
 	get goal() { return this._rawValues.goal; }
 	set goal(goal) { return this._rawValues.goal = goal; }
 
-	get root() { return this._rawValues.root; }
+	get root() { return this._root; }
 	get parent() { return this._rawValues.parent; }
 
 	get author() { return this._rawValues.author.username; }
@@ -274,7 +290,7 @@ export default class Task {
 			, asignee: author.code 
 			, author: author.code
 		};
-		return new Task(child);
+		return new Task(child, [this.root]);
 	}
 
 	static createTableSchema(fieldSet) {

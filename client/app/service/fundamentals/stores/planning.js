@@ -33,10 +33,11 @@ export default {
 		getCurrentProjectTaskList({ commit, getters }) {
 			const user = getters.me;
 			const options = { user : user.code };
+			const projects = getters.projects;
 			return tasks.get(options)
 				.then(data => {
 					let tasks = data.map(rawValues => {
-						return new Task(rawValues);
+						return new Task(rawValues, projects);
 					});
 					commit(LOAD_TASKS, tasks);
 				});

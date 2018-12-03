@@ -1,20 +1,16 @@
 import Vue from "vue";
-import moment from "moment";
-import { cloneDeep, isObject, isArray } from "lodash";
-import { validators } from "vue-form-generator";
+import { cloneDeep } from "lodash";
 
 import Task from "./task";
-
-import { taskProperties } from "../../constants";
 
 const _ = Vue.prototype._;
 
 export default class Group {
 
-	constructor(rawValues) {
+	constructor(rawValues, projects) {
 		this._rawValues = rawValues;
 		this._tasks = rawValues.children.map(task => {
-			return new Task(task);
+			return new Task(task, projects);
 		});
 	}
 
@@ -25,6 +21,5 @@ export default class Group {
 	get purpose() { return this._rawValues.purpose; }
 	get author() { return this._rawValues.author.username; }
 	get tasks() { return this._tasks; }
-
 
 }

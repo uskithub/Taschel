@@ -107,11 +107,7 @@
 		}
 
 		, methods: {
-			...mapActions([
-				"getCurrentSession"
-			])
-
-			, update(vm) {
+			update(vm) {
 				if (vm == null)
 					return;
 				
@@ -136,7 +132,6 @@
 		, created() {
 			console.log("App started!");
 			window.app = this;
-			this.getCurrentSession();
 		}
 	};
 </script>

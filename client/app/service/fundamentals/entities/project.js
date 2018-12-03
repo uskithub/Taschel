@@ -224,6 +224,7 @@ export default class Project {
 
 	constructor(rawValues) {
 		this._rawValues = rawValues;
+		// TODO: new Task()にprojectsを渡せていないので、rootがない
 		this._tasks = rawValues.children.map(t => new Task(t));
 	}
 
