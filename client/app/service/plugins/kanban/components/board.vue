@@ -7,7 +7,7 @@
 			ul.kanban-list(data-type="board", :data-id="board.id"
 				@dragenter="ondragenter($event, board)"
 			)
-				kanban(v-for="kanban in board.kanbans", :parent="board", :kanban="kanban", :key="kanban.id"
+				kanban(v-for="kanban in board.kanbans", :parent="board", :kanban="kanban", :key="kanban.id", :isDisplayShortname="true"
 					@dragstart="ondragstart"
 					@dragend="ondragend"
 					@dragenter="ondragenter"
