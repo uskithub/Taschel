@@ -4,16 +4,6 @@ import { METHOD, api } from "../../../../system/fundamentals/api";
 import { assign } from "lodash";
 const NAMESPACE = "/api/groups";
 
-
-// payload = {
-// 	options : {	
-//		taskType : "project"
-//    	, user : People.code
-//    	, root : Task.code
-//    	, populateParent : true
-// 	}
-//	, mutation : "LOAD"
-// }
 const get = options => {
 	let url = NAMESPACE;
 
