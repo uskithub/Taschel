@@ -168,7 +168,8 @@ module.exports = {
 					//			each groups' children and each tasks' children recursivly
 					//		2b-2) make an unclassified group
 					//			exclude what is descendant of the other task.
-					//		2b-3) delete classified children in the classified group
+					//		2b-3) delete classified children which are in the classified group from unclassified group
+					//		2b-4) delete classified top level children which are in the classified group from classified tasks' children
 					let type = `weekly_${week}`;
 					let userId = (ctx.params.user_code) ? this.personService.decodeID(ctx.params.user_code) : ctx.user.id;
 					let filter = {
@@ -260,8 +261,14 @@ module.exports = {
 							} else {
 								// make a classified tasks an array. 
 								let classifiedTaskCodes = groupJsons
-									.reduce((arr, g) => { return g.children.reduce((ret, t) => { return ret.concat(flatTree(t)); }, arr); }, [])
+									.reduce((arr, g) => { 
+										return g.children.reduce((ret, t) => { 
+											return ret.concat(flatTree(t)); 
+										}, arr); 
+									}, [])
 									.map(j => { return j.code; });
+
+								console.log("classifiedTaskCodes" , classifiedTaskCodes);
 
 								// make an unclassified group
 								let unclassifiedTaskJsons = taskJsons.filter(t => { return !classifiedTaskCodes.includes(t.code); });
@@ -279,7 +286,7 @@ module.exports = {
 									return result;
 								}, []);
 
-								// delete classified children in the classified group
+								// delete classified children which are in the classified group from unclassified group
 								unclassifiedTaskJsons = deleteClassified(unclassifiedTaskJsons, classifiedTaskCodes);
 
 								let unclassifiedGroup = {
@@ -289,6 +296,21 @@ module.exports = {
 									, purpose: "for_classify"
 									, children: unclassifiedTaskJsons
 								};
+
+								// delete classified top level children which are in the classified group from classified tasks' children
+
+								// make a classified top level tasks an array. 
+								let classifiedTopLevelTaskCodes = groupJsons
+									.reduce((arr, g) => { 
+										return arr.concat(g.children); 
+									}, [])
+									.map(j => { return j.code; });
+
+								groupJsons = groupJsons.map( g => { 
+									g.children = deleteClassified(g.children, classifiedTopLevelTaskCodes);
+									return g;
+								});
+
 								groupJsons.unshift(unclassifiedGroup);
 								return groupJsons;
 							}
