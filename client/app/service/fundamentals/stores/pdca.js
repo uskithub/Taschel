@@ -82,7 +82,7 @@ export default {
 					.then(() => {
 						// Removing
 						// you must execute removing before adding because of the index problem.
-						if (from.type === "group" && from.code !== "UNCLASSIFIED" && from.code !== to.code) {
+						if (from.type === "group" && from.entity.code !== "UNCLASSIFIED" && from.entity.code !== to.entity.code) {
 							// removing from "from"  if "from" is not "UNCLASSIFIED".
 							let rawValues = from.entity.rawValues;
 							let newChildren = rawValues.children.map(child => { return child.code; })
@@ -94,7 +94,7 @@ export default {
 					})
 					.then(data => {
 						// Adding
-						if (to.type === "group" && to.code !== "UNCLASSIFIED") {
+						if (to.type === "group" && to.entity.code !== "UNCLASSIFIED") {
 							// adding to "to" if "to" is not "UNCLASSIFIED".
 							let rawValues = to.entity.rawValues;
 							let newChildren = rawValues.children.map(child => { return child.code; })
