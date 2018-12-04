@@ -1,5 +1,5 @@
 <template lang="pug">
-	li.kanban-item(:draggable="draggable", :key="kanban.id", :data-id="kanban.id"
+	li.kanban-item.media(:draggable="draggable", :key="kanban.id", :data-id="kanban.id"
 		@click="$emit('click', $event, kanban)"
 		@dragstart="$emit('dragstart', $event, parent, kanban)"
 		@dragend="$emit('dragend', $event, kanban)"
@@ -16,6 +16,8 @@
 						@dragend="ondragend"
 						@dragenter="ondragenter"
 					)
+			.media-right(v-if="removable")
+				a.close(title="Remove" @click="$emit('remove', $event, parent, kanban)")
 </template>
 
 <script>
@@ -53,6 +55,10 @@
 				type: Boolean
 				, default: false
 			}
+			, removable: {
+				type: Boolean
+				, default: false
+			}
 		}
         , methods: {
             ondragstart(e, parent, kanban) {
@@ -65,6 +71,10 @@
 			}
 			, ondragenter(e, kanban) {
 				this.$emit("dragenter", e, kanban);
+				e.stopPropagation();
+			}
+			, onremove(e, parent, kanban) {
+				this.$emit("remove", e, parent, kanban);
 				e.stopPropagation();
 			}
         }

@@ -8,10 +8,11 @@
 				ul.kanban-list(data-type="board", :data-id="board.id"
 					@dragenter="ondragenter($event, board)"
 				)
-					kanban(v-for="kanban in board.kanbans", :parent="board", :kanban="kanban", :key="kanban.id", :isDisplayTag="true"
+					kanban(v-for="kanban in board.kanbans", :parent="board", :kanban="kanban", :key="kanban.id", :isDisplayTag="true", :removable="board.id!='UNCLASSIFIED'"
 						@dragstart="ondragstart"
 						@dragend="ondragend"
 						@dragenter="ondragenter"
+						@remove="onremove"
 					)
 </template>
 <script>
@@ -205,6 +206,14 @@
 						this.draggingOn.siblings = siblings;
 					}
 				}
+			}
+			, onremove(e, parent, kanban) {
+				this.$emit("arrange", {
+					kanban: kanban
+					, from: { type: "board", id: parent.id, entity: parent }
+					, to: { type: "board", id: "UNCLASSIFIED", entity: this.boardGroups[0].boards[0] }
+					, index: 0 
+				});
 			}
 		}
 	};
