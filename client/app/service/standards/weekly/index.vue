@@ -1,13 +1,13 @@
 <!-- // DDD: Presentation -->
 <template lang="pug">
-	.container
-		board.weekly-grid(:boards="boards" @arrange="didArrangeTask")
+	board.weekly-grid(:boardGroups="boardGroups" @arrange="didArrangeTask")
 </template>
 
 <script>
 	import Vue from "vue";
 	import Base from "../../fundamentals/mixins/base";
 	import Task from "../../fundamentals/entities/task";
+	import BoardGroup from "../../plugins/kanban/boardGroup";
 	import Board from "../../plugins/kanban/board";
 	import Kanban from "../../plugins/kanban/kanban";
 
@@ -22,8 +22,13 @@
 				"groups"
 				, "currentWeek"
 			])
-			, boards() {
-				return this.groups.map( g => new Board(g) );
+			, boardGroups() {
+				let boards = this.groups.map( g => new Board(g) );
+				const first = boards.shift();
+				let boardGroups = new Array();
+				boardGroups.push(new BoardGroup("unclassified", [first]));
+				boardGroups.push(new BoardGroup("classified", boards));
+				return boardGroups;
 			}
 		}
 		, data() {
@@ -79,7 +84,8 @@
 			}
 		}
 		, created() {
-			this.setSelectorOnLastCrumb({ 
+			this.setSelectorOnLastCrumb({
+				// TODO: 週の一覧を出す
 				items:[
 					{ id: "hoge1", name: "ajgoi;reagoi;" }
 					, { id: "hoge2", name: "vf,l;geajg" }
@@ -97,80 +103,32 @@
 	};
 </script>
 
-<style lang="scss" scoped>
-
+<style lang="scss">
 	@import "../../../../scss/common/mixins";
 
-    $on-hold: #FB7D44;
-    $in-progress: #2A92BF;
-    $needs-review: #F4CE46;
-    $approved: #00B961;
+	.kanban-system-container {
+		&.weekly-grid {
+			display: flex;
+			
+			.kanban-board-container {
+				flex-grow: 1;
 
-    .drag-column {
-        &-on-hold {
-            .drag-column-header,
-            .is-moved,
-            .drag-options {
-                background: $on-hold;
-            }
-        }
+				&:nth-child(2) {
+					flex-grow: 2;
+					display: flex;
+					flex-direction: row-reverse;
+					flex-wrap: wrap;
+					align-items: stretch;
+					align-content: flex-start;
 
-        &-in-progress {
-            .drag-column-header,
-            .is-moved,
-            .drag-options {
-                background: $in-progress;
-            }
-        }
-
-        &-needs-review {
-            .drag-column-header,
-            .is-moved,
-            .drag-options{
-                background: $needs-review;
-            }
-        }
-
-        &-approved {
-            .drag-column-header,
-            .is-moved,
-            .drag-options {
-                background: $approved;
-            }
-        }
-	}
-	
- 	.section {
-    	padding: 20px;
-    	text-align: center;
-
-    	a {
-    		color: white;
-    		text-decoration: none;
-    		font-weight: 300;
-    	}
-
-    	h4 {
-    		font-weight: 400;
-    		a {
-    			font-weight: 600;
-    		}
-    	}
-    }
-
-	.container {
-		padding: 1rem;
-	}
-
-	.form {
-		margin: 1rem 0;
-
-		@include bgTranslucentDark(0.2);
-		border-radius: 8px;
-
-		.buttons {
-			padding: 0.5em;
+					.kanban-board {
+						flex: inherit;
+						flex-grow: inherit;
+						width: 48%;
+						margin: 0 1% 1% 1%;
+					}
+				}
+			}
 		}
-
 	}
 </style>

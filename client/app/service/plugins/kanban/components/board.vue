@@ -1,17 +1,18 @@
 <template lang="pug">
-	ul.kanban-board-container
-		li.kanban-board(v-for="board in boards", :key="board.id")
-			span.kanban-board-header
-				legend {{ board.name }}
-			.drag-options
-			ul.kanban-list(data-type="board", :data-id="board.id"
-				@dragenter="ondragenter($event, board)"
-			)
-				kanban(v-for="kanban in board.kanbans", :parent="board", :kanban="kanban", :key="kanban.id", :isDisplayTag="true"
-					@dragstart="ondragstart"
-					@dragend="ondragend"
-					@dragenter="ondragenter"
+	.kanban-system-container
+		ul.kanban-board-container(v-for="boardGroup in boardGroups", :key="boardGroup.name")
+			li.kanban-board(v-for="board in boardGroup.boards", :key="board.id")
+				span.kanban-board-header
+					legend {{ board.name }}
+				.drag-options
+				ul.kanban-list(data-type="board", :data-id="board.id"
+					@dragenter="ondragenter($event, board)"
 				)
+					kanban(v-for="kanban in board.kanbans", :parent="board", :kanban="kanban", :key="kanban.id", :isDisplayTag="true"
+						@dragstart="ondragstart"
+						@dragend="ondragend"
+						@dragenter="ondragenter"
+					)
 </template>
 <script>
 
@@ -52,7 +53,7 @@
 	export default {
 		name: "Board"
         , props: {
-			boards : {
+			boardGroups : {
 				type: Array
 				, validator: (value) => { return true; } // TODO
 			}
