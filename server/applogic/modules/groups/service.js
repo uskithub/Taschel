@@ -267,9 +267,7 @@ module.exports = {
 										}, arr); 
 									}, [])
 									.map(j => { return j.code; });
-
-								console.log("classifiedTaskCodes" , classifiedTaskCodes);
-
+									
 								// make an unclassified group
 								let unclassifiedTaskJsons = taskJsons.filter(t => { return !classifiedTaskCodes.includes(t.code); });
 
