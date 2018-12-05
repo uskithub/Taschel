@@ -1,6 +1,6 @@
 <template lang="pug">
 	.container
-		.kanban-system-container
+		.kanban-system-container.daily
 			ul.kanban-board-container
 				li.kanban-board.kanban-board-weekly-tasks(key="weekly")
 					span.kanban-board-header
@@ -8,6 +8,7 @@
 					.drag-options
 					ul.kanban-list(data-type="board", data-id="weekly")
 						kanban(v-for="kanban in kanbans", :kanban="kanban", :key="kanban.id", :draggable="false")
+			ul.kanban-board-container.fullcalendar
 				li.kanban-board(key="schedule")
 					fullcalendar(:events="events", :options="fullcalendarSchema", :currentWeek="currentWeek")
 </template>
@@ -216,11 +217,22 @@
 	};
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
+	// @see http://makotottn.hatenablog.com/entry/2017/08/29/004422
+	@import "../../../../../../node_modules/fullcalendar/dist/fullcalendar.css";
+	@import "../../../../../scss/common/mixins";
 
-	.kanban-board-container {
-		.kanban-board {
-			overflow: visible;
+	.kanban-system-container {
+		&.daily {
+			display: flex;
+
+			.kanban-board-container {
+				flex: 1;
+				
+				&.fullcalendar {
+					flex-grow: 2;
+				}
+			}
 		}
 	}
 </style>

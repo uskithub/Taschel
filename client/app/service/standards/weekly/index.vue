@@ -111,19 +111,17 @@
 			display: flex;
 			
 			.kanban-board-container {
-				flex-grow: 1;
+				flex: 1;
 
 				&:nth-child(2) {
 					flex-grow: 2;
-					display: flex;
 					flex-direction: row-reverse;
 					flex-wrap: wrap;
 					align-items: stretch;
 					align-content: flex-start;
 
 					.kanban-board {
-						flex: inherit;
-						flex-grow: inherit;
+						flex: none;
 						width: 48%;
 						margin: 0 1% 1% 1%;
 					}
