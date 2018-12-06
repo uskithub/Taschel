@@ -252,7 +252,7 @@ console.log("oooo", schema.form);
 	};
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 	// @see http://makotottn.hatenablog.com/entry/2017/08/29/004422
 	@import "../../../../../../node_modules/fullcalendar/dist/fullcalendar.css";
 

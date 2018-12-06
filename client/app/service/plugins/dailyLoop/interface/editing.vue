@@ -19,6 +19,7 @@
 	import { mapGetters, mapMutations, mapActions } from "vuex";
 	import { schema as schemaUtils } from "vue-form-generator";
 	import { cloneDeep, isArray } from "lodash";
+	import moment from "moment";
 	const _ = Vue.prototype._;
 
 	export default {
@@ -43,6 +44,9 @@
 			if (!isArray(_rawValues.type)) {
 				_rawValues.type = [ _rawValues.type ];
 			}
+
+			if (_rawValues.actualStart === undefined) _rawValues.actualStart = moment(_rawValues.start).format("HH:mm");
+			if (_rawValues.actualEnd === undefined) _rawValues.actualEnd = moment().format("HH:mm");
 
 			return {
 				rawValues: _rawValues
