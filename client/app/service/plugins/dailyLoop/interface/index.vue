@@ -1,6 +1,7 @@
 <template lang="pug">
 	.container
-		.kanban-system-container.daily
+		editing(v-if="isEditing", :entity="entity", :schema="formSchema" @close="didReceiveCloseEvent")
+		.kanban-system-container.daily(v-else)
 			ul.kanban-board-container
 				li.kanban-board.kanban-board-weekly-tasks(key="weekly")
 					span.kanban-board-header
@@ -16,8 +17,10 @@
 <script>
 	import Vue from "vue";
 	import Base from "../../../fundamentals/mixins/base";
+	import Work from "../../../fundamentals/entities/work";
 	import Board from "../../kanban/board";
 	import Kanban from "../../kanban/kanban";
+	import Editing from "./editing";
 	import { mapGetters, mapActions } from "vuex";
 	import schema from "./schema";
 	import moment from "moment";
@@ -98,10 +101,17 @@
 		}
 		return null;
 	};
+
+	schema.form.groups = Work.createFormSchema(schema.form.groups);
 	
+console.log("oooo", schema.form);
+
 	export default {
 		name : "DailyLoop"
 		, mixins : [ Base ]
+		, components : {
+			Editing
+		}
 		, computed : {
 			...mapGetters([
 				"currentWeek"
@@ -138,7 +148,10 @@
 			schema.fullCalendar.viewRender = this.didChangeWeek;
 
 			return {
-				fullcalendarSchema: schema.fullCalendar
+				isEditing: false
+				, entity: null
+				, formSchema : schema.form
+				, fullcalendarSchema: schema.fullCalendar
 			};
 		}
 		, methods : {
@@ -182,7 +195,22 @@
 				this.editWork({ code, end });
 			}
 			, didClickEvent(event, jqEvent, view) {
-				console.log("eventClick");
+				if (event.id == "GOOGLE_CALENDAR") return;
+				if (event.allDay) {
+					console.log(`●`, event);
+					const dayOfWeek = event.start.day();
+					// this.$emit("selectReviewDayOfWeek", dayOfWeek);
+
+				} else {
+					for (let i in this.currentWeekWorks) {
+						let work = this.currentWeekWorks[i];
+						if (work.code == event.id) {
+							this.entity = work;
+							this.isEditing = true;
+							return;
+						}
+					}
+				}
 			}
 			, didChangeWeek(view, elem) {
 				if (!this.isReady) return;
@@ -195,6 +223,13 @@
 						this.getCurrentWeekTasks();
 						this.getCurrentWeekWorks();
 					});
+			}
+			, didReceiveCloseEvent() {
+				this.isEditing = false;
+				this.popCrumb();
+				this.$nextTick(() => {
+					this.entity = null;
+				});
 			}
 		}
 		, created() {
@@ -220,7 +255,6 @@
 <style lang="scss">
 	// @see http://makotottn.hatenablog.com/entry/2017/08/29/004422
 	@import "../../../../../../node_modules/fullcalendar/dist/fullcalendar.css";
-	@import "../../../../../scss/common/mixins";
 
 	.kanban-system-container {
 		&.daily {

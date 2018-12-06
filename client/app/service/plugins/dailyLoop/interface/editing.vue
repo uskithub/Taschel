@@ -12,27 +12,17 @@
 						button.button.primary(@click="didPushSaveButton")
 							i.icon.fa.fa-save 
 							| {{ _("Save") }}
-		.panel
-			.header 親子関係
-			.body
-				treelist(:treenodes="treenodes" ref="legend" @arrange="didArrangeTask" @addIconDidPush="addIconDidPush")
-
-		.panel
-			.header Timeline
-			.body
-				time-line(:treenodes="treenodes" ref="legend" @arrange="didArrangeTask" @addIconDidPush="addIconDidPush")
 </template>
 <script>
 	import Vue from "vue";
-	import Base from "../../fundamentals/mixins/base";
-	import Treenode from "../../plugins/gantt/treenode";
+	import Base from "../../../fundamentals/mixins/base";
 	import { mapGetters, mapMutations, mapActions } from "vuex";
 	import { schema as schemaUtils } from "vue-form-generator";
 	import { cloneDeep, isArray } from "lodash";
 	const _ = Vue.prototype._;
 
 	export default {
-		name : "TaskEditing"
+		name : "WorkEditing"
 		, mixins : [ Base ]
 		, props : {
 			entity : {
@@ -114,7 +104,7 @@
 			this.setWayBackOnLastCrumb(() => { 
 				this.$emit("close"); 
 			});
-			this.pushCrumb({ id: this._uid, name: (this.entity ? this.entity.name : "新規作成") });
+			this.pushCrumb({ id: this._uid, name: this.entity.title });
 		}
 	}
 </script>

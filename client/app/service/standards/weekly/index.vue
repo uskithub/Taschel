@@ -104,7 +104,6 @@
 </script>
 
 <style lang="scss">
-	@import "../../../../scss/common/mixins";
 
 	.kanban-system-container {
 		&.weekly-grid {

@@ -1,10 +1,16 @@
 import Vue from "vue";
 
-
 const _ = Vue.prototype._;
 
 export default {
-	fullCalendar : {
+	form : { 
+		groups: {
+			WorkDetail: [ "goal" ]
+			, Closing: [ "actualStart",  "actualEnd", "description"]
+		}
+		// fields : [ "goal"]
+	}
+	, fullCalendar : {
 		timezone : "local"
 		// , themeSystem : "bootstrap3"
 		, eventColor: "#FF895D"
