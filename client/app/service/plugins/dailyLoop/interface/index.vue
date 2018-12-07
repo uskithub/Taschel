@@ -224,6 +224,7 @@
 			}
 		}
 		, created() {
+			this.pushCrumb({ id: this._uid, name: _("DailyLoop") });
 			this.pushCrumb({ id: "week", name: this.currentWeekOfMonth });
 		}
 		, updated() {

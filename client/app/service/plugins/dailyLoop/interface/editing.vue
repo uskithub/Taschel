@@ -49,8 +49,7 @@
 			if (_rawValues.actualEnd === undefined) _rawValues.actualEnd = moment().format("HH:mm");
 
 			return {
-				crumb: this.entity.title
-				, rawValues: _rawValues
+				rawValues: _rawValues
 				, options: {}
 			};
 		}
@@ -109,6 +108,7 @@
 			this.setWayBackOnLastCrumb(() => { 
 				this.$emit("close"); 
 			});
+			this.pushCrumb({ id: this._uid, name: this.entity.title });
 		}
 	}
 </script>

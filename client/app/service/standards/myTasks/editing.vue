@@ -55,8 +55,7 @@
 			}
 
 			return {
-				crumb: this.entity.name
-				, rawValues: _rawValues
+				rawValues: _rawValues
 				, options: {}
 			};
 		}
@@ -115,6 +114,7 @@
 			this.setWayBackOnLastCrumb(() => { 
 				this.$emit("close"); 
 			});
+			this.pushCrumb({ id: this._uid, name: (this.entity ? this.entity.name : "新規作成") });
 		}
 	}
 </script>
