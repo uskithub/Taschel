@@ -8,7 +8,7 @@ const get = options => {
 	let url = NAMESPACE;
 
 	if (options.user !== undefined && options.week !== undefined) {
-		url = `${url}?user_code=${options.user}&week=${options.week}`;
+		url = `${url}?user_code=${options.user}&week=${options.week.format("YYYY-MM-DD")}`;
 	}
 
 	return api(METHOD.get, url);

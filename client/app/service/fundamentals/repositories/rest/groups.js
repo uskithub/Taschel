@@ -10,12 +10,12 @@ const get = options => {
 	if (options.parent != undefined) {
 		url = `${url}?parent_code=${options.parent}`;
 	} else if (options.week != undefined) {
-		url = `${url}?week=${options.week}`;
+		url = `${url}?week=${options.week.format("YYYY-MM-DD")}`;
 		if (options.user != undefined) {
 			url = `${url}&user_code=${options.user}`;
 		}
 	} else if (options.day != undefined) {
-		url = `${url}?day=${options.day}`;
+		url = `${url}?day=${options.day.format("YYYY-MM-DD")}`;
 		if (options.user != undefined) {
 			url = `${url}&user_code=${options.user}`;
 		}

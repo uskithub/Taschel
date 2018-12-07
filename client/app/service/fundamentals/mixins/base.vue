@@ -17,6 +17,7 @@
 				, "me"
 				, "currentProject"
 				, "currentWeek"
+				, "currentWeekOfMonth"
 				, "currentUserId"
 			])
 		}

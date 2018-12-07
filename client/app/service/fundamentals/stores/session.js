@@ -33,8 +33,8 @@ export default {
 		, projects: []
 
 		// YYYY-MM-DD（moment().day(1).format("YYYY-MM-DD")）
-		, currentWeek: (() => { return moment().day(1).format("YYYY-MM-DD"); })()
-
+		// , currentWeek: (() => { return moment().day(1).format("YYYY-MM-DD"); })()
+		, currentWeek: (() => { return moment().day(1); })()
 
 		, notifications: [
 			// { id: 1, text: "Something happened!", time: 1, user: null }
@@ -53,6 +53,13 @@ export default {
 		, me(state) { return state.user; }
 		, projects(state) { return state.projects; }
 		, currentWeek(state) { return state.currentWeek; }
+		, currentWeekOfMonth(state) { 
+			const todayWeek = state.currentWeek.week();
+			const firstDay = moment(state.currentWeek).startOf("month");
+			const firstDayWeek = firstDay.week();
+			const weekOfMonth = ((todayWeek > firstDayWeek) ? todayWeek - firstDayWeek : todayWeek - firstDayWeek + 52) + 1
+			return `${ firstDay.format("YYYY年MM月") } 第${weekOfMonth}週`; 
+		}
 
 		, notifications(state) { return state.notifications; }
 		, messages(state) { return state.messages; }
@@ -152,10 +159,11 @@ export default {
 				});
 		}
 		// Usecase:
-		, changeWeek({ commit }, week) {
+		, changeWeek({ commit }, momentObj) {
+			const m = momentObj.day(1);
 			return Promise.resolve()
 				.then(() => {
-					commit(SET_CURRENT_WEEK, week);
+					commit(SET_CURRENT_WEEK, m);
 				});
 		}
 		// Usecase: a user watches the list of the projects that he/she is owner or joins.

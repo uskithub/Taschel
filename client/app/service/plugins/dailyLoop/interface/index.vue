@@ -103,8 +103,6 @@
 	};
 
 	schema.form.groups = Work.createFormSchema(schema.form.groups);
-	
-console.log("oooo", schema.form);
 
 	export default {
 		name : "DailyLoop"
@@ -126,12 +124,6 @@ console.log("oooo", schema.form);
 				}
 			}
 			, events() {
-				// the first day of currentWeek(mon), tue, wed, thu, fri, sat, sun
-				let days = [0, 1, 2, 3, 4, 5].reduce((arr, i) => {
-					arr.push(moment(arr[i]).add(1, "d").format("YYYY-MM-DD"));
-					return arr;
-				}, [this.currentWeek]);
-
 				if (this.currentWeekWorks) {
 					//return this.currentWeekWorks.map(w => new Event(w));
 					return this.currentWeekWorks.map(convertWork2Event);
@@ -176,7 +168,7 @@ console.log("oooo", schema.form);
 					, start: date.utc().format()
 					, end: date.add(1, "h").utc().format()
 					, parent_code: task.code
-					, week: this.currentWeek
+					, week: this.currentWeek.format("YYYY-MM-DD")
 					, author: this.me.code
 				};
 				this.addWork(work);
@@ -214,12 +206,11 @@ console.log("oooo", schema.form);
 			}
 			, didChangeWeek(view, elem) {
 				if (!this.isReady) return;
-				const week = view.start.format("YYYY-MM-DD");
-				console.log("viewRender", week);
-				this.changeWeek(week)
+
+				this.changeWeek(view.start)
 					.then(() => {
 						this.popCrumb();
-						this.pushCrumb({ id: "week", name: this.currentWeek });
+						this.pushCrumb({ id: "week", name: this.currentWeekOfMonth });
 						this.getCurrentWeekTasks();
 						this.getCurrentWeekWorks();
 					});
@@ -233,7 +224,7 @@ console.log("oooo", schema.form);
 			}
 		}
 		, created() {
-			this.pushCrumb({ id: "week", name: this.currentWeek });
+			this.pushCrumb({ id: "week", name: this.currentWeekOfMonth });
 		}
 		, updated() {
 			this.$nextTick(function () {

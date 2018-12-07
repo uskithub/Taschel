@@ -95,7 +95,7 @@
 					console.log(item);
 				}
 			});
-			this.pushCrumb({ id: "week", name: this.currentWeek });
+			this.pushCrumb({ id: "week", name: this.currentWeekOfMonth });
 		}
 		, sessionEnsured(me) {
 			this.getMyWeeklyTasks();
