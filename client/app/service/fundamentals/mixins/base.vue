@@ -23,6 +23,7 @@
 		, data() {
 			return {
 				popup: null
+				, crumb: null
 			}
 		}
 		, methods : {
@@ -84,8 +85,9 @@
 			}
 		}
 		, created() {
-			if (this.$options.name) {
-				this.pushCrumb({ id: this._uid, name: this.$options.name });
+			let crumb = this.crumb || this.$options.name;
+			if (crumb) {
+				this.pushCrumb({ id: this._uid, name: crumb });
 			}
 
 			if (this.isReady) {
