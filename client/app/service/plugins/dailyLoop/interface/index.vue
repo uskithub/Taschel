@@ -151,6 +151,7 @@
 				// Usecases
 				"getCurrentWeekTasks"
 				, "getCurrentWeekWorks"
+				, "getCurrentWeekReviews"
 				, "addWork"
 				, "editWork"
 				, "changeWeek"
@@ -240,6 +241,7 @@
 		, sessionEnsured(me) {
 			this.getCurrentWeekTasks();
 			this.getCurrentWeekWorks();
+			this.getCurrentWeekReviews();
 		}
 	};
 </script>

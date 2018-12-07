@@ -1,9 +1,11 @@
 import Group from "../entities/group";
 import Work from "../entities/work";
-import { INITIALIZE, LOAD_WEEKLY_GROUPS, LOAD_CURRENTWEEK_TASK_GROUP, LOAD_WEEKLY_WORKS, ADD_WORK, UPDATE_WORK } from "../mutationTypes";
+import Review from "../entities/review";
+import { INITIALIZE, LOAD_WEEKLY_GROUPS, LOAD_CURRENTWEEK_TASK_GROUP, LOAD_WEEKLY_WORKS, LOAD_WEEKLY_REVIEWS, ADD_WORK, UPDATE_WORK } from "../mutationTypes";
 import { assign } from "lodash";
 import groups from "../repositories/rest/groups";
 import works from "../repositories/rest/works";
+import reviews from "../repositories/rest/reviews";
 import domainGlue from "../domainGlue";
 
 export default {
@@ -12,11 +14,13 @@ export default {
 		entities: []
 		, currentweekTaskGroup: null
 		, currentWeekWorks: []
+		, currentWeekReviews: []
 	}
 	, getters : {
 		groups(state) { return state.entities; }
 		, currentweekTaskGroup(state) { return state.currentweekTaskGroup; }
 		, currentWeekWorks(state) { return state.currentWeekWorks; }
+		, currentWeekReviews(state) { return state.currentWeekReviews; }
 	}
 	// DDD: Usecases
 	// Vuex: Mutations can change states. It must run synchronously.
@@ -34,6 +38,10 @@ export default {
 		, [LOAD_WEEKLY_WORKS] (state, entities) {
 			state.currentWeekWorks.splice(0);
 			state.currentWeekWorks.push(...entities);
+		}
+		, [LOAD_WEEKLY_REVIEWS] (state, entities) {
+			state.currentWeekReviews.splice(0);
+			state.currentWeekReviews.push(...entities);
 		}
 		, [ADD_WORK] (state, entity) {
 			let isFound = state.currentWeekWorks.find(e => e.code === entity.code);
@@ -152,6 +160,19 @@ export default {
 					commit(LOAD_WEEKLY_WORKS, works);
 				});
 		}
+		// Usecase:
+		, getCurrentWeekReviews({ commit, getters }) {
+			const user = getters.me;
+			const currentWeek = getters.currentWeek;
+			const options = { user: user.code, week: currentWeek };
+			return reviews.get(options)
+				.then(data => {
+					let reviews = data.map(rawValues => {
+						return new Review(rawValues);
+					});
+					commit(LOAD_WEEKLY_REVIEWS, reviews);
+				});
+		}
 		// Usecase: a user add new work.
 		, addWork({ commit }, rawValues) {
 			return works.post(rawValues)
@@ -160,7 +181,7 @@ export default {
 					commit(ADD_WORK, work);
 				});
 		}
-		// Usecase:
+		// Usecase: a user edit a work. 
 		, editWork({ commit }, rawValues) {
 			return works.put(rawValues)
 				.then(data => {
