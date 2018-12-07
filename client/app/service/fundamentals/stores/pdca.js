@@ -127,6 +127,7 @@ export default {
 		}
 		// Usecase: a user watches tasks that the user decided to do in the current week.
 		, getCurrentWeekTasks({ commit, getters }) {
+			// TODO: getMyWeeklyTasks同様に week で取得して、クライアント側でガッチャンコすれば、サーバ側のロジックを統一できる
 			const user = getters.me;
 			const currentWeek = getters.currentWeek;
 			const options = { user: user.code, day: currentWeek };
