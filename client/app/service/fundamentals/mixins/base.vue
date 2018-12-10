@@ -24,7 +24,6 @@
 		, data() {
 			return {
 				popup: null
-				, crumb: null
 			}
 		}
 		, methods : {
@@ -86,10 +85,10 @@
 			}
 		}
 		, created() {
-			let crumb = this.crumb || this.$options.name;
-			if (crumb) {
-				this.pushCrumb({ id: this._uid, name: crumb });
-			}
+			// let crumb = this.crumb || this.$options.name;
+			// if (crumb) {
+			// 	this.pushCrumb({ id: this._uid, name: crumb });
+			// }
 
 			if (this.isReady) {
 				console.log(this.$options.name, "is created. Required states are ready.");

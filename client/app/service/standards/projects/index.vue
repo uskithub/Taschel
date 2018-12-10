@@ -70,6 +70,7 @@
 			}
 		}
 		, created() {
+			this.pushCrumb({ id: this._uid, name: _("Project") });
 		}
 		, sessionEnsured(me) {
 			this.getUserProjectList();

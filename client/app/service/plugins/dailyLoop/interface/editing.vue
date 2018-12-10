@@ -12,6 +12,9 @@
 						button.button.primary(@click="didPushSaveButton")
 							i.icon.fa.fa-save 
 							| {{ _("Save") }}
+						button.button.danger(@click="didPushCloseButton")
+							i.icon.fa.fa-save 
+							| {{ _("Close") }}
 </template>
 <script>
 	import Vue from "vue";
@@ -49,8 +52,7 @@
 			if (_rawValues.actualEnd === undefined) _rawValues.actualEnd = moment().format("HH:mm");
 
 			return {
-				crumb: this.entity.title
-				, rawValues: _rawValues
+				rawValues: _rawValues
 				, options: {}
 			};
 		}
@@ -61,17 +63,13 @@
 		, methods : {
 			...mapActions([
 				// Usecases
-				"addTask"
-				, "editTask"
+				"editWork"
+				, "closeWork"
 			])
 			, didPushSaveButton() {
 				if (this.validate()) {
 					return Promise.resolve().then(() => {
-						if ( this.isNewEntity ) {
-							return this.addTask(this.rawValues);
-						} else {
-							return this.editTask(this.rawValues);
-						}
+						return this.editWork(this.rawValues);
 					}).then(() => {
 						this.$emit("close", this.rawValues);
 					});
@@ -84,11 +82,8 @@
 			, didPushCancelButton() {
 				this.$emit("close"); 
 			}
-			, didArrangeTask() {
-				// TODO
-			}
-			, addIconDidPush() {
-				// TODO
+			, didPushCloseButton() {
+				this.$emit("close"); 
 			}
 			// Application Service:
 			, validate() {
@@ -109,6 +104,7 @@
 			this.setWayBackOnLastCrumb(() => { 
 				this.$emit("close"); 
 			});
+			this.pushCrumb({ id: this._uid, name: this.entity.title });
 		}
 	}
 </script>

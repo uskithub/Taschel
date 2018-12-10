@@ -39,6 +39,8 @@ export const LOAD_WEEKLY_WORKS	= "LOAD_WEEKLY_WORKS";
 export const ADD_WORK       	= "ADD_WORK";
 export const UPDATE_WORK       	= "UPDATE_WORK";
 
+//review
+export const LOAD_WEEKLY_REVIEWS = "LOAD_WEEKLY_REVIEWS";
 
 // organizations
 export const LOAD 				= "LOAD";

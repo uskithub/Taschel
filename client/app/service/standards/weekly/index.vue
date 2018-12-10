@@ -84,6 +84,7 @@
 			}
 		}
 		, created() {
+			this.pushCrumb({ id: this._uid, name: _("Weekly") });
 			this.setSelectorOnLastCrumb({
 				// TODO: 週の一覧を出す
 				items:[

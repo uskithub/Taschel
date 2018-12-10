@@ -115,6 +115,7 @@
 				"currentWeek"
 				, "currentweekTaskGroup"
 				, "currentWeekWorks"
+				, "currentWeekReviews"
 			])
 			, kanbans() {
 				if (this.currentweekTaskGroup) {
@@ -124,11 +125,36 @@
 				}
 			}
 			, events() {
+				let sunDay = moment(this.currentWeek).add(-1, "d")
+				let days = [1, 2, 3, 4, 5, 6].reduce((arr, i) => {
+					arr.push(moment(sunDay).add(i, "d").format("YYYY-MM-DD"));
+					return arr;
+				}, [sunDay.format("YYYY-MM-DD")]);
+
+				let _events = days.map(d => {
+					const r = this.currentWeekReviews ? this.currentWeekReviews.find(r => { return r.date === d; }) : null;
+					if (r) {
+						return {
+							title: "済"
+							, allDay: true
+							, start: d
+							, editable: false
+							, color: closedEventColor.color
+						};
+					}
+					return {
+						title: "未"
+						, allDay: true
+						, start: d
+						, editable: false
+					};
+				});
+
 				if (this.currentWeekWorks) {
 					//return this.currentWeekWorks.map(w => new Event(w));
-					return this.currentWeekWorks.map(convertWork2Event);
+					return _events.concat(this.currentWeekWorks.map(convertWork2Event));
 				} else {
-					return [];
+					return _events;
 				}
 			}
 		}
@@ -151,6 +177,7 @@
 				// Usecases
 				"getCurrentWeekTasks"
 				, "getCurrentWeekWorks"
+				, "getCurrentWeekReviews"
 				, "addWork"
 				, "editWork"
 				, "changeWeek"
@@ -224,6 +251,7 @@
 			}
 		}
 		, created() {
+			this.pushCrumb({ id: this._uid, name: _("DailyLoop") });
 			this.pushCrumb({ id: "week", name: this.currentWeekOfMonth });
 		}
 		, updated() {
@@ -239,6 +267,7 @@
 		, sessionEnsured(me) {
 			this.getCurrentWeekTasks();
 			this.getCurrentWeekWorks();
+			this.getCurrentWeekReviews();
 		}
 	};
 </script>

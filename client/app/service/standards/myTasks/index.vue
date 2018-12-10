@@ -81,6 +81,7 @@
 			}
 		}
 		, created() {
+			this.pushCrumb({ id: this._uid, name: _("MyTask") });
 		}
 		, sessionEnsured(me) {
 			this.getMyTaskList();

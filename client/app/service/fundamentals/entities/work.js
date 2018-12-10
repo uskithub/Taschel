@@ -14,7 +14,7 @@ const _fields = {
 		, form: {
 			type: "input"
 			, inputType: "text"
-			, required: true
+			, required: false
 			, placeholder: _("TaskGoalPlaceholder")
 			, validator: validators.string
 		}
@@ -142,5 +142,9 @@ export default class Work {
 				return field.form; 
 			});
 		}
+	}
+
+	static finalize(model) {
+		// TODO: v1から移植
 	}
 }
