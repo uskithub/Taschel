@@ -101,6 +101,9 @@ export default class Work {
 	get end() { return this._rawValues.end; }
 	get purpose() { return this._rawValues.purpose; }
 	get status() { return this._rawValues.stauts; }
+	get goodSide() { return this._rawValues.goodSide; }
+	get badSide() { return this._rawValues.badSide; }
+	get improvement() { return this._rawValues.improvement; }
 	get author() { return this._rawValues.author.username; }
 
 	static createFormSchema(fieldSet) {

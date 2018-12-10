@@ -1,6 +1,7 @@
 <template lang="pug">
 	.container
-		editing(v-if="isEditing", :entity="entity", :schema="formSchema" @close="didReceiveCloseEvent")
+		editing(v-if="isEditing", :entity="workEntity", :schema="formSchema" @close="didReceiveCloseEvent")
+		reviewing(v-else-if="isReviewing", :entity="reviewEntity", :reviewingWorks="reviewingWorks", :schema="formSchema" @close="didReceiveCloseEvent")
 		.kanban-system-container.daily(v-else)
 			ul.kanban-board-container
 				li.kanban-board.kanban-board-weekly-tasks(key="weekly")
@@ -21,6 +22,7 @@
 	import Board from "../../kanban/board";
 	import Kanban from "../../kanban/kanban";
 	import Editing from "./editing";
+	import Reviewing from "./reviewing";
 	import { mapGetters, mapActions } from "vuex";
 	import schema from "./schema";
 	import moment from "moment";
@@ -109,6 +111,7 @@
 		, mixins : [ Base ]
 		, components : {
 			Editing
+			, Reviewing
 		}
 		, computed : {
 			...mapGetters([
@@ -135,7 +138,8 @@
 					const r = this.currentWeekReviews ? this.currentWeekReviews.find(r => { return r.date === d; }) : null;
 					if (r) {
 						return {
-							title: "済"
+							id: r.code
+							, title: "済"
 							, allDay: true
 							, start: d
 							, editable: false
@@ -167,7 +171,10 @@
 
 			return {
 				isEditing: false
-				, entity: null
+				, isReviewing: false
+				, workEntity: null
+				, reviewEntity: null
+				, reviewingWorks: null
 				, formSchema : schema.form
 				, fullcalendarSchema: schema.fullCalendar
 			};
@@ -218,13 +225,23 @@
 				if (event.allDay) {
 					console.log(`●`, event);
 					const dayOfWeek = event.start.day();
-					// this.$emit("selectReviewDayOfWeek", dayOfWeek);
+					for (let i in this.currentWeekReviews) {
+						let review = this.currentWeekReviews[i];
+						if (review.code === event.id) {
+							this.reviewEntity = review;
+							break;
+						}
+					}
+					this.reviewingWorks = this.currentWeekWorks.filter(w => {
+						return moment(w.start).day() === this.dayOfWeek; //&& w.status < 0;
+					});
+					this.isReviewing = true;
 
 				} else {
 					for (let i in this.currentWeekWorks) {
 						let work = this.currentWeekWorks[i];
 						if (work.code == event.id) {
-							this.entity = work;
+							this.workEntity = work;
 							this.isEditing = true;
 							return;
 						}
@@ -244,9 +261,12 @@
 			}
 			, didReceiveCloseEvent() {
 				this.isEditing = false;
+				this.isReviewing = false;
 				this.popCrumb();
 				this.$nextTick(() => {
-					this.entity = null;
+					this.workEntity = null;
+					this.reivewEntity = null;
+					this.reviewingWorks = null;
 				});
 			}
 		}
