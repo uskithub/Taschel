@@ -5,14 +5,14 @@
 			.body
 				.kanban-system-container
 					ul.kanban-board-container
-						li.kanban-board.kanban-board-daily-works(key="works", :class="{ active : isHighOrderReivew }"
+						li.kanban-board.kanban-board-daily-works(key="works", :class="{ active : isHighOrderReview }"
 							@click.prevent.stop="didSelect($event, null, reviewingWorks.length+1)"
 						)
 							span.kanban-board-header
 								legend {{ "works" }}
 							div.drag-options
 							ul.kanban-list(data-code="daily" ref="works")
-								li.kanban-item(v-if="entity.highOrderAwakening" key="HighOrderReview") 
+								li.kanban-item(v-if="entity && entity.highOrderAwakening" key="HighOrderReview") 
 									slot(name="HighOrderAwakening")
 										strong {{ _("HighOrderAwakening") }}
 									.text-muted {{ entity.highOrderAwakening }}
@@ -28,26 +28,22 @@
 												dd {{ item.value }}
 									message(v-for="comment in work.comments", :key="comment.code", :comment="comment", :user="getUser(comment.author)")
 						li.kanban-board.form(key="form")
-							vue-form-generator(:schema="dynamicForm", :model="dynamicModel", :options="options", ref="form", :is-new-model="isNewModel")
+							vue-form-generator(:schema="dynamicForm", :model="dynamicModel", :options="options", ref="form", :is-new-model="isNewEntity")
 
 							.errors.text-center
 								div.alert.alert-danger(v-for="(item, index) in validationErrors", :key="index") {{ item.field.label }}: 
 									strong {{ item.error }}
 
-							.buttons.flex.justify-space-around(v-if="!isAudience")
-								button.button.primary(@click="didPushSaveButton", :disabled="!isSaveButtonEnable")
+							.buttons.flex.justify-space-around
+								button.button.primary(@click="didPushSaveButton")
 									i.icon.fa.fa-save 
-									| {{ saveButtonCaption }}
+									| {{ dynamicButtonCaption }}
 								button.button.outline(v-if="options.isSkipButtonEnable" @click="didPushSkipButton", :disabled="!isSkipButtonEnable")
 									i.icon.fa.fa-save
-									| {{ schema.resources.skipCaption || _("Skip") }}
-								button.button.outline(@click="didPushCancelButton", :disabled="!isCancelButtonEnable")
+									| {{ _("Skip") }}
+								button.button.outline(@click="didPushCancelButton")
 									i.icon.fa.fa-close
-									| {{ schema.resources.cancelCaption || _("Cancel") }}
-							.buttons.flex.justify-space-around(v-else)
-								button.button.outline(@click="didPushCancelButton", :disabled="!isCancelButtonEnable")
-									i.icon.fa.fa-close
-									| {{ schema.resources.cancelCaption || _("Cancel") }}	
+									| {{ _("Cancel") }}
 </template>
 <script>
 	import Vue from "vue";
@@ -57,10 +53,6 @@
 	import { cloneDeep, isArray } from "lodash";
 	import moment from "moment";
 	const _ = Vue.prototype._;
-
-	const isHighOrderReivew = (works, index) => {
-		return index >= works.length;
-	};
 
 	export default {
 		name : "Reviewing"
@@ -80,17 +72,9 @@
 			}
 		}
 		, data() {
-			let _rawValues = this.entity ? this.entity.rawValues : schemaUtils.createDefaultObject(this.schema);
-
-			console.log("_rawValues:", _rawValues);
+			let _rawValues = this.entity ? this.entity.rawValues : schemaUtils.createDefaultObject(this.schema);	
+			if (!this.entity) _rawValues.works = this.reviewingWorks.map(w => w.rawValues);
 		
-			// if (!isArray(_rawValues.type)) {
-			// 	_rawValues.type = [ _rawValues.type ];
-			// }
-
-			// if (_rawValues.actualStart === undefined) _rawValues.actualStart = moment(_rawValues.start).format("HH:mm");
-			// if (_rawValues.actualEnd === undefined) _rawValues.actualEnd = moment().format("HH:mm");
-
 			return {
 				rawValues : _rawValues
 				, options : {}
@@ -99,7 +83,37 @@
 		}
 		, computed: {
 			isNewEntity() { return this.entity === null; }
-			, treenodes() { return [this.taskTree]; }
+			, isHighOrderReview() {
+				return this.index >= this.reviewingWorks.length;
+			}
+			, dynamicForm() {
+				if (this.index >= this.reviewingWorks.length) {
+					return this.schema.groups[1];
+				} else {
+					return this.schema.groups[0];
+				}
+			}
+			, dynamicModel() {
+				if (this.index >= this.reviewingWorks.length) {
+					return this.rawValues;
+				} else {
+					return this.rawValues.works[this.index];
+				}
+			}
+			, validationErrors() {
+				if (this.$refs.form && this.$refs.form.errors) return this.$refs.form.errors;
+				return [];
+			}
+			, isSkipButtonEnable() {
+				return !(this.index >= this.reviewingWorks.length);
+			}
+			, dynamicButtonCaption() {
+				if (this.index >= this.reviewingWorks.length) {
+					return _("Save");
+				} else {
+					return _("Next");
+				}
+			}
 		}
 		, methods : {
 			...mapActions([

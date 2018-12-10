@@ -229,7 +229,7 @@
 					console.log(`●`, event);
 					const dayOfWeek = event.start.day();
 					let review = this.currentWeekReviews.find(r => r.code == event.id);
-					this.reviewEntity = review;
+					this.reviewEntity = review ? review : null;
 					
 					this.reviewingWorks = this.currentWeekWorks.filter(w => {
 						return moment(w.start).day() === this.dayOfWeek; //&& w.status < 0;
