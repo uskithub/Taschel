@@ -92,6 +92,7 @@ export default class Work {
 		// this._tasks = rawValues.children.map(task => {
 		// 	return new Task(task);
 		// });
+		this._comments = null;
 	}
 
 	get rawValues() { return cloneDeep(this._rawValues); }
@@ -104,6 +105,7 @@ export default class Work {
 	get goodSide() { return this._rawValues.goodSide; }
 	get badSide() { return this._rawValues.badSide; }
 	get improvement() { return this._rawValues.improvement; }
+	get comments() { return this._comments; }
 	get author() { return this._rawValues.author.username; }
 
 	static createFormSchema(fieldSet) {

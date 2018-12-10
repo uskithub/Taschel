@@ -1,7 +1,7 @@
 <template lang="pug">
 	.container
-		editing(v-if="isEditing", :entity="workEntity", :schema="formSchema" @close="didReceiveCloseEvent")
-		reviewing(v-else-if="isReviewing", :entity="reviewEntity", :reviewingWorks="reviewingWorks", :schema="formSchema" @close="didReceiveCloseEvent")
+		editing(v-if="isEditing", :entity="workEntity", :schema="formSchemaEditing" @close="didReceiveCloseEvent")
+		reviewing(v-else-if="isReviewing", :entity="reviewEntity", :reviewingWorks="reviewingWorks", :schema="formSchemaReviewing" @close="didReceiveCloseEvent")
 		.kanban-system-container.daily(v-else)
 			ul.kanban-board-container
 				li.kanban-board.kanban-board-weekly-tasks(key="weekly")
@@ -19,6 +19,7 @@
 	import Vue from "vue";
 	import Base from "../../../fundamentals/mixins/base";
 	import Work from "../../../fundamentals/entities/work";
+	import Review from "../../../fundamentals/entities/review";
 	import Board from "../../kanban/board";
 	import Kanban from "../../kanban/kanban";
 	import Editing from "./editing";
@@ -104,7 +105,8 @@
 		return null;
 	};
 
-	schema.form.groups = Work.createFormSchema(schema.form.groups);
+	schema.formEditing.groups = Work.createFormSchema(schema.formEditing.groups);
+	schema.formReviewing.groups = Review.createFormSchema(schema.formReviewing.groups);
 
 	export default {
 		name : "DailyLoop"
@@ -175,7 +177,8 @@
 				, workEntity: null
 				, reviewEntity: null
 				, reviewingWorks: null
-				, formSchema : schema.form
+				, formSchemaEditing : schema.formEditing
+				, formSchemaReviewing : schema.formReviewing
 				, fullcalendarSchema: schema.fullCalendar
 			};
 		}
@@ -225,13 +228,9 @@
 				if (event.allDay) {
 					console.log(`●`, event);
 					const dayOfWeek = event.start.day();
-					for (let i in this.currentWeekReviews) {
-						let review = this.currentWeekReviews[i];
-						if (review.code === event.id) {
-							this.reviewEntity = review;
-							break;
-						}
-					}
+					let review = this.currentWeekReviews.find(r => r.code == event.id);
+					this.reviewEntity = review;
+					
 					this.reviewingWorks = this.currentWeekWorks.filter(w => {
 						return moment(w.start).day() === this.dayOfWeek; //&& w.status < 0;
 					});

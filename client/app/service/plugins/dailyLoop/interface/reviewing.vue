@@ -6,18 +6,18 @@
 				.kanban-system-container
 					ul.kanban-board-container
 						li.kanban-board.kanban-board-daily-works(key="works", :class="{ active : isHighOrderReivew }"
-							@click.prevent.stop="didSelect($event, null, works.length+1)"
+							@click.prevent.stop="didSelect($event, null, reviewingWorks.length+1)"
 						)
 							span.kanban-board-header
 								legend {{ "works" }}
 							div.drag-options
 							ul.kanban-list(data-code="daily" ref="works")
-								li.kanban-item(v-if="template.highOrderReview.highOrderAwakening" key="HighOrderReview") 
+								li.kanban-item(v-if="entity.highOrderAwakening" key="HighOrderReview") 
 									slot(name="HighOrderAwakening")
 										strong {{ _("HighOrderAwakening") }}
-									.text-muted {{ template.highOrderReview.highOrderAwakening }}
-									message(v-if="template.highOrderReview.comments" v-for="comment in template.highOrderReview.comments", :key="comment.code", :comment="comment", :user="getUser(comment.author)")
-								li.kanban-item(v-for="(work, i) in works", :class="{ active : index == i }", :data-code="work.code", :key="work.code" ref="items"
+									.text-muted {{ entity.highOrderAwakening }}
+									message(v-if="entity.comments" v-for="comment in entity.comments", :key="comment.code", :comment="comment", :user="getUser(comment.author)")
+								li.kanban-item(v-for="(work, i) in reviewingWorks", :class="{ active : index == i }", :data-code="work.code", :key="work.code" ref="items"
 									@click.prevent.stop="didSelect($event, work, i)"
 								)
 									slot(:name="work.title")
@@ -58,8 +58,12 @@
 	import moment from "moment";
 	const _ = Vue.prototype._;
 
+	const isHighOrderReivew = (works, index) => {
+		return index >= works.length;
+	};
+
 	export default {
-		name : "WorkEditing"
+		name : "Reviewing"
 		, mixins : [ Base ]
 		, props : {
 			entity : {
@@ -70,10 +74,6 @@
 				type: Array
 				, validator: (value) => { return true; } // TODO
 			}
-			, taskTree : {
-				type: Object
-				, validator: (value) => { return true; } // TODO
-			}
 			, schema : {
 				type: Object
 				, validator: (value) => { return true; } // TODO
@@ -81,12 +81,15 @@
 		}
 		, data() {
 			let _rawValues = this.entity ? this.entity.rawValues : schemaUtils.createDefaultObject(this.schema);
-			if (!isArray(_rawValues.type)) {
-				_rawValues.type = [ _rawValues.type ];
-			}
 
-			if (_rawValues.actualStart === undefined) _rawValues.actualStart = moment(_rawValues.start).format("HH:mm");
-			if (_rawValues.actualEnd === undefined) _rawValues.actualEnd = moment().format("HH:mm");
+			console.log("_rawValues:", _rawValues);
+		
+			// if (!isArray(_rawValues.type)) {
+			// 	_rawValues.type = [ _rawValues.type ];
+			// }
+
+			// if (_rawValues.actualStart === undefined) _rawValues.actualStart = moment(_rawValues.start).format("HH:mm");
+			// if (_rawValues.actualEnd === undefined) _rawValues.actualEnd = moment().format("HH:mm");
 
 			return {
 				rawValues : _rawValues

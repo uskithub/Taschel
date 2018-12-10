@@ -3,10 +3,17 @@ import Vue from "vue";
 const _ = Vue.prototype._;
 
 export default {
-	form : { 
+	formEditing : { 
 		groups: {
 			WorkDetail: [ "goal" ]
 			, Closing: [ "actualStart",  "actualEnd", "description"]
+		}
+		// fields : [ "goal"]
+	}
+	, formReviewing : { 
+		groups: {
+			reviewOfWorks: [ "goodSide", "badSide", "improvement" ]
+			, highOrderReview: [ "highOrderAwakening"]
 		}
 		// fields : [ "goal"]
 	}
