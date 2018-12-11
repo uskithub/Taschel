@@ -189,6 +189,15 @@ export default {
 					let work = new Work(data);
 					commit(UPDATE_WORK, work);
 				});
-		} 
+		}
+		// Usecase: a user close a work. 
+		, closeWork({ commit }, rawValues) {
+			rawValues.status = -1;
+			return works.put(rawValues)
+				.then(data => {
+					let work = new Work(data);
+					commit(UPDATE_WORK, work);
+				});
+		}
 	}
 };

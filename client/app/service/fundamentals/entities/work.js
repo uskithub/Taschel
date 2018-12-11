@@ -27,7 +27,7 @@ const _fields = {
 		, form: {
 			type: "myDateTimePicker"
 			, format: "HH:mm"
-			, closeRequired: true
+			, requiredInClosing : true
 			, dateTimePickerOptions: {
 				format: "HH:mm"
 				, stepping: 5
@@ -56,7 +56,7 @@ const _fields = {
 		, form: {
 			type: "myDateTimePicker"
 			, format: "HH:mm"
-			, closeRequired: true
+			, requiredInClosing: true
 			, dateTimePickerOptions: {
 				format: "HH:mm"
 				, stepping: 5
@@ -89,7 +89,7 @@ const _fields = {
 			, max: 1000
 			, placeholder: _("DescriptionPlaceholder")
 			, rows: 5
-			, closeRequired: true
+			, requiredInClosing: true
 			, validator: validators.string
 		}
 	}
@@ -111,7 +111,7 @@ export default class Work {
 	get start() { return this._rawValues.start; }
 	get end() { return this._rawValues.end; }
 	get purpose() { return this._rawValues.purpose; }
-	get status() { return this._rawValues.stauts; }
+	get status() { return this._rawValues.status; }
 	get goodSide() { return this._rawValues.goodSide; }
 	get badSide() { return this._rawValues.badSide; }
 	get improvement() { return this._rawValues.improvement; }

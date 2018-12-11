@@ -21,7 +21,7 @@
 	import Base from "../../../fundamentals/mixins/base";
 	import { mapGetters, mapMutations, mapActions } from "vuex";
 	import { schema as schemaUtils } from "vue-form-generator";
-	import { cloneDeep, isArray } from "lodash";
+	import { get as objGet, cloneDeep, isArray, isFunction } from "lodash";
 	import moment from "moment";
 	const _ = Vue.prototype._;
 
@@ -79,7 +79,15 @@
 				this.$emit("close"); 
 			}
 			, didPushCloseButton() {
-				this.$emit("close"); 
+				if (this.validateInClosing()) {
+					return Promise.resolve().then(() => {
+						return this.closeWork(this.rawValues);
+					}).then(() => {
+						this.$emit("close", this.rawValues);
+					});
+				} else {
+					// Validation error
+				} 
 			}
 			// Application Service:
 			, validate() {
@@ -94,6 +102,63 @@
 					});
 				}
 				return res;	
+			}
+			// TODO: editing向けのmixinsに寄せる
+			// @see https://github.com/vue-generators/vue-form-generator/blob/master/src/formGenerator.vue#L316
+			, validateInClosing(isAsync = null) {
+				let form = this.$refs.form;
+
+				form.$children.forEach(child => {
+					// notice: the required option not work without the validator option.
+					if (child.schema.requiredInClosing) {
+						child.schema._required = child.schema.required;
+						child.schema.required = true;
+					}
+				});
+
+				if (isAsync === null) {
+					isAsync = objGet(form.options, "validateAsync", false);
+				}
+				form.clearValidationErrors();
+				let fields = [];
+				let results = [];
+				form.$children.forEach(child => {
+					if (isFunction(child.validate)) {
+						fields.push(child); // keep track of validated children
+						results.push(child.validate(true));
+					}
+				});
+				let handleErrors = (errors) => {
+					let formErrors = [];
+					errors.forEach((err, i) => {
+						if (isArray(err) && err.length > 0) {
+							err.forEach(error => {
+								formErrors.push({
+									field: fields[i].schema,
+									error: error,
+								});
+							});
+						}
+					});
+					form.errors = formErrors;
+					let isValid = formErrors.length == 0;
+					form.$emit("validated", isValid, formErrors);
+
+					form.$children.forEach(child => {
+						if (child.schema.requiredInClosing) {
+							child.schema.required = child.schema._required;
+						}
+					});
+
+					return isAsync ? formErrors : isValid;
+				};
+
+				if(!isAsync) {
+					return handleErrors(results);
+				}
+
+				return Promise.all(results).then(handleErrors);
+
 			}
 		}
 		, created() {

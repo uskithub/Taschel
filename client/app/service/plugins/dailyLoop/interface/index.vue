@@ -59,7 +59,6 @@
 			// , backgroundColor: ???
 			// , borderColor: ???
 			, textColor: isGoogleCalendar ? googleCalendarEventColor.textColor : (work.status < 0 ? closedEventColor.textColor : null)
-				
 		};
 	};
 
