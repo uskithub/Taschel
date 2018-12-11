@@ -32,12 +32,17 @@ const _fields = {
 				format: "HH:mm"
 				, stepping: 5
 			}
-			, finalize: (model, value, field) => {
-				if (value) {
-					const hhmm = value.split(":");
-					return moment(model.start).hour(hhmm[0]).minute(hhmm[1]);
+			, get(rawValues) {
+				if (rawValues.actualStart === undefined) {
+					return moment(rawValues.start).format("HH:mm");
 				} else {
-					return value;
+					return moment(rawValues.actualStart).format("HH:mm");
+				}
+			}
+			, set(rawValues, newValue) {
+				if (newValue) {
+					const hhmm = newValue.split(":");
+					rawValues.actualStart = moment(rawValues.start).hour(hhmm[0]).minute(hhmm[1]);
 				}
 			}
 			, validator: validators.date
@@ -56,12 +61,17 @@ const _fields = {
 				format: "HH:mm"
 				, stepping: 5
 			}
-			, finalize: (model, value, field) => {
-				if (value) {
-					const hhmm = value.split(":");
-					return moment(model.start).hour(hhmm[0]).minute(hhmm[1]);
+			, get(rawValues) {
+				if (rawValues.actualEnd === undefined) {
+					return moment().format("HH:mm");
 				} else {
-					return value;
+					return moment(rawValues.actualEnd).format("HH:mm");
+				}
+			}
+			, set(rawValues, newValue) {
+				if (newValue) {
+					const hhmm = newValue.split(":");
+					rawValues.actualEnd = moment(rawValues.end).hour(hhmm[0]).minute(hhmm[1]);
 				}
 			}
 			, validator: validators.date
@@ -149,7 +159,15 @@ export default class Work {
 		}
 	}
 
-	static finalize(model) {
-		// TODO: v1から移植
+	// TODO: get/setを使えば要らないかも。actualStart/Endでは要らなかった
+	static finalize(rawValues) {
+		let _rawValues = cloneDeep(rawValues);
+		Object.keys(_fields).map(key => {
+			const f = _fields[key].form;
+			if (f && f.finalize) {
+				_rawValues[key] = f.finalize(_rawValues, _rawValues[key], f);
+			}
+		});
+		return _rawValues;
 	}
 }

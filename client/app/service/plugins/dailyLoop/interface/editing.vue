@@ -48,9 +48,6 @@
 				_rawValues.type = [ _rawValues.type ];
 			}
 
-			if (_rawValues.actualStart === undefined) _rawValues.actualStart = moment(_rawValues.start).format("HH:mm");
-			if (_rawValues.actualEnd === undefined) _rawValues.actualEnd = moment().format("HH:mm");
-
 			return {
 				rawValues: _rawValues
 				, options: {}
@@ -73,7 +70,6 @@
 					}).then(() => {
 						this.$emit("close", this.rawValues);
 					});
-					
 				} else {
 					// Validation error
 				}

@@ -258,7 +258,7 @@
 						this.getCurrentWeekWorks();
 					});
 			}
-			, didReceiveCloseEvent() {
+			, didReceiveCloseEvent(rawValues) {
 				this.isEditing = false;
 				this.isReviewing = false;
 				this.popCrumb();
