@@ -37,6 +37,10 @@ const post = rawValues => {
 	return api(METHOD.post, NAMESPACE, rawValues);
 };
 
+const put = rawValues => {
+	return api(METHOD.put, NAMESPACE, rawValues);
+};
+
 const patch = rawValues => {
 	return api(METHOD.patch, NAMESPACE, rawValues);
 };
@@ -44,5 +48,6 @@ const patch = rawValues => {
 export default {
 	get
 	, post
+	, put
 	, patch
 };

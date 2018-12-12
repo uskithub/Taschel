@@ -22,6 +22,7 @@ export const CLEAR_CRUMB		= "CLEAR_CRUMB";
 export const LOAD_PROJECTS		= "LOAD_PROJECTS";
 export const ADD_PROJECT        = "ADD_PROJECT";
 export const UPDATE_PROJECT		= "UPDATE_PROJECT";
+export const CLOSE_PROJECT		= "CLOSE_PROJECT";
 export const ADD_TASK_TO_PROJECT	= "ADD_TASK_TO_PROJECT";
 
 // task

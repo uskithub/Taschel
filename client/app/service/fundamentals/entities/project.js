@@ -225,7 +225,7 @@ export default class Project {
 	constructor(rawValues) {
 		this._rawValues = rawValues;
 		// TODO: new Task()にprojectsを渡せていないので、rootがない
-		this._tasks = rawValues.children.map(t => new Task(t));
+		this._tasks = rawValues.children ? rawValues.children.map(t => new Task(t)) : [];
 	}
 
 	get rawValues() { return cloneDeep(this._rawValues); }
@@ -249,6 +249,8 @@ export default class Project {
 
 	get description() { return this._rawValues.description; }
 	set description(description) { return this._rawValues.description = description; }
+
+	get status() { return this._rawValues.status; }
 
 	get author() { return this._rawValues.author; }
 	get tasks() { return this._tasks; }

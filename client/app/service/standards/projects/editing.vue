@@ -1,17 +1,21 @@
 <template lang="pug">
 	fieldset
 		.panel
-			.header {{ entity.name }}
+			.header {{ header }}
 			.body
 				.form
 					vue-form-generator(:schema="schema", :model="rawValues", :options="options", :is-new-model="isNewEntity" ref="form")
 					.buttons.flex.justify-end
-						button.button.primary(@click="didPushSaveButton")
-							i.icon.fa.fa-save 
-							| {{ _("Save") }}
 						button.button.outline(@click="didPushCancelButton")
 							i.icon.fa.fa-close
 							| {{ _("Cancel") }}
+						button.button.primary(@click="didPushSaveButton")
+							i.icon.fa.fa-save 
+							| {{ _("Save") }}
+						button.button.danger(v-if="!isNewEntity && rawValues.status >= 0" @click="didPushCloseButton")
+							i.icon.fa.fa-save 
+							| {{ _("Close") }}
+
 </template>
 <script>
 	import Vue from "vue";
@@ -50,12 +54,14 @@
 		}
 		, computed: {
 			isNewEntity() { return this.entity === null; }
+			, header() { return this.entity ? this.entity.name : "新規作成"; }
 		}
 		, methods : {
 			...mapActions([
 				// Usecases
 				"createProject"
 				, "editProject"
+				, "closeProject"
 			])
 			, didPushSaveButton() {
 				if (this.validate()) {
@@ -76,6 +82,18 @@
 			// Usecase: a user cancels editing or adding a project.
 			, didPushCancelButton() {
 				this.$emit("close");
+			}
+			// Usecase: a user close the project.
+			, didPushCloseButton() {
+				if (this.validateInClosing()) {
+					return Promise.resolve().then(() => {
+						return this.closeProject(this.rawValues);
+					}).then(() => {
+						this.$emit("close", this.rawValues);
+					});
+				} else {
+					// Validation error
+				} 
 			}
 		}
 		, created() {

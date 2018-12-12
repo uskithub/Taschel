@@ -6,7 +6,7 @@ import organization from "./organization";
 import breadcrumb from "./breadcrumb";
 import backlog from "./backlog";
 import pdca from "./pdca";
-import { INITIALIZE, GET_READY, ADD_MESSAGE, ADD_NOTIFICATION, SET_USER, SEARCH, SET_CURRENT_WEEK, LOAD_PROJECTS, ADD_PROJECT, UPDATE_PROJECT, ADD_TASK_TO_PROJECT, SET_CURRENT_PROJECT, CLEAR_SELECTION } from "../mutationTypes";
+import { INITIALIZE, GET_READY, ADD_MESSAGE, ADD_NOTIFICATION, SET_USER, SEARCH, SET_CURRENT_WEEK, LOAD_PROJECTS, ADD_PROJECT, UPDATE_PROJECT, CLOSE_PROJECT, ADD_TASK_TO_PROJECT, SET_CURRENT_PROJECT, CLEAR_SELECTION } from "../mutationTypes";
 import moment from "moment";
 import { assign } from "lodash";
 
@@ -103,6 +103,9 @@ export default {
 					assign(p, project);
 				}
 			});
+		}
+		, [CLOSE_PROJECT] (state, code) {
+			state.projects = state.projects.filter(p => p.code != code);
 		}
 		, [ADD_TASK_TO_PROJECT] (state, task) {
 			const findParentRecursively = (targetTask, newTask) => {
@@ -212,7 +215,7 @@ export default {
 			rawValues = assign({ type: "project", author : user.code }, rawValues);
 			return tasks.post(rawValues)
 				.then(data => {
-					let project = new Project(rawValues);
+					let project = new Project(data);
 					commit(ADD_PROJECT, project);
 				});
 		}
@@ -220,8 +223,15 @@ export default {
 		, editProject({ commit }, rawValues) {
 			return tasks.put(rawValues)
 				.then(data => {
-					let project = new Project(rawValues);
+					let project = new Project(data);
 					commit(UPDATE_PROJECT, project);
+				});
+		}
+		, closeProject({ commit }, rawValues) {
+			rawValues.status = -1;
+			return tasks.put(rawValues)
+				.then(data => {
+					commit(CLOSE_PROJECT, data.code);
 				});
 		}
 		// TODO: 以下をplanningとして切り出す

@@ -90,6 +90,7 @@
 			, didPushCancelButton() {
 				this.$emit("close"); 
 			}
+			// Usecase: a user close the work.
 			, didPushCloseButton() {
 				if (this.validateInClosing()) {
 					return Promise.resolve().then(() => {
