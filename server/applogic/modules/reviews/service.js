@@ -105,43 +105,20 @@ module.exports = {
 			})
 			.then(json => {
 				this.notifyModelChanges(ctx, "created", json);
-				slack.postMessage(`${ctx.user.username} が日次レビューをした！`);
+				//slack.postMessage(`${ctx.user.username} が日次レビューをした！`);
 				return json;
 			});
 		}
 
 		, update(ctx) {
-			ctx.assertModelIsExist(ctx.t("app:WorkNotFound"));
+			ctx.assertModelIsExist(ctx.t("app:ReviewNotFound"));
 			this.validateParams(ctx);
 
 			return this.collection.findById(ctx.modelID).exec()
 			.then(doc => {
 
-				console.log(ctx.params);
-
-				if (ctx.params.name != null)
-					doc.name = ctx.params.name;
-
-				if (ctx.params.goal != null)
-					doc.goal = ctx.params.goal;
-
-				if (ctx.params.start != null)
-					doc.start = ctx.params.start;
-
-				if (ctx.params.end != null)
-					doc.end = ctx.params.end;
-
-				if (ctx.params.actualStart != null)
-					doc.actualStart = ctx.params.actualStart;
-
-				if (ctx.params.actualEnd != null)
-					doc.actualEnd = ctx.params.actualEnd;
-
-				if (ctx.params.description != null)
-					doc.description = ctx.params.description;
-
-				if (ctx.params.status != null)
-					doc.status = ctx.params.status;
+				if (ctx.params.highOrderAwakening != null)
+					doc.highOrderAwakening = ctx.params.highOrderAwakening;
 
 				return doc.save();
 			})

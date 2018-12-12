@@ -130,6 +130,7 @@
 				// Usecases
 				"editWork"
 				, "review"
+				, "editReview"
 			])
 			, didSelect(e, work, index) {
 				this.index = index;
@@ -138,23 +139,23 @@
 
 				if (this.index >= this.reviewingWorks.length) {
 					// save
-					if (this.entity) {
-						// update
-						// TODO:
-					} else {
-						// create
-						if (this.validate()) {
-							let _rawValues = cloneDeep(this.rawValues);
-							_rawValues.works = _rawValues.works.map(w => w.code);
-							return Promise.resolve().then(() => {
+					if (this.validate()) {
+						let _rawValues = cloneDeep(this.rawValues);
+						_rawValues.works = _rawValues.works.map(w => w.code);
+						return Promise.resolve().then(() => {
+							if (this.entity) {
+								// update
+								return this.editReview(_rawValues);
+							} else {
+								// create
 								return this.review(_rawValues);
-							}).then(() => {
-								this.index = 0;
-								this.$emit("close");
-							});
-						} else {
-							// Validation error
-						}
+							}
+						}).then(() => {
+							this.index = 0;
+							this.$emit("close");
+						});
+					} else {
+						// Validation error
 					}
 
 				} else {

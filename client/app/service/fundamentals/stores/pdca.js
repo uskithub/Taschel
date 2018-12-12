@@ -1,7 +1,7 @@
 import Group from "../entities/group";
 import Work from "../entities/work";
 import Review from "../entities/review";
-import { INITIALIZE, LOAD_WEEKLY_GROUPS, LOAD_CURRENTWEEK_TASK_GROUP, LOAD_WEEKLY_WORKS, LOAD_WEEKLY_REVIEWS, ADD_WORK, UPDATE_WORK, REVIEW } from "../mutationTypes";
+import { INITIALIZE, LOAD_WEEKLY_GROUPS, LOAD_CURRENTWEEK_TASK_GROUP, LOAD_WEEKLY_WORKS, LOAD_WEEKLY_REVIEWS, ADD_WORK, UPDATE_WORK, REVIEW, UPDATE_REVIEW } from "../mutationTypes";
 import { assign } from "lodash";
 import groups from "../repositories/rest/groups";
 import works from "../repositories/rest/works";
@@ -205,6 +205,14 @@ export default {
 				.then(data => {
 					let review = new Review(data);
 					commit(REVIEW, review);
+				});
+		}
+		// Usecase: a user edit a review.
+		, editReview({ commit }, rawValues) {
+			return reviews.put(rawValues)
+				.then(data => {
+					let review = new Review(data);
+					commit(UPDATE_REVIEW, review);
 				});
 		}
 	}
