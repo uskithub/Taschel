@@ -1,156 +1,18 @@
 @import "variables";
 
-.kanban-board-container {
-    position: relative;
-    display: flex;
-    align-items: flex-start;
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
 
-    @media (max-width: 690px) {
+.kanban-board-header {
+    legend {
         display: block;
+		width: 100%;
+		margin-left: 0;
+		margin-bottom: 0.6em;
+		padding: 0.3em 0;
+		border-bottom: 2px solid $color2-light;
+
+		font-family: $fontFamilyHeader;
+		font-weight: 300;
+		font-size: 1.2em;
+		text-transform: uppercase;
     }
-
-    .kanban-board {
-        flex: 1;
-        align-items: flex-start;
-        margin: 0 0.5em;
-        position: relative;
-        background: rgba(black, 0.2);
-        overflow: hidden;
-    
-        @media (max-width: 690px) {
-            margin-bottom: 30px;
-        }
-
-        .kanban-board-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 10px;
-        }
-
-        .drag-options {
-            position: absolute;
-            top: 44px;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            padding: 10px;
-            opacity: 0;
-        
-            &.active {
-                opacity: 1;
-            }
-        
-            &-label {
-                display: block;
-                margin: 0 0 5px 0;
-        
-                input {
-                    opacity: 0.6;
-                }
-        
-                span {
-                    display: inline-block;
-                    font-size: 0.9rem;
-                    font-weight: 400;
-                    margin-left: 5px;
-                }
-            }
-        }
-
-        .kanban-list {
-            position: relative;
-            list-style-type: none;
-            margin: 0;
-            padding: 0;
-            min-height: 100px;
-            color: white;
-
-            .kanban-item {
-                margin: 0.5em;
-                padding: 0.5em;
-                background: rgba(black, 0.4);
-            
-                &.is-moving {
-                    background: rgba(black, 0.8);
-                }
-            
-                &.media {
-                    width: inherit;
-
-                    .kanban-list {
-                        min-height: inherit;
-                    }
-
-                    .media-right {
-                        margin-left: 0.5em;
-                    }
-            
-                    .block {
-                        padding: 0;
-                    }
-            
-                    .title {
-                        font-size: 1rem;
-                    }
-                }
-                &.requirement {
-                    border: 1px solid $requirementColor;
-                }
-            
-                &.way {
-                    border: 1px solid $wayColor;
-                }
-            
-                &.step {
-                    border: 1px solid $stepColor;
-                }
-            
-                dl {
-                    margin: 0;
-                }
-            
-                dt {
-                    text-decoration: underline;
-                }
-            
-                dd {
-                    margin-left: 1em;
-                    
-                }
-
-                .kanban-item {
-                    margin: 0.5em 0 0 0;
-                }
-            }
-        }
-    }
-}
-
-/* Dragula CSS  */
-
-.gu-mirror {
-  position: fixed !important;
-  margin: 0 !important;
-  z-index: 9999 !important;
-  opacity: 0.8;
-    list-style-type: none;
-}
-
-.gu-hide {
-  display: none !important;
-}
-
-.gu-unselectable {
-  -webkit-user-select: none !important;
-  -moz-user-select: none !important;
-  -ms-user-select: none !important;
-  user-select: none !important;
-}
-
-.gu-transit {
-  opacity: 0.2;
 }

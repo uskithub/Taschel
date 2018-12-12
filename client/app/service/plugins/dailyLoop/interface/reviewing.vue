@@ -34,7 +34,7 @@
 								div.alert.alert-danger(v-for="(item, index) in validationErrors", :key="index") {{ item.field.label }}: 
 									strong {{ item.error }}
 
-							.buttons.flex.justify-space-around
+							.buttons.flex.justify-end
 								button.button.primary(@click="didPushSaveButton")
 									i.icon.fa.fa-save 
 									| {{ dynamicButtonCaption }}
@@ -239,7 +239,7 @@
 		}
 	}
 </script>
-<style lang="scss" scoped>
+<style lang="scss">
 
 	.panel {
 		margin-bottom: 20px;
@@ -252,13 +252,15 @@
 			&.active {
 				border: 2px solid yellow;
 			}
-		}
 
-		.kanban-item {
-			border: 2px solid transparent;
+			.kanban-list {
+				.kanban-item {
+					border: 2px solid transparent;
 
-			&.active {
-				border: 2px solid yellow;
+					&.active {
+						border: 2px solid yellow;
+					}
+				}
 			}
 		}
 	}

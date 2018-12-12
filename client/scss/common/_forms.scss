@@ -211,3 +211,15 @@ fieldset {
 	} // legend
 
 } // fieldset
+
+.form {
+
+	.buttons {
+
+		&.flex.justify-end {
+			.button {
+				margin: 1em 1em 1em 0;
+			} // button
+		}
+	} // buttons
+} // form
