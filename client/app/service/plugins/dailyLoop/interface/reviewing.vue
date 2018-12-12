@@ -1,7 +1,7 @@
 <template lang="pug">
 	fieldset
 		.panel
-			.header {{ schema.title }}
+			.header {{ header }}
 			.body
 				.kanban-system-container
 					ul.kanban-board-container
@@ -58,7 +58,11 @@
 		name : "Reviewing"
 		, mixins : [ Base ]
 		, props : {
-			entity : {
+			date : {
+				type: Object // moment object
+				, validator: (value) => { return true; } // TODO
+			}
+			, entity : {
 				type: Object
 				, validator: (value) => { return true; } // TODO
 			}
@@ -83,6 +87,7 @@
 		}
 		, computed: {
 			isNewEntity() { return this.entity === null; }
+			, header() { return `${ this.date.format("MM/DD") } の振り返り`; }
 			, isHighOrderReview() {
 				return this.index >= this.reviewingWorks.length;
 			}
@@ -158,12 +163,43 @@
 				}
 				return res;	
 			}
+			, description(work) {
+				let result = [
+					{
+						key: "description"
+						, title: _("Description")
+						, value: work.description
+					}
+				];
+				if (work.goodSide) { 
+					result.push({
+						key: "goodSide"
+						, title: _("GoodSide")
+						, value: work.goodSide
+					});	
+				}
+				if (work.badSide) {
+					result.push({
+						key: "badSide"
+						, title: _("BadSide")
+						, value: work.badSide
+					});
+				}
+				if (work.improvement) {
+					result.push({
+						key: "improvement"
+						, title: _("Improvement")
+						, value: work.improvement
+					});
+				}
+				return result;
+			}
 		}
 		, created() {
 			this.setWayBackOnLastCrumb(() => { 
 				this.$emit("close"); 
 			});
-			this.pushCrumb({ id: this._uid, name: "revyu" });
+			this.pushCrumb({ id: this._uid, name: `${ this.date.format("MM/DD") } の振り返り` });
 		}
 	}
 </script>
@@ -171,6 +207,24 @@
 
 	.panel {
 		margin-bottom: 20px;
+	}
+
+	.kanban-board {
+		&-daily-works {
+			border: 2px solid transparent;
+
+			&.active {
+				border: 2px solid yellow;
+			}
+		}
+
+		.kanban-item {
+			border: 2px solid transparent;
+
+			&.active {
+				border: 2px solid yellow;
+			}
+		}
 	}
 
 </style>

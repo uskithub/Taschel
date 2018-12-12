@@ -1,7 +1,7 @@
 <template lang="pug">
 	.container
 		editing(v-if="isEditing", :entity="workEntity", :schema="formSchemaEditing" @close="didReceiveCloseEvent")
-		reviewing(v-else-if="isReviewing", :entity="reviewEntity", :reviewingWorks="reviewingWorks", :schema="formSchemaReviewing" @close="didReceiveCloseEvent")
+		reviewing(v-else-if="isReviewing", :date="reviewingDate", :entity="reviewEntity", :reviewingWorks="reviewingWorks", :schema="formSchemaReviewing" @close="didReceiveCloseEvent")
 		.kanban-system-container.daily(v-else)
 			ul.kanban-board-container
 				li.kanban-board.kanban-board-weekly-tasks(key="weekly")
@@ -174,6 +174,7 @@
 				isEditing: false
 				, isReviewing: false
 				, workEntity: null
+				, reviewingDate: null
 				, reviewEntity: null
 				, reviewingWorks: null
 				, formSchemaEditing : schema.formEditing
@@ -225,13 +226,13 @@
 			, didClickEvent(event, jqEvent, view) {
 				if (event.id == "GOOGLE_CALENDAR") return;
 				if (event.allDay) {
-					console.log(`●`, event);
+					this.reviewingDate = moment(event.start);
 					const dayOfWeek = event.start.day();
 					let review = this.currentWeekReviews.find(r => r.code == event.id);
 					this.reviewEntity = review ? review : null;
 					
 					this.reviewingWorks = this.currentWeekWorks.filter(w => {
-						return moment(w.start).day() === this.dayOfWeek; //&& w.status < 0;
+						return moment(w.start).day() === dayOfWeek && w.status < 0;
 					});
 					this.isReviewing = true;
 
@@ -263,6 +264,7 @@
 				this.popCrumb();
 				this.$nextTick(() => {
 					this.workEntity = null;
+					this.reviewingDate = null;
 					this.reivewEntity = null;
 					this.reviewingWorks = null;
 				});

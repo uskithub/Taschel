@@ -112,6 +112,10 @@ export default class Work {
 	get end() { return this._rawValues.end; }
 	get purpose() { return this._rawValues.purpose; }
 	get status() { return this._rawValues.status; }
+	get goal() { return this._rawValues.goal; }
+	get actualStart() { return this._rawValues.actualStart; }
+	get actualEnd() { return this._rawValues.actualEnd; }
+	get description() { return this._rawValues.description; }
 	get goodSide() { return this._rawValues.goodSide; }
 	get badSide() { return this._rawValues.badSide; }
 	get improvement() { return this._rawValues.improvement; }
