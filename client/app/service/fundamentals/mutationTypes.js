@@ -41,6 +41,8 @@ export const UPDATE_WORK       	= "UPDATE_WORK";
 
 //review
 export const LOAD_WEEKLY_REVIEWS = "LOAD_WEEKLY_REVIEWS";
+export const REVIEW             = "REVIEW";
+
 
 // organizations
 export const LOAD 				= "LOAD";

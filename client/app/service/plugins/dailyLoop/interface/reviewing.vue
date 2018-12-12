@@ -77,7 +77,12 @@
 		}
 		, data() {
 			let _rawValues = this.entity ? this.entity.rawValues : schemaUtils.createDefaultObject(this.schema);	
-			if (!this.entity) _rawValues.works = this.reviewingWorks.map(w => w.rawValues);
+			
+			if (!this.entity) {
+				_rawValues.week = moment(this.date).day(1).format("YYYY-MM-DD");
+				_rawValues.date = this.date.format("YYYY-MM-DD");
+			}
+			_rawValues.works = this.reviewingWorks.map(w => w.rawValues);
 		
 			return {
 				rawValues : _rawValues
@@ -124,27 +129,58 @@
 			...mapActions([
 				// Usecases
 				"editWork"
-				, "closeWork"
+				, "review"
 			])
 			, didSelect(e, work, index) {
-				console.log(work, index);
 				this.index = index;
 			}
 			, didPushSaveButton() {
-				if (this.validate()) {
-					return Promise.resolve().then(() => {
-						return this.editWork(this.rawValues);
-					}).then(() => {
-						this.$emit("close", this.rawValues);
-					});
-					
+
+				if (this.index >= this.reviewingWorks.length) {
+					// save
+					if (this.entity) {
+						// update
+						// TODO:
+					} else {
+						// create
+						if (this.validate()) {
+							let _rawValues = cloneDeep(this.rawValues);
+							_rawValues.works = _rawValues.works.map(w => w.code);
+							return Promise.resolve().then(() => {
+								return this.review(_rawValues);
+							}).then(() => {
+								this.index = 0;
+								this.$emit("close");
+							});
+						} else {
+							// Validation error
+						}
+					}
+
 				} else {
-					// Validation error
+					// next
+					let workRawValues = this.rawValues.works[this.index];
+
+					// 一つでも値が入っているかを検査
+					const isEmpty = !this.schema.groups[0].fields.reduce((result, f) => {
+						return result || workRawValues[f.model];
+					}, false);
+
+					if (!isEmpty) {
+						return Promise.resolve().then(() => {
+							return this.editWork(workRawValues);
+						}).then(() => {
+							this.index += 1;
+						});
+					} else {
+						this.index += 1;
+					}
 				}
 			}
 			// Usecase: a user cancels editing or adding a project.
 			, didPushCancelButton() {
-				this.$emit("close"); 
+				this.index = 0;
+				this.$emit("close");
 			}
 			, didPushSkipButton() {
 				this.$emit("close"); 

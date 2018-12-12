@@ -247,6 +247,7 @@
 					}
 				}
 			}
+			// 実際にはediting/reviewingから戻ってきた時の再描画でもviewRenderが呼ばれるので走っている
 			, didChangeWeek(view, elem) {
 				if (!this.isReady) return;
 
@@ -256,6 +257,7 @@
 						this.pushCrumb({ id: "week", name: this.currentWeekOfMonth });
 						this.getCurrentWeekTasks();
 						this.getCurrentWeekWorks();
+						this.getCurrentWeekReviews();
 					});
 			}
 			, didReceiveCloseEvent(rawValues) {
