@@ -33,15 +33,12 @@
 								strong {{ item.error }}
 
 						.buttons.flex.justify-end
+							button.button.outline(@click="didPushCancelButton")
+								i.icon.fa.fa-chevron-left
+								| {{ _("Back") }}
 							button.button.primary(@click="didPushSaveButton")
 								i.icon.fa.fa-save 
 								| {{ dynamicButtonCaption }}
-							button.button.outline(v-if="options.isSkipButtonEnable" @click="didPushSkipButton", :disabled="!isSkipButtonEnable")
-								i.icon.fa.fa-save
-								| {{ _("Skip") }}
-							button.button.outline(@click="didPushCancelButton")
-								i.icon.fa.fa-close
-								| {{ _("Cancel") }}
 </template>
 <script>
 	import Vue from "vue";
