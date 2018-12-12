@@ -3,47 +3,45 @@
 		.panel
 			.header {{ header }}
 			.body
-				.kanban-system-container
-					ul.kanban-board-container
-						li.kanban-board.kanban-board-daily-works(key="works", :class="{ active : isHighOrderReview }"
-							@click.prevent.stop="didSelect($event, null, reviewingWorks.length+1)"
-						)
-							span.kanban-board-header
-								legend {{ "works" }}
-							div.drag-options
-							ul.kanban-list(data-code="daily" ref="works")
-								li.kanban-item(v-if="entity && entity.highOrderAwakening" key="HighOrderReview") 
-									slot(name="HighOrderAwakening")
-										strong {{ _("HighOrderAwakening") }}
-									.text-muted {{ entity.highOrderAwakening }}
-									message(v-if="entity.comments" v-for="comment in entity.comments", :key="comment.code", :comment="comment", :user="getUser(comment.author)")
-								li.kanban-item(v-for="(work, i) in reviewingWorks", :class="{ active : index == i }", :data-code="work.code", :key="work.code" ref="items"
-									@click.prevent.stop="didSelect($event, work, i)"
-								)
-									slot(:name="work.title")
-										strong {{ work.title }}
-										.text-muted
-											dl(v-for="item in description(work)", :key="item.key")
-												dt {{ item.title }}
-												dd {{ item.value }}
-									message(v-for="comment in work.comments", :key="comment.code", :comment="comment", :user="getUser(comment.author)")
-						li.kanban-board.form(key="form")
-							vue-form-generator(:schema="dynamicForm", :model="dynamicModel", :options="options", ref="form", :is-new-model="isNewEntity")
+				ul.review-container
+					li.board.daily-works(key="works", :class="{ active : isHighOrderReview }"
+						@click.prevent.stop="didSelect($event, null, reviewingWorks.length+1)"
+					)
+						span.board-header
+							legend {{ "works" }}
+						ul.work-list(data-code="daily" ref="works")
+							li.highOrderReview(v-if="entity && entity.highOrderAwakening" key="HighOrderReview") 
+								slot(name="HighOrderAwakening")
+									strong {{ _("HighOrderAwakening") }}
+								.text-muted {{ entity.highOrderAwakening }}
+								message(v-if="entity.comments" v-for="comment in entity.comments", :key="comment.code", :comment="comment", :user="getUser(comment.author)")
+							li(v-for="(work, i) in reviewingWorks", :class="{ active : index == i }", :data-code="work.code", :key="work.code" ref="items"
+								@click.prevent.stop="didSelect($event, work, i)"
+							)
+								slot(:name="work.title")
+									strong {{ work.title }}
+									.text-muted
+										dl(v-for="item in description(work)", :key="item.key")
+											dt {{ item.title }}
+											dd {{ item.value }}
+								message(v-for="comment in work.comments", :key="comment.code", :comment="comment", :user="getUser(comment.author)")
+					li.board.form(key="form")
+						vue-form-generator(:schema="dynamicForm", :model="dynamicModel", :options="options", ref="form", :is-new-model="isNewEntity")
 
-							.errors.text-center
-								div.alert.alert-danger(v-for="(item, index) in validationErrors", :key="index") {{ item.field.label }}: 
-									strong {{ item.error }}
+						.errors.text-center
+							div.alert.alert-danger(v-for="(item, index) in validationErrors", :key="index") {{ item.field.label }}: 
+								strong {{ item.error }}
 
-							.buttons.flex.justify-end
-								button.button.primary(@click="didPushSaveButton")
-									i.icon.fa.fa-save 
-									| {{ dynamicButtonCaption }}
-								button.button.outline(v-if="options.isSkipButtonEnable" @click="didPushSkipButton", :disabled="!isSkipButtonEnable")
-									i.icon.fa.fa-save
-									| {{ _("Skip") }}
-								button.button.outline(@click="didPushCancelButton")
-									i.icon.fa.fa-close
-									| {{ _("Cancel") }}
+						.buttons.flex.justify-end
+							button.button.primary(@click="didPushSaveButton")
+								i.icon.fa.fa-save 
+								| {{ dynamicButtonCaption }}
+							button.button.outline(v-if="options.isSkipButtonEnable" @click="didPushSkipButton", :disabled="!isSkipButtonEnable")
+								i.icon.fa.fa-save
+								| {{ _("Skip") }}
+							button.button.outline(@click="didPushCancelButton")
+								i.icon.fa.fa-close
+								| {{ _("Cancel") }}
 </template>
 <script>
 	import Vue from "vue";
@@ -87,7 +85,7 @@
 			return {
 				rawValues : _rawValues
 				, options : {}
-				, index : 0
+				, index : (this.entity ? this.reviewingWorks.length : 0)
 			};
 		}
 		, computed: {
@@ -246,17 +244,58 @@
 		margin-bottom: 20px;
 	}
 
-	.kanban-board {
-		&-daily-works {
-			border: 2px solid transparent;
+	.review-container {
+		display: flex;
+		align-items: flex-start;
+		list-style-type: none;
+		margin: 0;
+		padding: 0;
 
-			&.active {
-				border: 2px solid yellow;
+		.board {
+			flex: 1;
+			align-items: flex-start;
+			margin: 0 0.5em;
+			position: relative;
+			background: rgba(black, 0.2);
+			overflow: hidden;
+
+			&.daily-works {
+				border: 2px solid transparent;
+
+				&.active {
+					border: 2px solid yellow;
+				}
 			}
 
-			.kanban-list {
-				.kanban-item {
+			.board-header {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				padding: 10px;
+
+				legend {
+					margin-left: 0;
+					margin-bottom: 0;
+				}
+			}
+
+			.work-list {
+				list-style-type: none;
+				margin: 0;
+				padding: 0;
+				min-height: 100px;
+				color: white;
+				border: 1px solid transparent;
+
+				li {
+					margin: 0.5em;
+					padding: 0.5em;
+					background: rgba(black, 0.4);
 					border: 2px solid transparent;
+
+					&.highOrderReview {
+						background: none;
+					}
 
 					&.active {
 						border: 2px solid yellow;
