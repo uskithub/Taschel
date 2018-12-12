@@ -45,7 +45,7 @@
 </template>
 <script>
 	import Vue from "vue";
-	import Base from "../../../fundamentals/mixins/base";
+	import BaseEditing from "../../../fundamentals/mixins/baseEditing";
 	import { mapGetters, mapMutations, mapActions } from "vuex";
 	import { schema as schemaUtils } from "vue-form-generator";
 	import { cloneDeep, isArray } from "lodash";
@@ -54,7 +54,7 @@
 
 	export default {
 		name : "Reviewing"
-		, mixins : [ Base ]
+		, mixins : [ BaseEditing ]
 		, props : {
 			date : {
 				type: Object // moment object
@@ -185,19 +185,6 @@
 				this.$emit("close"); 
 			}
 			// Application Service:
-			, validate() {
-				let res = this.$refs.form.validate();
-
-				if (!res) {
-					// Set focus to first input with error
-					this.$nextTick(() => {
-						let el = document.querySelector("div.form tr.error input:nth-child(1)");
-						if (el)
-							el.focus();
-					});
-				}
-				return res;	
-			}
 			, description(work) {
 				let result = [
 					{
@@ -231,18 +218,11 @@
 			}
 		}
 		, created() {
-			this.setWayBackOnLastCrumb(() => { 
-				this.$emit("close"); 
-			});
 			this.pushCrumb({ id: this._uid, name: `${ this.date.format("MM/DD") } の振り返り` });
 		}
 	}
 </script>
 <style lang="scss">
-
-	.panel {
-		margin-bottom: 20px;
-	}
 
 	.review-container {
 		display: flex;

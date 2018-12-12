@@ -49,7 +49,20 @@ export default {
 				state.currentWeekWorks.push(entity);
 			}
 		}
+		, [REVIEW] (state, entity) {
+			let isFound = state.currentWeekReviews.find(e => e.code === entity.code);
+			if (!isFound) {
+				state.currentWeekReviews.push(entity);
+			}
+		}
 		, [UPDATE_WORK] (state, entity) {
+			state.currentWeekReviews.forEach(e => {
+				if (e.code === entity.code) {
+					assign(e, entity);
+				}
+			});
+		}
+		, [UPDATE_REVIEW] (state, entity) {
 			state.currentWeekWorks.forEach(e => {
 				if (e.code === entity.code) {
 					assign(e, entity);

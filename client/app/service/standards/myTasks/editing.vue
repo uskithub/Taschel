@@ -1,7 +1,7 @@
 <template lang="pug">
 	fieldset
 		.panel
-			.header 概要
+			.header {{ header }}
 			.body
 				.form
 					vue-form-generator(:schema="schema", :model="rawValues", :options="options", :is-new-model="isNewEntity" ref="form")
@@ -24,7 +24,7 @@
 </template>
 <script>
 	import Vue from "vue";
-	import Base from "../../fundamentals/mixins/base";
+	import BaseEditing from "../../fundamentals/mixins/baseEditing";
 	import Treenode from "../../plugins/gantt/treenode";
 	import { mapGetters, mapMutations, mapActions } from "vuex";
 	import { schema as schemaUtils } from "vue-form-generator";
@@ -33,7 +33,7 @@
 
 	export default {
 		name : "TaskEditing"
-		, mixins : [ Base ]
+		, mixins : [ BaseEditing ]
 		, props : {
 			entity : {
 				type: Object
@@ -61,6 +61,7 @@
 		}
 		, computed: {
 			isNewEntity() { return this.entity === null; }
+			, header() { return this.entity ? this.entity.name : "新規作成"; }
 			, treenodes() { return [this.taskTree]; }
 		}
 		, methods : {
@@ -95,33 +96,11 @@
 			, addIconDidPush() {
 				// TODO
 			}
-			// Application Service:
-			, validate() {
-				let res = this.$refs.form.validate();
-
-				if (!res) {
-					// Set focus to first input with error
-					this.$nextTick(() => {
-						let el = document.querySelector("div.form tr.error input:nth-child(1)");
-						if (el)
-							el.focus();
-					});
-				}
-				return res;	
-			}
 		}
 		, created() {
-			this.setWayBackOnLastCrumb(() => { 
-				this.$emit("close"); 
-			});
 			this.pushCrumb({ id: this._uid, name: (this.entity ? this.entity.name : "新規作成") });
 		}
 	}
 </script>
-<style lang="scss" scoped>
-
-	.panel {
-		margin-bottom: 20px;
-	}
-
+<style lang="scss">
 </style>

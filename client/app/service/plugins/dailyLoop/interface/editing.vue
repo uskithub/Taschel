@@ -1,7 +1,7 @@
 <template lang="pug">
 	fieldset
 		.panel
-			.header 概要
+			.header {{ entity.title }}
 			.body
 				.form
 					vue-form-generator(:schema="schema", :model="rawValues", :options="options", :is-new-model="isNewEntity" ref="form")
@@ -18,16 +18,16 @@
 </template>
 <script>
 	import Vue from "vue";
-	import Base from "../../../fundamentals/mixins/base";
+	import BaseEditing from "../../../fundamentals/mixins/baseEditing";
 	import { mapGetters, mapMutations, mapActions } from "vuex";
 	import { schema as schemaUtils } from "vue-form-generator";
-	import { get as objGet, cloneDeep, isArray, isFunction } from "lodash";
+	import { cloneDeep, isArray } from "lodash";
 	import moment from "moment";
 	const _ = Vue.prototype._;
 
 	export default {
 		name : "WorkEditing"
-		, mixins : [ Base ]
+		, mixins : [ BaseEditing ]
 		, props : {
 			entity : {
 				type: Object
@@ -101,90 +101,13 @@
 					// Validation error
 				} 
 			}
-			// Application Service:
-			, validate() {
-				let res = this.$refs.form.validate();
-
-				if (!res) {
-					// Set focus to first input with error
-					this.$nextTick(() => {
-						let el = document.querySelector("div.form tr.error input:nth-child(1)");
-						if (el)
-							el.focus();
-					});
-				}
-				return res;	
-			}
-			// TODO: editing向けのmixinsに寄せる
-			// @see https://github.com/vue-generators/vue-form-generator/blob/master/src/formGenerator.vue#L316
-			, validateInClosing(isAsync = null) {
-				let form = this.$refs.form;
-
-				form.$children.forEach(child => {
-					// notice: the required option not work without the validator option.
-					if (child.schema.requiredInClosing) {
-						child.schema._required = child.schema.required;
-						child.schema.required = true;
-					}
-				});
-
-				if (isAsync === null) {
-					isAsync = objGet(form.options, "validateAsync", false);
-				}
-				form.clearValidationErrors();
-				let fields = [];
-				let results = [];
-				form.$children.forEach(child => {
-					if (isFunction(child.validate)) {
-						fields.push(child); // keep track of validated children
-						results.push(child.validate(true));
-					}
-				});
-				let handleErrors = (errors) => {
-					let formErrors = [];
-					errors.forEach((err, i) => {
-						if (isArray(err) && err.length > 0) {
-							err.forEach(error => {
-								formErrors.push({
-									field: fields[i].schema,
-									error: error,
-								});
-							});
-						}
-					});
-					form.errors = formErrors;
-					let isValid = formErrors.length == 0;
-					form.$emit("validated", isValid, formErrors);
-
-					form.$children.forEach(child => {
-						if (child.schema.requiredInClosing) {
-							child.schema.required = child.schema._required;
-						}
-					});
-
-					return isAsync ? formErrors : isValid;
-				};
-
-				if(!isAsync) {
-					return handleErrors(results);
-				}
-
-				return Promise.all(results).then(handleErrors);
-
-			}
 		}
 		, created() {
-			this.setWayBackOnLastCrumb(() => { 
-				this.$emit("close"); 
-			});
+		
 			this.pushCrumb({ id: this._uid, name: this.entity.title });
 		}
 	}
 </script>
-<style lang="scss" scoped>
-
-	.panel {
-		margin-bottom: 20px;
-	}
+<style lang="scss">
 
 </style>
