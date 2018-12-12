@@ -12,7 +12,7 @@
 						button.button.primary(@click="didPushSaveButton")
 							i.icon.fa.fa-save 
 							| {{ _("Save") }}
-						button.button.danger(@click="didPushCloseButton")
+						button.button.danger(v-if="rawValues.status >= 0" @click="didPushCloseButton")
 							i.icon.fa.fa-save 
 							| {{ _("Close") }}
 </template>
@@ -64,14 +64,26 @@
 				, "closeWork"
 			])
 			, didPushSaveButton() {
-				if (this.validate()) {
-					return Promise.resolve().then(() => {
-						return this.editWork(this.rawValues);
-					}).then(() => {
-						this.$emit("close", this.rawValues);
-					});
+				if (this.rawValues.status < 0) {
+					if (this.validateInClosing() && this.validate()) {
+						return Promise.resolve().then(() => {
+							return this.editWork(this.rawValues);
+						}).then(() => {
+							this.$emit("close", this.rawValues);
+						});
+					} else {
+						// Validation error
+					} 
 				} else {
-					// Validation error
+					if (this.validate()) {
+						return Promise.resolve().then(() => {
+							return this.editWork(this.rawValues);
+						}).then(() => {
+							this.$emit("close", this.rawValues);
+						});
+					} else {
+						// Validation error
+					}
 				}
 			}
 			// Usecase: a user cancels editing or adding a project.
