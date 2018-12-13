@@ -1,18 +1,20 @@
 <template lang="pug">
 	ul.treelist-board-container
-		li.treelist-board(v-for="treenode in treenodes", :key="treenode.id" @mouseover="onmouseover($event, treenode.id)" @mouseout="onmouseout($event, treenode.id)")
+		li.treelist-board(v-for="treenode in treenodes", :key="treenode.id" 
+			@mouseover="onmouseover($event, treenode.id)" 
+			@mouseout="onmouseout($event, treenode.id)")
 			input.checkbox(type="checkbox")
 			span.icon(v-if="treenode.subtree.length > 0" @click.prevent.stop="caratDidClick($event, treenode.id)")
-				i.fa(:class="{ 'fa-caret-down': isOpeningMap[treenode.id], 'fa-caret-right': !isOpeningMap[treenode.id] }")
+				i.fa(:class="{ 'fa-caret-down': !(foldingConditionMap[treenode.id]===false), 'fa-caret-right': foldingConditionMap[treenode.id]===false }")
 			span.treelist-board-header {{ treenode.name }}
 			span.operation(v-show="isHoveringMap[treenode.id]")
 				span.icon(@click="addIconDidPush($event, treenode)")
 					i.fa.fa-plus
 			.drag-options
-			ul.treelist(v-show="isOpeningMap[treenode.id]" data-type="treelist", :data-id="treenode.id"
+			ul.treelist(v-show="!(foldingConditionMap[treenode.id]===false)" data-type="treelist", :data-id="treenode.id"
 				@dragenter="ondragenter($event, treenode)"
 			)
-				treenode(v-for="childnode in treenode.subtree", :parent="treenode", :treenode="childnode", :isOpeningMap="isOpeningMap", :key="childnode.id"
+				treenode(v-for="childnode in treenode.subtree", :parent="treenode", :treenode="childnode", :foldingConditionMap="foldingConditionMap", :key="childnode.id"
 					@addIconDidPush="addIconDidPush"
 					@dragstart="ondragstart"
 					@dragend="ondragend"
@@ -65,6 +67,10 @@
 				type: Array
 				, validator: (value) => { return true; } // TODO
 			}
+			, foldingConditionMap: {
+				type: Object
+				, validator: (value) => { return true; } // TODO
+			}
 			, legendHelp: {
       			type: String
 				, default: "hoge"
@@ -72,28 +78,9 @@
 		}
 		, data() {
 			return {
-				isOpeningMap: {}
-				, isHoveringMap: {}
+				isHoveringMap: {}
 				, dragging: null
 				, draggingOn : null
-			}
-		}
-		, watch: {
-			treenodes : {
-				immediate: true // @see https://jp.vuejs.org/v2/api/index.html
-				, handler(newValue) {
-					const checkIsOpeningRecursively = arr => {
-						arr.forEach(item => {
-							if (this.isOpeningMap[item.id] === undefined) {
-								Vue.set(this.isOpeningMap, item.id, true);
-							}
-							if (item.subtree && item.subtree.length > 0) {
-								checkIsOpeningRecursively(item.subtree);
-							}
-						});
-					};
-					checkIsOpeningRecursively(newValue);
-				}
 			}
 		}
 		, methods : {
@@ -248,7 +235,7 @@
 				}
 			}
 			, caratDidClick(e, id) {
-				Vue.set(this.isOpeningMap, id, !this.isOpeningMap[id]);
+				this.$emit("toggleFolding", e, id);
 			}
 		}
 	};

@@ -10,15 +10,15 @@
 			.media-content
 				input.checkbox(type="checkbox")
 				span.icon(v-if="treenode.subtree.length > 0" @click.prevent.stop="$emit('toggle-caret', $event, treenode.id)")
-					i.fa(:class="{ 'fa-caret-down': isOpeningMap[treenode.id], 'fa-caret-right': !isOpeningMap[treenode.id] }")
+					i.fa(:class="{ 'fa-caret-down': !(foldingConditionMap[treenode.id]===false), 'fa-caret-right': foldingConditionMap[treenode.id]===false }")
 				span.treelist-node-header  {{ treenode.name }}
 				span.operation(v-show="isHovering")
 					span.icon(@click.prevent.stop="$emit('addIconDidPush', $event, treenode)")
 						i.fa.fa-plus
-				ul.treelist(v-show="isOpeningMap[treenode.id]" data-type="treenode", :data-id="treenode.id"
+				ul.treelist(v-show="!(foldingConditionMap[treenode.id]===false)" data-type="treenode", :data-id="treenode.id"
 					@dragenter="ondragenter($event, treenode)"
 				)
-					treenode(v-for="childnode in treenode.subtree", :parent="treenode", :treenode="childnode", :isOpeningMap="isOpeningMap", :key="childnode.id"
+					treenode(v-for="childnode in treenode.subtree", :parent="treenode", :treenode="childnode", :foldingConditionMap="foldingConditionMap", :key="childnode.id"
 						@addIconDidPush="addIconDidPush"
 						@dragstart="ondragstart"
 						@dragend="ondragend"
@@ -54,7 +54,7 @@
 					return true; 
 				}
 			}
-			, isOpeningMap: {
+			, foldingConditionMap: {
 				type: Object
 			}
 			, draggable: {

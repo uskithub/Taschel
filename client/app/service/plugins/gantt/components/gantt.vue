@@ -3,7 +3,7 @@
 		.gantt-row
 			.vue-gantt-legend
 				.title(:title="legendHelp") Legend (?)
-				treelist(:treenodes="treenodes" ref="legend" @arrange="didArrangeTask" @addIconDidPush="addIconDidPush")
+				treelist(:treenodes="treenodes", :foldingConditionMap="foldingConditionMap" ref="legend" @arrange="didArrangeTask" @addIconDidPush="addIconDidPush" @toggleFolding="didToggleFolding")
 				// gantt-legend(:rows="tasks", :legendHelp="legendHelp" ref="legend" @task-click="handleTaskClick")
 			.gantt-column(@wheel.prevent="handleWheel", :style="{ width: cellsCount * 24 }")
 				gantt-header(:rows="header" @header-click="handleHeaderClick")
@@ -17,6 +17,7 @@
 </template>
 
 <script>
+	import Vue from "vue";
 	import {
 		calcBody,
 		calcHeader,
@@ -36,6 +37,9 @@
 	import GanttBody from './ganttBody2';
 	import GanttFooter from './ganttFooter';
 
+	import { mapMutations, mapGetters } from "vuex";
+	import store from "../store.js";
+
 	const defaultOptions = {
 		cellWidth: 24
 		, scales: [
@@ -48,7 +52,8 @@
 	};
 
 	export default {
-		components: {
+		store
+		, components: {
 			GanttLegend
 			, GanttHeader
 			, GanttBody
@@ -64,16 +69,58 @@
 			}
 		}
 		, data() {
+
+			// if (this.foldingConditionMap === null) {
+			// 	let _foldingConditionMap = {};
+
+			// 	// 開閉ステータス初期化
+			// 	const checkFoldingConditionRecursively = arr => {
+			// 		arr.forEach(item => {
+			// 			if (_foldingConditionMap[item.id] === undefined) {
+			// 				_foldingConditionMap[item.id] = true;
+			// 			}
+			// 			if (item.subtree && item.subtree.length > 0) {
+			// 				checkFoldingConditionRecursively(item.subtree);
+			// 			}
+			// 		});
+			// 	};
+			// 	checkFoldingConditionRecursively(this.treenodes);
+
+			// 	this.INITIALIZE(_foldingConditionMap);
+			// }
+
 			return {
 				viewportStart: 0
 				, cellsCount: 0
 				, scales: createOptions(defaultOptions.scales)
 				, scale: defaultOptions.scales[0].scale
 				, step: defaultOptions.scales[0].steps[0]
+				//, foldingConditionMap: _foldingConditionMap
 			};
 		}
-		, computed: {
-			parsedProps() {
+		, watch: {
+			// treenodes : {
+			// 	immediate: true // @see https://jp.vuejs.org/v2/api/index.html
+			// 	, handler(newValue) {
+			// 		const checkFoldingConditionRecursively = arr => {
+			// 			arr.forEach(item => {
+			// 				if (this.foldingConditionMap[item.id] === undefined) {
+			// 					Vue.set(this.foldingConditionMap, item.id, true);
+			// 				}
+			// 				if (item.subtree && item.subtree.length > 0) {
+			// 					checkFoldingConditionRecursively(item.subtree);
+			// 				}
+			// 			});
+			// 		};
+			// 		checkFoldingConditionRecursively(newValue);
+			// 	}
+			// }
+		}
+		, computed : {
+			...mapGetters([
+				"foldingConditionMap"
+			])
+			, parsedProps() {
 				const { rows } = this.data;
 				return transformInputValues(rows);
 			}
@@ -119,6 +166,9 @@
 			}
 		}
 		, methods: {
+			...mapMutations([
+				"UPDATE"
+			]),
 			setCellsCount() {
 				this.cellsCount = Math.ceil((this.$el.clientWidth - this.$refs.legend.$el.clientWidth) / defaultOptions.cellWidth);
 			}
@@ -170,6 +220,13 @@
 			}
 			, addIconDidPush(e, treenode) {
 				this.$emit("addIconDidPush", e, treenode);
+			}
+			, didToggleFolding(e, id) {
+				// // foldingConditionMap への変更を検知し、リアクティブにViewの更新を行う
+				// // @see https://jp.vuejs.org/v2/api/index.html#Vue-set
+				// Vue.set(this.foldingConditionMap, id, newValue);
+				const newValue = (this.foldingConditionMap[id]===undefined) ? false : !this.foldingConditionMap[id];
+				this.UPDATE(id, newValue);
 			}
 		}
 		, mounted() {

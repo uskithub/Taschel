@@ -7,8 +7,8 @@
 					vue-form-generator(:schema="schema", :model="rawValues", :options="options", :is-new-model="isNewEntity" ref="form")
 					.buttons.flex.justify-end
 						button.button.outline(@click="didPushCancelButton")
-							i.icon.fa.fa-close
-							| {{ _("Cancel") }}
+							i.icon.fa.fa-chevron-left
+							| {{ _("Back") }}
 						button.button.primary(@click="didPushSaveButton")
 							i.icon.fa.fa-save 
 							| {{ _("Save") }}
