@@ -12,9 +12,8 @@ const getters = {
 };
 
 const mutations = {
-	"UPDATE" (state, id, newValue) {
-        // TODO: not working
-		state.foldingConditionMap[id] = newValue;
+	updateFoldingCondition(state, { id, newValue }) {
+		Vue.set(state.foldingConditionMap, id, newValue);
 	}
 };
 

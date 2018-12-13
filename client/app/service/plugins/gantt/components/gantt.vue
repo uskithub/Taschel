@@ -167,7 +167,7 @@
 		}
 		, methods: {
 			...mapMutations([
-				"UPDATE"
+				"updateFoldingCondition"
 			]),
 			setCellsCount() {
 				this.cellsCount = Math.ceil((this.$el.clientWidth - this.$refs.legend.$el.clientWidth) / defaultOptions.cellWidth);
@@ -222,11 +222,8 @@
 				this.$emit("addIconDidPush", e, treenode);
 			}
 			, didToggleFolding(e, id) {
-				// // foldingConditionMap への変更を検知し、リアクティブにViewの更新を行う
-				// // @see https://jp.vuejs.org/v2/api/index.html#Vue-set
-				// Vue.set(this.foldingConditionMap, id, newValue);
 				const newValue = (this.foldingConditionMap[id]===undefined) ? false : !this.foldingConditionMap[id];
-				this.UPDATE(id, newValue);
+				this.updateFoldingCondition({ id, newValue });
 			}
 		}
 		, mounted() {
