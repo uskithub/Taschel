@@ -1,14 +1,11 @@
 <template lang="pug">
 	section
-		gantt(:data="mock", :treenodes="treenodes" @arrange="didArrangeTask" @addIconDidPush="addIconDidPush")
-		// table
-		// 	tbody
-		// 		tr
-		// 			td
-		// 				treelist(:treelists="treelists")
-		// 			td
-		// 				treelist(:treelists="treelists")
-		// ganttchart(:options="fullcalendarSchema", :currentWeek="currentWeek")
+		editing(v-if="isEditing", :entity="entity", :taskTree="taskTree" , :schema="formSchema" @close="didReceiveCloseEvent")
+		gantt(v-else, :data="mock", :treenodes="treenodes"
+			@arrange="didArrangeTask"
+			@edit="editIconDidPush"
+			@add="addIconDidPush"
+		)
 </template>
 
 <script>
@@ -16,6 +13,7 @@
 	import Base from "../../../fundamentals/mixins/base";
 	import Task from "../../../fundamentals/entities/task";
 	import Treenode from "../treenode";
+	import Editing from "./editing";
 	import { mapGetters, mapActions } from "vuex";
 	import schema from "./schema";
 	import moment from "moment";
@@ -60,6 +58,9 @@
 	export default {
 		name : "GanttChart"
 		, mixins : [ Base ]
+		, components : {
+			Editing
+		}
 		, computed : {
 			...mapGetters([
 				"projects"
@@ -78,7 +79,10 @@
 		, data() {
 			schema.fullCalendar.resources = resources;
 			return {
-				formSchema : schema.form
+				isEditing: false
+				, entity: null
+				, taskTree: null
+				, formSchema : schema.form
 				, fullcalendarSchema: schema.fullCalendar
 				, mock : schema.data
 			};
@@ -97,6 +101,12 @@
 				let _to = { type: "task", code: to.id, entity: to.entity.task };
 
 				this.arrangeTasksInAnotherTask({ task: treenode.task, from: _from, to: _to, index });
+			}
+			, editIconDidPush(e, treenode) {
+				console.log("editIconDidPush", treenode)
+				this.entity = treenode.task;
+				this.taskTree = treenode;
+				this.isEditing = true;
 			}
 			, addIconDidPush(e, treenode) {
 				// create default values for new task according to its parent task.
@@ -123,6 +133,14 @@
 				// 		, parent: parent 
 				// 		, schema: this.formSchema 
 				// 	});
+			}
+			, didReceiveCloseEvent() {
+				this.isEditing = false;
+				this.popCrumb();
+				this.$nextTick(() => {
+					this.entity = null;
+					this.taskTree = null;
+				});
 			}
 		}
 		, sessionEnsured(me) {

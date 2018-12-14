@@ -5,6 +5,10 @@ import { INITIALIZE, LOAD_TASKS, ADD_TASK, UPDATE_TASK, LOAD_EDITING_TASK_TREE
 import { assign } from "lodash";
 import tasks from "../repositories/rest/tasks";
 
+/**
+ * This state is used in below:
+ * 	- MyTasks
+ */
 export default {
 	state : {
 		// DDD: Entities

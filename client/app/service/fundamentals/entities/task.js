@@ -216,6 +216,12 @@ const _fields = {
 
 export default class Task {
 
+	/**
+	 * projectsを渡すと、rootを設定する。
+	 * 
+	 * @param {*} rawValues 
+	 * @param {*} projects 
+	 */
 	constructor(rawValues, projects) {
 		this._rawValues = rawValues;
 
@@ -350,5 +356,32 @@ export default class Task {
 				return field.form; 
 			});
 		}
+	}
+
+	/**
+	 * propertyに対応してfieldを、fieldsになければ追加
+	 * ある場合には必須項目化
+	 * 
+	 * @param {*} fields 
+	 * @param {*} properties 
+	 */
+	static dynamicSchema(fields, properties) {
+
+		if (properties.includes("milestone")) {
+			let isExist = false;
+			fields.forEach(f => {
+				if (f.model === "deadline") {
+					f.required = true;
+					isExist = true;
+				}
+			});
+			if (!isExist) {
+				let f = Task.createFormSchema(["deadline"]).pop();
+				f.required = true;
+				fields.push(f);
+			}
+		}
+
+		return fields;
 	}
 }

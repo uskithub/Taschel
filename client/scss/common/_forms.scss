@@ -130,6 +130,15 @@
 
 	} // .error
 
+	&.required {
+		label::after {
+			content: " *";
+			font-weight: bold;
+			color: rgba(#f00, 1);
+		}
+
+	} // .required
+
 } // .form-group
 
 .form-option {

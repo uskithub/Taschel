@@ -3,7 +3,12 @@
 		.gantt-row
 			.vue-gantt-legend
 				.title(:title="legendHelp") Legend (?)
-				treelist(:treenodes="treenodes", :foldingConditionMap="foldingConditionMap" ref="legend" @arrange="didArrangeTask" @addIconDidPush="addIconDidPush" @toggleFolding="didToggleFolding")
+				treelist(:treenodes="treenodes", :foldingConditionMap="foldingConditionMap" ref="legend"
+					@arrange="didArrangeTask"
+					@editIconDidPush="editIconDidPush"
+					@addIconDidPush="addIconDidPush"
+					@toggleFolding="didToggleFolding"
+				)
 				// gantt-legend(:rows="tasks", :legendHelp="legendHelp" ref="legend" @task-click="handleTaskClick")
 			.gantt-column(@wheel.prevent="handleWheel", :style="{ width: cellsCount * 24 }")
 				gantt-header(:rows="header" @header-click="handleHeaderClick")
@@ -69,26 +74,6 @@
 			}
 		}
 		, data() {
-
-			// if (this.foldingConditionMap === null) {
-			// 	let _foldingConditionMap = {};
-
-			// 	// 開閉ステータス初期化
-			// 	const checkFoldingConditionRecursively = arr => {
-			// 		arr.forEach(item => {
-			// 			if (_foldingConditionMap[item.id] === undefined) {
-			// 				_foldingConditionMap[item.id] = true;
-			// 			}
-			// 			if (item.subtree && item.subtree.length > 0) {
-			// 				checkFoldingConditionRecursively(item.subtree);
-			// 			}
-			// 		});
-			// 	};
-			// 	checkFoldingConditionRecursively(this.treenodes);
-
-			// 	this.INITIALIZE(_foldingConditionMap);
-			// }
-
 			return {
 				viewportStart: 0
 				, cellsCount: 0
@@ -97,24 +82,6 @@
 				, step: defaultOptions.scales[0].steps[0]
 				//, foldingConditionMap: _foldingConditionMap
 			};
-		}
-		, watch: {
-			// treenodes : {
-			// 	immediate: true // @see https://jp.vuejs.org/v2/api/index.html
-			// 	, handler(newValue) {
-			// 		const checkFoldingConditionRecursively = arr => {
-			// 			arr.forEach(item => {
-			// 				if (this.foldingConditionMap[item.id] === undefined) {
-			// 					Vue.set(this.foldingConditionMap, item.id, true);
-			// 				}
-			// 				if (item.subtree && item.subtree.length > 0) {
-			// 					checkFoldingConditionRecursively(item.subtree);
-			// 				}
-			// 			});
-			// 		};
-			// 		checkFoldingConditionRecursively(newValue);
-			// 	}
-			// }
 		}
 		, computed : {
 			...mapGetters([
@@ -218,8 +185,11 @@
 			, didArrangeTask({ treenode, from, to, index }) {
 				this.$emit("arrange", { treenode, from, to, index });
 			}
+			, editIconDidPush(e, treenode) {
+				this.$emit("edit", e, treenode);
+			}
 			, addIconDidPush(e, treenode) {
-				this.$emit("addIconDidPush", e, treenode);
+				this.$emit("add", e, treenode);
 			}
 			, didToggleFolding(e, id) {
 				const newValue = (this.foldingConditionMap[id]===undefined) ? false : !this.foldingConditionMap[id];

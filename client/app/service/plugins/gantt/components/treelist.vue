@@ -8,6 +8,8 @@
 				i.fa(:class="{ 'fa-caret-down': !(foldingConditionMap[treenode.id]===false), 'fa-caret-right': foldingConditionMap[treenode.id]===false }")
 			span.treelist-board-header {{ treenode.name }}
 			span.operation(v-show="isHoveringMap[treenode.id]")
+				span.icon(@click="editIconDidPush($event, treenode)")
+					i.fa.fa-edit
 				span.icon(@click="addIconDidPush($event, treenode)")
 					i.fa.fa-plus
 			.drag-options
@@ -15,6 +17,7 @@
 				@dragenter="ondragenter($event, treenode)"
 			)
 				treenode(v-for="childnode in treenode.subtree", :parent="treenode", :treenode="childnode", :foldingConditionMap="foldingConditionMap", :key="childnode.id"
+					@editIconDidPush="editIconDidPush"
 					@addIconDidPush="addIconDidPush"
 					@dragstart="ondragstart"
 					@dragend="ondragend"
@@ -89,6 +92,9 @@
 			}
 			, onmouseout(e, id) {
 				Vue.set(this.isHoveringMap, id, false);
+			}
+			, editIconDidPush(e, treenode) {
+				this.$emit("editIconDidPush", e, treenode);
 			}
 			, addIconDidPush(e, treenode) {
 				this.$emit("addIconDidPush", e, treenode);

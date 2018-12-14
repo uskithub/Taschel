@@ -6,6 +6,7 @@ import organization from "./organization";
 import breadcrumb from "./breadcrumb";
 import backlog from "./backlog";
 import pdca from "./pdca";
+import planning from "./planning";
 import { INITIALIZE, GET_READY, ADD_MESSAGE, ADD_NOTIFICATION, SET_USER, SEARCH, SET_CURRENT_WEEK, LOAD_PROJECTS, ADD_PROJECT, UPDATE_PROJECT, CLOSE_PROJECT, ADD_TASK_TO_PROJECT, SET_CURRENT_PROJECT, CLEAR_SELECTION } from "../mutationTypes";
 import moment from "moment";
 import { assign } from "lodash";
@@ -21,6 +22,7 @@ export default {
 		, pdca
 		, profile
 		, organization
+		, planning
 
 		// for Presentation
 		, breadcrumb
@@ -173,7 +175,7 @@ export default {
 		, getUserProjectList({ commit, getters }, { options } = {}) {
 			const savedCurrentProject = getters.currentProject ? getters.currentProject.code : null;
 
-			let user = getters.me;
+			const user = getters.me;
 			options = assign({ taskType : "project", user : user.code }, options);
 
 			return tasks.get(options)

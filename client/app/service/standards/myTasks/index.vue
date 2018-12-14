@@ -77,6 +77,7 @@
 				this.popCrumb();
 				this.$nextTick(() => {
 					this.entity = null;
+					this.taskTree = null;
 				});
 			}
 		}

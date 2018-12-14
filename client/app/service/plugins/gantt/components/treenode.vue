@@ -13,12 +13,15 @@
 					i.fa(:class="{ 'fa-caret-down': !(foldingConditionMap[treenode.id]===false), 'fa-caret-right': foldingConditionMap[treenode.id]===false }")
 				span.treelist-node-header  {{ treenode.name }}
 				span.operation(v-show="isHovering")
+					span.icon(@click.prevent.stop="$emit('editIconDidPush', $event, treenode)")
+						i.fa.fa-edit
 					span.icon(@click.prevent.stop="$emit('addIconDidPush', $event, treenode)")
 						i.fa.fa-plus
 				ul.treelist(v-show="!(foldingConditionMap[treenode.id]===false)" data-type="treenode", :data-id="treenode.id"
 					@dragenter="ondragenter($event, treenode)"
 				)
 					treenode(v-for="childnode in treenode.subtree", :parent="treenode", :treenode="childnode", :foldingConditionMap="foldingConditionMap", :key="childnode.id"
+						@editIconDidPush="editIconDidPush"
 						@addIconDidPush="addIconDidPush"
 						@dragstart="ondragstart"
 						@dragend="ondragend"
@@ -73,6 +76,10 @@
 			}
 			, onmouseout(e) {
 				this.isHovering = false;
+			}
+			, editIconDidPush(e, treenode) {
+				this.$emit("editIconDidPush", e, treenode);
+				e.stopPropagation();
 			}
 			, addIconDidPush(e, treenode) {
 				this.$emit("addIconDidPush", e, treenode);
