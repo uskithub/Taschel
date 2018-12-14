@@ -8,7 +8,7 @@
 			.gantt-column(@wheel.prevent="handleWheel", :style="{ width: cellsCount * 24 }")
 				gantt-header(:rows="header" @header-click="handleHeaderClick")
 				// .vue-gantt-body
-				gantt-body(:treelists="treenodes")
+				gantt-body(:treelists="treenodes", :foldingConditionMap="foldingConditionMap")
 				// gantt-body(:tasks="body")
 		gantt-footer(:scales="scales", :selected="selectedScaleIdx", :startDate="min", :endDate="max", :step="msInCell", :period="viewportStart"
 			@scale-change="handleScaleChange"

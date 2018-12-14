@@ -13,6 +13,7 @@ const getters = {
 
 const mutations = {
 	updateFoldingCondition(state, { id, newValue }) {
+		// Objectのプロパティを変更した際もReactiveにするためにはVue.setを使う
 		Vue.set(state.foldingConditionMap, id, newValue);
 	}
 };

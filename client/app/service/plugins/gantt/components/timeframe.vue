@@ -7,8 +7,8 @@
 		slot(:name="treenode.name")
 			.media-content
 				legend 
-				ul.treelist(data-type="treenode", :data-id="treenode.id")
-					timeframe(v-for="childnode in treenode.subtree", :treenode="childnode", :key="childnode.id"
+				ul.treelist(v-show="!(foldingConditionMap[treenode.id]===false)" data-type="treenode", :data-id="treenode.id")
+					timeframe(v-for="childnode in treenode.subtree", :treenode="childnode", :foldingConditionMap="foldingConditionMap", :key="childnode.id"
 						@dragstart="ondragstart"
 						@dragend="ondragend"
 					)
@@ -33,6 +33,9 @@
 					if (value.name === undefined || value.id === undefined) return false;
 					return true; 
 				}
+			}
+			, foldingConditionMap: {
+				type: Object
 			}
 			, draggable: {
 				type: Boolean

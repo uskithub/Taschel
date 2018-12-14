@@ -4,10 +4,10 @@
 			span.treelist-board-header
 				legend {{ treelist.name }}
 			.drag-options
-			ul.treelist(data-type="treelist", :data-id="treelist.id"
+			ul.treelist(v-show="!(foldingConditionMap[treelist.id]===false)" data-type="treelist", :data-id="treelist.id"
 				@dragenter="ondragenter($event, treelist)"
 			)
-				timeframe(v-for="treenode in treelist.subtree", :treenode="treenode", :key="treenode.id", :draggable="false"
+				timeframe(v-for="treenode in treelist.subtree", :treenode="treenode", :foldingConditionMap="foldingConditionMap", :key="treenode.id", :draggable="false"
 					@dragstart="ondragstart"
 					@dragend="ondragend"
 				)
@@ -54,6 +54,9 @@
 			treelists : {
 				type: Array
 				, validator: (value) => { return true; } // TODO
+			}
+			, foldingConditionMap: {
+				type: Object
 			}
 			, legendHelp: {
       			type: String
