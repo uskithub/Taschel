@@ -24,6 +24,7 @@ export const ADD_PROJECT        = "ADD_PROJECT";
 export const UPDATE_PROJECT		= "UPDATE_PROJECT";
 export const CLOSE_PROJECT		= "CLOSE_PROJECT";
 export const ADD_TASK_TO_PROJECT	= "ADD_TASK_TO_PROJECT";
+export const UPDATE_TASK_OF_CURRENT_PROJECT	= "UPDATE_TASK_OF_CURRENT_PROJECT";
 
 // task
 export const LOAD_TASKS			= "LOAD_TASKS";

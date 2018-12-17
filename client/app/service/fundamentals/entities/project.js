@@ -255,6 +255,26 @@ export default class Project {
 	get author() { return this._rawValues.author; }
 	get tasks() { return this._tasks; }
 
+	updateDescendant(task) {
+		const searchRecursively = (parent, child) => {
+			const len = parent.tasks.length;
+			for (let i=0; i<len; i++) {
+				if (parent.tasks[i].code === child.code) {
+					parent.tasks.splice(i, 1, child);
+					return true;
+				}
+			}
+			for (let i=0; i<len; i++) {
+				if (searchRecursively(parent.tasks[i], child)) {
+					return true;
+				}
+			}
+			return false;
+		};
+
+		searchRecursively(this, task);
+	}
+
 	static createTableSchema(fieldSet) {
 		return fieldSet.map(f => {
 			if ( _fields[f] === undefined ) {

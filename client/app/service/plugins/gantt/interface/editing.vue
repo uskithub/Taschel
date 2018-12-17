@@ -65,7 +65,6 @@
             , dynamicSchema() {
                 let _schema = cloneDeep(this.schema);
                 _schema.fields = Task.dynamicSchema(_schema.fields, this.rawValues.properties);
-                console.log("_schema.fields", _schema.fields);
                 return _schema;
             }
 			, treenodes() { return [this.taskTree]; }
@@ -75,6 +74,7 @@
 				// Usecases
 				"addTask"
 				, "editTask"
+				, "editTaskInProjectTree"
 			])
 			, didPushSaveButton() {
 				if (this.validate()) {
@@ -82,7 +82,7 @@
 						if ( this.isNewEntity ) {
 							return this.addTask(this.rawValues);
 						} else {
-							return this.editTask(this.rawValues);
+							return this.editTaskInProjectTree(this.rawValues);
 						}
 					}).then(() => {
 						this.$emit("close", this.rawValues);

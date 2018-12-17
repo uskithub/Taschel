@@ -7,7 +7,7 @@ import breadcrumb from "./breadcrumb";
 import backlog from "./backlog";
 import pdca from "./pdca";
 import planning from "./planning";
-import { INITIALIZE, GET_READY, ADD_MESSAGE, ADD_NOTIFICATION, SET_USER, SEARCH, SET_CURRENT_WEEK, LOAD_PROJECTS, ADD_PROJECT, UPDATE_PROJECT, CLOSE_PROJECT, ADD_TASK_TO_PROJECT, SET_CURRENT_PROJECT, CLEAR_SELECTION } from "../mutationTypes";
+import { INITIALIZE, GET_READY, ADD_MESSAGE, ADD_NOTIFICATION, SET_USER, SEARCH, SET_CURRENT_WEEK, LOAD_PROJECTS, ADD_PROJECT, UPDATE_PROJECT, CLOSE_PROJECT, ADD_TASK_TO_PROJECT, UPDATE_TASK_OF_CURRENT_PROJECT, SET_CURRENT_PROJECT, CLEAR_SELECTION } from "../mutationTypes";
 import moment from "moment";
 import { assign } from "lodash";
 
@@ -128,7 +128,9 @@ export default {
 			
 			findParentRecursively(state.currentProjectRef, task);
 		}
-
+		, [UPDATE_TASK_OF_CURRENT_PROJECT] (state, entity) {
+			state.currentProjectRef.updateDescendant(entity);
+		}
 
 		, [ADD_MESSAGE] (state, item) {
 			state.messages.splice(0);

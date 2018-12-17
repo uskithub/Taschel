@@ -1,6 +1,6 @@
 import Project from "../entities/project";
 import Task from "../entities/task";
-import { INITIALIZE, LOAD_TASKS } from "../mutationTypes";
+import { UPDATE_TASK_OF_CURRENT_PROJECT } from "../mutationTypes";
 import { assign } from "lodash";
 import tasks from "../repositories/rest/tasks";
 import domainGlue from "../domainGlue";
@@ -12,21 +12,15 @@ import domainGlue from "../domainGlue";
 export default {
 	state : {
 		// DDD: Entities
-		project: null
 	}
 	, getters : {
-		currentProjectTask(state) { return state.entities; }
 	}
 	// DDD: Usecases
 	// Vuex: Mutations can change states. It must run synchronously.
 	, mutations : {
-		[INITIALIZE] (state) {
-			state.entities.splice(0);
-		}
-		, [LOAD_TASKS] (state, entities) {
-			state.entities.splice(0);
-			state.entities.push(...entities);
-		}
+		// [INITIALIZE] (state) {
+		// 	state.entities.splice(0);
+		// }
 	}
 
 	// DDD: Usecases
@@ -34,12 +28,14 @@ export default {
 	, actions : {
 
 		// Usecase: 
-		getCurrentProjectTaskList({ commit, getters }) {
-			const options = { task : getters.currentProject.code };
-			return tasks.get(options)
-				.then(data => {
-					commit(LOAD_TASKS, new Project(data));
-				});
+		editTaskInProjectTree({ commit, getters }, rawValues) {
+			const projects = getters.projects;
+			return tasks.put(rawValues)
+			.then(data => {
+				let task = new Task(data, projects);
+				// mutation は session.js の mutations
+				commit(UPDATE_TASK_OF_CURRENT_PROJECT, task);
+			});
 		}
 	}
 };
