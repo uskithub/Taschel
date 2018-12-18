@@ -1,14 +1,14 @@
 <template lang="pug">
 	nav
 		ul
-			li(v-for="(crumb, idx) in breadcrumb", :key="crumb.id" @click="didPushCrumb(crumb)")
+			li(v-for="(crumb, idx) in breadcrumb", :key="crumb.id" @click="didPushCrumb(crumb)" @mouseover="onmouseover($event, crumb)" @mouseout="onmouseout($event, crumb)")
 				span(v-if="idx < breadcrumb.length-1")
 					a.link {{ crumb.name }}
 					span.gt &nbsp;&gt;&nbsp;
 				span(v-else)
 					span {{ crumb.name }}
-				ul(v-if="crumb.items")
-					li(v-for="item in crumb.items" @click="crumb.itemDidPush(item)") {{ item.name }}
+				ul(v-if="isHovering && crumb.items")
+					li(v-for="item in crumb.items" @click="onclickitem(crumb, item)") {{ item.name }}
 </template>
 
 <script>
@@ -26,7 +26,7 @@
 		}
 		, data() {
 			return {
-
+				isHovering: false
 			};
 		}
 		, methods : {
@@ -36,7 +36,19 @@
 			, didPushCrumb(crumb) {
 				if (crumb.didPush) {
 					crumb.didPush();
+					console.log("falseってるけどな")
+					this.isHovering = false;
 				}
+			}
+			, onmouseover(event, crumb) {
+				this.isHovering = true;
+			}
+			, onmouseout(event, crumb) {
+				this.isHovering = false;
+			}
+			, onclickitem(crumb, item) {
+				crumb.itemDidPush(item);
+				this.isHovering = false;
 			}
 		}
 		, created() {
@@ -61,6 +73,7 @@
 			margin: 0;
 			padding: 0;
 			list-style: none;
+			z-index: 100;
 
 			li {
 				position: relative;
@@ -73,7 +86,7 @@
 
 				& > ul {
 					position: absolute;
-					display: none;
+					//display: none;
 					top: 100%;
 
 					li {
@@ -99,6 +112,7 @@
 			}
 
 			li:hover {
+				text-decoration: underline;
 				& > ul {
 					display: block;
 				}

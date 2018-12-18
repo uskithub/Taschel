@@ -92,6 +92,7 @@
 				// Usecases
 				"getUserProjectList"
 				, "arrangeTasksInAnotherTask"
+				, "selectProject"
 			])
 			// Interfacial Operations
 			, didArrangeTask({ treenode, from, to, index }) {
@@ -143,11 +144,22 @@
 				});
 			}
 		}
+		, created() {
+			this.pushCrumb({ id: this._uid, name: _("GanttChart") });
+		}
 		, sessionEnsured(me) {
 			return this.getUserProjectList()
 				.then(() => {
+					this.setSelectorOnLastCrumb({
+						items: this.projects
+						, itemDidPush: (item) => {
+							this.selectProject(item);
+							this.popCrumb();
+							this.pushCrumb({ id: item.code, name: item.name });
+						}
+					});
 					this.pushCrumb({ 
-						id: "project"
+						id: this.currentProject.code
 						, name: this.currentProject.name
 					});
 				});
