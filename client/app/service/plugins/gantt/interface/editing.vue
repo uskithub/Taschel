@@ -61,11 +61,11 @@
 
 			if (this.parent) {
 				_rawValues.parent = this.parent.code;
+				_rawValues.purpose = this.parent.purpose;
 
 				if (this.parent.root === -1) {
 					// if this is a top level task.
 					_rawValues.properties = [ "milestone" ];
-					// _rawValues.purpose = `${this.parent.goal}`;
 				}
 			}
 

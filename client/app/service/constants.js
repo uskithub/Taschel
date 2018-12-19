@@ -23,8 +23,8 @@ export const taskProperties = [
 	, { id: "objective", name: _("Objective") }
 	, { id: "keyresult", name: _("KeyResult") }
 	, { id: "milestone", name: _("Milestone") }
-	, { id: "requirement", name: _("Requirement") }
-	, { id: "issuue", name: _("Issue") }
+	, { id: "exitcriteria", name: _("Exit criteria") }
+	, { id: "issue", name: _("Issue") }
 	, { id: "way", name: _("Way") }
 ];
 
