@@ -110,23 +110,21 @@ export default {
 			state.projects = state.projects.filter(p => p.code != code);
 		}
 		, [ADD_TASK_TO_PROJECT] (state, task) {
-			const findParentRecursively = (targetTask, newTask) => {
-				console.log(targetTask);
+			const findParentRecursivelyToAddChild = (targetTask, newTask) => {
 				if (targetTask.code === newTask.parent) {
 					targetTask.addChild(newTask);
 					return true;
 				} else {
 					let tasks = targetTask.tasks;
 					for (let i=0, len=tasks.length; i<len; i++) {
-						if (findParentRecursively(tasks[i], newTask)) {
+						if (findParentRecursivelyToAddChild(tasks[i], newTask)) {
 							return true;
 						}
 					}
 					return false;
 				}
 			};
-			
-			findParentRecursively(state.currentProjectRef, task);
+			findParentRecursivelyToAddChild(state.currentProjectRef, task);
 		}
 		, [UPDATE_TASK_OF_CURRENT_PROJECT] (state, entity) {
 			state.currentProjectRef.updateDescendant(entity);

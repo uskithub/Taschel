@@ -1,7 +1,8 @@
 <template lang="pug">
 	section
-		editing(v-if="isEditing", :entity="entity", :taskTree="taskTree" , :schema="formSchema" @close="didReceiveCloseEvent")
+		editing(v-if="isEditing", :entity="entity", :parent="parentEntity", :taskTree="taskTree" , :schema="formSchema" @close="didReceiveCloseEvent")
 		gantt(v-else, :data="mock", :treenodes="treenodes"
+			@addTopLevel="addTopLevelDidPush"
 			@arrange="didArrangeTask"
 			@edit="editIconDidPush"
 			@add="addIconDidPush"

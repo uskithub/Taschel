@@ -220,6 +220,7 @@ const _fields = {
 	}
 };
 
+// Taskのメソッドは引き継ぐこと
 export default class Project {
 
 	constructor(rawValues) {
@@ -247,6 +248,8 @@ export default class Project {
 	get goal() { return this._rawValues.goal; }
 	set goal(goal) { return this._rawValues.goal = goal; }
 
+	get root() { return this._rawValues.root; }
+
 	get description() { return this._rawValues.description; }
 	set description(description) { return this._rawValues.description = description; }
 
@@ -254,6 +257,12 @@ export default class Project {
 
 	get author() { return this._rawValues.author; }
 	get tasks() { return this._tasks; }
+
+	// adding the task
+	addChild(task) {
+		this._tasks.push(task);
+		this._rawValues.children.push(task.rawValues);
+	}
 
 	updateDescendant(task) {
 		const searchRecursively = (parent, child) => {

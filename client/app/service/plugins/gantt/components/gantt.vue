@@ -2,7 +2,10 @@
 	.vue-gantt.gantt-column
 		.gantt-row
 			.vue-gantt-legend
-				.title(:title="legendHelp") Legend (?)
+				.title(:title="legendHelp") 
+					button.button.outline(@click="$emit('addTopLevel')")
+						i.icon.fa.fa-plus
+						| {{ _("Add a top level task") }}
 				treelist(:treenodes="treenodes", :foldingConditionMap="foldingConditionMap" ref="legend"
 					@arrange="didArrangeTask"
 					@editIconDidPush="editIconDidPush"

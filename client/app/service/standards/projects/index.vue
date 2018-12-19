@@ -53,7 +53,7 @@
 				// Usecases
 				"getUserProjectList"
 			])
-			// Interfacial Operations
+			// UI Operations
 			, didSelectRow(entity) {
 				this.entity = entity;
 				this.isEditing = true;

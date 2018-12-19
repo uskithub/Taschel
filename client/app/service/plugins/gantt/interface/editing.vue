@@ -25,7 +25,8 @@
 <script>
 	import Vue from "vue";
     import BaseEditing from "../../../fundamentals/mixins/baseEditing";
-    import Task from "../../../fundamentals/entities/task";
+	import Task from "../../../fundamentals/entities/task";
+	// import { taskProperties } from "../../../constants";
 	import { mapGetters, mapMutations, mapActions } from "vuex";
 	import { schema as schemaUtils } from "vue-form-generator";
     import { cloneDeep, isArray } from "lodash";
@@ -36,6 +37,10 @@
 		, mixins : [ BaseEditing ]
 		, props : {
 			entity : {
+				type: Object
+				, validator: (value) => { return true; } // TODO
+			}
+			, parent : {
 				type: Object
 				, validator: (value) => { return true; } // TODO
 			}
@@ -54,6 +59,16 @@
 				_rawValues.type = [ _rawValues.type ];
 			}
 
+			if (this.parent) {
+				_rawValues.parent = this.parent.code;
+
+				if (this.parent.root === -1) {
+					// if this is a top level task.
+					_rawValues.properties = [ "milestone" ];
+					// _rawValues.purpose = `${this.parent.goal}`;
+				}
+			}
+
 			return {
 				rawValues: _rawValues
 				, options: {}
@@ -61,7 +76,7 @@
 		}
 		, computed: {
 			isNewEntity() { return this.entity === null; }
-            , header() { return this.entity ? this.entity.name : "新規作成"; }
+            , header() { return (this.entity ? this.entity.name : (this.parent ? `${this.parent.name} にタスクを追加` : "新規作成")); }
             , dynamicSchema() {
                 let _schema = cloneDeep(this.schema);
                 _schema.fields = Task.dynamicSchema(_schema.fields, this.rawValues.properties);
@@ -72,15 +87,14 @@
 		, methods : {
 			...mapActions([
 				// Usecases
-				"addTask"
-				, "editTask"
+				"addTaskInProjectTree"
 				, "editTaskInProjectTree"
 			])
 			, didPushSaveButton() {
 				if (this.validate()) {
 					return Promise.resolve().then(() => {
 						if ( this.isNewEntity ) {
-							return this.addTask(this.rawValues);
+							return this.addTaskInProjectTree(this.rawValues);
 						} else {
 							return this.editTaskInProjectTree(this.rawValues);
 						}
@@ -104,7 +118,8 @@
 			}
 		}
 		, created() {
-			this.pushCrumb({ id: this._uid, name: (this.entity ? this.entity.name : "新規作成") });
+			const title = (this.entity ? this.entity.name : (this.parent ? `${this.parent.name} にタスクを追加` : "新規作成"));
+			this.pushCrumb({ id: this._uid, name: title });
 		}
 	}
 </script>
