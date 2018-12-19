@@ -1,4 +1,3 @@
-import ganttchart from "./components/ganttchart";
 import treelist from "./components/treelist";
 import treenode from "./components/treenode";
 import timeframe from "./components/timeframe";
@@ -17,7 +16,6 @@ const plugin = {
 		// strategies.googleMapsAPIsLoaded = strategies.created;
 
 		// componentの追加
-		Vue.component("ganttchart", ganttchart);
 		Vue.component("treelist", treelist);
 		Vue.component("treenode", treenode);
 		Vue.component("timeframe", timeframe);

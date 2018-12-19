@@ -9,12 +9,9 @@
 					@addIconDidPush="addIconDidPush"
 					@toggleFolding="didToggleFolding"
 				)
-				// gantt-legend(:rows="tasks", :legendHelp="legendHelp" ref="legend" @task-click="handleTaskClick")
 			.gantt-column(@wheel.prevent="handleWheel", :style="{ width: cellsCount * 24 }")
 				gantt-header(:rows="header" @header-click="handleHeaderClick")
-				// .vue-gantt-body
 				gantt-body(:treelists="treenodes", :foldingConditionMap="foldingConditionMap")
-				// gantt-body(:tasks="body")
 		gantt-footer(:scales="scales", :selected="selectedScaleIdx", :startDate="min", :endDate="max", :step="msInCell", :period="viewportStart"
 			@scale-change="handleScaleChange"
 			@period-change="handlePeriodChange"
@@ -36,11 +33,10 @@
 		getViewportInMilliseconds,
 		normalizeDate,
 		transformInputValues,
-	} from '../helpers';
-	import GanttLegend from './ganttLegend';
-	import GanttHeader from './ganttHeader';
-	import GanttBody from './ganttBody2';
-	import GanttFooter from './ganttFooter';
+	} from "../helpers";
+	import GanttHeader from "./ganttHeader";
+	import GanttBody from "./ganttBody";
+	import GanttFooter from "./ganttFooter";
 
 	import { mapMutations, mapGetters } from "vuex";
 	import store from "../store.js";
@@ -59,8 +55,7 @@
 	export default {
 		store
 		, components: {
-			GanttLegend
-			, GanttHeader
+			GanttHeader
 			, GanttBody
 			, GanttFooter
 		}
@@ -80,7 +75,6 @@
 				, scales: createOptions(defaultOptions.scales)
 				, scale: defaultOptions.scales[0].scale
 				, step: defaultOptions.scales[0].steps[0]
-				//, foldingConditionMap: _foldingConditionMap
 			};
 		}
 		, computed : {
@@ -185,6 +179,7 @@
 			, didArrangeTask({ treenode, from, to, index }) {
 				this.$emit("arrange", { treenode, from, to, index });
 			}
+			// Task Operations
 			, editIconDidPush(e, treenode) {
 				this.$emit("edit", e, treenode);
 			}
@@ -235,6 +230,10 @@
 					align-items: center;
 					height: 72px;
 					box-sizing: border-box;
+					border-bottom: 1px solid #DDD;
+				}
+
+				.first-input {
 					border-bottom: 1px solid #DDD;
 				}
 			}
