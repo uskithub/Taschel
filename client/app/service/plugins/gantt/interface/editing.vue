@@ -54,23 +54,10 @@
 			}
 		}
 		, data() {
-			let _rawValues = this.entity ? this.entity.rawValues : schemaUtils.createDefaultObject(this.schema);
-			if (!isArray(_rawValues.type)) {
-				_rawValues.type = [ _rawValues.type ];
-			}
-
-			if (this.parent) {
-				_rawValues.parent = this.parent.code;
-				_rawValues.purpose = this.parent.purpose;
-
-				if (this.parent.root === -1) {
-					// if this is a top level task.
-					_rawValues.properties = [ "milestone" ];
-				}
-			}
+			let _entity = this.entity || this.parent.childTaskFactory(schemaUtils.createDefaultObject(this.schema));
 
 			return {
-				rawValues: _rawValues
+				rawValues: _entity.rawValues
 				, options: {}
 			};
 		}
@@ -79,7 +66,7 @@
             , header() { return (this.entity ? this.entity.name : (this.parent ? `${this.parent.name} にタスクを追加` : "新規作成")); }
             , dynamicSchema() {
                 let _schema = cloneDeep(this.schema);
-                _schema.fields = Task.dynamicSchema(_schema.fields, this.rawValues.properties);
+                _schema.fields = Task.dynamicSchema(_schema.fields, this.rawValues);
                 return _schema;
             }
 			, treenodes() { return [this.taskTree]; }

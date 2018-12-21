@@ -225,7 +225,11 @@ export default class Task {
 	constructor(rawValues, projects) {
 		this._rawValues = rawValues;
 
-		if (projects && projects.length !== 0) {
+		if (!isArray(rawValues.type)) {
+			this._rawValues.type = [ rawValues.type ];
+		}
+
+		if (projects && projects.length > 0) {
 			const _projects = projects.reduce((result, p) => {
 				result[p.code] = p;
 				return result;
@@ -261,6 +265,7 @@ export default class Task {
 	set properties(properties) { return this._rawValues.properties = properties; }
 
 	get shortname() { return this._rawValues.shortname; }
+	set shortname(shortname) { return this._rawValues.shortname = shortname; }
 
 	get name() { return this._rawValues.name; }
 	set name(name) { return this._rawValues.name = name; }
@@ -287,16 +292,15 @@ export default class Task {
 	}
 
 	// return new child Task
-	childTaskFactory(author) {
-		let child = {
+	childTaskFactory(options) {
+		let child = Object.assign({
 			purpose: `${this.goal} にするため`
 			, root: this.root
 			, parent: this.code
 			, children: []
-			, asignee: author.code 
-			, author: author.code
-		};
-		return new Task(child, [this.root]);
+		}, options);
+
+		return new Task(child, (this.root ? [this.root] : null));
 	}
 
 	static createTableSchema(fieldSet) {
@@ -365,9 +369,9 @@ export default class Task {
 	 * @param {*} fields 
 	 * @param {*} properties 
 	 */
-	static dynamicSchema(fields, properties) {
+	static dynamicSchema(fields, rawValues) {
 
-		if (properties.includes("milestone")) {
+		if (rawValues.properties && rawValues.properties.includes("milestone")) {
 			let isExist = false;
 			fields.forEach(f => {
 				if (f.model === "deadline") {

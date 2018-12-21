@@ -221,48 +221,19 @@ const _fields = {
 };
 
 // Taskのメソッドは引き継ぐこと
-export default class Project {
+export default class Project extends Task {
 
 	constructor(rawValues) {
-		this._rawValues = rawValues;
-		// TODO: new Task()にprojectsを渡せていないので、rootがない
-		this._tasks = rawValues.children ? rawValues.children.map(t => new Task(t)) : [];
+		super(rawValues);
 	}
-
-	get rawValues() { return cloneDeep(this._rawValues); }
-
-	get code() { return this._rawValues.code;  }
 
 	get projectType() { return this._rawValues.projectType; }
 	set projectType(projectType) { return this._rawValues.projectType = projectType; }
-
-	get shortname() { return this._rawValues.shortname; }
-	set shortname(shortname) { return this._rawValues.shortname = shortname; }
-
-	get name() { return this._rawValues.name; }
-	set name(name) { return this._rawValues.name = name; }
-
-	get purpose() { return this._rawValues.purpose; }
-	set purpose(purpose) { return this._rawValues.purpose = purpose; }
-
-	get goal() { return this._rawValues.goal; }
-	set goal(goal) { return this._rawValues.goal = goal; }
-
-	get root() { return this._rawValues.root; }
 
 	get description() { return this._rawValues.description; }
 	set description(description) { return this._rawValues.description = description; }
 
 	get status() { return this._rawValues.status; }
-
-	get author() { return this._rawValues.author; }
-	get tasks() { return this._tasks; }
-
-	// adding the task
-	addChild(task) {
-		this._tasks.push(task);
-		this._rawValues.children.push(task.rawValues);
-	}
 
 	updateDescendant(task) {
 		const searchRecursively = (parent, child) => {
@@ -284,6 +255,16 @@ export default class Project {
 		searchRecursively(this, task);
 	}
 
+	// override
+	childTaskFactory(options) {
+		let child = super.childTaskFactory(options);
+
+		child.properties = [ "milestone" ];
+
+		return child;
+	}
+
+	// override _fieldsが異なるので
 	static createTableSchema(fieldSet) {
 		return fieldSet.map(f => {
 			if ( _fields[f] === undefined ) {
@@ -302,6 +283,7 @@ export default class Project {
 		});
 	}
 
+	// override _fieldsが異なるので
 	static createFormSchema(fieldSet) {
 		if (!isArray(fieldSet)) {
 			return {
