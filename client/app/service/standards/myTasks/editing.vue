@@ -12,12 +12,12 @@
 						button.button.primary(@click="didPushSaveButton")
 							i.icon.fa.fa-save 
 							| {{ _("Save") }}
-		.panel
+		.panel(v-if="!isNewEntity")
 			.header 親子関係
 			.body
 				treelist(:treenodes="treenodes" ref="legend" @arrange="didArrangeTask" @addIconDidPush="addIconDidPush")
 
-		.panel
+		.panel(v-if="!isNewEntity")
 			.header Timeline
 			.body
 				time-line(:treenodes="treenodes" ref="legend" @arrange="didArrangeTask" @addIconDidPush="addIconDidPush")
