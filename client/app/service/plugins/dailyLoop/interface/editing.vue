@@ -44,9 +44,6 @@
 		}
 		, data() {
 			let _rawValues = this.entity ? this.entity.rawValues : schemaUtils.createDefaultObject(this.schema);
-			if (!isArray(_rawValues.type)) {
-				_rawValues.type = [ _rawValues.type ];
-			}
 
 			return {
 				rawValues: _rawValues

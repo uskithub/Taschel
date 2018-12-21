@@ -57,6 +57,10 @@ const _fields = {
 			, required: true
 			, values: taskProperties
 			, default: []
+			, set(rawValues, newValue) {
+				rawValues.type = Task.decideTypeByProperties(newValue);
+				rawValues.properties = newValue;
+			}
 		}
 	}
 	, name: {
@@ -129,7 +133,7 @@ const _fields = {
 			, validator: [
 				// validators.date
 				(value, field, entity) => {
-					if (entity.type == "milestone" && (isNil(value) || value === "")) {
+					if (entity.type === "milestone" && (isNil(value) || value === "")) {
 						return [ _("MilestoneRequiresDeadline") ];
 					}
 					return [];
@@ -225,10 +229,6 @@ export default class Task {
 	constructor(rawValues, projects) {
 		this._rawValues = rawValues;
 
-		if (!isArray(rawValues.type)) {
-			this._rawValues.type = [ rawValues.type ];
-		}
-
 		if (projects && projects.length > 0) {
 			const _projects = projects.reduce((result, p) => {
 				result[p.code] = p;
@@ -255,11 +255,7 @@ export default class Task {
 
 	get code() { return this._rawValues.code; }
 
-	get type() { 
-		let type = this._rawValues.type;
-		return isArray(type) ? type : [type];
-	}
-	set type(type) { return this._rawValues.type = type; }
+	get type() { return this._rawValues.type; }
 
 	get properties() { return this._rawValues.properties; }
 	set properties(properties) { return this._rawValues.properties = properties; }
@@ -299,6 +295,22 @@ export default class Task {
 			, parent: this.code
 			, children: []
 		}, options);
+
+		console.log("type?", this.type);
+
+		if (this.type === "subproject") {
+			child.properties = [ "milestone" ];
+		} else if (this.type === "milestone" && this.properties.includes("objective")) {
+			child.properties = [ "keyresult" ];
+		} else if (this.type === "milestone") {
+			child.properties = [ "exitcriteria" ];
+		} else if (this.type === "requirement") {
+			child.properties = [ "way" ];
+		} else if (this.type === "issue") {
+			child.properties = [ "way" ];
+		} else if (this.type === "way") {
+			child.properties = [ "step" ];
+		}
 
 		return new Task(child, (this.root ? [this.root] : null));
 	}
@@ -363,6 +375,38 @@ export default class Task {
 	}
 
 	/**
+	 * 設定されているpropertiesで、typeが決定する
+	 * 
+	 * - propertiesに subproject がある → typeは subproject
+	 * - propertiesに milestone がある → typeは milestone
+	 * - propertiesに objective がある → typeは milestone
+	 * - propertiesに exitcriteria がある → typeは requirement
+	 * - propertiesに keyresult がある → typeは requirement
+	 * 
+	 * - typeが subproject
+	 * 		- milestoneとの併用はOK
+	 *	 	- keyresultになることはあってもobjectiveになることはない
+	 *		- 子のdefaultは milestone
+	 * 
+	 */
+	static decideTypeByProperties(properties) {
+
+		if (properties.includes("subproject")) {
+			return "subproject";
+		} else if (properties.includes("milestone") || properties.includes("objective")) {
+			return "milestone";
+		} else if (properties.includes("exitcriteria") || properties.includes("keyresult")) {
+			return "requirement";
+		} else if (properties.includes("issue")) {
+			return "issue";
+		} else if (properties.includes("way")) {
+			return "way";
+		}
+
+		return "todo";
+	}
+
+	/**
 	 * propertyに対応してfieldを、fieldsになければ追加
 	 * ある場合には必須項目化
 	 * 
@@ -371,7 +415,8 @@ export default class Task {
 	 */
 	static dynamicSchema(fields, rawValues) {
 
-		if (rawValues.properties && rawValues.properties.includes("milestone")) {
+		if ((rawValues.type && rawValues.type === "milestone") 
+			|| (rawValues.properties && rawValues.properties.includes("milestone"))) {
 			let isExist = false;
 			fields.forEach(f => {
 				if (f.model === "deadline") {

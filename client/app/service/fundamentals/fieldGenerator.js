@@ -181,7 +181,7 @@ const fields = {
 			, validator: [
 				// validators.date
 				(value, field, entity) => {
-					if (entity.type == "milestone" && (isNil(value) || value === "")) {
+					if (entity.type === "milestone" && (isNil(value) || value === "")) {
 						return [ _("MilestoneRequiresDeadline") ];
 					}
 					return [];

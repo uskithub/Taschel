@@ -12,6 +12,7 @@ export const taskTypes = [
 	{ id: "subproject", name: _("Subproject") }
 	, { id: "milestone", name: _("Milestone") }
 	, { id: "requirement", name: _("Requirement") }
+	, { id: "issue", name: _("Issue") }
 	, { id: "way", name: _("Way") }
 	, { id: "step", name: _("Step") }
 	, { id: "todo", name: _("ToDo") }

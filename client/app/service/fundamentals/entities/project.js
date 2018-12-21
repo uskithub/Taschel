@@ -1,6 +1,6 @@
 import Vue from "vue";
 import Task from "./task";
-import { cloneDeep, isObject, isArray } from "lodash";
+import { cloneDeep, isObject, isArray, isNil } from "lodash";
 import { validators } from "vue-form-generator";
 
 import { projectTypes } from "../../constants";
@@ -132,7 +132,7 @@ const _fields = {
 			, validator: [
 				// validators.date
 				(value, field, entity) => {
-					if (entity.type == "milestone" && (isNil(value) || value === "")) {
+					if (entity.type === "milestone" && (isNil(value) || value === "")) {
 						return [ _("MilestoneRequiresDeadline") ];
 					}
 					return [];
@@ -258,9 +258,7 @@ export default class Project extends Task {
 	// override
 	childTaskFactory(options) {
 		let child = super.childTaskFactory(options);
-
 		child.properties = [ "milestone" ];
-
 		return child;
 	}
 
