@@ -1,7 +1,9 @@
 <!-- // DDD: Presentation -->
 <template lang="pug">
 	.container
-		div
+		ul
+			li(v-for="work in latestWorks", :key="work.id")
+				span {{ work.title }}
 </template>
 
 <script>
@@ -21,6 +23,7 @@
 		}
 		, computed : {
 			...mapGetters([
+				"latestWorks"
 			])
 		}
 		, data() {
@@ -30,6 +33,7 @@
 		, methods : {
 			...mapActions([
 				// Usecases
+				"getTimeline"
 			])
 			// UI Operations
 		}
@@ -37,7 +41,7 @@
 			this.pushCrumb({ id: this._uid, name: _("Timeline") });
 		}
 		, sessionEnsured(me) {
-			
+			this.getTimeline();
 		}
 	};
 </script>

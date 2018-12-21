@@ -1,8 +1,8 @@
 import Project from "../entities/project";
-import Task from "../entities/task";
+import Work from "../entities/work";
 import { INITIALIZE, UPDATE_TIMELINE } from "../mutationTypes";
 import { assign } from "lodash";
-import tasks from "../repositories/rest/tasks";
+import works from "../repositories/rest/works";
 import domainGlue from "../domainGlue";
 
 export default {
@@ -11,7 +11,7 @@ export default {
 		works: []
 	}
 	, getters : {
-		works(state) { return state.works; }
+		latestWorks(state) { return state.works; }
 	}
 	// DDD: Usecases
 	// Vuex: Mutations can change states. It must run synchronously.

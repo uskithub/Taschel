@@ -68,13 +68,13 @@ module.exports = {
 					.then(json => {
 						return this.populateModels(json);
 					});
-				} else {
+				} else if (ctx.params.week) {
 					const userId = ctx.params.user_code ? this.personService.decodeID(ctx.params.user_code) : null;
 					filter = {
 						asignee : userId
 						, week : ctx.params.week
 					};
-					let query = Work.find(filter);					
+					let query = Work.find(filter);
 
 					return ctx.queryPageSort(query).exec()
 					.then(docs => {
@@ -155,6 +155,21 @@ module.exports = {
 							return json;
 						}
 					});
+				} else {
+					// for timeline
+					filter = {
+						
+					};
+
+					let query = Work.find().sort({ updatedAt : -1 }).skip(0).limit(10);
+
+					return ctx.queryPageSort(query).exec()
+					.then(docs => {
+						return this.toJSON(docs);
+					})
+					.then(json => {	
+						return this.populateModels(json);
+					})
 				}
 			}
 		}
