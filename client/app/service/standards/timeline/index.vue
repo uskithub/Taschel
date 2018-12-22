@@ -3,7 +3,21 @@
 	.container
 		ul
 			li(v-for="work in latestWorks", :key="work.id")
-				span {{ work.title }}
+				.media
+					.media-left
+						img.avatar(src="")
+					.media-content
+						strong {{ work.title }}
+						small.text-muted @johndoe - 31m ago
+						p {{ work.description }}
+						p goodSide: {{ work.goodSide }}
+						p badSide: {{ work.badSide }}
+						p improvement: {{ work.improvement }}
+						.functions
+							a(href="#")
+								i.fa.fa-reply
+							a(href="#")
+								i.fa.fa-heart
 </template>
 
 <script>
