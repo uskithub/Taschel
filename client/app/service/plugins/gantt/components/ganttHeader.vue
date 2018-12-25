@@ -1,7 +1,9 @@
 <template lang="pug">
   .vue-gantt-header
     .gantt-row(v-for="(row, idx) in rows", :key="idx")
-      .row-item(:title="obj.title" @click="$emit('header-click', obj)" v-for="(obj, idx) in row", :key="idx", :style="{ width: obj.width + 'px' }") {{ obj.label }}
+      .row-item(v-for="(obj, idx) in row", :title="obj.title", :key="idx", :style="{ width: obj.width + 'px' }"
+        @click="$emit('header-click', obj)"
+      ) {{ obj.label }}
 </template>
 
 <script>

@@ -1,7 +1,7 @@
 <template lang="pug">
 	ul.gantt-container
 		li.treelist-board(v-for="treelist in treelists", :key="treelist.id")
-			span.treelist-board-header
+			.treelist-board-header
 				legend {{ treelist.name }}
 			.drag-options
 			ul.treelist(v-show="!(foldingConditionMap[treelist.id]===false)" data-type="treelist", :data-id="treelist.id"
@@ -210,4 +210,9 @@
 	@import "../assets/style";
 </style>
 <style lang="scss" scoped>
+
+	.treelist-board-header {
+		background: #CCC;
+	}
+
 </style>

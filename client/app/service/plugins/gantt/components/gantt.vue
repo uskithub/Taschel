@@ -12,10 +12,10 @@
 					@addIconDidPush="addIconDidPush"
 					@toggleFolding="didToggleFolding"
 				)
-			.gantt-column(@wheel.prevent="handleWheel", :style="{ width: cellsCount * 24 }")
+			.gantt-column(@wheel.prevent="handleWheel", :style="{ width: numberOfColumns * 24 }")
 				gantt-header(:rows="header" @header-click="handleHeaderClick")
 				gantt-body(:treelists="treenodes", :foldingConditionMap="foldingConditionMap")
-		gantt-footer(:scales="scales", :selected="selectedScaleIdx", :startDate="min", :endDate="max", :step="msInCell", :period="viewportStart"
+		gantt-footer(:scales="scales", :selected="selectedScaleIdx", :startDate="min", :endDate="max", :step="msInCell", :period="startOfTerm"
 			@scale-change="handleScaleChange"
 			@period-change="handlePeriodChange"
 		)
@@ -47,11 +47,11 @@
 	const defaultOptions = {
 		cellWidth: 24
 		, scales: [
-			{ scale: 'months', steps: [1] }
-			, { scale: 'days', steps: [1] }
-			, { scale: 'hours', steps: [12, 8, 6, 3, 1] }
-			, { scale: 'minutes', steps: [30, 15, 5, 1] }
-			, { scale: 'seconds', steps: [30, 15, 5, 1] }
+			{ scale: 'days', steps: [1] }
+			, { scale: 'months', steps: [1] }
+			// , { scale: 'hours', steps: [12, 8, 6, 3, 1] }
+			// , { scale: 'minutes', steps: [30, 15, 5, 1] }
+			// , { scale: 'seconds', steps: [30, 15, 5, 1] }
 		]
 	};
 
@@ -73,8 +73,8 @@
 		}
 		, data() {
 			return {
-				viewportStart: 0
-				, cellsCount: 0
+				startOfTerm: null
+				, numberOfColumns: 0
 				, scales: createOptions(defaultOptions.scales)
 				, scale: defaultOptions.scales[0].scale
 				, step: defaultOptions.scales[0].steps[0]
@@ -84,6 +84,22 @@
 			...mapGetters([
 				"foldingConditionMap"
 			])
+			, visibleTerm() {
+				return calcViewport(this.startOfTerm, this.scale, this.step, this.numberOfColumns);
+			}
+			, earliestDate() {
+				let _earliest = moment().add(-1, "m");
+
+				// TODO: treenodeをなめて比べる
+				return _earliest;
+			}
+			, latestDate() {
+				let _latest = moment().add(2, "m");
+
+				// TODO: treenodeをなめて比べる
+				return _latest;
+			}
+			// 以下、未整理
 			, parsedProps() {
 				const { rows } = this.data;
 				return transformInputValues(rows);
@@ -104,26 +120,27 @@
 				return this.parsedProps.tasks;
 			}
 			, body() {
-				return calcBody(this.viewport, this.values, this.msInCell, defaultOptions.cellWidth);
+				return calcBody(this.visibleTerm, this.values, this.msInCell, defaultOptions.cellWidth);
 			}
 			, header() {
-				return calcHeader(this.viewport, this.scale, this.step, defaultOptions.cellWidth);
+				let h = calcHeader(this.visibleTerm, this.scale, this.step, defaultOptions.cellWidth);
+				console.log("header", h);
+				return h;
 			}
 			, max() {
 				return getMaxDate(
 					getEndOfScale(this.scale, this.endDate)
-					- getViewportInMilliseconds(this.endDate, this.scale, this.step, this.cellsCount),
+					- getViewportInMilliseconds(this.endDate, this.scale, this.step, this.numberOfColumns),
 					this.min, this.msInCell,
 				);
 			}
 			, min() {
-				return getMinDate(this.startDate, this.scale);
+				let r = getMinDate(this.startDate, this.scale);
+				console.log("min:", r, this.scale);
+				return r;
 			}
 			, msInCell() {
 				return getMsInScale(this.scale) * this.step;
-			}
-			, viewport() {
-				return calcViewport(this.viewportStart, this.scale, this.step, this.cellsCount);
 			}
 			, selectedScaleIdx() {
 				return this.scales.findIndex(el => el === `${this.scale} ${this.step}`);
@@ -132,36 +149,39 @@
 		, methods: {
 			...mapMutations([
 				"updateFoldingCondition"
-			]),
-			setCellsCount() {
-				this.cellsCount = Math.ceil((this.$el.clientWidth - this.$refs.legend.$el.clientWidth) / defaultOptions.cellWidth);
+			])
+			// for Presentation
+			, calculateColumns() {
+				this.numberOfColumns = Math.ceil((this.$el.clientWidth - this.$refs.legend.$el.clientWidth) / defaultOptions.cellWidth);
 			}
+
+			// 以下、未整理
 			, handleScaleChange(e) {
 				const [scale, step] = e.target.value.split(' ');
 				if (this.scale !== scale) this.scale = scale;
 				if (this.step !== step) this.step = step;
-				this.viewportStart = normalizeDate(this.viewportStart, this.scale, this.step);
-				if (this.viewportStart < this.min) this.viewportStart = this.min;
-				if (this.viewportStart > this.max) this.viewportStart = this.max;
+				this.startOfTerm = normalizeDate(this.startOfTerm, this.scale, this.step);
+				if (this.startOfTerm < this.min) this.startOfTerm = this.min;
+				if (this.startOfTerm > this.max) this.startOfTerm = this.max;
 			}
 			, handlePeriodChange(e) {
-				this.viewportStart = parseInt(e.target.value, 10);
+				this.startOfTerm = parseInt(e.target.value, 10);
 			}
 			, handleWheel(e) {
 				const newViewportStart = e.deltaY > 0
-					? this.viewportStart + this.msInCell
-					: this.viewportStart - this.msInCell;
+					? this.startOfTerm + this.msInCell
+					: this.startOfTerm - this.msInCell;
 				if (e.deltaY > 0) {
 					if (newViewportStart < this.max) {
-					this.viewportStart = newViewportStart;
+					this.startOfTerm = newViewportStart;
 					} else {
-					this.viewportStart = this.max;
+					this.startOfTerm = this.max;
 					}
 				} else if (e.deltaY < 0) {
 					if (newViewportStart > this.min) {
-					this.viewportStart = newViewportStart;
+					this.startOfTerm = newViewportStart;
 					} else {
-					this.viewportStart = this.min;
+					this.startOfTerm = this.min;
 					}
 				}
 			}
@@ -169,14 +189,14 @@
 				if (this.scales.includes(`${scale} 1`)) {
 					this.scale = scale;
 					this.step = 1;
-					if (date > this.max) this.viewportStart = this.max;
-					else if (date < this.min) this.viewportStart = this.min;
-					else this.viewportStart = date;
+					if (date > this.max) this.startOfTerm = this.max;
+					else if (date < this.min) this.startOfTerm = this.min;
+					else this.startOfTerm = date;
 				}
 			}
 			, handleTaskClick(start) {
-				const viewportStart = normalizeDate(start, this.scale, this.step);
-				this.viewportStart = Math.min(viewportStart, this.max);
+				const startOfTerm = normalizeDate(start, this.scale, this.step);
+				this.startOfTerm = Math.min(startOfTerm, this.max);
 			}
 			// Interfacial Operations
 			, didArrangeTask({ treenode, from, to, index }) {
@@ -195,17 +215,17 @@
 			}
 		}
 		, mounted() {
-			window.addEventListener('resize', this.setCellsCount);
-			this.setCellsCount();
-			const maxScaleIdx = calcMaxScale(this.startDate, this.endDate, this.cellsCount, this.scales);
+			window.addEventListener("resize", this.calculateColumns);
+			this.calculateColumns();
+			const maxScaleIdx = calcMaxScale(this.startDate, this.endDate, this.numberOfColumns, this.scales);
 			const [scale, step] = this.scales[maxScaleIdx].split(' ');
 			this.scale = scale;
 			this.step = step;
 			this.scales = this.scales.filter((_, idx) => idx >= maxScaleIdx);
-			this.viewportStart = this.min;
+			this.startOfTerm = this.min;
 		}
 		, beforeDestroy() {
-			window.removeEventListener('resize', this.setCellsCount);
+			window.removeEventListener("resize", this.calculateColumns);
 		}
 	};
 </script>
