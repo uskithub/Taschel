@@ -21,6 +21,7 @@ import Projects2 from "../service/standards/projects/index";
 import Weekly2 from "../service/standards/weekly/index";
 
 import DailyLoop from "../service/plugins/dailyLoop/interface/index";
+import TimeLine from "../service/standards/timeline/index";
 import Gantt2 from "../service/plugins/gantt/interface/index";
 import Kanban2 from "../service/plugins/kanban/interface/index";
 
@@ -50,6 +51,6 @@ export default new VueRouter({
 		, { path: "/v2/projects", name: Projects2.name, component: Projects2 }
 		, { path: "/v2/weekly", name: Weekly2.name, component: Weekly2 }
 		, { path: "/v2/gantt", component: Gantt2 }
-		, { path: "/v2/kanban", component: Kanban2 }
+		, { path: "/v2/timeline", component: TimeLine }
 	]
 });

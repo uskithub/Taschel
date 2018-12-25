@@ -27,6 +27,12 @@
 							i.fa.fa-home
 						span.label {{ "DailyLoop" | i18n }}
 
+				router-link(tag="li", to="/v2/timeline")
+					a(:title="_('Timeline')")
+						span.icon
+							i.fa.fa-home
+						span.label {{ "Timeline" | i18n }}
+
 				router-link(tag="li", to="/v2/gantt")
 					a(:title="_('Gantt2')")
 						span.icon

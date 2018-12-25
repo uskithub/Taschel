@@ -50,3 +50,6 @@ export const UPDATE_REVIEW      = "UPDATE_REVIEW";
 export const LOAD 				= "LOAD";
 export const ADD				= "ADD";
 export const SET_CURRENT		= "SET_CURRENT";
+
+// feedback
+export const UPDATE_TIMELINE	= "UPDATE_TIMELINE";
