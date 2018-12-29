@@ -59,7 +59,8 @@ const _fields = {
 			, default: []
 			, set(rawValues, newValue) {
 				rawValues.type = Task.decideTypeByProperties(newValue);
-				rawValues.properties = newValue;
+				rawValues.properties.splice(0);
+				rawValues.properties.push(...newValue);
 			}
 		}
 	}
@@ -141,6 +142,28 @@ const _fields = {
 			]
 		}
 	}
+	, schedule: {
+		label: _("Schedule")
+		, table: {}
+		, form: {
+			type: "myDateTimePicker"
+			, placeholder: _("Schedule")
+			, format: "YYYY-MM-DD"
+			, dateTimePickerOptions: {
+				format: "YYYY-MM-DD"
+				, showClear: true
+			}
+			, validator: [
+				// validators.date
+				(value, field, entity) => {
+					if (entity.type === "milestone" && (isNil(value) || value === "")) {
+						return [ _("MilestoneRequiresSchedule") ];
+					}
+					return [];
+				}
+			]
+		}
+	}
 	, timeframe: {
 		label: _("Timeframe")
 		, table: {}
@@ -148,6 +171,7 @@ const _fields = {
 			type: "rangeSlider"
 			, min: 0
 			, max: 90
+			, default: 1
 			, validator: validators.integer
 		}
 	}
@@ -417,16 +441,18 @@ export default class Task {
 
 		if ((rawValues.type && rawValues.type === "milestone") 
 			|| (rawValues.properties && rawValues.properties.includes("milestone"))) {
-			let isExist = false;
-			fields.forEach(f => {
-				if (f.model === "deadline") {
-					f.required = true;
-					isExist = true;
-				}
-			});
-			if (!isExist) {
+			if (fields.find(f => f.model === "deadline") === undefined) {
 				let f = Task.createFormSchema(["deadline"]).pop();
 				f.required = true;
+				fields.push(f);
+			}
+		} else {
+			if (fields.find(f => f.model === "schedule") === undefined) {
+				let f = Task.createFormSchema(["schedule"]).pop();
+				fields.push(f);
+			}
+			if (fields.find(f => f.model === "timeframe") === undefined) {
+				let f = Task.createFormSchema(["timeframe"]).pop();
 				fields.push(f);
 			}
 		}

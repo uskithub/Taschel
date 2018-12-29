@@ -60,6 +60,9 @@ let TaskSchema = new Schema({
 		type: Number
 		, "default": -1 // this means "not set yet"
 	}
+	, schedule: {
+		type: Date
+	}
 	// projectのid
 	, root : {
 		// おそらくこれでもOK

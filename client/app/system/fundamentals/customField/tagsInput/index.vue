@@ -15,9 +15,7 @@
 			VueTagsInput
 		}
 		, data() {
-			return {
-				tags: []
-			};
+			return {};
 		}
 		, methods: {
 			
