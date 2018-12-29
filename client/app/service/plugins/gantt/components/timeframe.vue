@@ -1,14 +1,14 @@
 <template lang="pug">
-	li.treenode(:draggable="draggable", :key="treenode.id", :data-id="treenode.id"
-		@click="$emit('click', $event, treenode)"
-		@dragstart="$emit('dragstart', $event, treenode)"
-		@dragend="$emit('dragend', $event, treenode)"
+	li.treenode(:draggable="draggable", :key="timeframe.id", :data-id="timeframe.id"
+		@click="$emit('click', $event, timeframe)"
+		@dragstart="$emit('dragstart', $event, timeframe)"
+		@dragend="$emit('dragend', $event, timeframe)"
 	)
-		slot(:name="treenode.name")
+		slot(:name="timeframe.name")
 			.media-content
 				legend 
-				ul.treelist(v-show="!(foldingConditionMap[treenode.id]===false)" data-type="treenode", :data-id="treenode.id")
-					timeframe(v-for="childnode in treenode.subtree", :treenode="childnode", :foldingConditionMap="foldingConditionMap", :key="childnode.id"
+				ul.treelist(v-show="!(foldingConditionMap[timeframe.id]===false)" data-type="timeframe", :data-id="timeframe.id")
+					timeframe(v-for="childnode in timeframe.subtree", :timeframe="childnode", :foldingConditionMap="foldingConditionMap", :key="childnode.id"
 						@dragstart="ondragstart"
 						@dragend="ondragend"
 					)
@@ -25,9 +25,9 @@
 	//  - kanban emits click events with the task.
 
 	export default {
-		name: "Treenode"
+		name: "Timeframe"
         , props: {
-			treenode: {
+			timeframe: {
 				type: Object
 				, validator: (value) => {
 					if (value.name === undefined || value.id === undefined) return false;
@@ -43,12 +43,12 @@
 			}
 		}
         , methods: {
-            ondragstart(e, treenode) {
-				this.$emit("dragstart", e, treenode);
+            ondragstart(e, timeframe) {
+				this.$emit("dragstart", e, timeframe);
 				e.stopPropagation();
 			}
-			, ondragend(e, treenode) {
-				this.$emit("dragend", e, treenode);
+			, ondragend(e, timeframe) {
+				this.$emit("dragend", e, timeframe);
 				e.stopPropagation();
 			}
         }

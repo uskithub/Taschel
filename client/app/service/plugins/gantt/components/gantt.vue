@@ -13,8 +13,8 @@
 					@toggleFolding="didToggleFolding"
 				)
 			.gantt-column(@wheel.prevent="handleWheel", :style="{ width: numberOfColumns * 24 }")
-				gantt-header(:rows="header" @header-click="handleHeaderClick")
-				gantt-body(:treelists="treenodes", :foldingConditionMap="foldingConditionMap")
+				gantt-header(:rows="headerRows" @header-click="handleHeaderClick")
+				gantt-body(:rows="bodyRows", :foldingConditionMap="foldingConditionMap")
 		gantt-footer(:scales="scales", :selected="selectedScaleIdx", :startDate="min", :endDate="max", :step="msInCell", :period="startOfTerm"
 			@scale-change="handleScaleChange"
 			@period-change="handlePeriodChange"
@@ -24,7 +24,6 @@
 <script>
 	import Vue from "vue";
 	import {
-		calcBody,
 		calcHeader,
 		calcMaxScale,
 		calcViewport,
@@ -40,7 +39,11 @@
 	import GanttHeader from "./ganttHeader";
 	import GanttBody from "./ganttBody";
 	import GanttFooter from "./ganttFooter";
+	
+	import Timeframe from "../timeframe.js";
 
+	import moment from "moment";
+	
 	import { mapMutations, mapGetters } from "vuex";
 	import store from "../store.js";
 
@@ -84,20 +87,117 @@
 			...mapGetters([
 				"foldingConditionMap"
 			])
+			// { startDate, endDate, days }
 			, visibleTerm() {
-				return calcViewport(this.startOfTerm, this.scale, this.step, this.numberOfColumns);
+				const _startOfTerm = this.startOfTerm !== null ? this.startOfTerm.valueOf() : 0;
+				const { startDate, endDate } = calcViewport(_startOfTerm, this.scale, this.step, this.numberOfColumns);
+				const start = moment(startDate);
+				const end = moment(endDate);
+				return { start, end, days: end.diff(start, "days")};
 			}
 			, earliestDate() {
-				let _earliest = moment().add(-1, "m");
+				let _earliest = moment();
 
 				// TODO: treenodeをなめて比べる
 				return _earliest;
 			}
 			, latestDate() {
-				let _latest = moment().add(2, "m");
+				let _latest = moment().add(2, "month");
 
 				// TODO: treenodeをなめて比べる
 				return _latest;
+			}
+			, headerRows() {
+				let _headers = [];
+				const { start, end, days } = this.visibleTerm;
+				
+				// year header
+				const sy = start.year();
+				const ey = end.year();
+				let yCols = 0;
+				
+				let yColumns = [];
+				let mColumns = [];
+				let dColumns = [];
+
+				do {
+					const _yStart = (yCols === 0) ? start : moment(start).add(yCols, "year").startOf("year");
+					const _yEnd = (sy + yCols < ey) ? moment(start).add(yCols, "year").endOf("year") : end;
+					const _yDays = _yEnd.diff(_yStart, "days") + 1;
+
+					yColumns.push({
+						label: `${sy + yCols} 年`
+						, title: `y:${sy + yCols}`
+						, start: _yStart
+						, end: _yEnd
+						, days: _yDays
+						, width: defaultOptions.cellWidth * _yDays
+					});
+
+					// month header
+					const sm = _yStart.month();
+					const em = _yEnd.month();
+					let mCols = 0;
+
+					do {
+						const _mStart = (mCols === 0) ? _yStart : moment(_yStart).add(mCols, "month").startOf("month");
+						const _mEnd = (sm + mCols < em) ? moment(_yStart).add(mCols, "month").endOf("month") : _yEnd;
+						const _mDays = _mEnd.diff(_mStart, "days") + 1;
+
+						mColumns.push({
+							label: `${sm + mCols + 1} 月`
+							, title: `y:${sy + yCols}_m:${sm + mCols + 1}`
+							, start: _mStart
+							, end: _mEnd
+							, days: _mDays
+							, width: defaultOptions.cellWidth * _mDays
+						});
+
+						// day header
+						const sd = _mStart.date();
+						const ed = _mEnd.date();
+						let dCols = 0;
+
+						do {
+							const _day = (dCols === 0) ? _mStart : moment(_mStart).add(dCols, "day");
+
+							dColumns.push({
+								label: `${sd + dCols}`
+								, title: `y:${sy + yCols}_m:${sm + mCols}_d:${sd + dCols}`
+								, start: _day
+								, end: _day
+								, days: 1
+								, width: defaultOptions.cellWidth
+							});
+
+							dCols += 1; 
+						} while ( sd + dCols <= ed);
+
+						mCols += 1; 
+					} while ( sm + mCols <= em);
+
+					yCols += 1; 
+				} while ( sy + yCols <= ey);
+				
+				_headers.push(yColumns);
+				_headers.push(mColumns);
+				_headers.push(dColumns);
+
+				return _headers;				
+			}
+			, bodyRows() {
+				return this.treenodes.map(n => new Timeframe(n));
+				// let _makeTimeframeRecursively = (treenodes) => {
+				// 	return treenodes.map(treenode => {
+				// 		treenode.name = `■ ${treenode.name}`;
+				// 		if ((treenode.subtree !== null || treenode.subtree !== undefined) && treenode.subtree.length > 0) {
+				// 			treenode.subtree = _makeTimeframeRecursively(treenode.subtree);
+				// 		}
+				// 		return treenode;
+				// 	});
+				// };
+				// let ret = _makeTimeframeRecursively(this.treenodes);
+				// return ret;
 			}
 			// 以下、未整理
 			, parsedProps() {
@@ -119,14 +219,6 @@
 			, tasks() {
 				return this.parsedProps.tasks;
 			}
-			, body() {
-				return calcBody(this.visibleTerm, this.values, this.msInCell, defaultOptions.cellWidth);
-			}
-			, header() {
-				let h = calcHeader(this.visibleTerm, this.scale, this.step, defaultOptions.cellWidth);
-				console.log("header", h);
-				return h;
-			}
 			, max() {
 				return getMaxDate(
 					getEndOfScale(this.scale, this.endDate)
@@ -136,7 +228,7 @@
 			}
 			, min() {
 				let r = getMinDate(this.startDate, this.scale);
-				console.log("min:", r, this.scale);
+				console.log("min:", r, moment(r));
 				return r;
 			}
 			, msInCell() {
@@ -222,7 +314,7 @@
 			this.scale = scale;
 			this.step = step;
 			this.scales = this.scales.filter((_, idx) => idx >= maxScaleIdx);
-			this.startOfTerm = this.min;
+			this.startOfTerm = this.earliestDate;
 		}
 		, beforeDestroy() {
 			window.removeEventListener("resize", this.calculateColumns);

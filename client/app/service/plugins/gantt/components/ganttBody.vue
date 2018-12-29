@@ -1,13 +1,13 @@
 <template lang="pug">
 	ul.gantt-container
-		li.treelist-board(v-for="treelist in treelists", :key="treelist.id")
+		li.treelist-board(v-for="treelist in rows", :key="treelist.id")
 			.treelist-board-header
 				legend {{ treelist.name }}
 			.drag-options
 			ul.treelist(v-show="!(foldingConditionMap[treelist.id]===false)" data-type="treelist", :data-id="treelist.id"
 				@dragenter="ondragenter($event, treelist)"
 			)
-				timeframe(v-for="treenode in treelist.subtree", :treenode="treenode", :foldingConditionMap="foldingConditionMap", :key="treenode.id", :draggable="false"
+				timeframe(v-for="timeframe in treelist.subtree", :timeframe="timeframe", :foldingConditionMap="foldingConditionMap", :key="timeframe.id", :draggable="false"
 					@dragstart="ondragstart"
 					@dragend="ondragend"
 				)
@@ -51,7 +51,7 @@
 	export default {
 		name: "Treelist"
         , props: {
-			treelists : {
+			rows : {
 				type: Array
 				, validator: (value) => { return true; } // TODO
 			}

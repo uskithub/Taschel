@@ -261,16 +261,16 @@ export default class Task {
 	set properties(properties) { return this._rawValues.properties = properties; }
 
 	get shortname() { return this._rawValues.shortname; }
-	set shortname(shortname) { return this._rawValues.shortname = shortname; }
+	set shortname(shortname) { this._rawValues.shortname = shortname; }
 
 	get name() { return this._rawValues.name; }
-	set name(name) { return this._rawValues.name = name; }
+	set name(name) { this._rawValues.name = name; }
 
 	get purpose() { return this._rawValues.purpose; }
-	set purpose(purpose) { return this._rawValues.purpose = purpose; }
+	set purpose(purpose) { this._rawValues.purpose = purpose; }
 
 	get goal() { return this._rawValues.goal; }
-	set goal(goal) { return this._rawValues.goal = goal; }
+	set goal(goal) { this._rawValues.goal = goal; }
 
 	get root() { return this._root; }
 	get parent() { return this._rawValues.parent; }
