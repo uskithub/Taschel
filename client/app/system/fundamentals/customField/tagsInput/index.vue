@@ -1,5 +1,7 @@
 <template lang="pug">
-	vue-tags-input(v-model="value", :autocompleteItems="schema.values", :addOnlyFromAutocomplete="schema.values != undefined", :autocompleteAlwaysOpen="schema.values != undefined")
+	vue-tags-input(v-model="value", :autocompleteItems="schema.values", :addOnlyFromAutocomplete="schema.values != undefined", :autocompleteAlwaysOpen="schema.values != undefined"
+		@tags-changed="didTagChanged"
+	)
 </template>
 
 <script>
@@ -18,7 +20,9 @@
 			return {};
 		}
 		, methods: {
-			
+			didTagChanged(tags) {
+				this.value = tags.map(tag => tag.id);
+			}
 		}
 		, created() {
 			console.log("● value", this.value);

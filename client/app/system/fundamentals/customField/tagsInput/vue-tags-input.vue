@@ -342,7 +342,6 @@
 				if (this.disabled) return;
 				this.deletionMark = null;
 				clearTimeout(this.deletionMarkTime);
-				this.value.splice(index, 1);
 				this.tagsCopy.splice(index, 1);
 				this.$emit("tags-changed", this.tagsCopy);
 			}
