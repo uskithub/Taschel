@@ -20,6 +20,7 @@
 <script>
 	import Vue from "vue";
 	import BaseEditing from "../../fundamentals/mixins/baseEditing";
+	import Project from "../../fundamentals/entities/project";
 	import { mapGetters, mapMutations, mapActions } from "vuex";
 	import { schema as schemaUtils } from "vue-form-generator";
 	import { cloneDeep } from "lodash";
@@ -41,14 +42,10 @@
 			}
 		}
 		, data() {
-			// MIGRATION v1->2
-			let rawValues = this.entity ? this.entity.rawValues : schemaUtils.createDefaultObject(this.schema);
-			if (rawValues.projectType === undefined) {
-				rawValues.projectType = projectTypes[1].id;
-			}
+			let _entity = this.entity || Project.newProjectFactory();
 
 			return {
-				rawValues: rawValues
+				rawValues: _entity.rawValues
 				, options: {}
 			};
 		}

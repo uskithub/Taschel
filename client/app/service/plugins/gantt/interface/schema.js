@@ -5,7 +5,7 @@ const _ = Vue.prototype._;
 
 export default {
 	form : { 
-		fields : [ "properties", "name", "purpose", "goal"]
+		fields : [ "type", "properties", "name", "purpose", "goal", "deadline"]
 	}
 	, data : {
 		"rows": [

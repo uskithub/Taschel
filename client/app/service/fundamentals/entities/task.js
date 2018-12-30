@@ -3,7 +3,8 @@ import moment from "moment";
 import { cloneDeep, isObject, isArray, isNil } from "lodash";
 import { validators } from "vue-form-generator";
 
-import { taskProperties } from "../../constants";
+
+import { taskTypes, taskProperties } from "../../constants";
 
 const _ = Vue.prototype._;
 
@@ -28,6 +29,21 @@ const _fields = {
 				else
 					return _("AutomaticNumbering");
 			}
+		}
+	}
+	, type: {
+		label: _("TaskTypes")
+		, table: {
+			values: taskTypes
+			, formatter(value, model) {
+				let type = find(taskTypes, (type) => type.id == value);
+				return type ? type.name : value;
+			}
+		}
+		, form: {
+			type: "select"
+			, required: true
+			, values: taskTypes
 		}
 	}
 	, properties: {
@@ -322,18 +338,16 @@ export default class Task {
 
 		console.log("type?", this.type);
 
-		if (this.type === "subproject") {
-			child.properties = [ "milestone" ];
-		} else if (this.type === "milestone" && this.properties.includes("objective")) {
-			child.properties = [ "keyresult" ];
+		if (this.type === "project" || this.type === "subproject") {
+			child.type = "milestone";
 		} else if (this.type === "milestone") {
-			child.properties = [ "exitcriteria" ];
-		} else if (this.type === "requirement") {
-			child.properties = [ "way" ];
-		} else if (this.type === "issue") {
-			child.properties = [ "way" ];
+			child.type = "requirement";
+		} else if (this.type === "requirement" || this.type === "issue") {
+			child.type = "way";
 		} else if (this.type === "way") {
-			child.properties = [ "step" ];
+			child.type = "step";
+		} else {
+			child.type =  "todo";
 		}
 
 		return new Task(child, (this.root ? [this.root] : null));
@@ -381,19 +395,37 @@ export default class Task {
 			});
 		} else {
 			return fieldSet.map(f => {
-				if ( _fields[f] === undefined ) {
-					throw new Error(`Missing the definition about "${f}" in filed at Task class!`);
-				} else if ( _fields[f].form === undefined ) {
-					throw new Error(`Missing the definition about "${f}.form" in filed at Task class!`);
-				}
-				let field = cloneDeep(_fields[f]);
-				if (field.form.label === undefined) {
-					field.form.label = field.label;
-				}
-				if (field.form.model === undefined) {
-					field.form.model = f;
-				}
-				return field.form; 
+				if (isObject(f)) {
+					if ( _fields[f.key] === undefined ) {
+						throw new Error(`Missing the definition about "${f.key}" in filed at Task class!`);
+					} else if ( _fields[f.key].form === undefined ) {
+						throw new Error(`Missing the definition about "${f.key}.form" in filed at Task class!`);
+					}
+					let field = cloneDeep(_fields[f.key]);
+					field.form = Object.assign(field.form, f.options);
+					
+					if (field.form.label === undefined) {
+						field.form.label = field.label;
+					}
+					if (field.form.model === undefined) {
+						field.form.model = f.key;
+					}
+					return field.form;
+				} else {
+					if ( _fields[f] === undefined ) {
+						throw new Error(`Missing the definition about "${f}" in filed at Task class!`);
+					} else if ( _fields[f].form === undefined ) {
+						throw new Error(`Missing the definition about "${f}.form" in filed at Task class!`);
+					}
+					let field = cloneDeep(_fields[f]);
+					if (field.form.label === undefined) {
+						field.form.label = field.label;
+					}
+					if (field.form.model === undefined) {
+						field.form.model = f;
+					}
+					return field.form;
+				} 
 			});
 		}
 	}
@@ -437,26 +469,40 @@ export default class Task {
 	 * @param {*} fields 
 	 * @param {*} properties 
 	 */
-	static dynamicSchema(fields, rawValues) {
-
-		if ((rawValues.type && rawValues.type === "milestone") 
-			|| (rawValues.properties && rawValues.properties.includes("milestone"))) {
-			if (fields.find(f => f.model === "deadline") === undefined) {
-				let f = Task.createFormSchema(["deadline"]).pop();
-				f.required = true;
-				fields.push(f);
-			}
-		} else {
-			if (fields.find(f => f.model === "schedule") === undefined) {
-				let f = Task.createFormSchema(["schedule"]).pop();
-				fields.push(f);
-			}
-			if (fields.find(f => f.model === "timeframe") === undefined) {
-				let f = Task.createFormSchema(["timeframe"]).pop();
-				fields.push(f);
-			}
+	static dynamicSchema(rawValues) {
+		let fields = [ { key: "type" }, { key: "name" }, { key: "purpose" }, { key: "goal" } ];
+		
+		switch (rawValues.type) {
+		case "subproject":
+			fields.push({ key: "deadline"});
+			break;
+		case "milestone":
+			fields.push({ key: "deadline", options: { required: true }});
+			fields.push({ key: "timeframe", options: { readonly: true }});
+			break;
+		case "requirement":
+			fields.push({ key: "deadline"});
+			break;
+		case "issue":
+			fields.push({ key: "deadline"});
+			fields.push({ key: "deadline", options: { required: true }});
+			break;
+		case "way":
+			fields.push({ key: "deadline"});
+			break;
+		case "step":
+			fields.push({ key: "deadline", options: { readonly: true }});
+			fields.push({ key: "timeframe", options: { required: true }});
+			break;
+		case "todo":
+			fields.push({ key: "deadline", options: { required: true }});
+			fields.push({ key: "timeframe", options: { required: true }});
+			break;
+		default:
+			fields.push({ key: "deadline"});
+			break;
 		}
 
-		return fields;
+		return Task.createFormSchema(fields);
 	}
 }

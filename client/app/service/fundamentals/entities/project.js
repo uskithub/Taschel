@@ -324,4 +324,12 @@ export default class Project extends Task {
 			});
 		}
 	}
+
+	static newProjectFactory(options) {
+		let newProject = Object.assign({
+			type: "project"
+			, children: []
+		}, options);
+		return new Project(newProject);
+	}
 }

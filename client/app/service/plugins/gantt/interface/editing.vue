@@ -48,13 +48,9 @@
 				type: Object
 				, validator: (value) => { return true; } // TODO
 			}
-			, schema : {
-				type: Object
-				, validator: (value) => { return true; } // TODO
-			}
 		}
 		, data() {
-			let _entity = this.entity || this.parent.childTaskFactory(schemaUtils.createDefaultObject(this.schema));
+			let _entity = this.entity || this.parent.childTaskFactory();
 
 			return {
 				rawValues: _entity.rawValues
@@ -64,11 +60,11 @@
 		, computed: {
 			isNewEntity() { return this.entity === null; }
             , header() { return (this.entity ? this.entity.name : (this.parent ? `${this.parent.name} にタスクを追加` : "新規作成")); }
-            , dynamicSchema() {
-                let _schema = cloneDeep(this.schema);
-                _schema.fields = Task.dynamicSchema(_schema.fields, this.rawValues);
-                return _schema;
-            }
+            , dynamicSchema() { 
+				let schema = {};
+				schema.fields = Task.dynamicSchema(this.rawValues)
+				return schema;
+			}
 			, treenodes() { return [this.taskTree]; }
 		}
 		, methods : {
