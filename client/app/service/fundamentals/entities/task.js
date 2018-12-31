@@ -150,8 +150,8 @@ const _fields = {
 			, validator: [
 				// validators.date
 				(value, field, entity) => {
-					if (entity.type === "milestone" && (isNil(value) || value === "")) {
-						return [ _("MilestoneRequiresDeadline") ];
+					if (field.required && (isNil(value) || value === "")) {
+						return [ _("DeadlineRequired") ];
 					}
 					return [];
 				}
@@ -172,8 +172,8 @@ const _fields = {
 			, validator: [
 				// validators.date
 				(value, field, entity) => {
-					if (entity.type === "milestone" && (isNil(value) || value === "")) {
-						return [ _("MilestoneRequiresSchedule") ];
+					if (field.required && (isNil(value) || value === "")) {
+						return [ _("ScheduleRequired") ];
 					}
 					return [];
 				}
@@ -188,7 +188,15 @@ const _fields = {
 			, min: 0
 			, max: 90
 			, default: 1
-			, validator: validators.integer
+			, validator: [
+				validators.integer
+				, (value, field, entity) => {
+						if (field.required && value === 0) {
+							return [ _("TimeframeRequired") ];
+						}
+						return [];
+					}
+			]
 		}
 	}
 	, closingComment: {
@@ -395,37 +403,19 @@ export default class Task {
 			});
 		} else {
 			return fieldSet.map(f => {
-				if (isObject(f)) {
-					if ( _fields[f.key] === undefined ) {
-						throw new Error(`Missing the definition about "${f.key}" in filed at Task class!`);
-					} else if ( _fields[f.key].form === undefined ) {
-						throw new Error(`Missing the definition about "${f.key}.form" in filed at Task class!`);
-					}
-					let field = cloneDeep(_fields[f.key]);
-					field.form = Object.assign(field.form, f.options);
-					
-					if (field.form.label === undefined) {
-						field.form.label = field.label;
-					}
-					if (field.form.model === undefined) {
-						field.form.model = f.key;
-					}
-					return field.form;
-				} else {
-					if ( _fields[f] === undefined ) {
-						throw new Error(`Missing the definition about "${f}" in filed at Task class!`);
-					} else if ( _fields[f].form === undefined ) {
-						throw new Error(`Missing the definition about "${f}.form" in filed at Task class!`);
-					}
-					let field = cloneDeep(_fields[f]);
-					if (field.form.label === undefined) {
-						field.form.label = field.label;
-					}
-					if (field.form.model === undefined) {
-						field.form.model = f;
-					}
-					return field.form;
-				} 
+				if ( _fields[f] === undefined ) {
+					throw new Error(`Missing the definition about "${f}" in filed at Task class!`);
+				} else if ( _fields[f].form === undefined ) {
+					throw new Error(`Missing the definition about "${f}.form" in filed at Task class!`);
+				}
+				let field = cloneDeep(_fields[f]);
+				if (field.form.label === undefined) {
+					field.form.label = field.label;
+				}
+				if (field.form.model === undefined) {
+					field.form.model = f;
+				}
+				return field.form;
 			});
 		}
 	}
@@ -470,39 +460,59 @@ export default class Task {
 	 * @param {*} properties 
 	 */
 	static dynamicSchema(rawValues) {
-		let fields = [ { key: "type" }, { key: "name" }, { key: "purpose" }, { key: "goal" } ];
+		let fieldSet = { 
+			type: { required: true }
+			, name: { required: true }
+			, purpose: { required: true }
+			, goal: { required: true }
+			, description: { required: false }
+			, deadline: { required: false } 
+			, timeframe: { required: false } 
+			, schedule: { required: false }
+		};
 		
 		switch (rawValues.type) {
 		case "subproject":
-			fields.push({ key: "deadline"});
+			fieldSet.deadline.required = true;
 			break;
 		case "milestone":
-			fields.push({ key: "deadline", options: { required: true }});
-			fields.push({ key: "timeframe", options: { readonly: true }});
+			fieldSet.deadline.required = true;
+			fieldSet.timeframe.readonly = true;
 			break;
 		case "requirement":
-			fields.push({ key: "deadline"});
 			break;
 		case "issue":
-			fields.push({ key: "deadline"});
-			fields.push({ key: "deadline", options: { required: true }});
+			fieldSet.deadline.required = true;
 			break;
 		case "way":
-			fields.push({ key: "deadline"});
 			break;
 		case "step":
-			fields.push({ key: "deadline", options: { readonly: true }});
-			fields.push({ key: "timeframe", options: { required: true }});
+			fieldSet.deadline.required = true;
+			fieldSet.timeframe.readonly = true;
 			break;
 		case "todo":
-			fields.push({ key: "deadline", options: { required: true }});
-			fields.push({ key: "timeframe", options: { required: true }});
+			fieldSet.deadline.required = true;
+			fieldSet.timeframe.required = true;
 			break;
 		default:
-			fields.push({ key: "deadline"});
 			break;
 		}
 
-		return Task.createFormSchema(fields);
+		return Object.keys(fieldSet).map(f => {
+			if ( _fields[f] === undefined ) {
+				throw new Error(`Missing the definition about "${f}" in filed at Task class!`);
+			} else if ( _fields[f].form === undefined ) {
+				throw new Error(`Missing the definition about "${f}.form" in filed at Task class!`);
+			}
+			let field = cloneDeep(_fields[f]);
+			field.form = Object.assign(field.form, fieldSet[f]);
+			if (field.form.label === undefined) {
+				field.form.label = field.label;
+			}
+			if (field.form.model === undefined) {
+				field.form.model = f;
+			}
+			return field.form;
+		});
 	}
 }
