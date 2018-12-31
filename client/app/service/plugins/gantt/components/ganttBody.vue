@@ -1,16 +1,16 @@
 <template lang="pug">
-	ul.gantt-container
-		li.treelist-board(v-for="treelist in rows", :key="treelist.id")
-			.treelist-board-header
-				legend {{ treelist.name }}
-			.drag-options
-			ul.treelist(v-show="!(foldingConditionMap[treelist.id]===false)" data-type="treelist", :data-id="treelist.id"
-				@dragenter="ondragenter($event, treelist)"
-			)
-				timeframe(v-for="timeframe in treelist.subtree", :timeframe="timeframe", :foldingConditionMap="foldingConditionMap", :key="timeframe.id", :draggable="false"
-					@dragstart="ondragstart"
-					@dragend="ondragend"
-				)
+	ul.treelist-board-container
+		li.treelist-board(v-for="timeframe in rows", :key="timeframe.id")
+			.tree-item
+				.treelist-board-header
+					legend {{ timeframe.name }}
+			//- ul.treelist(v-show="!(foldingConditionMap[timeframe.id]===false)" data-type="timeframe", :data-id="timeframe.id"
+			//- 	@dragenter="ondragenter($event, timeframe)"
+			//- )
+			//- 	timeframe(v-for="timeframe in timeframe.subtree", :timeframe="timeframe", :foldingConditionMap="foldingConditionMap", :key="timeframe.id", :draggable="false"
+			//- 		@dragstart="ondragstart"
+			//- 		@dragend="ondragend"
+			//- 	)
 </template>
 <script>
 

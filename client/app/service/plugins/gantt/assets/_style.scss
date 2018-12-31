@@ -1,5 +1,54 @@
 @charset "utf-8";
 
+.vue-gantt {
+    font-size: 12px;
+
+    .gantt-row {
+        display: flex;
+        flex-wrap: nowrap;
+
+        .vue-gantt-legend {
+            flex-shrink: 0;
+            width: 225px;
+            overflow: hidden;
+            box-sizing: border-box;
+            border: 1px solid #DDD;
+            border-bottom: none;
+            position: relative;
+            z-index: 20;
+
+            .title {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 72px;
+                box-sizing: border-box;
+                border-bottom: 1px solid #DDD;
+            }
+
+            .first-input {
+                border-bottom: 1px solid #DDD;
+            }
+        }
+    }
+}
+
+.vue-gantt.gantt-column,
+.vue-gantt .gantt-column {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    overflow: hidden;
+
+    .vue-gantt-body {
+        display: flex;
+        flex-direction: column;
+        flex-wrap: nowrap;
+        flex-shrink: 0;
+        overflow: hidden;
+    }
+}
+
 .treelist-board-container {
     list-style-type: none;
     margin: 0;
@@ -7,41 +56,46 @@
 
     .treelist-board {
 		margin: 0;
-		padding: 0.5em 0 0 0.5em;
+		padding: 0 0 0 0.5em;
         position: relative;
 		background: rgba(black, 0.2);
 		min-height: 2.5em;
 		border-bottom: 1px solid #000;
         overflow: hidden;
-        
-        .icon {
-            cursor: pointer;
-            
-            i {
-                min-width: 1em;
-            }
-        }
 
-        .operation {
+        .tree-item {
+            height: 2.5em;
+            padding: 0.5em;
+
             .icon {
-                padding-left: 0.5em;
-
-                &:hover {
-                    color: #ff0000;
+                cursor: pointer;
+                
+                i {
+                    min-width: 1em;
                 }
             }
+    
+            .operation {
+                .icon {
+                    padding-left: 0.5em;
+    
+                    &:hover {
+                        color: #ff0000;
+                    }
+                }
+            }
+            
+            .kanban-board-header {
+                align-items: center;
+                justify-content: space-between;
+                padding: 10px;
+            }
+    
+            .checkbox {
+                margin-right: 0.5em;
+            }    
         }
-		
-        .kanban-board-header {
-            align-items: center;
-            justify-content: space-between;
-            padding: 10px;
-        }
-
-        .checkbox {
-            margin-right: 0.5em;
-        }
-
+        
         .treelist {
             list-style-type: none;
             margin: 0;
@@ -57,74 +111,13 @@
 
             .treenode {
                 margin: 0;
-                padding: 0.5em 0 0 0.5em;
+                padding: 0 0 0 0.5em;
                 background: rgba(black, 0.4);
 				border-top: 1px solid #000;
                 border-left: 1px solid #000;
-
-				&:first-child {
-					margin: 0.5em 0 0 0;
-				}
             
                 &.dragging {
                     opacity: 0.5;
-				}
-            }
-        }
-    }
-
-}
-
-.gantt-container {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-
-    .treelist-board {
-		margin: 0;
-		padding: 0.5em 0 0 0;
-        position: relative;
-		background: rgba(black, 0.2);
-		min-height: 2.5em;
-		border-bottom: 1px solid #000;
-		overflow: hidden;
-
-		span {
-			min-height: 1.5em;
-		}
-		
-        .kanban-board-header {
-            align-items: center;
-            justify-content: space-between;
-            padding: 10px;
-        }
-        .treelist {
-            list-style-type: none;
-            margin: 0;
-            padding: 0;
-			color: white;
-			min-height: 0.5em;
-			border-top: 1px solid transparent;
-
-            &.drop-target {
-                border: 1px dashed #000;
-            }
-
-            .treenode {
-                margin: 0;
-                padding: 0.5em 0 0 0;
-                background: rgba(black, 0.4);
-                border-top: 1px solid #000;
-                min-height: 1em;
-
-				.media-content {
-					legend {
-						min-height: 1.5em;
-					}
-				}
-
-				&:first-child {
-					margin: 0.5em 0 0 0;
 				}
             }
         }

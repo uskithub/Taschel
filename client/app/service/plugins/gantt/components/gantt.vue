@@ -310,54 +310,8 @@
 		}
 	};
 </script>
+<style lang="scss">
+	@import "../assets/style";
+</style>
 <style lang="scss" scoped>
-	.vue-gantt {
-		font-size: 12px;
-
-		.gantt-row {
-			display: flex;
-			flex-wrap: nowrap;
-
-			.vue-gantt-legend {
-				flex-shrink: 0;
-				width: 225px;
-				overflow: hidden;
-				box-sizing: border-box;
-				border: 1px solid #DDD;
-				border-bottom: none;
-				position: relative;
-				z-index: 20;
-
-				.title {
-					display: flex;
-					justify-content: center;
-					align-items: center;
-					height: 72px;
-					box-sizing: border-box;
-					border-bottom: 1px solid #DDD;
-				}
-
-				.first-input {
-					border-bottom: 1px solid #DDD;
-				}
-			}
-		}
-	}
-
-	.vue-gantt.gantt-column,
-	.vue-gantt .gantt-column {
-		display: flex;
-		flex: 1 1 auto;
-		flex-direction: column;
-		overflow: hidden;
-
-		.vue-gantt-body {
-			display: flex;
-			flex-direction: column;
-			flex-wrap: nowrap;
-			flex-shrink: 0;
-			overflow: hidden;
-		}
-	}
-  
 </style>

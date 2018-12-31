@@ -2,17 +2,18 @@
 	ul.treelist-board-container
 		li.treelist-board(v-for="treenode in treenodes", :key="treenode.id" 
 			@mouseover="onmouseover($event, treenode.id)" 
-			@mouseout="onmouseout($event, treenode.id)")
-			input.checkbox(type="checkbox")
-			span.icon(v-if="treenode.subtree.length > 0" @click.prevent.stop="caratDidClick($event, treenode.id)")
-				i.fa(:class="{ 'fa-caret-down': !(foldingConditionMap[treenode.id]===false), 'fa-caret-right': foldingConditionMap[treenode.id]===false }")
-			span.treelist-board-header {{ treenode.name }}
-			span.operation(v-show="isHoveringMap[treenode.id]")
-				span.icon(@click="editIconDidPush($event, treenode)")
-					i.fa.fa-edit
-				span.icon(@click="addIconDidPush($event, treenode)")
-					i.fa.fa-plus
-			.drag-options
+			@mouseout="onmouseout($event, treenode.id)"
+		)
+			.tree-item
+				input.checkbox(type="checkbox")
+				span.icon(v-if="treenode.subtree.length > 0" @click.prevent.stop="caratDidClick($event, treenode.id)")
+					i.fa(:class="{ 'fa-caret-down': !(foldingConditionMap[treenode.id]===false), 'fa-caret-right': foldingConditionMap[treenode.id]===false }")
+				span.treelist-board-header {{ treenode.name }}
+				span.operation(v-show="isHoveringMap[treenode.id]")
+					span.icon(@click="editIconDidPush($event, treenode)")
+						i.fa.fa-edit
+					span.icon(@click="addIconDidPush($event, treenode)")
+						i.fa.fa-plus
 			ul.treelist(v-show="!(foldingConditionMap[treenode.id]===false)" data-type="treelist", :data-id="treenode.id"
 				@dragenter="ondragenter($event, treenode)"
 			)
@@ -252,34 +253,4 @@
 	@import "../assets/style";
 </style>
 <style lang="scss" scoped>
-
-	.vue-gantt-legend {
-		flex-shrink: 0;
-		width: 225px;
-		overflow: hidden;
-		box-sizing: border-box;
-		border: 1px solid #DDD;
-		border-bottom: none;
-		position: relative;
-		z-index: 20;
-
-		.title {
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			height: 72px;
-			box-sizing: border-box;
-			border-bottom: 1px solid #DDD;
-		}
-
-		.task {
-			box-sizing: border-box;
-			width: 100%;
-
-			.task-name {
-				font-weight: bold;
-				padding: 0 10px;
-			}
-		}
-	}
 </style>

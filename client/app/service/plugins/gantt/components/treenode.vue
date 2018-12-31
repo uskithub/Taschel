@@ -7,7 +7,7 @@
 		@dragend="$emit('dragend', $event, treenode)"
 	)
 		slot(:name="treenode.name")
-			.media-content
+			.tree-item
 				input.checkbox(type="checkbox")
 				span.icon(v-if="treenode.subtree.length > 0" @click.prevent.stop="$emit('toggle-caret', $event, treenode.id)")
 					i.fa(:class="{ 'fa-caret-down': !(foldingConditionMap[treenode.id]===false), 'fa-caret-right': foldingConditionMap[treenode.id]===false }")
@@ -17,17 +17,17 @@
 						i.fa.fa-edit
 					span.icon(@click.prevent.stop="$emit('addIconDidPush', $event, treenode)")
 						i.fa.fa-plus
-				ul.treelist(v-show="!(foldingConditionMap[treenode.id]===false)" data-type="treenode", :data-id="treenode.id"
-					@dragenter="ondragenter($event, treenode)"
+			ul.treelist(v-show="!(foldingConditionMap[treenode.id]===false)" data-type="treenode", :data-id="treenode.id"
+				@dragenter="ondragenter($event, treenode)"
+			)
+				treenode(v-for="childnode in treenode.subtree", :parent="treenode", :treenode="childnode", :foldingConditionMap="foldingConditionMap", :key="childnode.id"
+					@editIconDidPush="editIconDidPush"
+					@addIconDidPush="addIconDidPush"
+					@dragstart="ondragstart"
+					@dragend="ondragend"
+					@dragenter="ondragenter"
+					@toggle-caret="caratDidClick"
 				)
-					treenode(v-for="childnode in treenode.subtree", :parent="treenode", :treenode="childnode", :foldingConditionMap="foldingConditionMap", :key="childnode.id"
-						@editIconDidPush="editIconDidPush"
-						@addIconDidPush="addIconDidPush"
-						@dragstart="ondragstart"
-						@dragend="ondragend"
-						@dragenter="ondragenter"
-						@toggle-caret="caratDidClick"
-					)
 </template>
 
 <script>
@@ -109,38 +109,4 @@
 	@import "../assets/style";
 </style>
 <style scoped>
-	.vue-gantt-legend {
-		flex-shrink: 0;
-		width: 225px;
-		overflow: hidden;
-		box-sizing: border-box;
-		border: 1px solid #DDD;
-		border-bottom: none;
-		position: relative;
-		z-index: 20;
-	}
-
-	.vue-gantt-legend .title {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		height: 72px;
-		box-sizing: border-box;
-		border-bottom: 1px solid #DDD;
-	}
-
-	.vue-gantt-legend .task {
-		line-height: 24px;
-		box-sizing: border-box;
-		border-bottom: 1px solid #DDD;
-		cursor: pointer;
-		height: 24px;
-		margin: 0;
-		width: 100%;
-	}
-
-	.vue-gantt-legend .task .task-name {
-		font-weight: bold;
-		padding: 0 10px;
-	}
 </style>
