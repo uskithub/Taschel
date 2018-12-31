@@ -79,6 +79,10 @@ let TaskSchema = new Schema({
 		type: Number
 		, ref: "Task"
 	}]
+	, dependencies : [{
+		type: Number
+		, ref: "Task"
+	}]
 	, works : [{
 		type: Number
 		, ref: "Work"

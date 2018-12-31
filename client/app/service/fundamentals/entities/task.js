@@ -487,7 +487,6 @@ export default class Task {
 		case "way":
 			break;
 		case "step":
-			fieldSet.deadline.required = true;
 			fieldSet.timeframe.readonly = true;
 			break;
 		case "todo":
