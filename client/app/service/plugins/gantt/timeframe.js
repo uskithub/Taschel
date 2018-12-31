@@ -1,11 +1,24 @@
 export default class Timeframe {
 	constructor(treenode) {
-		this._treenode = treenode;
-		this._subtree = treenode.subtree.map(n => new Timeframe(n));
+		this._task = treenode.task;
 	}
 
-	get id() { return this._treenode.id; }
-	get name() { return this._treenode.name; }
-	get subtree() { return this._subtree; }
+	get id() { return this._task.code; }
+	get name() { return this._task.name; }
+
+	static timeframeRowsFactory(treenodes) {
+		let _makeTimeframeRowsRecursively = (treenodes, arr = []) => {
+			return treenodes.reduce( (arr, treenode) => {
+				arr.push(new Timeframe(treenode));
+				if ((treenode.subtree !== null || treenode.subtree !== undefined) && treenode.subtree.length > 0) {
+					arr = _makeTimeframeRowsRecursively(treenode.subtree, arr);
+				}
+				return arr;
+			}, arr);
+		};
+		let ret = _makeTimeframeRowsRecursively(treenodes);
+		console.log("******", ret);
+		return ret;
+	}
 	
 }

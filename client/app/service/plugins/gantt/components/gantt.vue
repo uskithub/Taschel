@@ -186,18 +186,7 @@
 				return _headers;				
 			}
 			, bodyRows() {
-				return this.treenodes.map(n => new Timeframe(n));
-				// let _makeTimeframeRecursively = (treenodes) => {
-				// 	return treenodes.map(treenode => {
-				// 		treenode.name = `■ ${treenode.name}`;
-				// 		if ((treenode.subtree !== null || treenode.subtree !== undefined) && treenode.subtree.length > 0) {
-				// 			treenode.subtree = _makeTimeframeRecursively(treenode.subtree);
-				// 		}
-				// 		return treenode;
-				// 	});
-				// };
-				// let ret = _makeTimeframeRecursively(this.treenodes);
-				// return ret;
+				return Timeframe.timeframeRowsFactory(this.treenodes);
 			}
 			// 以下、未整理
 			, parsedProps() {
