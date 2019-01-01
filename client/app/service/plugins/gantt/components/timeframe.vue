@@ -7,11 +7,6 @@
 		slot(:name="timeframe.name")
 			.tree-item
 				legend 
-			ul.treelist(v-show="!(foldingConditionMap[timeframe.id]===false)" data-type="timeframe", :data-id="timeframe.id")
-				timeframe(v-for="childnode in timeframe.subtree", :timeframe="childnode", :foldingConditionMap="foldingConditionMap", :key="childnode.id"
-					@dragstart="ondragstart"
-					@dragend="ondragend"
-				)
 </template>
 
 <script>

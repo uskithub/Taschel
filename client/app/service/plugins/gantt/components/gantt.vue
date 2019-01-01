@@ -1,5 +1,5 @@
 <template lang="pug">
-	.vue-gantt.gantt-column
+	.vue-gantt
 		.gantt-row
 			.vue-gantt-legend
 				.title(:title="legendHelp") 
