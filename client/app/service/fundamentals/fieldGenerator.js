@@ -189,8 +189,8 @@ const fields = {
 			]
 		}
 	}
-	, timeframe: {
-		label: _("Timeframe")
+	, manhour: {
+		label: _("ManHour")
 		, table: {}
 		, form: {
 			type: "rangeSlider"

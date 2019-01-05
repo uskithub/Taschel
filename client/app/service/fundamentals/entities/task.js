@@ -180,8 +180,8 @@ const _fields = {
 			]
 		}
 	}
-	, timeframe: {
-		label: _("Timeframe")
+	, manhour: {
+		label: _("ManHour")
 		, table: {}
 		, form: {
 			type: "rangeSlider"
@@ -192,7 +192,7 @@ const _fields = {
 				validators.integer
 				, (value, field, entity) => {
 						if (field.required && value === 0) {
-							return [ _("TimeframeRequired") ];
+							return [ _("ManhourRequired") ];
 						}
 						return [];
 					}
@@ -321,7 +321,7 @@ export default class Task {
 	set goal(goal) { this._rawValues.goal = goal; }
 
 	get deadline() { return this._rawValues.deadline; }
-	get timeframe() { return this._rawValues.timeframe; }
+	get manhour() { return this._rawValues.manhour; }
 	get schedule() { return this._rawValues.schedule; }
 	get dependencies() { return this._rawValues.dependencies; }
 	get subscequences() { return this._rawValues.subscequences; }
@@ -473,7 +473,7 @@ export default class Task {
 			, goal: { required: true }
 			, description: { required: false }
 			, deadline: { required: false } 
-			, timeframe: { required: false } 
+			, manhour: { required: false } 
 			, schedule: { required: false }
 		};
 		
@@ -483,7 +483,7 @@ export default class Task {
 			break;
 		case "milestone":
 			fieldSet.deadline.required = true;
-			fieldSet.timeframe.readonly = true;
+			fieldSet.manhour.readonly = true;
 			break;
 		case "requirement":
 			break;
@@ -493,11 +493,11 @@ export default class Task {
 		case "way":
 			break;
 		case "step":
-			fieldSet.timeframe.readonly = true;
+			fieldSet.manhour.readonly = true;
 			break;
 		case "todo":
 			fieldSet.deadline.required = true;
-			fieldSet.timeframe.required = true;
+			fieldSet.manhour.required = true;
 			break;
 		default:
 			break;

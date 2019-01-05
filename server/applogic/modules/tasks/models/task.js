@@ -56,7 +56,7 @@ let TaskSchema = new Schema({
 	, deadline: {
 		type: Date
 	}
-	, timeframe: {
+	, manhour: {
 		type: Number
 		, "default": -1 // this means "not set yet"
 	}
