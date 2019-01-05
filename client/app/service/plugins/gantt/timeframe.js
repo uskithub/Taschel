@@ -10,12 +10,18 @@ export default class Timeframe {
 	 * @param {*} end 
 	 * @param {*} cellWidth 
 	 */
-	constructor(treenode, start, end, cellWidth) {
+	constructor(treenode, parent, start, end, cellWidth) {
 		this._task = treenode.task;
+		this._parent = parent;
 		this._start = start;
 		this._end = end;
 		this._cellWidth = cellWidth;
+
+		this._isCalculate = false;
 	}
+
+	get isCalculated() { return this._isCalculate; }
+	set isCalculate(value) { this._isCalculate = value; }
 
 	get id() { return this._task.code; }
 	get name() { return this._task.name; }
