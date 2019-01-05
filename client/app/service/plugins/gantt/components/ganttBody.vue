@@ -2,15 +2,7 @@
 	ul.treelist-board-container
 		li.treelist-board(v-for="timeframe in rows", :key="timeframe.id")
 			.tree-item
-				.treelist-board-header
-					legend {{ timeframe.name }}
-			//- ul.treelist(v-show="!(foldingConditionMap[timeframe.id]===false)" data-type="timeframe", :data-id="timeframe.id"
-			//- 	@dragenter="ondragenter($event, timeframe)"
-			//- )
-			//- 	timeframe(v-for="timeframe in timeframe.subtree", :timeframe="timeframe", :foldingConditionMap="foldingConditionMap", :key="timeframe.id", :draggable="false"
-			//- 		@dragstart="ondragstart"
-			//- 		@dragend="ondragend"
-			//- 	)
+				.timeframe(v-show="timeframe.isDisplay", :style="{ width: timeframe.width + 'px', 'margin-left': timeframe.offset + 'px'}") {{ timeframe.name }}
 </template>
 <script>
 
@@ -210,9 +202,4 @@
 	@import "../assets/style";
 </style>
 <style lang="scss" scoped>
-
-	.treelist-board-header {
-		background: #CCC;
-	}
-
 </style>

@@ -50,7 +50,11 @@
             
                     .checkbox {
                         margin-right: 0.5em;
-                    }    
+                    }
+
+                    .timeframe {
+                        background-color: #C0C0C0;
+                    }
                 }
                 
                 .treelist {
@@ -117,8 +121,11 @@
 
             .treelist-board-container {
                 .treelist-board {
+                    padding-left: 0;
                     padding-bottom: 1px;
+
                     .tree-item {
+                        padding-left: 0;
                         margin-bottom: 0.5em;
                     }
                 }

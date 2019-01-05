@@ -43,6 +43,7 @@
 	import Timeframe from "../timeframe.js";
 
 	import moment from "moment";
+	import { cloneDeep } from "lodash";
 	
 	import { mapMutations, mapGetters } from "vuex";
 	import store from "../store.js";
@@ -87,7 +88,7 @@
 			...mapGetters([
 				"foldingConditionMap"
 			])
-			// { startDate, endDate, days }
+			// { start, end, days }
 			, visibleTerm() {
 				const _startOfTerm = this.startOfTerm !== null ? this.startOfTerm.valueOf() : 0;
 				const { startDate, endDate } = calcViewport(_startOfTerm, this.scale, this.step, this.numberOfColumns);
@@ -186,7 +187,55 @@
 				return _headers;				
 			}
 			, bodyRows() {
-				return Timeframe.timeframeRowsFactory(this.treenodes);
+				const { start, end, days } = this.visibleTerm;
+
+				// ツリー構造をそのままの順序になるように配列化
+				const _treeToArrayRecursively = (treenodes, arr = []) => {
+					return treenodes.reduce( (arr, treenode) => {
+						arr.push(treenode.id);
+						if ((treenode.subtree !== null || treenode.subtree !== undefined) && treenode.subtree.length > 0) {
+							arr = _treeToArrayRecursively(treenode.subtree, arr);
+						}
+						return arr;
+					}, arr);
+				}
+
+				const idArr = _treeToArrayRecursively(this.treenodes);
+
+				const _makeTimeframeRowsRecursively = (taskArr, parentDeadline = null, arr = []) => {
+					// deadlineの遅い順に並び替え
+					taskArr.sort((a, b) => {
+						return -(a.deadline || moment("19700101", ["YYYYMMDD"])).time.diff(b.deadline.time || moment("19700101", ["YYYYMMDD"]));
+					});
+
+					return taskArr.reduce( (arr, task) => {
+						let _children = null;
+						let _subscequences = null;
+						
+						if ((task.children !== null || task.children !== undefined) && task.children.length > 0) {
+							_children = _makeTimeframeRowsRecursively(task.children, task.deadline);
+						} else {
+							// TODO
+						}
+
+						// TODO
+						if ((task.subscequences !== null || task.subscequences !== undefined) && task.subscequences.length > 0) {
+							_subscequences = _makeTimeframeRowsRecursively(task.subscequences, task.deadline);
+						}
+
+
+						// deadlineの決定
+						treenode
+						// manhourの決定
+						// scheduleの決定
+						arr.push(new Timeframe(treenode, start, end, defaultOptions.cellWidth));
+						
+						return arr;
+					}, arr);
+				};
+				let ret = _makeTimeframeRowsRecursively(this.treenodes.map(t => t.task));
+				console.log("******", ret);
+				return ret;
 			}
 			// 以下、未整理
 			, parsedProps() {
