@@ -1,5 +1,5 @@
 <template lang="pug">
-	.vue-gantt.gantt-column
+	.vue-gantt
 		.gantt-row
 			.vue-gantt-legend
 				.title(:title="legendHelp") 
@@ -43,6 +43,7 @@
 	import Timeframe from "../timeframe.js";
 
 	import moment from "moment";
+	import { cloneDeep } from "lodash";
 	
 	import { mapMutations, mapGetters } from "vuex";
 	import store from "../store.js";
@@ -87,7 +88,7 @@
 			...mapGetters([
 				"foldingConditionMap"
 			])
-			// { startDate, endDate, days }
+			// { start, end, days }
 			, visibleTerm() {
 				const _startOfTerm = this.startOfTerm !== null ? this.startOfTerm.valueOf() : 0;
 				const { startDate, endDate } = calcViewport(_startOfTerm, this.scale, this.step, this.numberOfColumns);
@@ -186,18 +187,55 @@
 				return _headers;				
 			}
 			, bodyRows() {
-				return this.treenodes.map(n => new Timeframe(n));
-				// let _makeTimeframeRecursively = (treenodes) => {
-				// 	return treenodes.map(treenode => {
-				// 		treenode.name = `■ ${treenode.name}`;
-				// 		if ((treenode.subtree !== null || treenode.subtree !== undefined) && treenode.subtree.length > 0) {
-				// 			treenode.subtree = _makeTimeframeRecursively(treenode.subtree);
-				// 		}
-				// 		return treenode;
-				// 	});
-				// };
-				// let ret = _makeTimeframeRecursively(this.treenodes);
-				// return ret;
+				const { start, end, days } = this.visibleTerm;
+
+				// ツリー構造をそのままの順序になるように配列化
+				const _treeToArrayRecursively = (treenodes, arr = []) => {
+					return treenodes.reduce( (arr, treenode) => {
+						arr.push(treenode.id);
+						if ((treenode.subtree !== null || treenode.subtree !== undefined) && treenode.subtree.length > 0) {
+							arr = _treeToArrayRecursively(treenode.subtree, arr);
+						}
+						return arr;
+					}, arr);
+				}
+
+				const idArr = _treeToArrayRecursively(this.treenodes);
+
+				const _makeTimeframeRowsRecursively = (taskArr, parentDeadline = null, arr = []) => {
+					// deadlineの遅い順に並び替え
+					taskArr.sort((a, b) => {
+						return -(a.deadline || moment("19700101", ["YYYYMMDD"])).time.diff(b.deadline.time || moment("19700101", ["YYYYMMDD"]));
+					});
+
+					return taskArr.reduce( (arr, task) => {
+						let _children = null;
+						let _subscequences = null;
+						
+						if ((task.children !== null || task.children !== undefined) && task.children.length > 0) {
+							_children = _makeTimeframeRowsRecursively(task.children, task.deadline);
+						} else {
+							// TODO
+						}
+
+						// TODO
+						if ((task.subscequences !== null || task.subscequences !== undefined) && task.subscequences.length > 0) {
+							_subscequences = _makeTimeframeRowsRecursively(task.subscequences, task.deadline);
+						}
+
+
+						// deadlineの決定
+						treenode
+						// manhourの決定
+						// scheduleの決定
+						arr.push(new Timeframe(treenode, start, end, defaultOptions.cellWidth));
+						
+						return arr;
+					}, arr);
+				};
+				let ret = _makeTimeframeRowsRecursively(this.treenodes.map(t => t.task));
+				console.log("******", ret);
+				return ret;
 			}
 			// 以下、未整理
 			, parsedProps() {
@@ -321,54 +359,8 @@
 		}
 	};
 </script>
+<style lang="scss">
+	@import "../assets/style";
+</style>
 <style lang="scss" scoped>
-	.vue-gantt {
-		font-size: 12px;
-
-		.gantt-row {
-			display: flex;
-			flex-wrap: nowrap;
-
-			.vue-gantt-legend {
-				flex-shrink: 0;
-				width: 225px;
-				overflow: hidden;
-				box-sizing: border-box;
-				border: 1px solid #DDD;
-				border-bottom: none;
-				position: relative;
-				z-index: 20;
-
-				.title {
-					display: flex;
-					justify-content: center;
-					align-items: center;
-					height: 72px;
-					box-sizing: border-box;
-					border-bottom: 1px solid #DDD;
-				}
-
-				.first-input {
-					border-bottom: 1px solid #DDD;
-				}
-			}
-		}
-	}
-
-	.vue-gantt.gantt-column,
-	.vue-gantt .gantt-column {
-		display: flex;
-		flex: 1 1 auto;
-		flex-direction: column;
-		overflow: hidden;
-
-		.vue-gantt-body {
-			display: flex;
-			flex-direction: column;
-			flex-wrap: nowrap;
-			flex-shrink: 0;
-			overflow: hidden;
-		}
-	}
-  
 </style>

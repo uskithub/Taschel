@@ -320,6 +320,12 @@ export default class Task {
 	get goal() { return this._rawValues.goal; }
 	set goal(goal) { this._rawValues.goal = goal; }
 
+	get deadline() { return this._rawValues.deadline; }
+	get timeframe() { return this._rawValues.timeframe; }
+	get schedule() { return this._rawValues.schedule; }
+	get dependencies() { return this._rawValues.dependencies; }
+	get subscequences() { return this._rawValues.subscequences; }
+
 	get root() { return this._root; }
 	get parent() { return this._rawValues.parent; }
 

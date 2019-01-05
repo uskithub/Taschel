@@ -1,6 +1,5 @@
 import treelist from "./components/treelist";
 import treenode from "./components/treenode";
-import timeframe from "./components/timeframe";
 
 import gantt from "./components/gantt";
 
@@ -18,7 +17,6 @@ const plugin = {
 		// componentの追加
 		Vue.component("treelist", treelist);
 		Vue.component("treenode", treenode);
-		Vue.component("timeframe", timeframe);
 		Vue.component("gantt", gantt);
 
 		// maps.googleapiのロード
