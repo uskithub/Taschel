@@ -79,6 +79,8 @@
 			return {
 				startOfTerm: null
 				, numberOfColumns: 0
+				, idTimeframeMap: this.treenodeToIdTimeframeMapRecursively(this.treenodes)
+				// 以下、未整理
 				, scales: createOptions(defaultOptions.scales)
 				, scale: defaultOptions.scales[0].scale
 				, step: defaultOptions.scales[0].steps[0]
@@ -187,36 +189,43 @@
 				return _headers;				
 			}
 			, bodyRows() {
+				/**
+				 * ● 期日について
+				 * 期日を決める要因は、
+				 * 		① 自身の期日
+				 * 		② 親タスクの期日
+				 * 		③ 後続タスクに期日に終わるために逆算した期日
+				 * ②より①が遅くなるのはOKとする
+				 * ③より①が遅くなるのはNGなので、③を表示の期日とする
+				 * 
+				 * ①③ともにある場合 → ①と③で早い方を期日とする
+				 * ①のみあり③がない場合 → ①を期日とする
+				 * ①がなく③のみある場合 → ③を期日とする
+				 * ①③ともになく②がある場合 → ②を期日とする
+				 * ①②③ともにない場合 → 開始日から逆算
+				 * 	
+				 * ● 工数について
+				 * 工数は「自身の工数」を使う
+				 * 
+				 * ● 開始日について
+				 * 開始日を決める要因は、
+				 * 		① 自身の開始日
+				 * 		② 期日と工数で逆算した開始日
+				 * 		③ 子タスクの連結で算出した開始日
+				 * ②より①が遅くなるのはNGなので、②を表示の開始日とする
+				 * ③より①が遅くなるのはOKとする
+				 * 
+				 * ①②ともにある場合 → ①と②で早い方を開始日とする
+				 * ①②③ともにない場合 → 本日を開始日とする
+				 */ 
 				const { start, end, days } = this.visibleTerm;
 
-				// ツリー構造をそのままの順序になるように配列化
-				const _treeToArrayRecursively = (treenodes, arr = []) => {
-					return treenodes.reduce( (arr, treenode) => {
-						arr.push(treenode.id);
-						if ((treenode.subtree !== null || treenode.subtree !== undefined) && treenode.subtree.length > 0) {
-							arr = _treeToArrayRecursively(treenode.subtree, arr);
-						}
-						return arr;
-					}, arr);
-				}
-				// [id : Timeframe]マップへ変換
-				const _treenodeToIdTimeframeMapRecursively = (treenodes, parent = null, map = {}) => {
-					return treenodes.reduce( (arr, treenode) => {
-						map[treenode.id] = new Timeframe(treenode, parent);
-						if ((treenode.subtree !== null || treenode.subtree !== undefined) && treenode.subtree.length > 0) {
-							map = _treenodeToIdTimeframeMapRecursively(treenode.subtree, map[treenode.id], treenodemap);
-						}
-						return map;
-					}, map);
-				}
 
-				const _idArr = _treeToArrayRecursively(this.treenodes);
-				const _idTimeframeMap = _treenodeToIdTimeframeMapRecursively(this.treenodes);
 
 				const _decideDeadlineBySubsequenceRecursively = (task) => {
 					let _deadline = null;
 
-					subscequences.reduce(arr, task => {
+					task.subscequences.reduce(arr, task => {
 						if (_idTimeframeMap[task.code].isCalculated) { return _idTimeframeMap[task.code]; }
 						
 						// TODO
@@ -285,9 +294,19 @@
 				};
 				_makeTimeframeRowsRecursively(this.treenodes.map(t => t.task));
 
-				console.log("******", _idTimeframeMap);
+				console.log("******", this.idTimeframeMap);
 
-				return _idArr.map(id => _idTimeframeMap[id]);
+				// ツリー構造をそのままの順序になるように配列化
+				const _treeToArrayRecursively = (treenodes, arr = []) => {
+					return treenodes.reduce( (arr, treenode) => {
+						arr.push(treenode.id);
+						if ((treenode.subtree !== null || treenode.subtree !== undefined) && treenode.subtree.length > 0) {
+							arr = _treeToArrayRecursively(treenode.subtree, arr);
+						}
+						return arr;
+					}, arr);
+				};
+				return _treeToArrayRecursively(this.treenodes).map(id => this.idTimeframeMap[id]);
 			}
 			// 以下、未整理
 			, parsedProps() {
@@ -336,7 +355,15 @@
 			, calculateColumns() {
 				this.numberOfColumns = Math.ceil((this.$el.clientWidth - this.$refs.legend.$el.clientWidth) / defaultOptions.cellWidth);
 			}
-
+			, treenodeToIdTimeframeMapRecursively = (treenodes, parentTimeframe = null, idTimeframeMap = {}) => {
+				return treenodes.reduce((arr, treenode) => {
+					idTimeframeMap[treenode.id] = new Timeframe(treenode.task, parentTimeframe);
+					if ((treenode.subtree !== null || treenode.subtree !== undefined) && treenode.subtree.length > 0) {
+						idTimeframeMap = this.treenodeToIdTimeframeMapRecursively(treenode.subtree, idTimeframeMap[treenode.id], idTimeframeMap);
+					}
+					return idTimeframeMap;
+				}, idTimeframeMap);
+			}
 			// 以下、未整理
 			, handleScaleChange(e) {
 				const [scale, step] = e.target.value.split(' ');

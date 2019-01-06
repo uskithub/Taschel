@@ -1,21 +1,8 @@
 export default class Timeframe {
 
-	/**
-	 * 
-	 * 
-	 * 
-	 * @param {*} treenode 
-	 * @param {*} latestFinishTime
-	 * @param {*} start 
-	 * @param {*} end 
-	 * @param {*} cellWidth 
-	 */
-	constructor(treenode, parent, start, end, cellWidth) {
-		this._task = treenode.task;
-		this._parent = parent;
-		this._start = start;
-		this._end = end;
-		this._cellWidth = cellWidth;
+	constructor(task, parentTimeframe) {
+		this._task = task;
+		this._parentTimeframe = parentTimeframe;
 
 		this._deadline = null;
 		this._manhour = null;
