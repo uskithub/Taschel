@@ -79,7 +79,7 @@
 			return {
 				startOfTerm: null
 				, numberOfColumns: 0
-				, idTimeframeMap: this.treenodeToIdTimeframeMapRecursively(this.treenodes)
+				, idTimeframeMap: (() => { return this.treenodeToIdTimeframeMapRecursively(this.treenodes); })()
 				// 以下、未整理
 				, scales: createOptions(defaultOptions.scales)
 				, scale: defaultOptions.scales[0].scale
@@ -189,107 +189,18 @@
 				return _headers;				
 			}
 			, bodyRows() {
-				/**
-				 * ● 期日について
-				 * 期日を決める要因は、
-				 * 		① 自身の期日
-				 * 		② 親タスクの期日
-				 * 		③ 後続タスクに期日に終わるために逆算した期日
-				 * ②より①が遅くなるのはOKとする
-				 * ③より①が遅くなるのはNGなので、③を表示の期日とする
-				 * 
-				 * ①③ともにある場合 → ①と③で早い方を期日とする
-				 * ①のみあり③がない場合 → ①を期日とする
-				 * ①がなく③のみある場合 → ③を期日とする
-				 * ①③ともになく②がある場合 → ②を期日とする
-				 * ①②③ともにない場合 → 開始日から逆算
-				 * 	
-				 * ● 工数について
-				 * 工数は「自身の工数」を使う
-				 * 
-				 * ● 開始日について
-				 * 開始日を決める要因は、
-				 * 		① 自身の開始日
-				 * 		② 期日と工数で逆算した開始日
-				 * 		③ 子タスクの連結で算出した開始日
-				 * ②より①が遅くなるのはNGなので、②を表示の開始日とする
-				 * ③より①が遅くなるのはOKとする
-				 * 
-				 * ①②ともにある場合 → ①と②で早い方を開始日とする
-				 * ①②③ともにない場合 → 本日を開始日とする
-				 */ 
-				const { start, end, days } = this.visibleTerm;
-
-
-
-				const _decideDeadlineBySubsequenceRecursively = (task) => {
-					let _deadline = null;
-
-					task.subscequences.reduce(arr, task => {
-						if (_idTimeframeMap[task.code].isCalculated) { return _idTimeframeMap[task.code]; }
-						
-						// TODO
-						
-					}, []);
-					
-					return _deadline;
-				};
-
-				const _makeTimeframeRowsRecursively = (taskArr, parentDeadline = null) => {
+				const _makeTimeframeRowsRecursively = (taskArr) => {
 					// deadlineの遅い順に並び替え
 					taskArr.sort((a, b) => -(a.deadline || moment("19700101", ["YYYYMMDD"])).diff(b.deadline || moment("19700101", ["YYYYMMDD"])));
 
-					if (parentDeadline === null) {
-						// 親のdeadlineがない場合、子の中で一番遅い兄弟のdeadlineを基準deadlineにする
-						parentDeadline = taskArr[0].deadline.valueOf();
-					}
-
+					// deadlineの遅いものから計算させる
 					taskArr.forEach(task => {
-						if (_idTimeframeMap[task.code].isCalculated) { return; }
+						/* 期日、開始日を決める */
+						this.idTimeframeMap[task.code].calculateSchedule(this.idTimeframeMap);
 
-						let _deadline = null;
-						let _manhour = null;
-						let _schedule = null;
-
-						/* 期日を決める */
-						// 自身が期日をもつ場合、かつsubsequencesのない場合、それが期日となる
-						// 自身が期日をもつ場合、かつsubsequencesのある場合、subsequencesのうち、一番scheduleの早いものがdeadlineと自身の期日の早い方が期日となる
-						// 自身が期日を持たない場合、かつsubsequencesのない場合、親の期日が期日となる
-						// 自身が期日を持たない場合、かつsubsequencesのある場合、subsequencesのうち、一番scheduleの早いものがdeadlineとなる
-						if ((task.subscequences !== null || task.subscequences !== undefined) && task.subscequences.length > 0) {
-							_deadline = _decideDeadlineBySubsequenceRecursively(task);
-						} else {
-							_deadline = task.deadline ? task.deadline.valueOf() : parentDeadline;
+						if (task.tasks && task.tasks.length > 0) {
+							_makeTimeframeRowsRecursively(task.tasks.map(t=>t));
 						}
-
-						/* 工数を決める */
-						// 自身が工数をもつ場合、かつchildrenのない場合、それが工数となる
-						// 自身が工数をもつ場合、かつchildrenのある場合、それらを連結したものが工数と自身の工数の長い方を工数とする
-						// 自身が工数を持たない場合、かつchildrenがない場合、1dayとする
-						// 自身が工数を持たない場合、かつchildrenのある場合、それらを連結したものが工数となる
-						if ((task.children !== null || task.children !== undefined) && task.children.length > 0) {
-							const _childTimeframes = _makeTimeframeRowsRecursively(task.children, _deadline);
-							_childTimeframes.sort((a, b) => a.schedule.diff(b.schedule));
-							let _beginning = moment(_childTimeframes[0].schedule);
-							_manhour = _beginning.diff(moment(_deadline), "days");
-							if (task.manhour && task.manhour > _manhour) { _manhour = task.manhour; }
-							
-						} else {
-							// 子がないので自信の工数あるいはデフォルトの1が工数となる
-							_manhour = task._manhour ? task._manhour : 1;
-						}
-
-						/* 開始日を決める */
-						// 自身が開始日をもつ場合、期日から工数を差し引いた日と自身の開始日の早い方を開始日とする
-						// 自身が開始日を持たない場合、期日から工数を差し引いた日を開始日とする
-						_schedule = moment(_deadline).add(-_manhour, "day");
-						if (task.schedule && task.schedule.isBefore(_schedule)) { _schedule = moment(task.schedule); }
-
-						let _timeframe = _childTimeframes[task.id];
-						_timeframe.deadline = moment(_deadline);
-						_timeframe.manhour = _manhour;
-						_timeframe.schedule = _schedule;
-						_timeframe.isCalculated = true;
 					});
 				};
 				_makeTimeframeRowsRecursively(this.treenodes.map(t => t.task));
@@ -306,7 +217,7 @@
 						return arr;
 					}, arr);
 				};
-				return _treeToArrayRecursively(this.treenodes).map(id => this.idTimeframeMap[id]);
+				return _treeToArrayRecursively(this.treenodes)//.map(id => this.idTimeframeMap[id]);
 			}
 			// 以下、未整理
 			, parsedProps() {
@@ -347,6 +258,11 @@
 				return this.scales.findIndex(el => el === `${this.scale} ${this.step}`);
 			}
 		}
+		, watch : {
+			treenodes(newArr) {
+				this.idTimeframeMap = this.treenodeToIdTimeframeMapRecursively(newArr);
+			}
+		}
 		, methods: {
 			...mapMutations([
 				"updateFoldingCondition"
@@ -355,7 +271,7 @@
 			, calculateColumns() {
 				this.numberOfColumns = Math.ceil((this.$el.clientWidth - this.$refs.legend.$el.clientWidth) / defaultOptions.cellWidth);
 			}
-			, treenodeToIdTimeframeMapRecursively = (treenodes, parentTimeframe = null, idTimeframeMap = {}) => {
+			, treenodeToIdTimeframeMapRecursively(treenodes, parentTimeframe = null, idTimeframeMap = {}) {
 				return treenodes.reduce((arr, treenode) => {
 					idTimeframeMap[treenode.id] = new Timeframe(treenode.task, parentTimeframe);
 					if ((treenode.subtree !== null || treenode.subtree !== undefined) && treenode.subtree.length > 0) {
