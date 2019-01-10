@@ -17,7 +17,7 @@
 						i.fa.fa-edit
 					span.icon(@click.prevent.stop="$emit('addIconDidPush', $event, treenode)")
 						i.fa.fa-plus
-			ul.treelist(v-show="!(foldingConditionMap[treenode.id]===false)" data-type="treenode", :data-id="treenode.id"
+			ul.treelist(v-if="!(foldingConditionMap[treenode.id]===false)" data-type="treenode", :data-id="treenode.id"
 				@dragenter="ondragenter($event, treenode)"
 			)
 				treenode(v-for="childnode in treenode.subtree", :parent="treenode", :treenode="childnode", :foldingConditionMap="foldingConditionMap", :key="childnode.id"
@@ -28,6 +28,9 @@
 					@dragenter="ondragenter"
 					@toggle-caret="caratDidClick"
 				)
+			ul.treelist(v-else data-type="treelist", :data-id="treenode.id"
+				@dragenter="ondragenter($event, treenode)"
+			)
 </template>
 
 <script>
