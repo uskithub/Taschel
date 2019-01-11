@@ -94,8 +94,8 @@
 			, visibleTerm() {
 				const _startOfTerm = this.startOfTerm !== null ? this.startOfTerm.valueOf() : 0;
 				const { startDate, endDate } = calcViewport(_startOfTerm, this.scale, this.step, this.numberOfColumns);
-				const start = moment(startDate);
-				const end = moment(endDate);
+				const start = moment(startDate).startOf("day");
+				const end = moment(endDate).startOf("day");
 				return { start, end, days: end.diff(start, "days")};
 			}
 			, earliestDate() {
@@ -192,7 +192,8 @@
 				const { start, end, days } = this.visibleTerm;
 				const _makeTimeframeRowsRecursively = (taskArr) => {
 					// deadlineの遅い順に並び替え
-					taskArr.sort((a, b) => -(a.deadline || moment("19700101", ["YYYYMMDD"])).diff(b.deadline || moment("19700101", ["YYYYMMDD"])));
+					taskArr.sort((a, b) => -((a.deadline !== undefined || a.deadline !== null) ? moment(a.deadline) : moment("19700101", ["YYYYMMDD"]))
+							.diff((b.deadline !== undefined || b.deadline !== null) ? moment(b.deadline) : moment("19700101", ["YYYYMMDD"])));
 
 					// deadlineの遅いものから計算させる
 					taskArr.forEach(task => {

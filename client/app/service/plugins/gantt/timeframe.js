@@ -16,12 +16,14 @@ export default class Timeframe {
 
 	get id() { return this._task.code; }
 	get name() { return this._task.name; }
-
+	get task() { return this._task; }
 	get deadline() { return this._deadline; }
 	get manhour() { return this._task.manhour; }
 	get schedule() { return this._schedule; }
 	get isCalculated() { return this._deadline !== null && this._schedule !== null; }
-	get isDisplay() { return this._offset !== null && this._width !== null; }
+	get isDisplay() { 
+		console.log(`${this.name}: offset: ${this._offset}, width: ${this._width}`);
+		return this._offset !== null && this._width !== null; }
 
 	get width() { return this._width; }
 	get offset() { return this._offset; }
@@ -91,15 +93,17 @@ export default class Timeframe {
 
 		this.calculateDeadline(idTimeframeMap);
 
+		console.log(this._task.schedule);
+
 		if (this._task.schedule) {
-			if (this.deadline !== -1 && this.manhour) {
+			if (this.deadline !== -1 && this.manhour > 0) {
 				const scheduleByDeadline = moment(this.deadline).add(-this.manhour, "day");
-				this._schedule = scheduleByDeadline.isBefore(this._task.schedule) ? this._task.schedule.valueOf() : scheduleByDeadline.valueOf();
+				this._schedule = scheduleByDeadline.isBefore(this._task.schedule) ? scheduleByDeadline.valueOf() : this._task.schedule.valueOf();
 			} else {
 				this._schedule = this._task.schedule.valueOf();
 			}
 		} else {
-			if (this.deadline !== -1 && this.manhour) {
+			if (this.deadline !== -1 && this.manhour > 0) {
 				this._schedule = moment(this.deadline).add(-this.manhour, "day").valueOf();
 			} else {
 				if (this._task.tasks && this._task.tasks.length > 0) {
@@ -117,6 +121,7 @@ export default class Timeframe {
 
 					this._schedule = scheduleByChildren.valueOf();		
 				} else {
+					console.log("ほあｒきてる", moment().startOf("day").format());
 					this._schedule = moment().startOf("day").valueOf();
 				}
 			}
@@ -130,31 +135,37 @@ export default class Timeframe {
 		const deadline = moment(this.deadline);
 		const offset = schedule.diff(start, "days");
 
-		console.log(this._task.name);
+		console.log(`${this.name}: offset: ${offset}`, this, start);
 
 		if (offset <= 0) {
 			if (deadline.isBefore(start)) {
 				this._offset = null;
 				this._width = null;
+				console.log(`A-1: ${this.name}`);
 			} else if (deadline.isBefore(end)) {
 				this._offset = 0;
-				this._width = deadline.diff(start, "days") * cellWidth;
+				this._width = (deadline.diff(start, "days") + 1) * cellWidth;
+				console.log(`A-2: ${this.name}: offset: ${offset}, width: ${deadline.diff(start, "days")}`, deadline, start);
 			} else {
 				this._offset = 0;
-				this._width = end.diff(start, "days") * cellWidth;
+				this._width = (end.diff(start, "days") + 1) * cellWidth;
+				console.log(`A-3: ${this.name}: offset: ${offset}, width: ${this._width}`);
 			}
 
 		} else if (schedule.isBefore(end)) {
 			this._offset = offset * cellWidth;
 			if (deadline.isBefore(end)) {
-				this._width = deadline.diff(schedule, "days") * cellWidth;
+				this._width = (deadline.diff(schedule, "days") + 1) * cellWidth;
+				console.log(`B-1: ${this.name}: offset: ${offset}, width: ${this._width}`);
 			} else {
-				this._width = end.diff(schedule, "days") * cellWidth;
+				this._width = (end.diff(schedule, "days") + 1) * cellWidth;
+				console.log(`B-2: ${this.name}: offset: ${offset}, width: ${this._width}`);
 			}
 
 		} else {
 			this._offset = null;
 			this._width = null;
+			console.log(`C: ${this.name}`, schedule, end);
 		}
 	}
 }
