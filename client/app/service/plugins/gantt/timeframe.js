@@ -92,19 +92,17 @@ export default class Timeframe {
 		if (this._schedule !== null) { return; }
 
 		this.calculateDeadline(idTimeframeMap);
-
-		console.log(this._task.schedule);
-
+		
 		if (this._task.schedule) {
 			if (this.deadline !== -1 && this.manhour > 0) {
-				const scheduleByDeadline = moment(this.deadline).add(-this.manhour, "day");
+				const scheduleByDeadline = moment(this.deadline).add(-(this.manhour-1), "day");
 				this._schedule = scheduleByDeadline.isBefore(this._task.schedule) ? scheduleByDeadline.valueOf() : this._task.schedule.valueOf();
 			} else {
 				this._schedule = this._task.schedule.valueOf();
 			}
 		} else {
 			if (this.deadline !== -1 && this.manhour > 0) {
-				this._schedule = moment(this.deadline).add(-this.manhour, "day").valueOf();
+				this._schedule = moment(this.deadline).add(-(this.manhour-1), "day").valueOf();
 			} else {
 				if (this._task.tasks && this._task.tasks.length > 0) {
 					// 子タスクについて計算する
@@ -121,7 +119,6 @@ export default class Timeframe {
 
 					this._schedule = scheduleByChildren.valueOf();		
 				} else {
-					console.log("ほあｒきてる", moment().startOf("day").format());
 					this._schedule = moment().startOf("day").valueOf();
 				}
 			}
