@@ -9,6 +9,9 @@ export default class Timeframe {
 		// Unix Timestamp (milliseconds)
 		this._deadline = null;
 		this._schedule = null;
+		
+		this._offset = null;
+		this._width = null;
 	}
 
 	get id() { return this._task.code; }
@@ -18,15 +21,10 @@ export default class Timeframe {
 	get manhour() { return this._task.manhour; }
 	get schedule() { return this._schedule; }
 	get isCalculated() { return this._deadline !== null && this._schedule !== null; }
+	get isDisplay() { return this._offset !== null && this._width !== null; }
 
-	get width() { 
-		// TODO
-		return 500; 
-	}
-	get offset() { 
-		// TODO
-		return 100; 
-	}
+	get width() { return this._width; }
+	get offset() { return this._offset; }
 
 	/**
 	 * 期日を決める要因は、
@@ -122,6 +120,41 @@ export default class Timeframe {
 					this._schedule = moment().startOf("day").valueOf();
 				}
 			}
+		}
+	}
+
+	calculateView(start, end, cellWidth) {
+		if (this.deadline === -1) return;
+
+		const schedule = moment(this.schedule);
+		const deadline = moment(this.deadline);
+		const offset = schedule.diff(start, "days");
+
+		console.log(this._task.name);
+
+		if (offset <= 0) {
+			if (deadline.isBefore(start)) {
+				this._offset = null;
+				this._width = null;
+			} else if (deadline.isBefore(end)) {
+				this._offset = 0;
+				this._width = deadline.diff(start, "days") * cellWidth;
+			} else {
+				this._offset = 0;
+				this._width = end.diff(start, "days") * cellWidth;
+			}
+
+		} else if (schedule.isBefore(end)) {
+			this._offset = offset * cellWidth;
+			if (deadline.isBefore(end)) {
+				this._width = deadline.diff(schedule, "days") * cellWidth;
+			} else {
+				this._width = end.diff(schedule, "days") * cellWidth;
+			}
+
+		} else {
+			this._offset = null;
+			this._width = null;
 		}
 	}
 }

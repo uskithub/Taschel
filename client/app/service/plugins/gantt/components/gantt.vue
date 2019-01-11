@@ -14,7 +14,7 @@
 				)
 			.gantt-column(@wheel.prevent="handleWheel", :style="{ width: numberOfColumns * 24 }")
 				gantt-header(:rows="headerRows" @header-click="handleHeaderClick")
-				gantt-body(:rows="bodyRows", :foldingConditionMap="foldingConditionMap")
+				gantt-body(:rows="bodyRows")
 		gantt-footer(:scales="scales", :selected="selectedScaleIdx", :startDate="min", :endDate="max", :step="msInCell", :period="startOfTerm"
 			@scale-change="handleScaleChange"
 			@period-change="handlePeriodChange"
@@ -189,6 +189,7 @@
 				return _headers;				
 			}
 			, bodyRows() {
+				const { start, end, days } = this.visibleTerm;
 				const _makeTimeframeRowsRecursively = (taskArr) => {
 					// deadlineの遅い順に並び替え
 					taskArr.sort((a, b) => -(a.deadline || moment("19700101", ["YYYYMMDD"])).diff(b.deadline || moment("19700101", ["YYYYMMDD"])));
@@ -197,6 +198,7 @@
 					taskArr.forEach(task => {
 						/* 期日、開始日を決める */
 						this.idTimeframeMap[task.code].calculateSchedule(this.idTimeframeMap);
+						this.idTimeframeMap[task.code].calculateView(start, end, defaultOptions.cellWidth);
 
 						if (task.tasks && task.tasks.length > 0) {
 							_makeTimeframeRowsRecursively(task.tasks.map(t=>t));
@@ -208,16 +210,17 @@
 				console.log("******", this.idTimeframeMap);
 
 				// ツリー構造をそのままの順序になるように配列化
+				// foldingMapを見て表示しないnodeは外す
 				const _treeToArrayRecursively = (treenodes, arr = []) => {
 					return treenodes.reduce( (arr, treenode) => {
 						arr.push(treenode.id);
-						if ((treenode.subtree !== null || treenode.subtree !== undefined) && treenode.subtree.length > 0) {
+						if ( !(this.foldingConditionMap[treenode.id]===false) && (treenode.subtree !== null || treenode.subtree !== undefined) && treenode.subtree.length > 0) {
 							arr = _treeToArrayRecursively(treenode.subtree, arr);
 						}
 						return arr;
 					}, arr);
 				};
-				return _treeToArrayRecursively(this.treenodes)//.map(id => this.idTimeframeMap[id]);
+				return _treeToArrayRecursively(this.treenodes).map(id => this.idTimeframeMap[id]);
 			}
 			// 以下、未整理
 			, parsedProps() {

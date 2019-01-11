@@ -2,7 +2,7 @@
 	ul.treelist-board-container
 		li.treelist-board(v-for="timeframe in rows", :key="timeframe.id")
 			.tree-item
-				.timeframe(v-show="timeframe.isCalculated", :style="{ width: timeframe.width + 'px', 'margin-left': timeframe.offset + 'px'}") {{ timeframe.name }}
+				.timeframe(v-show="timeframe.isDisplay", :style="{ width: timeframe.width + 'px', 'margin-left': timeframe.offset + 'px'}") {{ timeframe.name }}
 </template>
 <script>
 

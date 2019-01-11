@@ -232,6 +232,12 @@ module.exports = {
 					if (ctx.params.description != null)
 						doc.description = ctx.params.description;
 
+					if (ctx.params.deadline != null)
+						doc.deadline = ctx.params.deadline;
+
+					if (ctx.params.schedule != null)
+						doc.schedule = ctx.params.schedule;
+
 					if (ctx.params.status != null)
 						doc.status = ctx.params.status;
 
