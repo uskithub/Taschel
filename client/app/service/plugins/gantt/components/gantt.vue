@@ -101,14 +101,30 @@
 			, earliestDate() {
 				let _earliest = moment();
 
-				// TODO: treenodeをなめて比べる
-				return _earliest;
+				for (let id in this.idTimeframeMap) {
+					const tf = this.idTimeframeMap[id];
+					if (tf.schedule !== undefined && tf.schedule !== null) {
+						const m = moment(tf.schedule);
+						if (m.isBefore(_earliest)) {
+							_earliest = m;
+						}
+					}
+				}
+				return _earliest.add(-2, "day");
 			}
 			, latestDate() {
 				let _latest = moment().add(2, "month");
 
-				// TODO: treenodeをなめて比べる
-				return _latest;
+				for (let id in this.idTimeframeMap) {
+					const tf = this.idTimeframeMap[id];
+					if (tf.deadline !== undefined && tf.deadline !== null) {
+						const m = moment(tf.deadline);
+						if (m.isAfter(_latest)) {
+							_latest = m;
+						}
+					}
+				}
+				return _latest.add(2, "day");
 			}
 			, headerRows() {
 				let _headers = [];
@@ -208,7 +224,7 @@
 				};
 				_makeTimeframeRowsRecursively(this.treenodes.map(t => t.task));
 
-				console.log("******", this.idTimeframeMap);
+				console.log("★★★ bodyRows", this.idTimeframeMap);
 
 				// ツリー構造をそのままの順序になるように配列化
 				// foldingMapを見て表示しないnodeは外す
