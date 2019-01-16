@@ -22,7 +22,7 @@ export default class Timeframe {
 	get schedule() { return this._schedule; }
 	get isCalculated() { return this._deadline !== null && this._schedule !== null; }
 	get isDisplay() { 
-		console.log(`${this.name}: offset: ${this._offset}, width: ${this._width}`);
+		// console.log(`${this.name}: offset: ${this._offset}, width: ${this._width}`);
 		return this._offset !== null && this._width !== null; }
 
 	get width() { return this._width; }
@@ -132,37 +132,37 @@ export default class Timeframe {
 		const deadline = moment(this.deadline);
 		const offset = schedule.diff(start, "days");
 
-		console.log(`${this.name}: offset: ${offset}`, this, start);
+		// console.log(`${this.name}: offset: ${offset}`, this, start);
 
 		if (offset <= 0) {
 			if (deadline.isBefore(start)) {
 				this._offset = null;
 				this._width = null;
-				console.log(`A-1: ${this.name}`);
+				// console.log(`A-1: ${this.name}`);
 			} else if (deadline.isBefore(end)) {
 				this._offset = 0;
 				this._width = (deadline.diff(start, "days") + 1) * cellWidth;
-				console.log(`A-2: ${this.name}: offset: ${offset}, width: ${deadline.diff(start, "days")}`, deadline, start);
+				// console.log(`A-2: ${this.name}: offset: ${offset}, width: ${deadline.diff(start, "days")}`, deadline, start);
 			} else {
 				this._offset = 0;
 				this._width = (end.diff(start, "days") + 1) * cellWidth;
-				console.log(`A-3: ${this.name}: offset: ${offset}, width: ${this._width}`);
+				// console.log(`A-3: ${this.name}: offset: ${offset}, width: ${this._width}`);
 			}
 
 		} else if (schedule.isBefore(end)) {
 			this._offset = offset * cellWidth;
 			if (deadline.isBefore(end)) {
 				this._width = (deadline.diff(schedule, "days") + 1) * cellWidth;
-				console.log(`B-1: ${this.name}: offset: ${offset}, width: ${this._width}`);
+				// console.log(`B-1: ${this.name}: offset: ${offset}, width: ${this._width}`);
 			} else {
 				this._width = (end.diff(schedule, "days") + 1) * cellWidth;
-				console.log(`B-2: ${this.name}: offset: ${offset}, width: ${this._width}`);
+				// console.log(`B-2: ${this.name}: offset: ${offset}, width: ${this._width}`);
 			}
 
 		} else {
 			this._offset = null;
 			this._width = null;
-			console.log(`C: ${this.name}`, schedule, end);
+			// console.log(`C: ${this.name}`, schedule, end);
 		}
 	}
 }

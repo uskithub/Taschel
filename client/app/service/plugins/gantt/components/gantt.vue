@@ -15,7 +15,7 @@
 			.gantt-column(@wheel.prevent="handleWheel", :style="{ width: numberOfColumns * 24 }")
 				gantt-header(:rows="headerRows" @header-click="handleHeaderClick")
 				gantt-body(:rows="bodyRows")
-		gantt-footer(:scales="scales", :selected="selectedScaleIdx", :startDate="min", :endDate="max", :step="msInCell", :period="startOfTerm"
+		gantt-footer(:scales="scales", :selected="selectedScaleIdx", :startDate="earliestDate", :endDate="latestDate", :step="msInCell", :period="startOfTerm"
 			@scale-change="handleScaleChange"
 			@period-change="handlePeriodChange"
 		)
@@ -30,8 +30,6 @@
 		createOptions,
 		getEndOfScale,
 		getMsInScale,
-		getMinDate,
-		getMaxDate,
 		getViewportInMilliseconds,
 		normalizeDate,
 		transformInputValues,
@@ -92,7 +90,7 @@
 			])
 			// { start, end, days }
 			, visibleTerm() {
-				const _startOfTerm = this.startOfTerm !== null ? this.startOfTerm.valueOf() : 0;
+				const _startOfTerm = this.startOfTerm !== null ? this.startOfTerm : 0;
 				const { startDate, endDate } = calcViewport(_startOfTerm, this.scale, this.step, this.numberOfColumns);
 				const start = moment(startDate).startOf("day");
 				const end = moment(endDate).startOf("day");
@@ -110,7 +108,7 @@
 						}
 					}
 				}
-				return _earliest.add(-2, "day");
+				return _earliest.add(-2, "day").valueOf();
 			}
 			, latestDate() {
 				let _latest = moment().add(2, "month");
@@ -124,7 +122,7 @@
 						}
 					}
 				}
-				return _latest.add(2, "day");
+				return _latest.add(2, "day").valueOf();
 			}
 			, headerRows() {
 				let _headers = [];
@@ -224,7 +222,7 @@
 				};
 				_makeTimeframeRowsRecursively(this.treenodes.map(t => t.task));
 
-				console.log("★★★ bodyRows", this.idTimeframeMap);
+				// console.log("★★★ bodyRows", this.idTimeframeMap);
 
 				// ツリー構造をそのままの順序になるように配列化
 				// foldingMapを見て表示しないnodeは外す
@@ -259,20 +257,10 @@
 			, tasks() {
 				return this.parsedProps.tasks;
 			}
-			, max() {
-				return getMaxDate(
-					getEndOfScale(this.scale, this.endDate)
-					- getViewportInMilliseconds(this.endDate, this.scale, this.step, this.numberOfColumns),
-					this.min, this.msInCell,
-				);
-			}
-			, min() {
-				let r = getMinDate(this.startDate, this.scale);
-				console.log("min:", r, moment(r));
-				return r;
-			}
 			, msInCell() {
-				return getMsInScale(this.scale) * this.step;
+				let r = getMsInScale(this.scale) * this.step;
+				console.log("msInCell:", r / (60 * 60 * 24));
+				return r;
 			}
 			, selectedScaleIdx() {
 				return this.scales.findIndex(el => el === `${this.scale} ${this.step}`);
@@ -300,48 +288,40 @@
 					return idTimeframeMap;
 				}, idTimeframeMap);
 			}
+			, handleWheel(e) {
+				if (e.deltaY > 0) {
+					const newViewportStart = this.startOfTerm + this.msInCell;
+					this.startOfTerm = (newViewportStart < this.latestDate) ? newViewportStart : this.latestDate;
+				} else if (e.deltaY < 0) {
+					const newViewportStart = this.startOfTerm - this.msInCell;
+					this.startOfTerm = (newViewportStart > this.earliestDate) ? newViewportStart : this.earliestDate;
+				}
+			}
 			// 以下、未整理
 			, handleScaleChange(e) {
 				const [scale, step] = e.target.value.split(' ');
 				if (this.scale !== scale) this.scale = scale;
 				if (this.step !== step) this.step = step;
 				this.startOfTerm = normalizeDate(this.startOfTerm, this.scale, this.step);
-				if (this.startOfTerm < this.min) this.startOfTerm = this.min;
-				if (this.startOfTerm > this.max) this.startOfTerm = this.max;
+				if (this.startOfTerm < this.earliestDate) this.startOfTerm = this.earliestDate;
+				if (this.startOfTerm > this.latestDate) this.startOfTerm = this.latestDate;
 			}
 			, handlePeriodChange(e) {
 				this.startOfTerm = parseInt(e.target.value, 10);
 			}
-			, handleWheel(e) {
-				const newViewportStart = e.deltaY > 0
-					? this.startOfTerm + this.msInCell
-					: this.startOfTerm - this.msInCell;
-				if (e.deltaY > 0) {
-					if (newViewportStart < this.max) {
-					this.startOfTerm = newViewportStart;
-					} else {
-					this.startOfTerm = this.max;
-					}
-				} else if (e.deltaY < 0) {
-					if (newViewportStart > this.min) {
-					this.startOfTerm = newViewportStart;
-					} else {
-					this.startOfTerm = this.min;
-					}
-				}
-			}
+
 			, handleHeaderClick({ date, scale }) {
 				if (this.scales.includes(`${scale} 1`)) {
 					this.scale = scale;
 					this.step = 1;
-					if (date > this.max) this.startOfTerm = this.max;
-					else if (date < this.min) this.startOfTerm = this.min;
+					if (date > this.latestDate) this.startOfTerm = this.latestDate;
+					else if (date < this.earliestDate) this.startOfTerm = this.earliestDate;
 					else this.startOfTerm = date;
 				}
 			}
 			, handleTaskClick(start) {
 				const startOfTerm = normalizeDate(start, this.scale, this.step);
-				this.startOfTerm = Math.min(startOfTerm, this.max);
+				this.startOfTerm = Math.min(startOfTerm, this.latestDate);
 			}
 			// Interfacial Operations
 			, didArrangeTask({ treenode, from, to, index }) {

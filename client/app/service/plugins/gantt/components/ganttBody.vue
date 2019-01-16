@@ -68,8 +68,8 @@
 				return timeframe.name 
 					+ ", schedule:" + moment(timeframe.schedule).format('MM/DD') 
 					+ ", deadline:" + moment(timeframe.deadline).format('MM/DD')
-					+ ", _schedule:" + timeframe.task.schedule
-					+ ", _deadline:" + timeframe.task.deadline
+					+ ", _schedule:" + (timeframe.task.schedule ? moment(timeframe.task.schedule).format('MM/DD') : "-")
+					+ ", _deadline:" + (timeframe.task.deadline ? moment(timeframe.task.deadline).format('MM/DD') : "-")
 			}
             , ondragstart(e, treenode) {
 				const elem = e.target
