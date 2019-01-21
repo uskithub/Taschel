@@ -44,6 +44,10 @@
 				type: Object
 				, validator: (value) => { return true; } // TODO
 			}
+			, sibling : {
+				type: Object
+				, validator: (value) => { return true; } // TODO
+			}
 			, taskTree : {
 				type: Object
 				, validator: (value) => { return true; } // TODO
@@ -51,15 +55,35 @@
 		}
 		, data() {
 			let _entity = this.entity || this.parent.childTaskFactory();
+			let rawValues = _entity.rawValues;
+			if (this.sibling) {
+				if (isArray(rawValues.dependencies)) {
+					rawValues.dependencies.push(this.sibling.code);
+				} else {
+					rawValues.dependencies = [this.sibling.code];
+				}
+			}
 
 			return {
-				rawValues: _entity.rawValues
+				rawValues: rawValues
 				, options: {}
 			};
 		}
 		, computed: {
 			isNewEntity() { return this.entity === null; }
-            , header() { return (this.entity ? this.entity.name : (this.parent ? `${this.parent.name} にタスクを追加` : "新規作成")); }
+            , header() {
+				if (this.entity) {
+					return this.entity.name;
+				} else if (this.parent) {
+					if (this.sibling) {
+						return `${this.parent.name} に ${this.sibling.name} の後続タスクを追加`;
+					} else {
+						return `${this.parent.name} にタスクを追加`;
+					}
+				} else {
+					return "新規作成"; 
+				}
+			}
             , dynamicSchema() { 
 				let schema = {};
 				schema.fields = Task.dynamicSchema(this.rawValues)

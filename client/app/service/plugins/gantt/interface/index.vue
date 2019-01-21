@@ -1,6 +1,6 @@
 <template lang="pug">
 	section
-		editing(v-if="isEditing", :entity="entity", :parent="parentEntity", :taskTree="taskTree" , :schema="formSchema" @close="didReceiveCloseEvent")
+		editing(v-if="isEditing", :entity="entity", :parent="parentEntity", :sibling="presuppositionalSiblingEntity", :taskTree="taskTree" , :schema="formSchema" @close="didReceiveCloseEvent")
 		gantt(v-else, :data="mock", :treenodes="treenodes"
 			@addTopLevel="addTopLevelDidPush"
 			@arrange="didArrangeTask"
@@ -53,6 +53,7 @@
 				isEditing: false
 				, entity: null
 				, parentEntity: null
+				, presuppositionalSiblingEntity: null
 				, taskTree: null
 				, formSchema : schema.form
 				, mock : schema.data
@@ -85,9 +86,14 @@
 				this.taskTree = treenode;
 				this.isEditing = true;
 			}
-			, addIconDidPush(e, treenode) {
+			, addIconDidPush(e, parent, sibling) {
 				// create default values for new task according to its parent task.
-				this.parentEntity = treenode.task;
+				if (sibling) {
+					this.presuppositionalSiblingEntity = sibling.task;
+					this.parentEntity = parent ? parent.task : this.currentProject;
+				} else {
+					this.parentEntity = parent.task;
+				}
 				this.isEditing = true;
 			}
 			, didReceiveCloseEvent() {
@@ -96,6 +102,7 @@
 				this.$nextTick(() => {
 					this.entity = null;
 					this.parentEntity = null;
+					this.presuppositionalSiblingEntity = null;
 					this.taskTree = null;
 				});
 			}

@@ -17,6 +17,8 @@
 						i.fa.fa-edit
 					span.icon(@click.prevent.stop="$emit('addIconDidPush', $event, treenode)")
 						i.fa.fa-plus
+					span.icon(@click.prevent.stop="$emit('addIconDidPush', $event, parent, treenode)")
+						i.fa.fa-arrow-right
 			ul.treelist(v-if="!(foldingConditionMap[treenode.id]===false)" data-type="treenode", :data-id="treenode.id"
 				@dragenter="ondragenter($event, treenode)"
 			)
@@ -84,8 +86,8 @@
 				this.$emit("editIconDidPush", e, treenode);
 				e.stopPropagation();
 			}
-			, addIconDidPush(e, treenode) {
-				this.$emit("addIconDidPush", e, treenode);
+			, addIconDidPush(e, parent, sibling) {
+				this.$emit("addIconDidPush", e, parent, sibling);
 				e.stopPropagation();
 			}
             , ondragstart(e, parent, treenode) {

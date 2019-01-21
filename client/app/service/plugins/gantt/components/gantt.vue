@@ -331,8 +331,8 @@
 			, editIconDidPush(e, treenode) {
 				this.$emit("edit", e, treenode);
 			}
-			, addIconDidPush(e, treenode) {
-				this.$emit("add", e, treenode);
+			, addIconDidPush(e, parent, sibling) {
+				this.$emit("add", e, parent, sibling);
 			}
 			, didToggleFolding(e, id) {
 				const newValue = (this.foldingConditionMap[id]===undefined) ? false : !this.foldingConditionMap[id];

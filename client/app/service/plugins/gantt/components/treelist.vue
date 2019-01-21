@@ -10,10 +10,12 @@
 					i.fa(:class="{ 'fa-caret-down': !(foldingConditionMap[treenode.id]===false), 'fa-caret-right': foldingConditionMap[treenode.id]===false }")
 				span.treelist-board-header {{ treenode.name }}
 				span.operation(v-show="isHoveringMap[treenode.id]")
-					span.icon(@click="editIconDidPush($event, treenode)")
+					span.icon(@click.prevent.stop="$emit('editIconDidPush', $event, treenode)")
 						i.fa.fa-edit
-					span.icon(@click="addIconDidPush($event, treenode)")
+					span.icon(@click.prevent.stop="$emit('addIconDidPush', $event, treenode)")
 						i.fa.fa-plus
+					span.icon(@click.prevent.stop="$emit('addIconDidPush', $event, null, treenode)")
+						i.fa.fa-arrow-right
 			ul.treelist(v-if="!(foldingConditionMap[treenode.id]===false)" data-type="treelist", :data-id="treenode.id"
 				@dragenter="ondragenter($event, treenode)"
 			)
@@ -99,9 +101,11 @@
 			}
 			, editIconDidPush(e, treenode) {
 				this.$emit("editIconDidPush", e, treenode);
+				e.stopPropagation();
 			}
-			, addIconDidPush(e, treenode) {
-				this.$emit("addIconDidPush", e, treenode);
+			, addIconDidPush(e, parent, sibling) {
+				this.$emit("addIconDidPush", e, parent, sibling);
+				e.stopPropagation();
 			}
             , ondragstart(e, parent, treenode) {
 				const elem = e.target
