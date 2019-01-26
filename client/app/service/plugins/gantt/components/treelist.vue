@@ -1,6 +1,6 @@
 <template lang="pug">
 	ul.treelist-board-container
-		li.treelist-board(v-for="treenode in treenodes", :key="treenode.id" 
+		li.treelist-board(v-for="treenode in treenodes", :key="treenode.id", :class="getClass(treenode)" 
 			@mouseover="onmouseover($event, treenode.id)" 
 			@mouseout="onmouseout($event, treenode.id)"
 		)
@@ -93,7 +93,13 @@
 			}
 		}
 		, methods : {
-			onmouseover(e, id) {
+			// for presentation
+			getClass(treenode) {
+				return treenode.task.type;
+			}
+
+			// for interactione
+			, onmouseover(e, id) {
 				Vue.set(this.isHoveringMap, id, true);
 			}
 			, onmouseout(e, id) {

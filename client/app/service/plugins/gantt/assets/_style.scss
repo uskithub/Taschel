@@ -19,6 +19,41 @@
                 min-height: 2.5em;
                 border-bottom: 1px solid #000;
                 overflow: hidden;
+
+                &.milestone {
+                    color: #22559c;
+                    background: #ede862;
+
+                    > .tree-item {
+                        .treelist-board-header:before {
+                            content: "\f11e "; // flag-checkered
+                            font-family: FontAwesome;
+                        }
+                    }
+                }
+
+                &.requirement {
+                    background: #f27370;
+
+                    > .tree-item {
+                        .treelist-board-header:before {
+                            content: "\f084 "; // key
+                            font-family: FontAwesome;
+                        }
+                    }
+                }
+
+                &.way {
+                    background: #005792;
+                }
+
+                &.step {
+                    background: #0ea5c6;
+                }
+
+                &.todo {
+                    background: #fa9856;
+                }
         
                 .tree-item {
                     height: 2.5em;
@@ -80,6 +115,47 @@
                         padding: 0 0 0 0.5em;
                         border-top: 1px solid #000;
                         border-left: 1px solid #000;
+
+                        &.milestone {
+                            color: #22559c;
+                            background: #ede862;
+
+                            > .tree-item {
+                                .treelist-node-header:before {                                    
+                                    content: "\f11e "; // flag-checkered
+                                    font-family: FontAwesome;
+                                }
+                            }
+                        }
+        
+                        &.requirement {
+                            background: #f27370;
+
+                            > .tree-item {
+                                .treelist-node-header:before {
+                                    content: "\f084 "; // key
+                                    font-family: FontAwesome;
+                                }
+                            }
+                        }
+
+                        &.way {
+                            background: #005792;
+                            > .tree-item {
+                                .treelist-node-header:before {
+                                    content: "\f126 "; // code-branch
+                                    font-family: FontAwesome;
+                                }
+                            }
+                        }
+
+                        &.step {
+                            background: #0ea5c6;
+                        }
+
+                        &.todo {
+                            background: #fa9856;
+                        }
                     
                         &.dragging {
                             opacity: 0.5;

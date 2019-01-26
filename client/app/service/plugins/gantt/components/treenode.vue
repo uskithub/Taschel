@@ -1,5 +1,5 @@
 <template lang="pug">
-	li.treenode(:draggable="draggable", :key="treenode.id", :data-id="treenode.id"
+	li.treenode(:draggable="draggable", :key="treenode.id", :data-id="treenode.id", :class="getClass(treenode)" 
 		@mouseover.prevent.stop="onmouseover"
 		@mouseout.prevent.stop="onmouseout"
 		@click="$emit('click', $event, treenode)"
@@ -76,7 +76,13 @@
 			}
 		}
         , methods: {
-            onmouseover(e) {
+			// for presentation
+			getClass(treenode) {
+				return treenode.task.type;
+			}
+
+            // for interactione
+			, onmouseover(e) {
 				this.isHovering = true;
 			}
 			, onmouseout(e) {
