@@ -99,6 +99,15 @@ task.dependOn = [task, task, ...]
   - 終わったらsessionEnsuredを呼ぶ
 - BaseをMixinしているVueでsessionEnsuredが呼ばれる
 
+# Test
+
+## Unit
+
+mocha + chai + sinon
+
+## e2e
+
+nightmare
 
 # Vue, Express, MongoDB full-stack JS Boilerplate
 
