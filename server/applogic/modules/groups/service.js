@@ -118,7 +118,7 @@ module.exports = {
 							// exclude status is closed or already classified tasks.
 							const recursiveUnclassifiedFilter = (task, classifiedArray) => {
 								task.children = task.children.filter(child => {
-									return !(child.status < 0 || classifiedTaskCodes.includes(child.code));
+									return !(child.status < 0 || child.isDeleted == 1 || classifiedTaskCodes.includes(child.code));
 								})
 								.map(child => {
 									return recursiveUnclassifiedFilter(child, classifiedArray);
@@ -127,7 +127,7 @@ module.exports = {
 							};
 
 							let unclassifiedGroups = projectJson.children.reduce((result, child) => {
-								if (child.status < 0 || classifiedTaskCodes.includes(child.code)) {
+								if (child.status < 0 || child.isDeleted == 1 || classifiedTaskCodes.includes(child.code)) {
 									return result;
 								}
 								child = recursiveUnclassifiedFilter(child, classifiedTaskCodes);
@@ -181,6 +181,7 @@ module.exports = {
 					const excludeTaskRule = ((serviceName, json) => {
 						if ( serviceName != "tasks" ) { return true; }
 						return json.status > -1
+							&& json.isDeleted != 1
 							&& ["requirement", "way", "step", "todo"].includes(json.type)
 							&& (json.author == userId || json.asignee == userId);
 					});
@@ -198,6 +199,7 @@ module.exports = {
 						// author or asignee is user
 						let filter = {
 							status : { $gt : -1 }
+							, isDeleted : { $eq : 0 }
 							, type : { $in: ["requirement", "way", "step", "todo"] }
 							, $or : [ { author : userId }, { asignee : userId } ]
 						};
@@ -401,8 +403,8 @@ module.exports = {
 
 			let group = new Group({
 				type: ctx.params.type
-                , name: ctx.params.name
-                , purpose: ctx.params.purpose
+				, name: ctx.params.name
+				, purpose: ctx.params.purpose
 				, parent: (ctx.params.parent_code !== undefined) ? this.taskService.decodeID(ctx.params.parent_code) : -1
 				, author : ctx.user.id
 			});
