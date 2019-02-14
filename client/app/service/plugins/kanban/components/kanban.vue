@@ -1,5 +1,5 @@
 <template lang="pug">
-	li.kanban-item.media(:draggable="draggable", :key="kanban.id", :data-id="kanban.id"
+	li.kanban-item(:draggable="draggable", :key="kanban.id", :data-id="kanban.id"
 		@click="$emit('click', $event, kanban)"
 		@dragstart="$emit('dragstart', $event, parent, kanban)"
 		@dragend="$emit('dragend', $event, kanban)"

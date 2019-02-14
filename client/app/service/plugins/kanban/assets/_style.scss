@@ -35,9 +35,13 @@
 
             .kanban-item {
                 margin: 0.5em;
-                padding: 0.5em;
-                background: rgba(black, 0.4);
+                padding: 0.5em 0 0.5em 0.5em;
+                // background: rgba(black, 0.4);
                 border: 1px solid #000;
+
+                &.top-level-item {
+                    border: 1px solid #000;
+                }
             
                 &.dragging {
                     opacity: 0.5;

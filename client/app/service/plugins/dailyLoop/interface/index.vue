@@ -9,7 +9,7 @@
 						legend {{ _("Tasks") }}
 					.drag-options
 					ul.kanban-list(data-type="board", data-id="weekly")
-						kanban(v-for="kanban in kanbans", :kanban="kanban", :key="kanban.id", :draggable="false")
+						kanban.top-level-item(v-for="kanban in kanbans", :kanban="kanban", :key="kanban.id", :draggable="false")
 			ul.kanban-board-container.fullcalendar
 				li.kanban-board(key="schedule")
 					fullcalendar(:events="events", :options="fullcalendarSchema", :currentWeek="currentWeek")
