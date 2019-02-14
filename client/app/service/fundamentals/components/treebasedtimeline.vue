@@ -11,7 +11,7 @@
 			ul.treelist(v-show="isOpeningMap[treenode.id]" data-type="treelist", :data-id="treenode.id"
 				@dragenter="ondragenter($event, treenode)"
 			)
-				treenode(v-for="childnode in treenode.subtree", :parent="treenode", :treenode="childnode", :isOpeningMap="isOpeningMap", :key="childnode.id"
+				timeline-treenode(v-for="childnode in treenode.subtree", :parent="treenode", :treenode="childnode", :isOpeningMap="isOpeningMap", :key="childnode.id"
 					@addIconDidPush="addIconDidPush"
 					@dragstart="ondragstart"
 					@dragend="ondragend"

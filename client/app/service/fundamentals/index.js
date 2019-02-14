@@ -1,5 +1,6 @@
 import Table from "./components/table";
 import TimeLine from "./components/treebasedtimeline";
+import TreeNode from "./components/timelinetreenode";
 
 const plugin = {
 	// @see https://jp.vuejs.org/v2/guide/plugins.html
@@ -15,6 +16,7 @@ const plugin = {
 		// componentの追加
 		Vue.component("data-table", Table);
 		Vue.component("time-line", TimeLine);
+		Vue.component("timeline-treenode", TreeNode);
 		
 		// maps.googleapiのロード
 		// if (finalOptions.load) {
