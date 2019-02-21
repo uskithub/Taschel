@@ -3,90 +3,41 @@
 		.menu
 			.title {{ "General" | i18n }}
 			ul
-				router-link(tag="li", to="/v2/")
-					a(:title="_('Home')")
-						span.icon
-							i.fa.fa-home
-						span.label {{ "Home2" | i18n }}
-
-				router-link(tag="li", to="/v2/projects")
-					a(:title="_('Projects')")
-						span.icon
-							i.fa.fa-home
-						span.label {{ "Project2" | i18n }}
-
-				router-link(tag="li", to="/v2/weekly")
-					a(:title="_('Weekly')")
-						span.icon
-							i.fa.fa-home
-						span.label {{ "Weekly2" | i18n }}
-
-				router-link(tag="li", to="/v2/dailyLoop")
-					a(:title="_('DailyLoop')")
-						span.icon
-							i.fa.fa-home
-						span.label {{ "DailyLoop" | i18n }}
-
-				router-link(tag="li", to="/v2/timeline")
-					a(:title="_('Timeline')")
-						span.icon
-							i.fa.fa-home
-						span.label {{ "Timeline" | i18n }}
-
-				router-link(tag="li", to="/v2/gantt")
-					a(:title="_('Gantt2')")
-						span.icon
-							i.fa.fa-home
-						span.label {{ "Gantt2" | i18n }}
-
 				router-link(tag="li", to="/")
 					a(:title="_('Home')")
 						span.icon
 							i.fa.fa-home
 						span.label {{ "Home" | i18n }}
 
-				router-link(tag="li", to="/weekly")
-					a(:title="_('Weekly')")
-						span.icon
-							i.fa.fa-tasks
-						span.label {{ "Weekly" | i18n }}
-
-				router-link(tag="li", to="/daily")
-					a(:title="_('Daily')")
-						span.icon
-							i.fa.fa-tasks
-						span.label {{ "Daily" | i18n }}
-
-				router-link(tag="li", to="/daily-review")
-					a(:title="_('Daily Review')")
-						span.icon
-							i.fa.fa-tasks
-						span.label {{ "Daily Review" | i18n }}
-				
 				router-link(tag="li", to="/projects")
 					a(:title="_('Projects')")
 						span.icon
-							i.fa.fa-tasks
-						span.label {{ "Projects" | i18n }}
+							i.fa.fa-home
+						span.label {{ "Project" | i18n }}
 
-				router-link(tag="li", to="/tasks")
-					a(:title="_('Tasks')")
+				router-link(tag="li", to="/weekly")
+					a(:title="_('Weekly')")
 						span.icon
-							i.fa.fa-tasks
-						span.label {{ "Tasks" | i18n }}
+							i.fa.fa-home
+						span.label {{ "Weekly" | i18n }}
 
-				router-link(tag="li", to="/kanban")
-					a(:title="_('Kanban')")
+				router-link(tag="li", to="/dailyLoop")
+					a(:title="_('DailyLoop')")
 						span.icon
-							i.fa.fa-tasks
-						span.label {{ "Kanban" | i18n }}
+							i.fa.fa-home
+						span.label {{ "DailyLoop" | i18n }}
+
+				router-link(tag="li", to="/timeline")
+					a(:title="_('Timeline')")
+						span.icon
+							i.fa.fa-home
+						span.label {{ "Timeline" | i18n }}
 
 				router-link(tag="li", to="/gantt")
 					a(:title="_('Gantt')")
 						span.icon
-							i.fa.fa-tasks
+							i.fa.fa-home
 						span.label {{ "Gantt" | i18n }}
-
 			.title {{ "Profile" | i18n }}
 			ul
 				li
