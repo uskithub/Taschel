@@ -182,7 +182,7 @@ module.exports = {
 						if ( serviceName != "tasks" ) { return true; }
 						return json.status > -1
 							&& json.isDeleted != 1
-							&& ["requirement", "way", "step", "todo"].includes(json.type)
+							&& ["requirement", "issue", "way", "step", "todo"].includes(json.type)
 							&& (json.author == userId || json.asignee == userId);
 					});
 					let query = Group.find(filter);
@@ -200,7 +200,7 @@ module.exports = {
 						let filter = {
 							status : { $gt : -1 }
 							, isDeleted : { $eq : 0 }
-							, type : { $in: ["requirement", "way", "step", "todo"] }
+							, type : { $in: ["requirement", "issue", "way", "step", "todo"] }
 							, $or : [ { author : userId }, { asignee : userId } ]
 						};
 
