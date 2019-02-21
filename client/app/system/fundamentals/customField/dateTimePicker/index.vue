@@ -9,7 +9,10 @@
 	/* global $ */
 	import { abstractField } from "vue-form-generator";
 	import { defaults } from "lodash";
-    import fecha from "fecha";
+	import fecha from "fecha";
+	
+	import "bootstrap";
+	import "eonasdan-bootstrap-datetimepicker";
     
     let inputFormat = "YYYY-MM-DD HH:mm:ss";
     
@@ -79,5 +82,5 @@
 </script>
 
 
-<style lang="sass">
+<style lang="scss">
 </style>
