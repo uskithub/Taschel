@@ -58,20 +58,20 @@ module.exports = {
 					// find from ProjectsPage, GanttPage
 					// /tasks?type=project
 					filter.type = ctx.params.type;
-					filter.isDeleted = { $ne: true };
-					filter.status = { "$gt" : -1 };
+					filter.isDeleted = { $eq: 0 };
+					filter.status = { $gt : -1 };
 
 					excludeRule = ((serviceName, json) => {
 						if ( serviceName != "tasks" ) { return true; }
-						return json.status > -1;
+						return json.status > -1 && json.isDeleted == 0;
 					});
 
 				} else if (ctx.params.root_code != undefined) {
 					// find from TasksPage
 					// /tasks?root_code=${hash}
 					filter.root = this.decodeID(ctx.params.root_code);
-					filter.isDeleted = { $ne: true };
-					filter.status = { "$gt" : -1 };
+					filter.isDeleted = { $eq: 0 };
+					filter.status = { $gt : -1 };
 
 				} else if (ctx.params.user_code != undefined) {
 					// find from MyTasksPage
@@ -79,13 +79,13 @@ module.exports = {
 					let user_code = this.personService.decodeID(ctx.params.user_code);
 					filter.$or = [ {author : user_code}, {asignee : user_code} ];
 					filter.type = { $ne: "project" };
-					filter.isDeleted = { $ne: true };
-					filter.status = { "$gt" : -1 };
+					filter.isDeleted = { $eq: 0 };
+					filter.status = { $gt : -1 };
 					
 				} else {
 					filter.type = { $ne: "project" };
-					filter.isDeleted = { $ne: true };
-					filter.status = { "$gt" : -1 };
+					filter.isDeleted = { $eq: 0 };
+					filter.status = { $gt : -1 };
 				}
 
 				let query = Task.find(filter);
