@@ -1,14 +1,14 @@
 <!-- // DDD: Presentation -->
 <template lang="pug">
 	.container
-		ul
+		ul.timeline
 			li(v-for="work in latestWorks", :key="work.id")
 				.media
 					.media-left
 						img.avatar(src="")
 					.media-content
 						strong {{ work.title }}
-						small.text-muted @johndoe - 31m ago
+						small.text-muted @{{ work.author }} - 31m ago
 						p {{ work.description }}
 						p goodSide: {{ work.goodSide }}
 						p badSide: {{ work.badSide }}
@@ -59,3 +59,18 @@
 		}
 	};
 </script>
+
+<style lang="scss">
+
+	.container {
+		.timeline {
+			list-style: none;
+			padding: 0;
+
+			li {
+				margin-bottom: .5em; 
+			}
+		}
+	}
+
+</style>
