@@ -210,6 +210,7 @@ export default {
 				.then(data => {
 					let work = new Work(data);
 					commit(UPDATE_WORK, work);
+					return work;
 				});
 		}
 		// Usecase: a user review a day.

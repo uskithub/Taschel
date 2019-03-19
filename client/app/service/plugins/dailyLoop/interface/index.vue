@@ -260,7 +260,7 @@
 						this.getCurrentWeekReviews();
 					});
 			}
-			, didReceiveCloseEvent(rawValues) {
+			, didReceiveCloseEvent(rawValues, withTask = false) {
 				this.isEditing = false;
 				this.isReviewing = false;
 				this.popCrumb();

@@ -15,6 +15,9 @@
 						button.button.danger(v-if="rawValues.status >= 0" @click="didPushCloseButton")
 							i.icon.fa.fa-save 
 							| {{ _("Close") }}
+						button.button.danger(v-if="rawValues.status >= 0 && false" @click="didPushCloseButton($event, true)")
+							i.icon.fa.fa-save 
+							| {{ _("CloseWithTask") }}
 </template>
 <script>
 	import Vue from "vue";
@@ -59,6 +62,7 @@
 				// Usecases
 				"editWork"
 				, "closeWork"
+				, "closeTask"
 			])
 			, didPushSaveButton() {
 				if (this.rawValues.status < 0) {
@@ -88,12 +92,19 @@
 				this.$emit("close"); 
 			}
 			// Usecase: a user close the work.
-			, didPushCloseButton() {
+			, didPushCloseButton(e, withTask = false) {
 				if (this.validateInClosing()) {
 					return Promise.resolve().then(() => {
-						return this.closeWork(this.rawValues);
+						return this.closeWork(this.rawValues)
 					}).then(() => {
-						this.$emit("close", this.rawValues);
+						if (withTask) {
+							// TODO: タスクをクローズする。　TaskのrawValuesがあるわけでないのでどうやるか。。。
+							return this.closeTask(this.rawValues)
+						} else {
+							return;
+						}
+					}).then(() => {
+						this.$emit("close", this.rawValues, withTask);
 					});
 				} else {
 					// Validation error

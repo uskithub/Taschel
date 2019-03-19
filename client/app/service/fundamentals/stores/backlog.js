@@ -87,6 +87,16 @@ export default {
 					commit(UPDATE_TASK, task);
 				});
 		}
+		// Usecase:
+		, closeTask({ commit, getters }, rawValues) {
+			const projects = getters.projects;
+			rawValues.status = -1;
+			return tasks.put(rawValues)
+				.then(data => {
+					let task = new Task(data, projects);
+					commit(CLOSE_TASK, task);
+				});
+		}
 		// Usecase: get an editing task's parent as detail if it has.
 		, getTaskDetail({ commit, getters }, task) {
 			const projects = getters.projects;
