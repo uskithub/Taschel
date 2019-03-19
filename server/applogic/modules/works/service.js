@@ -325,7 +325,7 @@ module.exports = {
 				return this.populateModels(json);
 			})
 			.then((json) => {
-				this.notifyModelChanges(ctx, "updated", json);
+				//this.notifyModelChanges(ctx, "updated", json);
 				return json;
 			});								
 		}
