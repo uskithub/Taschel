@@ -30,7 +30,7 @@ module.exports = {
 			comments : "comments"
 		}
 		, idEncodes: {
-            "works": "works"
+			"works": "works"
 			, "author": "persons"
 		}
 	}
@@ -74,29 +74,39 @@ module.exports = {
 			this.validateParams(ctx, true);
 			
 			let review = new Review({
-                week: ctx.params.week
+				week: ctx.params.week
 				, date: ctx.params.date
 				// , works: this.workService.decodeID(ctx.params.work_code)
-                , highOrderAwakening: ctx.params.highOrderAwakening
-                , works: ctx.params.works.map(code => { return this.workService.decodeID(code); })
+				, highOrderAwakening: ctx.params.highOrderAwakening
+				, works: ctx.params.works.map(code => { return this.workService.decodeID(code); })
 				, author : ctx.user.id
 			});
 
 			return review.save()
-			// .then(doc => {
-			// 	// 親のTaskに追加（本来Promiseだが、待つ必要がないので非同期処理）
-			// 	Work.findById(doc.work).exec()
-			// 	.then(workDoc => {
-			// 		if (workDoc.works == null) {
-			// 			taskDoc.work = [doc.id];
-			// 		} else {
-			// 			taskDoc.works.push(doc.id);
-			// 		}
-			// 		taskDoc.save();
-			// 	});
-			// 	// あくまでworkのdocを返すこと
-			// 	return doc;
-			// })
+			.then(doc => {
+				// slackへのPOST用にworkを取得（後続処理に関係ない非同期処理）
+				let filter = {
+					_id : { $in : doc.works }
+				};
+				Work.find(filter).exec()
+				.then(docs => {
+					let message = docs.reduce((message, d) => {
+						message += `:fencer: *${d.title}*\n`;
+						message += `${d.description}\n`;
+						if (d.goodSide != undefined && d.goodSide != "") { message += `> :blush: ${d.goodSide}\n`; }
+						if (d.badSide != undefined && d.badSide != "") { message += `> :tired_face: ${d.badSide}\n`; }
+						if (d.improvement != undefined && d.improvement != "") { message += `> :thinking_face: ${d.improvement}\n`; }
+						message += "\n";
+						return message;
+					}, "");
+
+					message += `→ \`${doc.highOrderAwakening}\``;
+
+					slack.postMessage(`${ctx.user.username} の ${doc.date} のレビュー:sparkles:\n ${message}`);
+				});
+				// あくまでworkのdocを返すこと
+				return doc;
+			})
 			.then(doc => {
 				return this.toJSON(doc);
 			})
