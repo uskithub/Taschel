@@ -1,6 +1,9 @@
 "use strict";
 
+// js-all
 const WEBHOOK_URL = "https://hooks.slack.com/services/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";
+// yusuke
+// const WEBHOOK_URL = "https://hooks.slack.com/services/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";
 
 let _ = require("lodash");
 let request = require("request");
