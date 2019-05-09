@@ -107,6 +107,12 @@ module.exports = {
 								format: "HH:mm"
 								, stepping: 5
 							}
+							, get(rawValues) {
+								if (rawValues.actualStart === undefined) {
+									rawValues.actualStart = moment(rawValues.start).format("HH:mm");
+								}
+								return rawValues.actualStart;
+							}
 							, finalize: (model, value, field) => {
 								if (value) {
 									const hhmm = value.split(":");
@@ -127,6 +133,12 @@ module.exports = {
 							, dateTimePickerOptions: {
 								format: "HH:mm"
 								, stepping: 5
+							}
+							, get(rawValues) {
+								if (rawValues.actualEnd === undefined) {
+									rawValues.actualEnd = moment().format("HH:mm");
+								}
+								return rawValues.actualEnd;
 							}
 							, finalize: (model, value, field) => {
 								if (value) {
