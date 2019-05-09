@@ -1,5 +1,5 @@
 import Task from "../entities/task";
-import { INITIALIZE, LOAD_TASKS, ADD_TASK, UPDATE_TASK, LOAD_EDITING_TASK_TREE
+import { INITIALIZE, LOAD_TASKS, ADD_TASK, UPDATE_TASK, CLOSE_TASK, LOAD_EDITING_TASK_TREE
 	//, ARRANGE_AVOBE, ARRANGE_INTO, ARRANGE_BELOW 
 } from "../mutationTypes";
 import { assign } from "lodash";
@@ -42,6 +42,9 @@ export default {
 					assign(e, entity);
 				}
 			});
+		}
+		, [CLOSE_TASK] (state, code) {
+			state.entities = state.entities.filter(p => p.code != code);
 		}
 		, [LOAD_EDITING_TASK_TREE] (state, entity) {
 			state.editingTaskTree = entity;
@@ -94,7 +97,7 @@ export default {
 			return tasks.put(rawValues)
 				.then(data => {
 					let task = new Task(data, projects);
-					commit(CLOSE_TASK, task);
+					commit(CLOSE_TASK, task.code);
 				});
 		}
 		// Usecase: get an editing task's parent as detail if it has.

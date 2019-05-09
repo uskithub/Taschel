@@ -31,6 +31,7 @@ export const LOAD_TASKS			= "LOAD_TASKS";
 export const LOAD_EDITING_TASK_TREE	= "LOAD_EDITING_TASK_TREE";
 export const ADD_TASK			= "ADD_TASK";
 export const UPDATE_TASK		= "UPDATE_TASK";
+export const CLOSE_TASK		    = "CLOSE_TASK";
 
 // group
 export const LOAD_WEEKLY_GROUPS	= "LOAD_WEEKLY_GROUPS";

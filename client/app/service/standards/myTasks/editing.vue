@@ -12,6 +12,9 @@
 						button.button.primary(@click="didPushSaveButton")
 							i.icon.fa.fa-save 
 							| {{ _("Save") }}
+						button.button.danger(v-if="!isNewEntity" @click="didPushCloseButton")
+							i.icon.fa.fa-check
+							| {{ _("Close") }}
 		.panel(v-if="!isNewEntity")
 			.header 親子関係
 			.body
@@ -66,6 +69,7 @@
 				// Usecases
 				"addTask"
 				, "editTask"
+				, "closeTask"
 			])
 			, didPushSaveButton() {
 				if (this.validate()) {
@@ -75,6 +79,18 @@
 						} else {
 							return this.editTask(this.rawValues);
 						}
+					}).then(() => {
+						this.$emit("close", this.rawValues);
+					});
+					
+				} else {
+					// Validation error
+				}
+			}
+			, didPushCloseButton() {
+				if (this.validateInClosing()) {
+					return Promise.resolve().then(() => {
+						return this.closeTask(this.rawValues);
 					}).then(() => {
 						this.$emit("close", this.rawValues);
 					});
