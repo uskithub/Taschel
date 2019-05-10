@@ -30,21 +30,21 @@ export default {
 		addTaskInProjectTree({ commit, getters }, rawValues) {
 			const projects = getters.projects;
 			return tasks.post(rawValues)
-			.then(data => {
-				let task = new Task(data, projects);
-				// mutation は session.js の mutations
-				commit(ADD_TASK_TO_PROJECT, task);
-			});
+				.then(data => {
+					let task = new Task(data, projects);
+					// mutation は session.js の mutations
+					commit(ADD_TASK_TO_PROJECT, task);
+				});
 		}
 		// Usecase: 
 		, editTaskInProjectTree({ commit, getters }, rawValues) {
 			const projects = getters.projects;
 			return tasks.put(rawValues)
-			.then(data => {
-				let task = new Task(data, projects);
-				// mutation は session.js の mutations
-				commit(UPDATE_TASK_OF_CURRENT_PROJECT, task);
-			});
+				.then(data => {
+					let task = new Task(data, projects);
+					// mutation は session.js の mutations
+					commit(UPDATE_TASK_OF_CURRENT_PROJECT, task);
+				});
 		}
 	}
 };

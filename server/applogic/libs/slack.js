@@ -12,21 +12,21 @@ let request = require("request");
 function postMessage(text) {
 	let options = {
 		url: WEBHOOK_URL
-        , json: true
-        , form: `payload={"text": "${text}"}`
+		, json: true
+		, form: `payload={"text": "${text}"}`
 	};
 
 	return new Promise((resolve, reject) => {
-        request.post(options, (error, response, body) => {
-            if (error)
-                return reject(error);
+		request.post(options, (error, response, body) => {
+			if (error)
+				return reject(error);
     
-            if (response.statusCode >= 400)
-                return reject("Response error:" + response.statusCode + " " + response.statusMessage);
+			if (response.statusCode >= 400)
+				return reject("Response error:" + response.statusCode + " " + response.statusMessage);
     
-            return resolve(body);
-        });
-    });
+			return resolve(body);
+		});
+	});
 }
 
 module.exports = {

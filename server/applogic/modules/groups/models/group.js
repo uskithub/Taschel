@@ -11,11 +11,11 @@ let hashids 		= require("../../../../libs/hashids")("groups");
 let autoIncrement 	= require("mongoose-auto-increment");
 
 let schemaOptions = {
-	timestamps: true,
-	toObject: {
+	timestamps: true
+	, toObject: {
 		virtuals: true
-	},
-	toJSON: {
+	}
+	, toJSON: {
 		virtuals: true
 	}
 };
@@ -27,8 +27,8 @@ let GroupSchema = new Schema({
 	 * - daily_yyyy-MM-dd
 	 */
 	type: {
-		type: String,
-		trim: true
+		type: String
+		, trim: true
 	}
 	/**
 	 * - kanban
@@ -38,12 +38,12 @@ let GroupSchema = new Schema({
 	 * 
 	 */
 	, name: {
-		type: String,
-		trim: true
+		type: String
+		, trim: true
 	}
 	, purpose: {
-		type: String,
-		trim: true
+		type: String
+		, trim: true
 	}
 	// 親タスクのid
 	, parent : {
@@ -55,13 +55,13 @@ let GroupSchema = new Schema({
 		, ref: "Task"
 	}]
 	, author : {
-		type: Number,
-		required: "Please fill in an author ID",
-		ref: "User"
+		type: Number
+		, required: "Please fill in an author ID"
+		, ref: "User"
 	}
 	, lastCommunication: {
-		type: Date,	
-		"default": Date.now
+		type: Date	
+		, "default": Date.now
 	}
 	, metadata: {}
 
@@ -72,8 +72,8 @@ GroupSchema.virtual("code").get(function() {
 });
 
 GroupSchema.plugin(autoIncrement.plugin, {
-	model: "Group",
-	startAt: 1
+	model: "Group"
+	, startAt: 1
 });
 
 GroupSchema.methods.encodeID = function(id) {

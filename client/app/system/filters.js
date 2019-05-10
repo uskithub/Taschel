@@ -22,17 +22,17 @@ let filters = {
 				return "<span class=\"" + cls + "\">" + match + "</span>";
 			});
 		}
-	},
+	}
 
 	/*bytes(bytes) {
 		return prettyBytes(bytes);
 	},*/
 
-	ago(time) {
+	, ago(time) {
 		return moment(time).fromNow();
-	},
+	}
 
-	truncate(text, length) {
+	, truncate(text, length) {
 		if (text && text.length > length)
 			return text.substr(0, length - 1) + "…";
 		return text;
@@ -41,9 +41,9 @@ let filters = {
 };
 
 export default {
-	filters,
+	filters
 
-	install(Vue) {
+	, install(Vue) {
 		let keys = Object.keys(filters);
 		keys.forEach(name => Vue.filter(name, filters[name]));
 	}

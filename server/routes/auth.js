@@ -106,14 +106,14 @@ module.exports = function(app, db) {
 					crypto.randomBytes(25, function(err, buf) {
 						done(err, err ? null : buf.toString("hex"));
 					});
-				},
+				}
 
-				function getUser(token, done) {
+				, function getUser(token, done) {
 					let username = req.body.username;
 					User.findOne({
 						$or: [ 
-							{ "username": username}, 
-							{ "email": username}
+							{ "username": username} 
+							, { "email": username}
 						]
 					}, function(err, user) {
 						if (!user) {
@@ -134,9 +134,9 @@ module.exports = function(app, db) {
 							done(err, token, user);
 						});					
 					});
-				},
+				}
 
-				function sendResetEmailToUser(token, user, done) {
+				, function sendResetEmailToUser(token, user, done) {
 					if (!config.mailer.enabled) {
 						const err = "Trying to send email without config.mailer not enabled; emailing skipped. Have you configured mailer yet?";
 						logger.error(err);
@@ -145,8 +145,8 @@ module.exports = function(app, db) {
 					let subject = req.t("mailSubjectLogin", config);
 
 					res.render("mail/passwordLessLogin", {
-						name: user.fullName,
-						loginLink: "http://" + req.headers.host + "/passwordless/" + token
+						name: user.fullName
+						, loginLink: "http://" + req.headers.host + "/passwordless/" + token
 					}, function(err, html) {
 						if (err)
 							return done(err);

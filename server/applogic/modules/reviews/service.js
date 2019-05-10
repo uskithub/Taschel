@@ -12,17 +12,17 @@ let Work 		= require("../works/models/work");
 
 module.exports = {
 	settings: {
-		name: "reviews",
-		version: 1,
-		namespace: "reviews",
-		rest: true,
-		ws: true,
-		graphql: true,
-		permission: C.PERM_LOGGEDIN,
-		role: "user",
-		collection: Review,
+		name: "reviews"
+		, version: 1
+		, namespace: "reviews"
+		, rest: true
+		, ws: true
+		, graphql: true
+		, permission: C.PERM_LOGGEDIN
+		, role: "user"
+		, collection: Review
 		
-		modelPropFilter: "code week date works highOrderAwakening comments author createdAt updatedAt"
+		, modelPropFilter: "code week date works highOrderAwakening comments author createdAt updatedAt"
 
 		// TODO: populateModelsを改造すれば、下にのみpopulate、上にのみpopulateもできる
 		, modelPopulates: {
@@ -37,8 +37,8 @@ module.exports = {
 	
 	, actions: {
 		find: {
-			cache: true,
-			handler(ctx) {
+			cache: true
+			, handler(ctx) {
 				let filter = {};
 
 				if (ctx.params.date) {
@@ -55,16 +55,16 @@ module.exports = {
 				return ctx.queryPageSort(query).exec().then(docs => {
 					return this.toJSON(docs);
 				})
-				.then(json => {
-					return this.populateModels(json);
-				});
+					.then(json => {
+						return this.populateModels(json);
+					});
 			}
 		}
 
 		// return a model by ID
 		, get: {
-			cache: true,
-			handler(ctx) {
+			cache: true
+			, handler(ctx) {
 				ctx.assertModelIsExist(ctx.t("app:TaskNotFound"));
 				return Promise.resolve(ctx.model);
 			}
@@ -83,41 +83,41 @@ module.exports = {
 			});
 
 			return review.save()
-			.then(doc => {
+				.then(doc => {
 				// slackへのPOST用にworkを取得（後続処理に関係ない非同期処理）
-				let filter = {
-					_id : { $in : doc.works }
-				};
-				Work.find(filter).exec()
-				.then(docs => {
-					let message = docs.reduce((message, d) => {
-						message += `:fencer: *${d.title}*\n`;
-						message += `${d.description}\n`;
-						if (d.goodSide != undefined && d.goodSide != "") { message += `> :blush: ${d.goodSide}\n`; }
-						if (d.badSide != undefined && d.badSide != "") { message += `> :tired_face: ${d.badSide}\n`; }
-						if (d.improvement != undefined && d.improvement != "") { message += `> :thinking_face: ${d.improvement}\n`; }
-						message += "\n";
-						return message;
-					}, "");
+					let filter = {
+						_id : { $in : doc.works }
+					};
+					Work.find(filter).exec()
+						.then(docs => {
+							let message = docs.reduce((message, d) => {
+								message += `:fencer: *${d.title}*\n`;
+								message += `${d.description}\n`;
+								if (d.goodSide != undefined && d.goodSide != "") { message += `> :blush: ${d.goodSide}\n`; }
+								if (d.badSide != undefined && d.badSide != "") { message += `> :tired_face: ${d.badSide}\n`; }
+								if (d.improvement != undefined && d.improvement != "") { message += `> :thinking_face: ${d.improvement}\n`; }
+								message += "\n";
+								return message;
+							}, "");
 
-					message += `→ \`${doc.highOrderAwakening}\``;
+							message += `→ \`${doc.highOrderAwakening}\``;
 
-					slack.postMessage(`${ctx.user.username} の ${doc.date} のレビュー:sparkles:\n ${message}`);
+							slack.postMessage(`${ctx.user.username} の ${doc.date} のレビュー:sparkles:\n ${message}`);
+						});
+					// あくまでworkのdocを返すこと
+					return doc;
+				})
+				.then(doc => {
+					return this.toJSON(doc);
+				})
+				.then(json => {
+					return this.populateModels(json);
+				})
+				.then(json => {
+					this.notifyModelChanges(ctx, "created", json);
+					//slack.postMessage(`${ctx.user.username} が日次レビューをした！`);
+					return json;
 				});
-				// あくまでworkのdocを返すこと
-				return doc;
-			})
-			.then(doc => {
-				return this.toJSON(doc);
-			})
-			.then(json => {
-				return this.populateModels(json);
-			})
-			.then(json => {
-				this.notifyModelChanges(ctx, "created", json);
-				//slack.postMessage(`${ctx.user.username} が日次レビューをした！`);
-				return json;
-			});
 		}
 
 		, update(ctx) {
@@ -125,36 +125,36 @@ module.exports = {
 			this.validateParams(ctx);
 
 			return this.collection.findById(ctx.modelID).exec()
-			.then(doc => {
+				.then(doc => {
 
-				if (ctx.params.highOrderAwakening != null)
-					doc.highOrderAwakening = ctx.params.highOrderAwakening;
+					if (ctx.params.highOrderAwakening != null)
+						doc.highOrderAwakening = ctx.params.highOrderAwakening;
 
-				return doc.save();
-			})
-			.then(doc => {
-				return this.toJSON(doc);
-			})
-			.then(json => {
-				return this.populateModels(json);
-			})
-			.then(json => {
-				this.notifyModelChanges(ctx, "updated", json);
-				return json;
-			});								
+					return doc.save();
+				})
+				.then(doc => {
+					return this.toJSON(doc);
+				})
+				.then(json => {
+					return this.populateModels(json);
+				})
+				.then(json => {
+					this.notifyModelChanges(ctx, "updated", json);
+					return json;
+				});								
 		}
 
 		, remove(ctx) {
 			ctx.assertModelIsExist(ctx.t("app:TaskNotFound"));
 
 			return Work.remove({ _id: ctx.modelID })
-			.then(() => {
-				return ctx.model;
-			})
-			.then((json) => {
-				this.notifyModelChanges(ctx, "removed", json);
-				return json;
-			});		
+				.then(() => {
+					return ctx.model;
+				})
+				.then((json) => {
+					this.notifyModelChanges(ctx, "removed", json);
+					return json;
+				});		
 		}	
 	}
 	
@@ -168,15 +168,15 @@ module.exports = {
 		 */
 		validateParams(ctx, strictMode) {
 			if (strictMode || ctx.hasParam("week"))
-                ctx.validateParam("week").trim().notEmpty(ctx.t("app:ReviewWeekCannotBeBlank")).end();
+				ctx.validateParam("week").trim().notEmpty(ctx.t("app:ReviewWeekCannotBeBlank")).end();
                 
-            if (strictMode || ctx.hasParam("date"))
-                ctx.validateParam("date").trim().notEmpty(ctx.t("app:ReviewDateCannotBeBlank")).end();
+			if (strictMode || ctx.hasParam("date"))
+				ctx.validateParam("date").trim().notEmpty(ctx.t("app:ReviewDateCannotBeBlank")).end();
                 
-            if (strictMode || ctx.hasParam("works"))
-                ctx.validateParam("works").notEmpty(ctx.t("app:ReviewworksCannotBeBlank")).end();
+			if (strictMode || ctx.hasParam("works"))
+				ctx.validateParam("works").notEmpty(ctx.t("app:ReviewworksCannotBeBlank")).end();
                 
-            if (strictMode || ctx.hasParam("highOrderAwakening"))
+			if (strictMode || ctx.hasParam("highOrderAwakening"))
 				ctx.validateParam("highOrderAwakening").trim().notEmpty(ctx.t("app:ReviewHighOrderAwakeningCannotBeBlank")).end();
 
 			if (ctx.hasValidationErrors())
@@ -201,9 +201,9 @@ module.exports = {
 		query: `
 			reviews(limit: Int, offset: Int, sort: String): [Review]
 			review(code: String): Review
-		`,
+		`
 
-		types: `
+		, types: `
 			type Review {
 				code: String!
 				purpose: String
@@ -213,24 +213,24 @@ module.exports = {
 				status: Int
 				lastCommunication: Timestamp
 			}
-		`,
+		`
 
-		mutation: `
+		, mutation: `
             reviewCreate(name: String!, purpose: String, type: String, goal: String, status: Int): Review
 			reviewUpdate(code: String!, name: String, purpose: String, type: String, goal: String, status: Int): Review
 			reviewRemove(code: String!): Review
-		`,
+		`
 
-		resolvers: {
+		, resolvers: {
 			Query: {
-				reviews: "find",
-				review: "get"
-			},
+				reviews: "find"
+				, review: "get"
+			}
 
-			Mutation: {
-				reviewCreate: "create",
-				reviewUpdate: "update",
-				reviewRemove: "remove"
+			, Mutation: {
+				reviewCreate: "create"
+				, reviewUpdate: "update"
+				, reviewRemove: "remove"
 			}
 		}
 	}

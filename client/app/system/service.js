@@ -8,8 +8,8 @@ import { InMemoryCache } from "apollo-cache-inmemory";
 window.gql = gql; // debug
 
 const apolloClient = new ApolloClient({
-	link : new HttpLink({ uri: "/graphql", credentials: "same-origin" }),
-	cache: new InMemoryCache()
+	link : new HttpLink({ uri: "/graphql", credentials: "same-origin" })
+	, cache: new InMemoryCache()
 });
 
 export default class Service {
@@ -30,8 +30,8 @@ export default class Service {
 
 		this.namespace = namespace;
 		this.axios = axios.create({
-			baseURL: `/api/${namespace}/`,
-			responseType: "json"
+			baseURL: `/api/${namespace}/`
+			, responseType: "json"
 		});
 	}
 
@@ -47,8 +47,8 @@ export default class Service {
 	rest(action, params) {
 		return new Promise((resolve, reject) => {
 			this.axios.request(action, {
-				method: "post",
-				data: params
+				method: "post"
+				, data: params
 			}).then((response) => {
 				if (response.data && response.data.data)
 					resolve(response.data.data);
@@ -107,10 +107,10 @@ export default class Service {
 	 */
 	query(query, variables, fragments) {
 		return apolloClient.query({
-			query,
-			variables,
-			fragments,
-			forceFetch: true
+			query
+			, variables
+			, fragments
+			, forceFetch: true
 		}).then( (result) => {
 			// console.log("GraphQL response: ", result);
 
@@ -129,11 +129,11 @@ export default class Service {
 	// under dev
 	watchQuery(query, variables, fragments, pollInterval) {
 		return apolloClient.watchQuery({
-			query,
-			variables,
-			fragments, 
-			pollInterval,
-			forceFetch: true,
+			query
+			, variables
+			, fragments 
+			, pollInterval
+			, forceFetch: true,
 		});
 	}
 
@@ -150,9 +150,9 @@ export default class Service {
 	 */
 	mutate(mutation, variables, fragments) {
 		return apolloClient.mutate({
-			mutation,
-			variables,
-			fragments
+			mutation
+			, variables
+			, fragments
 		}).then( (result) => {
 			//console.log("GraphQL response: ", result);
 

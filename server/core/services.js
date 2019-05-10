@@ -136,37 +136,37 @@ class Services extends EventEmitter {
 						Promise.resolve()
 
 						// Resolve model if ID provided
-						.then(() => {
-							return ctx.resolveModel();
-						})
+							.then(() => {
+								return ctx.resolveModel();
+							})
 
 						// Check permission
-						.then(() => {
-							return ctx.checkPermission();
-						})
+							.then(() => {
+								return ctx.checkPermission();
+							})
 
 						// Call the action handler
-						.then(() => {
-							return action.handler(ctx);
-						})
+							.then(() => {
+								return action.handler(ctx);
+							})
 
 						// Response the result
-						.then((json) => {
-							res.append("Request-Id", ctx.id);
-							response.json(res, json);
-						})
+							.then((json) => {
+								res.append("Request-Id", ctx.id);
+								response.json(res, json);
+							})
 
 						// Response the error
-						.catch((err) => {
-							logger.error(err);
-							response.json(res, null, err);
-						})
+							.catch((err) => {
+								logger.error(err);
+								response.json(res, null, err);
+							})
 
-						.then(() => {
-							self.emit("response", ctx);
-							console.timeEnd("REST request");
+							.then(() => {
+								self.emit("response", ctx);
+								console.timeEnd("REST request");
 							//logger.debug("Response time:", ctx.responseTime(), "ms");
-						});
+							});
 
 					};
 
@@ -311,39 +311,39 @@ class Services extends EventEmitter {
 							Promise.resolve()
 
 							// Resolve model if ID provided
-							.then(() => {
-								return ctx.resolveModel();
-							})
+								.then(() => {
+									return ctx.resolveModel();
+								})
 
 							// Check permission
-							.then(() => {
-								return ctx.checkPermission();
-							})
+								.then(() => {
+									return ctx.checkPermission();
+								})
 
 							// Call the action handler
-							.then(() => {
-								return action.handler(ctx);
-							})
+								.then(() => {
+									return action.handler(ctx);
+								})
 
 							// Response the result
-							.then((json) => {
-								if (_.isFunction(callback)) {
-									callback(response.json(null, json));
-								}
-							})
+								.then((json) => {
+									if (_.isFunction(callback)) {
+										callback(response.json(null, json));
+									}
+								})
 
 							// Response the error
-							.catch((err) => {
-								logger.error(err);
-								if (_.isFunction(callback)) {
-									callback(response.json(null, null, err));
-								}
-							})
+								.catch((err) => {
+									logger.error(err);
+									if (_.isFunction(callback)) {
+										callback(response.json(null, null, err));
+									}
+								})
 
-							.then(() => {
-								self.emit("response", ctx);
-								console.timeEnd("SOCKET request");
-							});
+								.then(() => {
+									self.emit("response", ctx);
+									console.timeEnd("SOCKET request");
+								});
 
 						};
 
@@ -368,10 +368,10 @@ class Services extends EventEmitter {
 		let self = this;
 
 		let schemas = {
-			queries: [],
-			types: [],
-			mutations: [],
-			resolvers: []
+			queries: []
+			, types: []
+			, mutations: []
+			, resolvers: []
 		};
 
 		_.forIn(this.services, (service, name) => {
@@ -403,30 +403,30 @@ class Services extends EventEmitter {
 								return Promise.resolve()
 								
 								// Resolve model if ID provided
-								.then(() => {
-									return ctx.resolveModel();
-								})
+									.then(() => {
+										return ctx.resolveModel();
+									})
 
 								// Check permission
-								.then(() => {
-									return ctx.checkPermission();
-								})
+									.then(() => {
+										return ctx.checkPermission();
+									})
 
 								// Call the action handler
-								.then(() => {
-									return action.handler(ctx);
-								})
+									.then(() => {
+										return action.handler(ctx);
+									})
 
-								.catch((err) => {
-									logger.error(err);
-									throw err;
-								})
+									.catch((err) => {
+										logger.error(err);
+										throw err;
+									})
 
-								.then((json) => {
-									self.emit("response", ctx);
-									console.timeEnd("GRAPHQL request");
-									return json;
-								});								
+									.then((json) => {
+										self.emit("response", ctx);
+										console.timeEnd("GRAPHQL request");
+										return json;
+									});								
 							};
 
 							resolvers[name] = handler;
@@ -485,17 +485,17 @@ class Services extends EventEmitter {
 		};
 
 		return {
-			schema: [mergedSchema],
-			resolvers: mergeModuleResolvers({
+			schema: [mergedSchema]
+			, resolvers: mergeModuleResolvers({
 
 				Timestamp: {
 					__parseValue(value) {
 						return new Date(value); // value from the client
-					},
-					__serialize(value) {
+					}
+					, __serialize(value) {
 						return value.getTime(); // value sent to the client
-					},
-					__parseLiteral(ast) {
+					}
+					, __parseLiteral(ast) {
 						if (ast.kind === Kind.INT)
 							return parseInt(ast.value, 10); // ast value is always in string format
 						

@@ -9,26 +9,26 @@ let store 		= require("./memstore");
 module.exports = {
 	settings: {
 		// Name of service
-		name: "counter",
+		name: "counter"
 
 		// Version (for versioned API)
-		version: 1,
+		, version: 1
 
 		// Namespace for rest and websocket requests
-		namespace: "counter",
+		, namespace: "counter"
 
 		// Enable calling via REST
-		rest: true,
+		, rest: true
 
 		// Enable calling via websocket
-		ws: true,
+		, ws: true
 
 		// Required permission for actions
-		permission: C.PERM_LOGGEDIN
-	},
+		, permission: C.PERM_LOGGEDIN
+	}
 
 	// Actions of service
-	actions: {
+	, actions: {
 		/**
 		 * 	Get the value of the counter.
 		 * 	
@@ -43,11 +43,11 @@ module.exports = {
 		 *		query { counter }
 		 */
 		find: {
-			cache: true,
-			handler(ctx) {
+			cache: true
+			, handler(ctx) {
 				return Promise.resolve(store.counter);
 			}
-		},
+		}
 
 		/**
 		 * Set a new value to the counter
@@ -66,13 +66,13 @@ module.exports = {
 		 *		mutation { countercreate(value: 123) }
 		 *		
 		 */		
-		create(ctx) {
+		, create(ctx) {
 			if (ctx.params.value) {
 				return this.changeCounter(ctx, parseInt(ctx.params.value));
 			} else {
 				throw new Error("Missing value from request!");
 			}
-		},
+		}
 
 		/**
 		 * Reset the counter
@@ -86,15 +86,15 @@ module.exports = {
 		 *	via GraphQL: 
 		 *		mutation { counterReset }
 		 */
-		reset: {
+		, reset: {
 			// Need administration role to perform this action
-			permission: C.PERM_ADMIN,
+			permission: C.PERM_ADMIN
 
 			// Handler
-			handler(ctx) {
+			, handler(ctx) {
 				return this.changeCounter(ctx, 0);
 			}
-		},		
+		}		
 
 		/**
 		 * Increment the counter
@@ -108,9 +108,9 @@ module.exports = {
 		 *	via GraphQL: 
 		 *		mutation { counterIncrement }
 		 */
-		increment(ctx) {
+		, increment(ctx) {
 			return this.changeCounter(ctx, store.counter + 1);
-		},
+		}
 
 		/**
 		 * Decrement the counter
@@ -124,13 +124,13 @@ module.exports = {
 		 *	via GraphQL: 
 		 *		mutation { counterDecrement }
 		 */
-		decrement(ctx) {
+		, decrement(ctx) {
 			return this.changeCounter(ctx, store.counter - 1);
 		}
 
-	},
+	}
 
-	methods: {
+	, methods: {
 		/**
 		 * Change the counter value
 		 * @param  {Context} ctx   Context of request
@@ -144,22 +144,22 @@ module.exports = {
 
 			return Promise.resolve(store.counter);
 		}
-	},
+	}
 	
 	/**
 	 * Initialize this service. It will be called when server load this service.
 	 * The `ctx` contains the references of `app` and `db`
 	 * @param  {Context} ctx   Context of initialization
 	 */
-	init(ctx) {
+	, init(ctx) {
 		// Call when start the service
 		//logger.info("Initialize counter service!");
-	},
+	}
 
 	/**
 	 * Websocket options
 	 */
-	socket: {
+	, socket: {
 		// Namespace of socket
 		//nsp: "/counter",
 
@@ -170,37 +170,37 @@ module.exports = {
 			// We sent the counter last value to the client
 			socket.emit("/counter/changed", store.counter);
 		}
-	},
+	}
 
 	/**
 	 * Define GraphQL queries, types, mutations. 
 	 * This definitions enable to access this service via graphql
 	 */
-	graphql: {
+	, graphql: {
 		query: `
 			counter: Int
-		`,
+		`
 
-		types: "",
+		, types: ""
 
-		mutation: `
+		, mutation: `
 			counterCreate(value: Int!): Int
 			counterReset: Int
 			counterIncrement: Int
 			counterDecrement: Int
-		`,
+		`
 		
-		resolvers: {
+		, resolvers: {
 
 			Query: {
 				counter: "find",
-			},
+			}
 
-			Mutation: {
-				counterCreate: "create",
-				counterReset: "reset",
-				counterIncrement: "increment",
-				counterDecrement: "decrement"
+			, Mutation: {
+				counterCreate: "create"
+				, counterReset: "reset"
+				, counterIncrement: "increment"
+				, counterDecrement: "decrement"
 			}
 		}
 	}

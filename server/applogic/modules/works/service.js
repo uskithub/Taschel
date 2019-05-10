@@ -24,17 +24,17 @@ const CALENDAR_SOURCE_ID = "Taschel";
 
 module.exports = {
 	settings: {
-		name: "works",
-		version: 1,
-		namespace: "works",
-		rest: true,
-		ws: true,
-		graphql: true,
-		permission: C.PERM_LOGGEDIN,
-		role: "user",
-		collection: Work,
+		name: "works"
+		, version: 1
+		, namespace: "works"
+		, rest: true
+		, ws: true
+		, graphql: true
+		, permission: C.PERM_LOGGEDIN
+		, role: "user"
+		, collection: Work
 		
-		modelPropFilter: "code goal title start end actualStart actualEnd description week parent goodSide badSide improvement comments author status asignee lastCommunication createdAt updatedAt"
+		, modelPropFilter: "code goal title start end actualStart actualEnd description week parent goodSide badSide improvement comments author status asignee lastCommunication createdAt updatedAt"
 
 		// TODO: populateModelsを改造すれば、下にのみpopulate、上にのみpopulateもできる
 		, modelPopulates: {
@@ -50,8 +50,8 @@ module.exports = {
 	
 	, actions: {
 		find: {
-			cache: true,
-			handler(ctx) {
+			cache: true
+			, handler(ctx) {
 				let filter = {};
 
 				if (ctx.params.date) {
@@ -65,9 +65,9 @@ module.exports = {
 					return ctx.queryPageSort(query).exec().then(docs => {
 						return this.toJSON(docs);
 					})
-					.then(json => {
-						return this.populateModels(json);
-					});
+						.then(json => {
+							return this.populateModels(json);
+						});
 				} else if (ctx.params.week) {
 					const userId = ctx.params.user_code ? this.personService.decodeID(ctx.params.user_code) : null;
 					filter = {
@@ -77,84 +77,84 @@ module.exports = {
 					let query = Work.find(filter);
 
 					return ctx.queryPageSort(query).exec()
-					.then(docs => {
-						return this.toJSON(docs);
-					})
-					.then(json => {	
-						return this.populateModels(json);
-					})
-					.then(json => {
-						if (userId) {
-							return this.personService.collection.findById(userId).exec()
-							.then(doc => {
-								if (doc.credentials.access_token) {
-									let week = moment(ctx.params.week);
-									const min = week.format();
-									const max = week.add(5, "d").format();
+						.then(docs => {
+							return this.toJSON(docs);
+						})
+						.then(json => {	
+							return this.populateModels(json);
+						})
+						.then(json => {
+							if (userId) {
+								return this.personService.collection.findById(userId).exec()
+									.then(doc => {
+										if (doc.credentials.access_token) {
+											let week = moment(ctx.params.week);
+											const min = week.format();
+											const max = week.add(5, "d").format();
 			
-									console.log(min, max);
+											console.log(min, max);
 
-									let oauth2Client = new OAuth2(clientID, clientSecret, redirectUrl);
-									oauth2Client.credentials = doc.credentials;
+											let oauth2Client = new OAuth2(clientID, clientSecret, redirectUrl);
+											oauth2Client.credentials = doc.credentials;
 				
-									let calendar = google.calendar("v3");
-									// @see https://github.com/google/google-api-nodejs-client/blob/master/src/apis/calendar/v3.ts#L1025
+											let calendar = google.calendar("v3");
+											// @see https://github.com/google/google-api-nodejs-client/blob/master/src/apis/calendar/v3.ts#L1025
 		
-									return new Promise((resolve, reject) => {
+											return new Promise((resolve, reject) => {
 		
-										calendar.events.list({
-											// Auth client or API Key for the request
-											// auth?: string|OAuth2Client|JWT|Compute|UserRefreshClient;
-											auth: oauth2Client
-											, calendarId: "primary"
-											, timeMax: max
-											, timeMin: min
-											, maxResults: 10
-											, singleEvents: true
-											, orderBy: "startTime"
-										}
-										, (err, response) => {
-											if (err) {
-												return reject(err);
-											}
-											return resolve(response.data.items);
-										});
-									}).then(items => {
-										// Taschelで追加したイベントが重複して表示されないようにしている
-										items.forEach(item => {
-
-											if (item.source && item.source.title == CALENDAR_SOURCE_ID) {
-												// an event is made by taschel.
-												let eventId = String.fromCharCode.apply("", new Uint8Array(base32Decode((item.id	).toUpperCase(), "RFC4648-HEX")))
-												let workId = eventId.replace(EVENT_ID_PREFIX, "");
-
-												// TODO: jsonの中身と比べて、Googleカレンダー側で更新されていたら、workを更新
-												let work = json.find(j => this.decodeID(j.code) == workId);
-												console.log("■□■", work, item);
-												
-											} else {
-												// TODO: Google Caldndarで追加したイベントにも振り返りを可能にする
-
-												// Google Calendarで作成した予定だけ追加
-												json.push({
-													code: "GOOGLE_CALENDAR"
-													, title: item.summary
-													, start: item.start.dateTime
-													, end: item.end.dateTime
-													, week: ctx.params.week
+												calendar.events.list({
+													// Auth client or API Key for the request
+													// auth?: string|OAuth2Client|JWT|Compute|UserRefreshClient;
+													auth: oauth2Client
+													, calendarId: "primary"
+													, timeMax: max
+													, timeMin: min
+													, maxResults: 10
+													, singleEvents: true
+													, orderBy: "startTime"
+												}
+												, (err, response) => {
+													if (err) {
+														return reject(err);
+													}
+													return resolve(response.data.items);
 												});
-											}
-										});
-										return json;
+											}).then(items => {
+												// Taschelで追加したイベントが重複して表示されないようにしている
+												items.forEach(item => {
+
+													if (item.source && item.source.title == CALENDAR_SOURCE_ID) {
+														// an event is made by taschel.
+														let eventId = String.fromCharCode.apply("", new Uint8Array(base32Decode((item.id	).toUpperCase(), "RFC4648-HEX")));
+														let workId = eventId.replace(EVENT_ID_PREFIX, "");
+
+														// TODO: jsonの中身と比べて、Googleカレンダー側で更新されていたら、workを更新
+														let work = json.find(j => this.decodeID(j.code) == workId);
+														console.log("■□■", work, item);
+												
+													} else {
+														// TODO: Google Caldndarで追加したイベントにも振り返りを可能にする
+
+														// Google Calendarで作成した予定だけ追加
+														json.push({
+															code: "GOOGLE_CALENDAR"
+															, title: item.summary
+															, start: item.start.dateTime
+															, end: item.end.dateTime
+															, week: ctx.params.week
+														});
+													}
+												});
+												return json;
+											});
+										} else {
+											return json;
+										}
 									});
-								} else {
-									return json;
-								}
-							});
-						} else {
-							return json;
-						}
-					});
+							} else {
+								return json;
+							}
+						});
 				} else {
 					// for timeline
 					filter = {
@@ -164,20 +164,20 @@ module.exports = {
 					let query = Work.find().sort({ updatedAt : -1 }).skip(0).limit(10);
 
 					return ctx.queryPageSort(query).exec()
-					.then(docs => {
-						return this.toJSON(docs);
-					})
-					.then(json => {	
-						return this.populateModels(json);
-					})
+						.then(docs => {
+							return this.toJSON(docs);
+						})
+						.then(json => {	
+							return this.populateModels(json);
+						});
 				}
 			}
 		}
 
 		// return a model by ID
 		, get: {
-			cache: true,
-			handler(ctx) {
+			cache: true
+			, handler(ctx) {
 				ctx.assertModelIsExist(ctx.t("app:TaskNotFound"));
 				return Promise.resolve(ctx.model);
 			}
@@ -197,87 +197,87 @@ module.exports = {
 			});
 
 			return work.save()
-			.then(doc => {
+				.then(doc => {
 				// 親のTaskに追加（本来Promiseだが、待つ必要がないので非同期処理）
-				Task.findById(doc.parent).exec()
-				.then(taskDoc => {
-					if (taskDoc.works == null) {
-						taskDoc.work = [doc.id];
-					} else {
-						taskDoc.works.push(doc.id);
-					}
-					taskDoc.save();
-				});
+					Task.findById(doc.parent).exec()
+						.then(taskDoc => {
+							if (taskDoc.works == null) {
+								taskDoc.work = [doc.id];
+							} else {
+								taskDoc.works.push(doc.id);
+							}
+							taskDoc.save();
+						});
 
-				// Google Calendarに追加
-				const userId = ctx.user.id;
+					// Google Calendarに追加
+					const userId = ctx.user.id;
 
-				if (userId) {
+					if (userId) {
 					// 本来Promiseだが、待つ必要がないので非同期処理
-					this.personService.collection.findById(userId).exec()
-					.then(userDoc => {
-						if (userDoc.credentials.access_token) {
-							let oauth2Client = new OAuth2(clientID, clientSecret, redirectUrl);
-							oauth2Client.credentials = userDoc.credentials;
+						this.personService.collection.findById(userId).exec()
+							.then(userDoc => {
+								if (userDoc.credentials.access_token) {
+									let oauth2Client = new OAuth2(clientID, clientSecret, redirectUrl);
+									oauth2Client.credentials = userDoc.credentials;
 
-							let calendar = google.calendar("v3");
-							// @see https://github.com/google/google-api-nodejs-client/blob/master/src/apis/calendar/v3.ts#L3433
+									let calendar = google.calendar("v3");
+									// @see https://github.com/google/google-api-nodejs-client/blob/master/src/apis/calendar/v3.ts#L3433
 			
-							return new Promise((resolve, reject) => {
+									return new Promise((resolve, reject) => {
 
-								let idEncoded = base32Encode(Uint8Array.from(Buffer.from(`${EVENT_ID_PREFIX}${doc.id}`)), "RFC4648-HEX", { padding: false }).toLowerCase();
+										let idEncoded = base32Encode(Uint8Array.from(Buffer.from(`${EVENT_ID_PREFIX}${doc.id}`)), "RFC4648-HEX", { padding: false }).toLowerCase();
 
-								console.log("****** 来てる");
+										console.log("****** 来てる");
 
-								calendar.events.insert(
-								// params: Params$Resource$Events$Insert
-								{ 
-									// Auth client or API Key for the request
-									// auth?: string|OAuth2Client|JWT|Compute|UserRefreshClient;
-									auth: oauth2Client
-									, calendarId: "primary"
-									, resource: {
-										// required
-										start: { dateTime: ctx.params.start }
-										, end: { dateTime: ctx.params.end }
-										// optional
-										, id : idEncoded
-										, summary : doc.title
-										, colorId : "2"
-										// , description: ""
-										, source : {
-											title : CALENDAR_SOURCE_ID
-											, url : "https://taschel.com/"
-										}
-									}
+										calendar.events.insert(
+											// params: Params$Resource$Events$Insert
+											{ 
+												// Auth client or API Key for the request
+												// auth?: string|OAuth2Client|JWT|Compute|UserRefreshClient;
+												auth: oauth2Client
+												, calendarId: "primary"
+												, resource: {
+													// required
+													start: { dateTime: ctx.params.start }
+													, end: { dateTime: ctx.params.end }
+													// optional
+													, id : idEncoded
+													, summary : doc.title
+													, colorId : "2"
+													// , description: ""
+													, source : {
+														title : CALENDAR_SOURCE_ID
+														, url : "https://taschel.com/"
+													}
+												}
+											}
+											// callback: BodyResponseCallback<Schema$Event>
+											, (err, response) => {
+												if (err) {
+													console.log("●●●●●", err);
+													return reject(err);
+												}
+												console.log("●●◯●●", response.data.items);
+												return resolve(response.data.items);
+											});
+									});
 								}
-								// callback: BodyResponseCallback<Schema$Event>
-								, (err, response) => {
-									if (err) {
-										console.log("●●●●●", err);
-										return reject(err);
-									}
-									console.log("●●◯●●", response.data.items);
-									return resolve(response.data.items);
-								});
 							});
-						}
-					});
-				}
+					}
 
-				// あくまでworkのdocを返すこと
-				return doc;
-			})
-			.then(doc => {
-				return this.toJSON(doc);
-			})
-			.then(json => {
-				return this.populateModels(json);
-			})
-			.then(json => {
-				this.notifyModelChanges(ctx, "created", json);
-				return json;
-			});
+					// あくまでworkのdocを返すこと
+					return doc;
+				})
+				.then(doc => {
+					return this.toJSON(doc);
+				})
+				.then(json => {
+					return this.populateModels(json);
+				})
+				.then(json => {
+					this.notifyModelChanges(ctx, "created", json);
+					return json;
+				});
 		}
 
 		, update(ctx) {
@@ -285,49 +285,49 @@ module.exports = {
 			this.validateParams(ctx);
 
 			return this.collection.findById(ctx.modelID).exec()
-			.then(doc => {
-				if (ctx.params.goal != null)
-					doc.goal = ctx.params.goal;
+				.then(doc => {
+					if (ctx.params.goal != null)
+						doc.goal = ctx.params.goal;
 
-				if (ctx.params.start != null)
-					doc.start = ctx.params.start;
+					if (ctx.params.start != null)
+						doc.start = ctx.params.start;
 
-				if (ctx.params.end != null)
-					doc.end = ctx.params.end;
+					if (ctx.params.end != null)
+						doc.end = ctx.params.end;
 
-				if (ctx.params.actualStart != null)
-					doc.actualStart = ctx.params.actualStart;
+					if (ctx.params.actualStart != null)
+						doc.actualStart = ctx.params.actualStart;
 
-				if (ctx.params.actualEnd != null)
-					doc.actualEnd = ctx.params.actualEnd;
+					if (ctx.params.actualEnd != null)
+						doc.actualEnd = ctx.params.actualEnd;
 
-				if (ctx.params.description != null)
-					doc.description = ctx.params.description;
+					if (ctx.params.description != null)
+						doc.description = ctx.params.description;
 
-				if (ctx.params.status != null)
-					doc.status = ctx.params.status;
+					if (ctx.params.status != null)
+						doc.status = ctx.params.status;
 
-				if (ctx.params.goodSide != null)
-					doc.goodSide = ctx.params.goodSide;
+					if (ctx.params.goodSide != null)
+						doc.goodSide = ctx.params.goodSide;
 
-				if (ctx.params.badSide != null)
-					doc.badSide = ctx.params.badSide;
+					if (ctx.params.badSide != null)
+						doc.badSide = ctx.params.badSide;
 
-				if (ctx.params.improvement != null)
-					doc.improvement = ctx.params.improvement;
+					if (ctx.params.improvement != null)
+						doc.improvement = ctx.params.improvement;
 
-				return doc.save();
-			})
-			.then((doc) => {
-				return this.toJSON(doc);
-			})
-			.then((json) => {
-				return this.populateModels(json);
-			})
-			.then((json) => {
+					return doc.save();
+				})
+				.then((doc) => {
+					return this.toJSON(doc);
+				})
+				.then((json) => {
+					return this.populateModels(json);
+				})
+				.then((json) => {
 				//this.notifyModelChanges(ctx, "updated", json);
-				return json;
-			});								
+					return json;
+				});								
 		}
 
 		// removing the model and updating the parent task.
@@ -335,20 +335,20 @@ module.exports = {
 			ctx.assertModelIsExist(ctx.t("app:WorkNotFound"));
 
 			return Work.remove({ _id: ctx.modelID })
-			.then(() => {
-				return ctx.model;
-			})
-			.then(json => {
-				return Task.findById(this.taskService.decodeID(json.parent)).exec()
-				.then(taskDoc => {
-					taskDoc.works = taskDoc.works.filter(id => { return id != ctx.modelID; });
-					return taskDoc.save();
+				.then(() => {
+					return ctx.model;
 				})
-				.then(doc => {
-					this.notifyModelChanges(ctx, "removed", json);
-					return json;
-				});		
-			});
+				.then(json => {
+					return Task.findById(this.taskService.decodeID(json.parent)).exec()
+						.then(taskDoc => {
+							taskDoc.works = taskDoc.works.filter(id => { return id != ctx.modelID; });
+							return taskDoc.save();
+						})
+						.then(doc => {
+							this.notifyModelChanges(ctx, "removed", json);
+							return json;
+						});		
+				});
 		}	
 	}
 	
@@ -393,9 +393,9 @@ module.exports = {
 		query: `
 			works(limit: Int, offset: Int, sort: String): [Work]
 			work(code: String): Work
-		`,
+		`
 
-		types: `
+		, types: `
 			type Work {
 				code: String!
 				purpose: String
@@ -405,24 +405,24 @@ module.exports = {
 				status: Int
 				lastCommunication: Timestamp
 			}
-		`,
+		`
 
-		mutation: `
+		, mutation: `
 			workCreate(name: String!, purpose: String, type: String, goal: String, status: Int): Work
 			workUpdate(code: String!, name: String, purpose: String, type: String, goal: String, status: Int): Work
 			workRemove(code: String!): Work
-		`,
+		`
 
-		resolvers: {
+		, resolvers: {
 			Query: {
-				works: "find",
-				work: "get"
-			},
+				works: "find"
+				, work: "get"
+			}
 
-			Mutation: {
-				workCreate: "create",
-				workUpdate: "update",
-				workRemove: "remove"
+			, Mutation: {
+				workCreate: "create"
+				, workUpdate: "update"
+				, workRemove: "remove"
 			}
 		}
 	}

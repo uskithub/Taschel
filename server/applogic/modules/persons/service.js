@@ -11,54 +11,54 @@ let User 		= require("./models/user");
 
 module.exports = {
 	settings: {
-		name: "persons",
-		version: 1,
-		namespace: "persons",
-		rest: true,
-		ws: true,
-		graphql: true,
-		permission: C.PERM_LOGGEDIN,
-		role: "user",
-		collection: User,
+		name: "persons"
+		, version: 1
+		, namespace: "persons"
+		, rest: true
+		, ws: true
+		, graphql: true
+		, permission: C.PERM_LOGGEDIN
+		, role: "user"
+		, collection: User
 
-		modelPropFilter: "code username fullName avatar lastLogin roles"
-	},
+		, modelPropFilter: "code username fullName avatar lastLogin roles"
+	}
 	
-	actions: {
+	, actions: {
 		// return all model
 		find: {
-			cache: true,
-			handler(ctx) {
+			cache: true
+			, handler(ctx) {
 				return ctx.queryPageSort(User.find({})).exec().then( (docs) => {
 					return this.toJSON(docs);
 				})
-				.then((json) => {
-					return this.populateModels(json);					
-				});
+					.then((json) => {
+						return this.populateModels(json);					
+					});
 			}
-		},
+		}
 
 		// return a model by ID
-		get: {
-			cache: true,
-			handler(ctx) {
+		, get: {
+			cache: true
+			, handler(ctx) {
 				ctx.assertModelIsExist(ctx.t("app:UserNotFound"));
 				return Promise.resolve(ctx.model);
 			}
 		}
-	},
+	}
 
-	methods: {
-	},
+	, methods: {
+	}
 
-	graphql: {
+	, graphql: {
 
 		query: `
 			# users(limit: Int, offset: Int, sort: String): [Person]
 			person(code: String): Person
-		`,
+		`
 
-		types: `
+		, types: `
 			type Person {
 				code: String!
 				fullName: String
@@ -69,18 +69,18 @@ module.exports = {
 
 				posts(limit: Int, offset: Int, sort: String): [Post]
 			}
-		`,		
+		`		
 
-		mutation: `
-		`,
+		, mutation: `
+		`
 
-		resolvers: {
+		, resolvers: {
 			Query: {
 				//users: "find",
 				person: "get"
-			},
+			}
 
-			Person: {
+			, Person: {
 				posts(person, args, context) {
 					let ctx = context.ctx;
 					let postService = ctx.services("posts");

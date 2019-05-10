@@ -21,25 +21,25 @@ let self = {
 	 * IO server instance
 	 * We will assign it in `init`
 	 */
-	IO: null,
+	IO: null
 	
 	/**
 	 * Mongo store instance.
 	 * We will assign it in `init`
 	 */
-	mongoStore: null,
+	, mongoStore: null
 
 	/**
 	 * IO namespaces
 	 * @type {Object}
 	 */
-	namespaces: {},
+	, namespaces: {}
 
 	/** 
 	 * List of logged in online users/sockets
 	 * @type {Array}
 	 */
-	userSockets: [],
+	, userSockets: []
 
 	/**
 	 * Init Socket.IO module and load socket handlers 
@@ -48,12 +48,12 @@ let self = {
 	 * @param  {Object} app Express App
 	 * @param  {Object} db  MongoDB connection
 	 */
-	init(app, db) {
+	, init(app, db) {
 		// Create a MongoDB storage object
 		self.mongoStore = new MongoStore({
-			mongooseConnection: db.connection,
-			collection: config.sessions.collection,
-			autoReconnect: true
+			mongooseConnection: db.connection
+			, collection: config.sessions.collection
+			, autoReconnect: true
 		});		
 
 		// Create a new HTTP server
@@ -77,7 +77,7 @@ let self = {
 		services.registerSockets(IO, self);
 
 		return server;
-	},
+	}
 
 	/**
 	 * Create a new Socket.IO namespace
@@ -86,7 +86,7 @@ let self = {
 	 * @param {any} role	required role for namespace
 	 * @returns
 	 */
-	addNameSpace(ns, role) {
+	, addNameSpace(ns, role) {
 		let io = self.namespaces[ns];
 		if (io == null) {
 			io = self.IO.of(ns);
@@ -94,7 +94,7 @@ let self = {
 		}
 
 		return io;
-	},
+	}
 
 	/**
 	 * Initialize IO namespace. Apply authentication middleware
@@ -104,7 +104,7 @@ let self = {
 	 * @param  {Object} mongoStore 		Mongo Session store
 	 * @param  {Object} roleRequired 	required role
 	 */
-	initNameSpace(ns, io, mongoStore, roleRequired) {
+	, initNameSpace(ns, io, mongoStore, roleRequired) {
 
 		// Intercept Socket.io's handshake request
 		io.use(function (socket, next) {
@@ -174,7 +174,7 @@ let self = {
 		});
 
 		self.namespaces[ns] = io;
-	},
+	}
 
 	/**
 	 * Emit a message to a namespace
@@ -184,38 +184,38 @@ let self = {
 	 * @param {any} data
 	 * @returns
 	 */
-	nsEmit(namespace, command, data) {
+	, nsEmit(namespace, command, data) {
 		if (self.namespaces[namespace]) {
 			self.namespaces[namespace].emit(command, data);
 			return true;
 		}
-	},
+	}
 
 	/**
 	 * Add a socket to the online users list
 	 * 
 	 * @param {any} socket
 	 */
-	addOnlineUser(socket) {
+	, addOnlineUser(socket) {
 		self.removeOnlineUser(socket);
 		self.userSockets.push(socket);
-	},
+	}
 
 	/**
 	 * Remove a socket from the online users
 	 * 
 	 * @param {any} socket
 	 */
-	removeSocket(socket) {
+	, removeSocket(socket) {
 		_.remove(self.userSockets, function(s) { return s == socket; });
-	},
+	}
 
 	/**
 	 * Remove sockets of user from the online users
 	 * 
 	 * @param {any} socket
 	 */
-	removeOnlineUser(socket) {
+	, removeOnlineUser(socket) {
 		_.remove(self.userSockets, function(s) { return s.request.user._id == socket.request.user._id; });
 	}
 

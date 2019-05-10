@@ -9,11 +9,11 @@ let htmlToText 	= require("nodemailer-html-to-text").htmlToText;
 
 module.exports = {
 	settings: {
-		name: "mailer",
-		internal: true
-	},
+		name: "mailer"
+		, internal: true
+	}
 
-	methods: {
+	, methods: {
 		send(recipients, subject, body) {
 			return new Promise((resolve, reject) => {
 
@@ -25,26 +25,26 @@ module.exports = {
 
 				// recipients can be a comma separated string or array which will be sent by the 'to' field
 				// recipients can also be an object with to, cc, bcc properties etc. See: 'Common fields' https://community.nodemailer.com/
-				let emailRecipients = {}
+				let emailRecipients = {};
 				if (recipients instanceof Object) {
 					if(recipients instanceof Array) {
-						emailRecipients.to = recipients
+						emailRecipients.to = recipients;
 					}
 					else {
-						emailRecipients = recipients
+						emailRecipients = recipients;
 					}
 				}
 				else {
-					emailRecipients.to = recipients
+					emailRecipients.to = recipients;
 				} 
 
 				let mailOptions = {
-					from: config.mailer.from,
-					to: emailRecipients.to,
-					cc: emailRecipients.cc,
-					bcc: emailRecipients.bcc,
-					subject: subject,
-					html: body
+					from: config.mailer.from
+					, to: emailRecipients.to
+					, cc: emailRecipients.cc
+					, bcc: emailRecipients.bcc
+					, subject: subject
+					, html: body
 				};
 
 				let transporter;
@@ -55,8 +55,8 @@ module.exports = {
 					let mg = require("nodemailer-mailgun-transport");
 					transporter = nodemailer.createTransport(mg({
 						auth: {
-							api_key: config.mailer.mailgun.apiKey,
-							domain: config.mailer.mailgun.domain
+							api_key: config.mailer.mailgun.apiKey
+							, domain: config.mailer.mailgun.domain
 						}
 					}));
 				}
@@ -86,9 +86,9 @@ module.exports = {
 
 			});
 		}
-	},
+	}
 
-	init(ctx) {
+	, init(ctx) {
 		// Fired when start the service
 	}
 };

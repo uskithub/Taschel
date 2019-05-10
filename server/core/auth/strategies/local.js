@@ -6,14 +6,14 @@ let User = require("../../../models/user");
 
 module.exports = function() {
 	passport.use(new LocalStrategy({
-		usernameField: "username",
-		passwordField: "password",
-		passReqToCallback : true
+		usernameField: "username"
+		, passwordField: "password"
+		, passReqToCallback : true
 	}, function(req, username, password, done) {
 		return User.findOne({
 			$or: [ 
-				{ "username": username}, 
-				{ "email": username}
+				{ "username": username} 
+				, { "email": username}
 			]
 		}, function(err, user) {
 			if (err)

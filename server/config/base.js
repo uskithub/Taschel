@@ -5,74 +5,74 @@ let pkg = require("../../package.json");
 
 module.exports = {
 	app: {
-		title: pkg.title,
-		version: pkg.version,
-		description: pkg.description,
-		keywords: pkg.keywords.join(","),
-		url: "http://localhost:" + (process.env.PORT || 3000) + "/",
+		title: pkg.title
+		, version: pkg.version
+		, description: pkg.description
+		, keywords: pkg.keywords.join(",")
+		, url: "http://localhost:" + (process.env.PORT || 3000) + "/"
 		//googleAnalyticsID: 'UA-xxxxx-x',
-		contactEmail: "hello@vem-app.com"
-	},
+		, contactEmail: "hello@vem-app.com"
+	}
 
-	ip: process.env.NODE_IP || "0.0.0.0",
-	port: process.env.PORT || 3000,
+	, ip: process.env.NODE_IP || "0.0.0.0"
+	, port: process.env.PORT || 3000
 
-	rootPath: global.rootPath,
-	dataFolder: path.join(global.rootPath, "data"),
+	, rootPath: global.rootPath
+	, dataFolder: path.join(global.rootPath, "data")
 
-	uploadLimit: 2 * 1024 * 1024, // 2MB
+	, uploadLimit: 2 * 1024 * 1024 // 2MB
 
-	sessions: {
+	, sessions: {
 		cookie: {
 			// session expiration is set by default to one week
-			maxAge: 7 * 24 * (60 * 60 * 1000),
+			maxAge: 7 * 24 * (60 * 60 * 1000)
 
 			// httpOnly flag makes sure the cookie is only accessed
 			// through the HTTP protocol and not JS/browser
-			httpOnly: true,
+			, httpOnly: true
 
 			// secure cookie should be turned to true to provide additional
 			// layer of security so that the cookie is set only when working
 			// in HTTPS mode.
-			secure: false
-		},
+			, secure: false
+		}
 
 		// Cookie key name
-		name: "sessionId",
+		, name: "sessionId"
 
 		// Mongo store collection name
-		collection: "sessions"
-	},
+		, collection: "sessions"
+	}
 
-	test: false,
+	, test: false
 
-	db: {
-		useMongoClient: true,
-		uri: process.env.MONGO_URI || "mongodb://localhost/" + pkg.config.dbName + "-dev",
-		options: {
-			user: "",
-			pass: "",
-			server: {
+	, db: {
+		useMongoClient: true
+		, uri: process.env.MONGO_URI || "mongodb://localhost/" + pkg.config.dbName + "-dev"
+		, options: {
+			user: ""
+			, pass: ""
+			, server: {
 				socketOptions: {
 					keepAlive: 1
 				}
 			}
 		}
-	},
+	}
 
-	redis: {
-		enabled: false,
-		uri: process.env.REDIS_URI || "redis://localhost:6379",
-		options: null
-	},
+	, redis: {
+		enabled: false
+		, uri: process.env.REDIS_URI || "redis://localhost:6379"
+		, options: null
+	}
 
-	cacheTimeout: null, //5 * 60, // 5 mins
+	, cacheTimeout: null //5 * 60, // 5 mins
 
-	mailer: {
-		enabled: false, // change this flag to true to turn emailing feature on.
+	, mailer: {
+		enabled: false // change this flag to true to turn emailing feature on.
 		
 		//if enabled = true make sure to configure one of the methods below
-		from: "noreply@vem-app.com"
+		, from: "noreply@vem-app.com"
 		/*
 		transport: "smtp",
 		smtp: {
@@ -107,84 +107,84 @@ module.exports = {
 		sendgrid: {
 			apiKey: ""
 		}*/
-	},
+	}
 
-	features: {
-		disableSignUp: false,
-		verificationRequired: true
-	},
+	, features: {
+		disableSignUp: false
+		, verificationRequired: true
+	}
 
-	authKeys: {
+	, authKeys: {
 
 		google: {
-			clientID: null,
-			clientSecret: null
-		},
+			clientID: null
+			, clientSecret: null
+		}
 
-		facebook: {
-			clientID: null,
-			clientSecret: null
-		},
+		, facebook: {
+			clientID: null
+			, clientSecret: null
+		}
 
-		github: {
-			clientID: null,
-			clientSecret: null
-		},
+		, github: {
+			clientID: null
+			, clientSecret: null
+		}
 
-		twitter: {
-			clientID: null,
-			clientSecret: null
+		, twitter: {
+			clientID: null
+			, clientSecret: null
 		}		
-	},
+	}
 
-	logging: {
+	, logging: {
 		console: {
 			level: "debug"
-		},
+		}
 
-		file: {
-			enabled: false,
-			path: path.join(global.rootPath, "logs"),
-			level: "info",
-			json: false,
-			exceptionFile: true
-		},
+		, file: {
+			enabled: false
+			, path: path.join(global.rootPath, "logs")
+			, level: "info"
+			, json: false
+			, exceptionFile: true
+		}
 
-		graylog: {
+		, graylog: {
 			enabled: false
 			// servers: [ { host: "192.168.0.174", port: 12201 } ]
-		},
+		}
 
-		papertrail: {
-			enabled: false,
-			host: null,
-			port: null,
-			level: "debug",
-			program: "vem"
-		},
+		, papertrail: {
+			enabled: false
+			, host: null
+			, port: null
+			, level: "debug"
+			, program: "vem"
+		}
 
-		logentries: {
-			enabled: false,
-			token: null
-		},
+		, logentries: {
+			enabled: false
+			, token: null
+		}
 
-		loggly: {
-			enabled: false,
-			token: null,
-			subdomain: null
-		},
-		
-		logsene: {
-			enabled: false,
-			token: null
-		},
-		
-		logzio: {
-			enabled: false,
-			token: null
+		, loggly: {
+			enabled: false
+			, token: null
+			, subdomain: null
 		}
 		
-	},
+		, logsene: {
+			enabled: false
+			, token: null
+		}
+		
+		, logzio: {
+			enabled: false
+			, token: null
+		}
+		
+	}
 
-	agendaTimer: "one minute"
+	, agendaTimer: "one minute"
 };

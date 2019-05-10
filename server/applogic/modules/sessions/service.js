@@ -12,51 +12,51 @@ let personService;
 
 module.exports = {
 	settings: {
-		name: "sessions",
-		version: 1,
-		namespace: "sessions",
-		rest: true,
-		ws: true,
-		graphql: true,
-		permission: C.PERM_LOGGEDIN,
-		role: "user"
-	},
+		name: "sessions"
+		, version: 1
+		, namespace: "sessions"
+		, rest: true
+		, ws: true
+		, graphql: true
+		, permission: C.PERM_LOGGEDIN
+		, role: "user"
+	}
 
-	actions: {
+	, actions: {
 
 		// return my User model
 		me(ctx) {
 			return Promise.resolve(ctx.user).then( (doc) => {
 				return personService.toJSON(doc);
 			});
-		},
+		}
 
 		// return all online users
-		onlineUsers(ctx) {
+		, onlineUsers(ctx) {
 			return Promise.resolve().then(() => {
 				return personService.toJSON(_.map(Sockets.userSockets, (s) => s.request.user));
 			});
 		}
-	},
+	}
 
-	init(ctx) {
+	, init(ctx) {
 		personService = this.services("persons");
-	},
+	}
 
-	graphql: {
+	, graphql: {
 
 		query: `
 			me: Person
 			onlineUsers: [Person]
-		`,
+		`
 
-		mutation: `
-		`,
+		, mutation: `
+		`
 
-		resolvers: {
+		, resolvers: {
 			Query: {
-				me: "me",
-				onlineUsers: "onlineUsers"
+				me: "me"
+				, onlineUsers: "onlineUsers"
 			}
 		}
 	}

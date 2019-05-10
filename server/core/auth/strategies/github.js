@@ -13,11 +13,11 @@ module.exports = function() {
 	if (config.authKeys.github.clientID && config.authKeys.github.clientSecret) {
 
 		passport.use("github", new GithubStrategy({
-			clientID: config.authKeys.github.clientID,
-			clientSecret: config.authKeys.github.clientSecret,
-			callbackURL: "/auth/github/callback",
-			scope: [ "user:email" ],
-			passReqToCallback: true
+			clientID: config.authKeys.github.clientID
+			, clientSecret: config.authKeys.github.clientSecret
+			, callbackURL: "/auth/github/callback"
+			, scope: [ "user:email" ]
+			, passReqToCallback: true
 		}, function(req, accessToken, refreshToken, profile, done) {
 			logger.info("Received profile: ", profile);
 
@@ -28,20 +28,20 @@ module.exports = function() {
 			}
 
 			helper.linkToSocialAccount({
-				req, 
-				accessToken,
-				refreshToken,
-				profile,
-				done,
+				req 
+				, accessToken
+				, refreshToken
+				, profile
+				, done
 
-				provider: "github",
-				username: profile.username,
-				email: email ? email.value : null,
-				userData: {
-					name: profile.displayName,
-					gender: null,
-					picture: profile._json.avatar_url,
-					location: profile._json.location
+				, provider: "github"
+				, username: profile.username
+				, email: email ? email.value : null
+				, userData: {
+					name: profile.displayName
+					, gender: null
+					, picture: profile._json.avatar_url
+					, location: profile._json.location
 				}
 			});
 

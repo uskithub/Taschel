@@ -13,28 +13,28 @@ module.exports = function() {
 	if (config.authKeys.twitter.clientID && config.authKeys.twitter.clientSecret) {
 
 		passport.use("twitter", new TwitterStrategy({
-			consumerKey: config.authKeys.twitter.clientID,
-			consumerSecret: config.authKeys.twitter.clientSecret,
-			callbackURL: "/auth/twitter/callback",
-			passReqToCallback: true
+			consumerKey: config.authKeys.twitter.clientID
+			, consumerSecret: config.authKeys.twitter.clientSecret
+			, callbackURL: "/auth/twitter/callback"
+			, passReqToCallback: true
 		}, function(req, accessToken, refreshToken, profile, done) {
 			//logger.info("Received profile: ", profile);
 
 			helper.linkToSocialAccount({
-				req, 
-				accessToken,
-				refreshToken,
-				profile,
-				done,
+				req 
+				, accessToken
+				, refreshToken
+				, profile
+				, done
 
-				provider: "twitter",
-				email: `${profile.username}@twitter.com`,
-				username: profile.username,
-				userData: {
-					name: profile.displayName,
-					gender: null,
-					picture: profile._json.profile_image_url_https,
-					location: profile._json.location
+				, provider: "twitter"
+				, email: `${profile.username}@twitter.com`
+				, username: profile.username
+				, userData: {
+					name: profile.displayName
+					, gender: null
+					, picture: profile._json.profile_image_url_https
+					, location: profile._json.location
 				}
 			});
 

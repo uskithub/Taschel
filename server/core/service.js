@@ -43,16 +43,16 @@ class Service {
 			exception(`No settings of service '${self.name}'! Please create a settings object in service schema!`);
 
 		let settings = _.defaultsDeep(schema.settings, {
-			version: 1,
-			namespace: "",
-			internal: false,
-			rest: false,
-			ws: false,
-			graphql: false,
-			permission: C.PERM_LOGGEDIN,
-			role: C.ROLE_USER,
-			idParamName: "code", // GET /users/find?code=bD6kd
-			modelPropFilter: null
+			version: 1
+			, namespace: ""
+			, internal: false
+			, rest: false
+			, ws: false
+			, graphql: false
+			, permission: C.PERM_LOGGEDIN
+			, role: C.ROLE_USER
+			, idParamName: "code" // GET /users/find?code=bD6kd
+			, modelPropFilter: null
 		});
 		self.$settings = settings;
 
@@ -83,17 +83,17 @@ class Service {
 				let cacheKey = self.getCacheKey(action.name, ctx.params);
 
 				return self.getFromCache(cacheKey)
-				.then((cachedJSON) => {
-					if (cachedJSON != null) {
+					.then((cachedJSON) => {
+						if (cachedJSON != null) {
 						// Found in the cache!
-						return cachedJSON;
-					}
+							return cachedJSON;
+						}
 
-					return handler(ctx).then((json) => {
-						self.putToCache(cacheKey, json);
-						return json;
-					});					
-				});
+						return handler(ctx).then((json) => {
+							self.putToCache(cacheKey, json);
+							return json;
+						});					
+					});
 			};
 		};
 
@@ -104,8 +104,8 @@ class Service {
 				if (_.isFunction(action)) {
 					// Change action function to action object
 					action = {
-						handler: action,
-						name: name
+						handler: action
+						, name: name
 					};
 				}
 
@@ -272,53 +272,53 @@ class Service {
 			else
 				return null;				
 		})
-		.then(data => {
-			if (data)
-				return data;
+			.then(data => {
+				if (data)
+					return data;
 			
-			let query;
-			if (_.isArray(id)) {
-				query = this.collection.find({ _id: { $in: id} });
-			} else
-				query = this.collection.findById(id);
+				let query;
+				if (_.isArray(id)) {
+					query = this.collection.find({ _id: { $in: id} });
+				} else
+					query = this.collection.findById(id);
 
-			return query.exec().then(docs => {
-				if (_.isArray(docs)) {
+				return query.exec().then(docs => {
+					if (_.isArray(docs)) {
 					// the result of find, array will be cahnged to be ascendant of _id,
 					// so unmaking original scequences.
-					let _docs = docs.reduce((obj, d) => { 
-						obj[d._id] = d;
-						return obj;
-					}, {});
-					let reorderedDocs = id.map(id => _docs[id]);
-					const jsons = this.toJSON(reorderedDocs);
-					if (excludeRule) {
-						return jsons.filter(j => { return excludeRule(this.name, j); });
-					} else {
-						return jsons;
+						let _docs = docs.reduce((obj, d) => { 
+							obj[d._id] = d;
+							return obj;
+						}, {});
+						let reorderedDocs = id.map(id => _docs[id]);
+						const jsons = this.toJSON(reorderedDocs);
+						if (excludeRule) {
+							return jsons.filter(j => { return excludeRule(this.name, j); });
+						} else {
+							return jsons;
+						}
 					}
-				}
 
-				const json = this.toJSON(docs);
-				if (excludeRule) {
-					return excludeRule(this.name, json) ? json : null;
-				} else {
-					return json;
-				}
-			})
-			.then(json => {
-				return this.populateModels(json, excludeRule);
-			})
-			.then(json => {
-				// Save to cache
-				if (cacheKey) {
-					// After caching, if the returned json was modified, cached json also would change.
-					// So caching the clone json.
-					this.putToCache(cacheKey, _.cloneDeep(json));
-				}
-				return json;
-			});
-		});			
+					const json = this.toJSON(docs);
+					if (excludeRule) {
+						return excludeRule(this.name, json) ? json : null;
+					} else {
+						return json;
+					}
+				})
+					.then(json => {
+						return this.populateModels(json, excludeRule);
+					})
+					.then(json => {
+						// Save to cache
+						if (cacheKey) {
+							// After caching, if the returned json was modified, cached json also would change.
+							// So caching the clone json.
+							this.putToCache(cacheKey, _.cloneDeep(json));
+						}
+						return json;
+					});
+			});			
 	}	
 
 	/**

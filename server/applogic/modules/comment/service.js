@@ -12,17 +12,17 @@ let Review 		= require("../reviews/models/review");
 
 module.exports = {
 	settings: {
-		name: "comments",
-		version: 1,
-		namespace: "comments",
-		rest: true,
-		ws: true,
-		graphql: true,
-		permission: C.PERM_LOGGEDIN,
-		role: "user",
-		collection: Comment,
+		name: "comments"
+		, version: 1
+		, namespace: "comments"
+		, rest: true
+		, ws: true
+		, graphql: true
+		, permission: C.PERM_LOGGEDIN
+		, role: "user"
+		, collection: Comment
 		
-		modelPropFilter: "code description work review replies author createdAt updatedAt"
+		, modelPropFilter: "code description work review replies author createdAt updatedAt"
 
 		, modelPopulates: {
 			"replies": "comments"
@@ -36,8 +36,8 @@ module.exports = {
 	
 	, actions: {
 		find: {
-			cache: true,
-			handler(ctx) {
+			cache: true
+			, handler(ctx) {
 				let filter = {};
 
 				if (ctx.params.date) {
@@ -54,16 +54,16 @@ module.exports = {
 				return ctx.queryPageSort(query).exec().then(docs => {
 					return this.toJSON(docs);
 				})
-				.then(json => {
-					return this.populateModels(json);
-				});
+					.then(json => {
+						return this.populateModels(json);
+					});
 			}
 		}
 
 		// return a model by ID
 		, get: {
-			cache: true,
-			handler(ctx) {
+			cache: true
+			, handler(ctx) {
 				ctx.assertModelIsExist(ctx.t("app:TaskNotFound"));
 				return Promise.resolve(ctx.model);
 			}
@@ -80,42 +80,42 @@ module.exports = {
 			});
 
 			return comment.save()
-			.then(doc => {
-				if (doc.work) {
-					Work.findById(doc.work).exec()
-					.then(workDoc => {
-						if (workDoc.comments == null) {
-							workDoc.comments = [doc.id];
-						} else {
-							workDoc.comments.push(doc.id);
-						}
-						workDoc.save();
-					});
-				} else if (doc.review) {
-					Review.findById(doc.review).exec()
-					.then(reviewDoc => {
-						if (reviewDoc.comments == null) {
-							reviewDoc.comments = [doc.id];
-						} else {
-							reviewDoc.comments.push(doc.id);
-						}
-						reviewDoc.save();
-					});
-				}
+				.then(doc => {
+					if (doc.work) {
+						Work.findById(doc.work).exec()
+							.then(workDoc => {
+								if (workDoc.comments == null) {
+									workDoc.comments = [doc.id];
+								} else {
+									workDoc.comments.push(doc.id);
+								}
+								workDoc.save();
+							});
+					} else if (doc.review) {
+						Review.findById(doc.review).exec()
+							.then(reviewDoc => {
+								if (reviewDoc.comments == null) {
+									reviewDoc.comments = [doc.id];
+								} else {
+									reviewDoc.comments.push(doc.id);
+								}
+								reviewDoc.save();
+							});
+					}
 				
-				// あくまでworkのdocを返すこと
-				return doc;
-			})
-			.then(doc => {
-				return this.toJSON(doc);
-			})
-			.then(json => {
-				return this.populateModels(json);
-			})
-			.then(json => {
-				this.notifyModelChanges(ctx, "created", json);
-				return json;
-			});
+					// あくまでworkのdocを返すこと
+					return doc;
+				})
+				.then(doc => {
+					return this.toJSON(doc);
+				})
+				.then(json => {
+					return this.populateModels(json);
+				})
+				.then(json => {
+					this.notifyModelChanges(ctx, "created", json);
+					return json;
+				});
 		}
 
 		, update(ctx) {
@@ -164,9 +164,9 @@ module.exports = {
 		query: `
 			comments(limit: Int, offset: Int, sort: String): [Comment]
 			comment(code: String): Comment
-		`,
+		`
 
-		types: `
+		, types: `
 			type Comment {
 				code: String!
 				purpose: String
@@ -176,24 +176,24 @@ module.exports = {
 				status: Int
 				lastCommunication: Timestamp
 			}
-		`,
+		`
 
-		mutation: `
+		, mutation: `
             commentCreate(name: String!, purpose: String, type: String, goal: String, status: Int): Comment
 			commentUpdate(code: String!, name: String, purpose: String, type: String, goal: String, status: Int): Comment
 			commentRemove(code: String!): Comment
-		`,
+		`
 
-		resolvers: {
+		, resolvers: {
 			Query: {
-				comments: "find",
-				comment: "get"
-			},
+				comments: "find"
+				, comment: "get"
+			}
 
-			Mutation: {
-				commentCreate: "create",
-				commentUpdate: "update",
-				commentRemove: "remove"
+			, Mutation: {
+				commentCreate: "create"
+				, commentUpdate: "update"
+				, commentRemove: "remove"
 			}
 		}
 	}

@@ -31,12 +31,12 @@ export default {
 		getTimeline({ commit, getters }) {
 			const options = {  };
 			return works.get(options)
-			.then(data => {
-				let works = data.map(rawValues => {
-					return new Work(rawValues);
+				.then(data => {
+					let works = data.map(rawValues => {
+						return new Work(rawValues);
+					});
+					commit(UPDATE_TIMELINE, works);
 				});
-				commit(UPDATE_TIMELINE, works);
-			})
 		}
 	}
 };

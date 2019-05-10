@@ -53,9 +53,9 @@ export const api = (method, url, model) => {
 			}
 		});
 	})
-	.catch(error => {
-		console.error(`API ERROR: [${method}] ${url}`, model);
-		console.error(error);
-		toastr.error(error.message);
-	});
+		.catch(error => {
+			console.error(`API ERROR: [${method}] ${url}`, model);
+			console.error(error);
+			toastr.error(error.message);
+		});
 };

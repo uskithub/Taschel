@@ -11,11 +11,11 @@ let hashids 		= require("../../../../libs/hashids")("reviews");
 let autoIncrement 	= require("mongoose-auto-increment");
 
 let schemaOptions = {
-	timestamps: true,
-	toObject: {
+	timestamps: true
+	, toObject: {
 		virtuals: true
-	},
-	toJSON: {
+	}
+	, toJSON: {
 		virtuals: true
 	}
 };
@@ -25,15 +25,15 @@ let ReviewSchema = new Schema({
 		type: String // "YYYY-MM-DD"
 		, trim: true
 	}
-    , date: {
+	, date: {
 		type: String // "YYYY-MM-DD"
 		, trim: true
-    }
+	}
 	, works : [{
 		type: Number
 		, ref: "Work"
 	}]
-    , highOrderAwakening: {
+	, highOrderAwakening: {
 		type: String
 		, trim: true
 	}
@@ -42,9 +42,9 @@ let ReviewSchema = new Schema({
 		, ref: "Comment"
 	}]
 	, author : {
-		type: Number,
-		required: "Please fill in an author ID",
-		ref: "User"
+		type: Number
+		, required: "Please fill in an author ID"
+		, ref: "User"
 	}
 	, metadata: {}
 
@@ -55,8 +55,8 @@ ReviewSchema.virtual("code").get(function() {
 });
 
 ReviewSchema.plugin(autoIncrement.plugin, {
-	model: "Review",
-	startAt: 1
+	model: "Review"
+	, startAt: 1
 });
 
 ReviewSchema.methods.encodeID = function(id) {

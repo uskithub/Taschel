@@ -1,4 +1,7 @@
 
+
+export const ゲットカレントセッション         = "ゲットカレントセッション";
+
 // common
 export const INITIALIZE         = "INITIALIZE";
 export const GET_READY			= "GET_READY";

@@ -3,7 +3,7 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 
-import Profile from "../service/standards/profile/index";
+import Profile from "../service/presentation/profile/presenter";
 import MyTasks from "../service/standards/myTasks/index";
 import Projects from "../service/standards/projects/index";
 import Weekly from "../service/standards/weekly/index";
@@ -15,8 +15,8 @@ import Gantt from "../service/plugins/gantt/interface/index";
 Vue.use(VueRouter);
 
 export default new VueRouter({
-	mode: "hash",
-	routes: [
+	mode: "hash"
+	, routes: [
 		//, { path: "/users", component: User, meta: { needRole: "admin" } }
 		// , { path: "*", component: NotFound }
 		{ path: "/profile", component: Profile }

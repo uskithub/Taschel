@@ -11,10 +11,10 @@ let User = require("../models/user");
 
 let agenda = new Agenda({
 	db: {
-		address: config.db.uri,
-		collection: "agendaJobs"
-	},
-	processEvery: config.agendaTimer || "one minute"
+		address: config.db.uri
+		, collection: "agendaJobs"
+	}
+	, processEvery: config.agendaTimer || "one minute"
 });
 
 agenda.on("fail", function(err, job) {
@@ -31,8 +31,8 @@ agenda.define("removeUnverifiedAccounts", function(job, done) {
 		User.remove({ 
 			createdAt: {
 				$lte: moment().subtract(1, "day").toDate()
-			},
-			verified: false
+			}
+			, verified: false
 		}, (err, count) => {
 			if (count > 0)
 				logger.warn(chalk.bold.red(count + " unverified and expired account removed!"));

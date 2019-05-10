@@ -10,23 +10,23 @@ let Device 		= require("./models/device");
 
 module.exports = {
 	settings: {
-		name: "devices",
-		version: 1,
-		namespace: "devices",
-		rest: true,
-		ws: true,
-		graphql: true,
-		permission: C.PERM_LOGGEDIN,
-		role: "user",
-		collection: Device,
+		name: "devices"
+		, version: 1
+		, namespace: "devices"
+		, rest: true
+		, ws: true
+		, graphql: true
+		, permission: C.PERM_LOGGEDIN
+		, role: "user"
+		, collection: Device
 		
-		modelPropFilter: "code type address name description status lastCommunication createdAt updatedAt"
-	},
+		, modelPropFilter: "code type address name description status lastCommunication createdAt updatedAt"
+	}
 	
-	actions: {
+	, actions: {
 		find: {
-			cache: true,
-			handler(ctx) {
+			cache: true
+			, handler(ctx) {
 				let filter = {};
 
 				let query = Device.find(filter);
@@ -34,93 +34,93 @@ module.exports = {
 					return this.toJSON(docs);
 				});
 			}
-		},
+		}
 
 		// return a model by ID
-		get: {
-			cache: true,
-			handler(ctx) {
+		, get: {
+			cache: true
+			, handler(ctx) {
 				ctx.assertModelIsExist(ctx.t("app:DeviceNotFound"));
 				return Promise.resolve(ctx.model);
 			}
-		},
+		}
 
-		create(ctx) {
+		, create(ctx) {
 			this.validateParams(ctx, true);
 			
 			let device = new Device({
-				address: ctx.params.address,
-				type: ctx.params.type,
-				name: ctx.params.name,
-				description: ctx.params.description,
-				status: ctx.params.status
+				address: ctx.params.address
+				, type: ctx.params.type
+				, name: ctx.params.name
+				, description: ctx.params.description
+				, status: ctx.params.status
 			});
 
 			return device.save()
-			.then((doc) => {
-				return this.toJSON(doc);
-			})
-			.then((json) => {
-				return this.populateModels(json);
-			})
-			.then((json) => {
-				this.notifyModelChanges(ctx, "created", json);
-				return json;
-			});	
-		},
+				.then((doc) => {
+					return this.toJSON(doc);
+				})
+				.then((json) => {
+					return this.populateModels(json);
+				})
+				.then((json) => {
+					this.notifyModelChanges(ctx, "created", json);
+					return json;
+				});	
+		}
 
-		update(ctx) {
+		, update(ctx) {
 			ctx.assertModelIsExist(ctx.t("app:DeviceNotFound"));
 			this.validateParams(ctx);
 
 			return this.collection.findById(ctx.modelID).exec()
-			.then((doc) => {
+				.then((doc) => {
 
-				if (ctx.params.address != null)
-					doc.address = ctx.params.address;
+					if (ctx.params.address != null)
+						doc.address = ctx.params.address;
 
-				if (ctx.params.type != null)
-					doc.type = ctx.params.type;
+					if (ctx.params.type != null)
+						doc.type = ctx.params.type;
 
-				if (ctx.params.name != null)
-					doc.name = ctx.params.name;
+					if (ctx.params.name != null)
+						doc.name = ctx.params.name;
 
-				if (ctx.params.description != null)
-					doc.description = ctx.params.description;
+					if (ctx.params.description != null)
+						doc.description = ctx.params.description;
 
-				if (ctx.params.status != null)
-					doc.status = ctx.params.status;
+					if (ctx.params.status != null)
+						doc.status = ctx.params.status;
 
-				return doc.save();
-			})
-			.then((doc) => {
-				return this.toJSON(doc);
-			})
-			.then((json) => {
-				return this.populateModels(json);
-			})
-			.then((json) => {
-				this.notifyModelChanges(ctx, "updated", json);
-				return json;
-			});								
-		},
+					return doc.save();
+				})
+				.then((doc) => {
+					return this.toJSON(doc);
+				})
+				.then((json) => {
+					return this.populateModels(json);
+				})
+				.then((json) => {
+					this.notifyModelChanges(ctx, "updated", json);
+					return json;
+				});								
+		}
 
-		remove(ctx) {
+		, remove(ctx) {
 			ctx.assertModelIsExist(ctx.t("app:DeviceNotFound"));
 
 			return Device.remove({ _id: ctx.modelID })
-			.then(() => {
-				return ctx.model;
-			})
-			.then((json) => {
-				this.notifyModelChanges(ctx, "removed", json);
-				return json;
-			});		
+				.then(() => {
+					return ctx.model;
+				})
+				.then((json) => {
+					this.notifyModelChanges(ctx, "removed", json);
+					return json;
+				});		
 		}
 
-	},
+	}
 	
-	methods: {
+	, methods: {
 		/**
 		 * Validate params of context.
 		 * We will call it in `create` and `update` actions
@@ -142,26 +142,26 @@ module.exports = {
 			if (ctx.hasValidationErrors())
 				throw ctx.errorBadRequest(C.ERR_VALIDATION_ERROR, ctx.validationErrors);			
 		}
-	},	
+	}	
 
-	init(ctx) {
+	, init(ctx) {
 		// Fired when start the service
-	},
+	}
 
-	socket: {
+	, socket: {
 		afterConnection(socket, io) {
 			// Fired when a new client connected via websocket
 		}
-	},
+	}
 
-	graphql: {
+	, graphql: {
 
 		query: `
 			devices(limit: Int, offset: Int, sort: String): [Device]
 			device(code: String): Device
-		`,
+		`
 
-		types: `
+		, types: `
 			type Device {
 				code: String!
 				address: String
@@ -171,24 +171,24 @@ module.exports = {
 				status: Int
 				lastCommunication: Timestamp
 			}
-		`,
+		`
 
-		mutation: `
+		, mutation: `
 			deviceCreate(name: String!, address: String, type: String, description: String, status: Int): Device
 			deviceUpdate(code: String!, name: String, address: String, type: String, description: String, status: Int): Device
 			deviceRemove(code: String!): Device
-		`,
+		`
 
-		resolvers: {
+		, resolvers: {
 			Query: {
-				devices: "find",
-				device: "get"
-			},
+				devices: "find"
+				, device: "get"
+			}
 
-			Mutation: {
-				deviceCreate: "create",
-				deviceUpdate: "update",
-				deviceRemove: "remove"
+			, Mutation: {
+				deviceCreate: "create"
+				, deviceUpdate: "update"
+				, deviceRemove: "remove"
 			}
 		}
 	}

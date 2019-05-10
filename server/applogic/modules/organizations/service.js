@@ -39,16 +39,16 @@ module.exports = {
 				return ctx.queryPageSort(query).exec().then(docs => {
 					return this.toJSON(docs);
 				})
-				.then(json => {
-					return this.populateModels(json);
-				});
+					.then(json => {
+						return this.populateModels(json);
+					});
 			}
 		}
 
 		// return a model by ID
 		, get: {
-			cache: true,
-			handler(ctx) {
+			cache: true
+			, handler(ctx) {
 				ctx.assertModelIsExist(ctx.t("app:TaskNotFound"));
 				return Promise.resolve(ctx.model);
 			}
@@ -196,9 +196,9 @@ module.exports = {
 		query: `
 			organizations(limit: Int, offset: Int, sort: String): [Organization]
 			organization(code: String): Organization
-		`,
+		`
 
-		types: `
+		, types: `
 			type Organization {
 				code: String!
 				purpose: String
@@ -208,24 +208,24 @@ module.exports = {
 				status: Int
 				lastCommunication: Timestamp
 			}
-		`,
+		`
 
-		mutation: `
+		, mutation: `
 			organizationCreate(name: String!, purpose: String, type: String, goal: String, status: Int): Organization
 			organizationUpdate(code: String!, name: String, purpose: String, type: String, goal: String, status: Int): Organization
 			organizationRemove(code: String!): Organization
-		`,
+		`
 
-		resolvers: {
+		, resolvers: {
 			Query: {
-				organizations: "find",
-				organization: "get"
-			},
+				organizations: "find"
+				, organization: "get"
+			}
 
-			Mutation: {
-				organizationCreate: "create",
-				organizationUpdate: "update",
-				organizationRemove: "remove"
+			, Mutation: {
+				organizationCreate: "create"
+				, organizationUpdate: "update"
+				, organizationRemove: "remove"
 			}
 		}
 	}

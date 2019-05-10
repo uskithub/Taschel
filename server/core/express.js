@@ -61,9 +61,9 @@ function initMiddleware(app) {
 	app.use(compress({
 		filter: function(req, res) {
 			return /json|text|javascript|css/.test(res.getHeader("Content-Type"));
-		},
-		level: 3,
-		threshold: 512
+		}
+		, level: 3
+		, threshold: 512
 	}));
 
 	// Configure express app
@@ -71,8 +71,8 @@ function initMiddleware(app) {
 
 	// Request body parsing middleware should be above methodOverride
 	app.use(bodyParser.urlencoded({
-		extended: true,
-		limit: config.contentMaxLength * 2
+		extended: true
+		, limit: config.contentMaxLength * 2
 	}));
 	app.use(validator());
 	app.use(bodyParser.json());	
@@ -128,23 +128,23 @@ function initI18N(app) {
 
 	let conf = {
 		//debug: true,
-		fallbackLng: "en",
-		whitelist: ["en", "ja", "hu"],
-		ns: ["app", "frontend"],
-		defaultNS: "frontend",
-		load: "all",
-		saveMissing: true, //config.isDevMode(),
-		saveMissingTo: "all", // "fallback", "current", "all"
+		fallbackLng: "en"
+		, whitelist: ["en", "ja", "hu"]
+		, ns: ["app", "frontend"]
+		, defaultNS: "frontend"
+		, load: "all"
+		, saveMissing: true //config.isDevMode(),
+		, saveMissingTo: "all" // "fallback", "current", "all"
 
-		backend: {
+		, backend: {
 			// path where resources get loaded from
-			loadPath: path.join(serverFolder, "locales", "{{lng}}", "{{ns}}.json"),
+			loadPath: path.join(serverFolder, "locales", "{{lng}}", "{{ns}}.json")
 
 			// path to post missing resources
-			addPath: path.join(serverFolder, "locales", "{{lng}}", "{{ns}}.missing.json"),
+			, addPath: path.join(serverFolder, "locales", "{{lng}}", "{{ns}}.missing.json")
 
 			// jsonIndent to use when storing json files
-			jsonIndent: 4
+			, jsonIndent: 4
 		}
 	};
 
@@ -220,16 +220,16 @@ function initViewEngine(app) {
 function initSession(app, db) {
 	// Express MongoDB session storage
 	app.use(session({
-		saveUninitialized: true,
-		resave: false,
-		secret: config.sessionSecret,
-		store: new MongoStore({
-			mongooseConnection: db.connection,
-			collection: config.sessions.collection,
-			autoReconnect: true
-		}),
-		cookie: config.sessions.cookie,
-		name: config.sessions.name
+		saveUninitialized: true
+		, resave: false
+		, secret: config.sessionSecret
+		, store: new MongoStore({
+			mongooseConnection: db.connection
+			, collection: config.sessions.collection
+			, autoReconnect: true
+		})
+		, cookie: config.sessions.cookie
+		, name: config.sessions.name
 	}));
 }
 
@@ -258,7 +258,7 @@ function initAuth(app) {
 	require("./auth/passport")(app);
 
 	if (!config.isTestMode()) {
-/*
+		/*
 		// Handle CSRF
 		app.use(csrf());
 
@@ -288,11 +288,11 @@ function initWebpack(app) {
 		let compiler = webpack(wpConfig);
 		let devMiddleware = require('webpack-dev-middleware'); // eslint-disable-line
 		app.use(devMiddleware(compiler, {
-			noInfo: true,
-			publicPath: wpConfig.output.publicPath,
-			headers: { "Access-Control-Allow-Origin": "*" },
+			noInfo: true
+			, publicPath: wpConfig.output.publicPath
+			, headers: { "Access-Control-Allow-Origin": "*" }
 			//stats: 'errors-only'
-			stats: {colors: true}
+			, stats: {colors: true}
 		}));
 
 		let hotMiddleware = require('webpack-hot-middleware'); // eslint-disable-line

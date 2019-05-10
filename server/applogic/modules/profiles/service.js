@@ -10,44 +10,44 @@ let User 		= require("./models/user");
 
 module.exports = {
 	settings: {
-		name: "profiles",
-		version: 1,
-		namespace: "profiles",
-		rest: true,
-		ws: true,
-		graphql: true,
-		permission: C.PERM_LOGGEDIN,
-		role: "user",
-		collection: User,
+		name: "profiles"
+		, version: 1
+		, namespace: "profiles"
+		, rest: true
+		, ws: true
+		, graphql: true
+		, permission: C.PERM_LOGGEDIN
+		, role: "user"
+		, collection: User
 
-		modelPropFilter: "code username fullName email avatar passwordLess provider profile socialLinks roles apiKey lastLogin locale status credentials createdAt updatedAt"
-	},
+		, modelPropFilter: "code username fullName email avatar passwordLess provider profile socialLinks roles apiKey lastLogin locale status credentials createdAt updatedAt"
+	}
 	
-	actions: {
+	, actions: {
 		// return my profile with all properties
 		get: {
-			cache: false, // can't be cached, because it is unique for every account
-			handler(ctx) {
+			cache: false // can't be cached, because it is unique for every account
+			, handler(ctx) {
 				return User.findById(User.schema.methods.decodeID(ctx.user.code)).exec().then( (doc) => {
 					return this.toJSON(doc);
 				})
-				.then((json) => {
-					return this.populateModels(json);
-				});
+					.then((json) => {
+						return this.populateModels(json);
+					});
 			}
 		}
-	},
+	}
 
-	methods: {
-	},
+	, methods: {
+	}
 
-	graphql: {
+	, graphql: {
 
 		query: `
 			profile: Profile
-		`,
+		`
 
-		types: `
+		, types: `
 			type Profile {
 				code: String!
 				fullName: String
@@ -81,12 +81,12 @@ module.exports = {
 				google: String
 				github: String
 			}
-		`,		
+		`		
 
-		mutation: `
-		`,
+		, mutation: `
+		`
 
-		resolvers: {
+		, resolvers: {
 			Query: {
 				profile: "get"
 			}

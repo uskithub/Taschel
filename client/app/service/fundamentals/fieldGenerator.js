@@ -11,7 +11,7 @@ const fields = {
 		label: _("ID")
 		, table: {
 			align: "left"
-			, formatter(value, entity) {
+			, formatter (value, entity) {
 				return entity ? entity.code : "";
 			}
 		}
@@ -21,18 +21,18 @@ const fields = {
 			, readonly: true
 			, disabled: true
 			, multi: false
-			, get(entity) {
+			, get (entity) {
 				if (entity.code)
-					return entity.code;
+				{return entity.code;}
 				else
-					return _("AutomaticNumbering");
+				{return _("AutomaticNumbering");}
 			}
 		}
 	}
 	, root: {
-		label: _("Projects") 
+		label: _("Projects")
 		, table: {
-			formatter(value, entity, col) {
+			formatter (value, entity, col) {
 				return isObject(value) ? value.name : "-";
 			}
 		}
@@ -45,8 +45,8 @@ const fields = {
 	, projectType: {
 		label: _("ProjectType")
 		, table: {
-			formatter(value) {
-				let type = find(projectTypes, (type) => type.id == value);
+			formatter (value) {
+				const type = find(projectTypes, (type) => type.id == value);
 				return type ? type.name : value;
 			}
 		}
@@ -62,8 +62,8 @@ const fields = {
 	, type: {
 		label: _("TaskType")
 		, table: {
-			formatter(value) {
-				let type = find(taskTypes, (type) => type.id == value);
+			formatter (value) {
+				const type = find(taskTypes, (type) => type.id == value);
 				return type ? type.name : value;
 			}
 		}
@@ -83,8 +83,8 @@ const fields = {
 	, properties: {
 		label: _("TaskProperties")
 		, table: {
-			formatter(value) {
-				let type = find(taskProperties, (type) => type.id == value);
+			formatter (value) {
+				const type = find(taskProperties, (type) => type.id == value);
 				return type ? type.name : value;
 			}
 		}
@@ -112,7 +112,7 @@ const fields = {
 	, shortname: {
 		label: _("ShortName")
 		, table: {
-			formatter(value, entity, col) {
+			formatter (value, entity, col) {
 				return isObject(value) ? value.shortname : "-";
 			}
 		}
@@ -182,7 +182,7 @@ const fields = {
 				// validators.date
 				(value, field, entity) => {
 					if (entity.type === "milestone" && (isNil(value) || value === "")) {
-						return [ _("MilestoneRequiresDeadline") ];
+						return [_("MilestoneRequiresDeadline")];
 					}
 					return [];
 				}
@@ -215,10 +215,10 @@ const fields = {
 			, validator: validators.string
 		}
 	}
-	, asignee : {
+	, asignee: {
 		label: _("Asignee")
 		, table: {
-			formatter(value, entity, col) {
+			formatter (value, entity, col) {
 				return (entity.asignee) ? entity.asignee.username : "-";
 			}
 			, align: "center"
@@ -229,10 +229,10 @@ const fields = {
 			, values: []
 		}
 	}
-	, assistants : {
+	, assistants: {
 		label: _("Assistants")
 		, table: {
-			formatter(value, entity, col) {
+			formatter (value, entity, col) {
 				return (entity.assistants) ? entity.assistants.username : "-";
 			}
 			, align: "center"
@@ -242,10 +242,10 @@ const fields = {
 			, values: []
 		}
 	}
-	, author : {
+	, author: {
 		label: _("Author")
 		, table: {
-			formatter(value, entity, col) {
+			formatter (value, entity, col) {
 				return entity.author.username;
 			}
 			, align: "center"
@@ -258,19 +258,19 @@ const fields = {
 	, lastCommunication: {
 		label: _("LastCommunication")
 		, table: {
-			formatter(value) {
+			formatter (value) {
 				return moment(value).fromNow();
 			}
 		}
 		, form: {
 			type: "label"
-			, get(entity) { return entity && entity.lastCommunication ? moment(entity.lastCommunication).fromNow() : "-"; }
+			, get (entity) { return entity && entity.lastCommunication ? moment(entity.lastCommunication).fromNow() : "-"; }
 		}
 	}
 	, status: {
 		label: _("Status")
 		, table: {
-			formatter(value, entity, col) {
+			formatter (value, entity, col) {
 				return value ? "<i class='fa fa-check'/>" : "<i class='fa fa-ban'/>";
 			}
 			, align: "center"
@@ -314,8 +314,8 @@ const fields = {
 		label: _("OrganizationType")
 		, table: {
 			field: "type"
-			, formatter(value) {
-				let type = find(organizationTypes, (type) => type.id == value);
+			, formatter (value) {
+				const type = find(organizationTypes, (type) => type.id == value);
 				return type ? type.name : value;
 			}
 		}
@@ -331,7 +331,7 @@ const fields = {
 	, role: {
 		label: _("Role")
 		, table: {
-			formatter(value, entity, col) {
+			formatter (value, entity, col) {
 				// TODO: entity.administrators の中にユーザのcodeがあるかで判別
 				return "admin";
 			}
@@ -347,67 +347,67 @@ const fields = {
 };
 
 export const componentTypes = {
-	form : "form"
-	, table : "table"
+	form: "form"
+	, table: "table"
 };
 
 export const generate = (componentType, fieldSet) => {
 	if (componentType == componentTypes.form) {
 		if (!isArray(fieldSet)) {
 			return {
-				groups : Object.keys(fieldSet).map(key => {
+				groups: Object.keys(fieldSet).map(key => {
 					return {
-						legend : _(key)
-						, fields: fieldSet[key].map(f => { 
-							if ( fields[f] === undefined ) {
+						legend: _(key)
+						, fields: fieldSet[key].map(f => {
+							if (fields[f] === undefined) {
 								throw new Error(`Missing the definition about "${f}" in filed at fieldGenerator!`);
-							} else if ( fields[f].form === undefined ) {
+							} else if (fields[f].form === undefined) {
 								throw new Error(`Missing the definition about "${f}.form" in filed at fieldGenerator!`);
 							}
-							let field = cloneDeep(fields[f]);
+							const field = cloneDeep(fields[f]);
 							if (field.form.label === undefined) {
 								field.form.label = field.label;
 							}
 							if (field.form.model === undefined) {
 								field.form.model = f;
 							}
-							return field.form; 
+							return field.form;
 						})
 					};
 				})
 			};
 		} else {
 			return fieldSet.map(f => {
-				if ( fields[f] === undefined ) {
+				if (fields[f] === undefined) {
 					throw new Error(`Missing the definition about "${f}" in filed at fieldGenerator!`);
-				} else if ( fields[f].form === undefined ) {
+				} else if (fields[f].form === undefined) {
 					throw new Error(`Missing the definition about "${f}.form" in filed at fieldGenerator!`);
 				}
-				let field = cloneDeep(fields[f]);
+				const field = cloneDeep(fields[f]);
 				if (field.form.label === undefined) {
 					field.form.label = field.label;
 				}
 				if (field.form.model === undefined) {
 					field.form.model = f;
 				}
-				return field.form; 
+				return field.form;
 			});
 		}
 	} else {
 		return fieldSet.map(f => {
-			if ( fields[f] === undefined ) {
+			if (fields[f] === undefined) {
 				throw new Error(`Missing the definition about "${f}" in filed at fieldGenerator!`);
-			} else if ( fields[f].form === undefined ) {
+			} else if (fields[f].form === undefined) {
 				throw new Error(`Missing the definition about "${f}.table" in filed at fieldGenerator!`);
 			}
-			let field = cloneDeep(fields[f]);
+			const field = cloneDeep(fields[f]);
 			if (field.table.title === undefined) {
 				field.table.title = field.label;
 			}
 			if (field.table.field === undefined) {
 				field.table.field = f;
 			}
-			return field.table; 
+			return field.table;
 		});
 	}
 };

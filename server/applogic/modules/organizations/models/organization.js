@@ -11,11 +11,11 @@ let hashids 		= require("../../../../libs/hashids")("organizations");
 let autoIncrement 	= require("mongoose-auto-increment");
 
 let schemaOptions = {
-	timestamps: true,
-	toObject: {
+	timestamps: true
+	, toObject: {
 		virtuals: true
-	},
-	toJSON: {
+	}
+	, toJSON: {
 		virtuals: true
 	}
 };
@@ -34,8 +34,8 @@ let OrganizationSchema = new Schema({
 		, ref: "User"
 	}]
 	, administrators : [{
-		type: Number,
-		ref: "User"
+		type: Number
+		, ref: "User"
 	}]
 	, projects : [{
 		type: Number
@@ -55,8 +55,8 @@ OrganizationSchema.virtual("code").get(function() {
 });
 
 OrganizationSchema.plugin(autoIncrement.plugin, {
-	model: "Organization",
-	startAt: 1
+	model: "Organization"
+	, startAt: 1
 });
 
 OrganizationSchema.methods.encodeID = function(id) {

@@ -5,7 +5,7 @@ const state = {
 };
 
 const getters = {
-	profile(state) { return state.profile; }
+	profile (state) { return state.profile; }
 };
 
 const mutations = {
@@ -23,8 +23,8 @@ import profiles from "../repositories/rest/profiles";
 export default {
 	state
 	, getters
-	, actions : {
-		getProfile : profiles.get
+	, actions: {
+		getProfile: profiles.get
 	}
 	, mutations
 };

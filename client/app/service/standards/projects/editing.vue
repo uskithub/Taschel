@@ -71,7 +71,7 @@
 					}).then(() => {
 						this.$emit("close", this.rawValues);
 					});
-					
+	
 				} else {
 					// TODO: Validation error
 				}
@@ -90,7 +90,7 @@
 					});
 				} else {
 					// Validation error
-				} 
+				}
 			}
 		}
 		, created() {

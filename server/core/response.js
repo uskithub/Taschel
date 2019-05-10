@@ -3,52 +3,52 @@
 module.exports = {
 	
 	BAD_REQUEST: {
-		status: 400,
-		type: "BAD_REQUEST",
-		message: "Invalid request"
-	},
+		status: 400
+		, type: "BAD_REQUEST"
+		, message: "Invalid request"
+	}
 
-	UNAUTHORIZED: {
-		status: 401,
-		type: "UNAUTHORIZED",
-		message: "Unauthorized. Please login first!"
-	},
+	, UNAUTHORIZED: {
+		status: 401
+		, type: "UNAUTHORIZED"
+		, message: "Unauthorized. Please login first!"
+	}
 
-	REQUEST_FAILED: {
-		status: 402,
-		type: "REQUEST_FAILED",
-		message: "Request failed!"
-	},	
+	, REQUEST_FAILED: {
+		status: 402
+		, type: "REQUEST_FAILED"
+		, message: "Request failed!"
+	}	
 
-	FORBIDDEN: {
-		status: 403,
-		type: "FORBIDDEN",
-		message: "You have not enough permission for this resource!"
-	},
+	, FORBIDDEN: {
+		status: 403
+		, type: "FORBIDDEN"
+		, message: "You have not enough permission for this resource!"
+	}
 
-	NOT_FOUND: {
-		status: 404,
-		type: "NOT_FOUND",
-		message: "Not found!"
-	},
+	, NOT_FOUND: {
+		status: 404
+		, type: "NOT_FOUND"
+		, message: "Not found!"
+	}
 
-	TOO_MANY_REQUEST: {
-		status: 429,
-		type: "TOO_MANY_REQUEST",
-		message: "Too many request!"
-	},
+	, TOO_MANY_REQUEST: {
+		status: 429
+		, type: "TOO_MANY_REQUEST"
+		, message: "Too many request!"
+	}
 
-	SERVER_ERROR: {
-		status: 500,
-		type: "SERVER_ERROR",
-		message: "Server error"
-	},
+	, SERVER_ERROR: {
+		status: 500
+		, type: "SERVER_ERROR"
+		, message: "Server error"
+	}
 
-	NOT_IMPLEMENTED: {
-		status: 501,
-		type: "NOT_IMPLEMENTED",
-		message: "This resource is not implemented!"
-	},
+	, NOT_IMPLEMENTED: {
+		status: 501
+		, type: "NOT_IMPLEMENTED"
+		, message: "This resource is not implemented!"
+	}
 
 	
 	/**
@@ -63,7 +63,7 @@ module.exports = {
 	 * @param  {String} errMessage  Custom error message
 	 * @return {json} If res assigned, return with res, otherwise return the response JSON object
 	 */
-	json(res, data, err, errMessage) {
+	, json(res, data, err, errMessage) {
 		let response = {};
 
 		if (err) {

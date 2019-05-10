@@ -5,7 +5,7 @@
 	import moment from "moment";
 
 	import { mapGetters, mapActions } from "vuex";
-	import { GET_READY } from "../../fundamentals/mutationTypes";
+	import { GET_READY, ゲットカレントセッション } from "../../fundamentals/mutationTypes";
 
 	const _ = Vue.prototype._;
 	const Popup = Vue.component("popup");
@@ -27,9 +27,12 @@
 			}
 		}
 		, methods : {
-			...mapActions([
-				"getCurrentSession"
-				, "getUserProjectList"
+			...mapActions({
+				ゲットカレントセッション
+			})
+			,...mapActions([
+			
+				"getUserProjectList"
 
 				// for Presentation
 				, "setWayBackOnLastCrumb"
@@ -126,7 +129,7 @@
 				});
 
 				// Get ready for required states.
-				this.getCurrentSession()
+				this.ゲットカレントセッション()
 				.then(this.getUserProjectList)
 				.then(_ => {
 					// poised

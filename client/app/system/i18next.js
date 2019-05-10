@@ -12,31 +12,31 @@ function install(Vue, callback, options = {}) {
 		.use(i18NextXHR)
 		.use(i18NextLanguageDetector)
 		.init(defaultsDeep({}, {
-			lng: "ja",
-			fallbackLng: "en",
-			whitelist: ["ja", "en"],
-			ns: ["app"],
-			defaultNS: "app",
-			load: "languageOnly",
-			saveMissing: true,
-			saveMissingTo: "all", // "fallback", "current", "all"
+			lng: "ja"
+			, fallbackLng: "en"
+			, whitelist: ["ja", "en"]
+			, ns: ["app"]
+			, defaultNS: "app"
+			, load: "languageOnly"
+			, saveMissing: true
+			, saveMissingTo: "all" // "fallback", "current", "all"
 
-			backend: {
+			, backend: {
 				// path where resources get loaded from
-				loadPath: "/locales/resources.json?lng={{lng}}&ns={{ns}}",
+				loadPath: "/locales/resources.json?lng={{lng}}&ns={{ns}}"
 
 				// path to post missing resources
-				addPath: "/locales/add/{{lng}}/{{ns}}",
+				, addPath: "/locales/add/{{lng}}/{{ns}}"
 
 				// server supports multiloading
 				// /locales/resources.json?lng=de+en&ns=ns1+ns2
-				allowMultiLoading: true,
+				, allowMultiLoading: true
 
 				// allow cross domain requests
-				crossDomain: false
-			},
+				, crossDomain: false
+			}
 
-			detection: {
+			, detection: {
 				order: ["querystring", "cookie", "htmlTag", "navigator"]
 				/*
 				// keys or params to lookup language from

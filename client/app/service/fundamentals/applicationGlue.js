@@ -8,4 +8,4 @@ const getWeekList = currentWeek => {
 
 export default {
 	getWeekList
-}
+};

@@ -13,9 +13,9 @@ module.exports = function(app, db) {
 	if (!servicesSchema) return;
 	
 	let schema = graphqlTools.makeExecutableSchema({ 
-		typeDefs: servicesSchema.schema, 
-		resolvers: servicesSchema.resolvers,
-		logger: config.isDevMode() ? logger : undefined
+		typeDefs: servicesSchema.schema 
+		, resolvers: servicesSchema.resolvers
+		, logger: config.isDevMode() ? logger : undefined
 		//allowUndefinedInResolve: false
 	});	
 	//console.log(schema);
@@ -34,23 +34,23 @@ module.exports = function(app, db) {
 			//graphiql: config.isDevMode(),
 			//pretty: config.isDevMode(),
 			//printErrors: config.isDevMode(),
-			schema: schema,
-			context: {
-				req: req,
-				query: query,
-				t: req.t,
-				user: req.user,
-				session: req.session
-			},
-			debug: config.isDevMode(),
-			formatError(e) {
+			schema: schema
+			, context: {
+				req: req
+				, query: query
+				, t: req.t
+				, user: req.user
+				, session: req.session
+			}
+			, debug: config.isDevMode()
+			, formatError(e) {
 				//console.dir(e);
 				return {
-					status: e.originalError ? e.originalError.status : 400, 
-					type: e.originalError ? e.originalError.type : null, 
-					message: e.message,
-					locations: e.locations,
-					path: e.path
+					status: e.originalError ? e.originalError.status : 400 
+					, type: e.originalError ? e.originalError.type : null 
+					, message: e.message
+					, locations: e.locations
+					, path: e.path
 				};
 			}
 			/*

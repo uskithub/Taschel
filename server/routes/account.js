@@ -114,9 +114,9 @@ module.exports = function(app, db) {
 				} else {
 					done(null, null);
 				}
-			},
+			}
 
-			function passwordlessToken(token, done) {
+			, function passwordlessToken(token, done) {
 				if (passwordless) {
 					crypto.randomBytes(25, function(err, buf) {
 						done(err, token, err ? null : buf.toString("hex"));
@@ -124,18 +124,18 @@ module.exports = function(app, db) {
 				}
 				else
 					done(null, token, req.body.password);
-			},
+			}
 
-			function createUser(token, password, done) {
+			, function createUser(token, password, done) {
 
 				let user = new User({
-					fullName: req.body.name,
-					email: req.body.email,
-					username: req.body.username,
-					password: password,
-					passwordLess: passwordless,
-					roles: [C.ROLE_USER],
-					provider: "local"
+					fullName: req.body.name
+					, email: req.body.email
+					, username: req.body.username
+					, password: password
+					, passwordLess: passwordless
+					, roles: [C.ROLE_USER]
+					, provider: "local"
 				});
 
 				if (token && config.mailer.enabled) {
@@ -169,9 +169,9 @@ module.exports = function(app, db) {
 					}
 					done(err, user);
 				});
-			},
+			}
 
-			function sendEmail(user, done) {
+			, function sendEmail(user, done) {
 				if (!config.mailer.enabled) {
 					logger.error("config.mailer not enabled; emailing skipped. Have you configured mailer yet?");
 					return done(null, user);
@@ -199,8 +199,8 @@ module.exports = function(app, db) {
 					let subject = req.t("mailSubjectActivate", config);
 
 					res.render("mail/accountVerify", {
-						name: user.fullName,
-						validateLink: "http://" + req.headers.host + "/verify/" + user.verifyToken
+						name: user.fullName
+						, validateLink: "http://" + req.headers.host + "/verify/" + user.verifyToken
 					}, function(err, html) {
 						if (err)
 							return done(err);
@@ -270,9 +270,9 @@ module.exports = function(app, db) {
 							done(null, user);
 						});
 					});			
-			},
+			}
 
-			function sendWelcomeEmailToUser(user, done) {
+			, function sendWelcomeEmailToUser(user, done) {
 				if (!config.mailer.enabled) {
 					// this should never be triggered since token only exists when mailer IS configured""
 					const err = "Trying to send email without config.mailer enabled; emailing skipped. Have you configured mailer yet?";
@@ -294,9 +294,9 @@ module.exports = function(app, db) {
 						done(null, user);
 					});
 				});	
-			},
+			}
 
-			function loginUser(user, done) {
+			, function loginUser(user, done) {
 				req.login(user, function(err) {
 					done(err, user);
 				});				
@@ -347,9 +347,9 @@ module.exports = function(app, db) {
 							done(null, user);
 						});
 					});			
-			},
+			}
 
-			function loginUser(user, done) {
+			, function loginUser(user, done) {
 				req.login(user, function(err) {
 					done(err, user);
 				});				
@@ -391,9 +391,9 @@ module.exports = function(app, db) {
 				crypto.randomBytes(25, function(err, buf) {
 					done(err, err ? null : buf.toString("hex"));
 				});
-			},
+			}
 
-			function getUserAndSaveToken(token, done) {
+			, function getUserAndSaveToken(token, done) {
 				User.findOne({ email: req.body.email }, function(err, user) {
 					if (!user) {
 						req.flash("error", { msg: req.t("EmailNotAssociatedToAccount", req.body) });
@@ -412,9 +412,9 @@ module.exports = function(app, db) {
 						done(err, token, user);
 					});					
 				});
-			},
+			}
 
-			function sendResetEmailToUser(token, user, done) {
+			, function sendResetEmailToUser(token, user, done) {
 				if (!config.mailer.enabled) {
 					const err = "Trying to send email without config.mailer enabled; emailing skipped. Have you configured mailer yet?";
 					logger.error(err);
@@ -423,8 +423,8 @@ module.exports = function(app, db) {
 				let subject = req.t("mailSubjectResetPassword", config);
 
 				res.render("mail/passwordReset", {
-					name: user.fullName,
-					resetLink: "http://" + req.headers.host + "/reset/" + token
+					name: user.fullName
+					, resetLink: "http://" + req.headers.host + "/reset/" + token
 				}, function(err, html) {
 					if (err)
 						return done(err);
@@ -515,9 +515,9 @@ module.exports = function(app, db) {
 							});
 						});
 					});			
-			},
+			}
 
-			function sendPasswordChangeEmailToUser(user, done) {
+			, function sendPasswordChangeEmailToUser(user, done) {
 				if (!config.mailer.enabled) {
 					const err = "Trying to send email without config.mailer enabled; emailing skipped. Have you configured mailer yet?";
 					logger.error(err);

@@ -12,7 +12,7 @@ let Group 		= require("../groups/models/group");
 const DEFAULT_KANBAN_GROUPS = [
 	{ name: "TODO", purpose: "for_the_tasks_to_do_from_now" }
 	, { name: "IN_PROGRESS", purpose: "for_the_tasks_now_people_doing" }
-	, { name: "DONE" , purpose: "for_the_tasks_finished_already" }
+	, { name: "DONE", purpose: "for_the_tasks_finished_already" }
 ];
 
 module.exports = {
@@ -46,8 +46,8 @@ module.exports = {
 	
 	, actions: {
 		find: {
-			cache: true,
-			handler(ctx) {
+			cache: true
+			, handler(ctx) {
 				// DEBUG
 				if (ctx.params.check) { return this.actions.check(ctx); }
 
@@ -93,16 +93,16 @@ module.exports = {
 				return ctx.queryPageSort(query).exec().then(docs => {
 					return this.toJSON(docs);
 				})
-				.then(json => {
-					return this.populateModels(json, excludeRule);
-				});
+					.then(json => {
+						return this.populateModels(json, excludeRule);
+					});
 			}
 		}
 
 		// return a model by ID
 		, get: {
-			cache: true,
-			handler(ctx) {
+			cache: true
+			, handler(ctx) {
 				ctx.assertModelIsExist(ctx.t("app:TaskNotFound"));
 				return Promise.resolve(ctx.model);
 			}
@@ -585,9 +585,9 @@ module.exports = {
 		query: `
 			tasks(limit: Int, offset: Int, sort: String): [Task]
 			task(code: String): Task
-		`,
+		`
 
-		types: `
+		, types: `
 			type Task {
 				code: String!
 				purpose: String
@@ -597,24 +597,24 @@ module.exports = {
 				status: Int
 				lastCommunication: Timestamp
 			}
-		`,
+		`
 
-		mutation: `
+		, mutation: `
 			taskCreate(name: String!, purpose: String, type: String, goal: String, status: Int): Task
 			taskUpdate(code: String!, name: String, purpose: String, type: String, goal: String, status: Int): Task
 			taskRemove(code: String!): Task
-		`,
+		`
 
-		resolvers: {
+		, resolvers: {
 			Query: {
-				tasks: "find",
-				task: "get"
-			},
+				tasks: "find"
+				, task: "get"
+			}
 
-			Mutation: {
-				taskCreate: "create",
-				taskUpdate: "update",
-				taskRemove: "remove"
+			, Mutation: {
+				taskCreate: "create"
+				, taskUpdate: "update"
+				, taskRemove: "remove"
 			}
 		}
 	}

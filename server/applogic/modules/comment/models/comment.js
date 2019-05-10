@@ -11,11 +11,11 @@ let hashids 		= require("../../../../libs/hashids")("comments");
 let autoIncrement 	= require("mongoose-auto-increment");
 
 let schemaOptions = {
-	timestamps: true,
-	toObject: {
+	timestamps: true
+	, toObject: {
 		virtuals: true
-	},
-	toJSON: {
+	}
+	, toJSON: {
 		virtuals: true
 	}
 };
@@ -28,8 +28,8 @@ let CommentSchema = new Schema({
 	, work : {
 		type: Number
 		, ref: "Work"
-    }
-    , review : {
+	}
+	, review : {
 		type: Number
 		, ref: "Review"
 	}
@@ -56,8 +56,8 @@ CommentSchema.virtual("code").get(function() {
 });
 
 CommentSchema.plugin(autoIncrement.plugin, {
-	model: "Comment",
-	startAt: 1
+	model: "Comment"
+	, startAt: 1
 });
 
 CommentSchema.methods.encodeID = function(id) {

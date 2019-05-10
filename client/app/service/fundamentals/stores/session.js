@@ -8,7 +8,7 @@ import backlog from "./backlog";
 import pdca from "./pdca";
 import planning from "./planning";
 import feedback from "./feedback";
-import { INITIALIZE, GET_READY, ADD_MESSAGE, ADD_NOTIFICATION, SET_USER, SEARCH, SET_CURRENT_WEEK, LOAD_PROJECTS, ADD_PROJECT, UPDATE_PROJECT, CLOSE_PROJECT, ADD_TASK_TO_PROJECT, UPDATE_TASK_OF_CURRENT_PROJECT, SET_CURRENT_PROJECT, CLEAR_SELECTION } from "../mutationTypes";
+import { ゲットカレントセッション, INITIALIZE, GET_READY, ADD_MESSAGE, ADD_NOTIFICATION, SET_USER, SEARCH, SET_CURRENT_WEEK, LOAD_PROJECTS, ADD_PROJECT, UPDATE_PROJECT, CLOSE_PROJECT, ADD_TASK_TO_PROJECT, UPDATE_TASK_OF_CURRENT_PROJECT, SET_CURRENT_PROJECT, CLEAR_SELECTION } from "../mutationTypes";
 import moment from "moment";
 import { assign } from "lodash";
 
@@ -61,7 +61,7 @@ export default {
 			const todayWeek = state.currentWeek.week();
 			const firstDay = moment(state.currentWeek).startOf("month");
 			const firstDayWeek = firstDay.week();
-			const weekOfMonth = ((todayWeek > firstDayWeek) ? todayWeek - firstDayWeek : todayWeek - firstDayWeek + 52) + 1
+			const weekOfMonth = ((todayWeek > firstDayWeek) ? todayWeek - firstDayWeek : todayWeek - firstDayWeek + 52) + 1;
 			return `${ firstDay.format("YYYY年MM月") } 第${weekOfMonth}週`; 
 		}
 
@@ -158,7 +158,7 @@ export default {
 		initialize({ commit }) {
 			commit(INITIALIZE);
 		}
-		, getCurrentSession({ commit }) {
+		, [ゲットカレントセッション]({ commit }) {
 			return sessions.get()
 				.then(data => {
 					let user = new User(data);

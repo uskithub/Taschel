@@ -191,11 +191,11 @@ const _fields = {
 			, validator: [
 				validators.integer
 				, (value, field, entity) => {
-						if (field.required && value === 0) {
-							return [ _("ManhourRequired") ];
-						}
-						return [];
+					if (field.required && value === 0) {
+						return [ _("ManhourRequired") ];
 					}
+					return [];
+				}
 			]
 		}
 	}

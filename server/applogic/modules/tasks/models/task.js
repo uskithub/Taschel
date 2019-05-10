@@ -11,11 +11,11 @@ let hashids 		= require("../../../../libs/hashids")("tasks");
 let autoIncrement 	= require("mongoose-auto-increment");
 
 let schemaOptions = {
-	timestamps: true,
-	toObject: {
+	timestamps: true
+	, toObject: {
 		virtuals: true
-	},
-	toJSON: {
+	}
+	, toJSON: {
 		virtuals: true
 	}
 };
@@ -123,8 +123,8 @@ TaskSchema.virtual("code").get(function() {
 });
 
 TaskSchema.plugin(autoIncrement.plugin, {
-	model: "Task",
-	startAt: 1
+	model: "Task"
+	, startAt: 1
 });
 
 TaskSchema.methods.encodeID = function(id) {

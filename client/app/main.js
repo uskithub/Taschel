@@ -16,8 +16,8 @@ import VueWebsocket from "vue-websocket";
 import fieldMyDateTimePicker from "./system/fundamentals/customField/dateTimePicker/index";
 import fieldTagsInput from "./system/fundamentals/customField/tagsInput/index";
 import "ion-rangeslider";
-import "ion-rangeslider/css/ion.rangeSlider.css"
-import "ion-rangeslider/css/ion.rangeSlider.skinFlat.css"
+import "ion-rangeslider/css/ion.rangeSlider.css";
+import "ion-rangeslider/css/ion.rangeSlider.skinFlat.css";
 
 import SystemFundamentals from "./system/fundamentals/index";
 import ServiceFundamentals from "./service/fundamentals/index";

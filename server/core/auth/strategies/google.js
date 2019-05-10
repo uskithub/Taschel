@@ -32,20 +32,20 @@ module.exports = function() {
 			if (refreshToken) credentials.refresh_token = refreshToken;
 
 			helper.linkToSocialAccount({
-				req, 
-				accessToken,
-				refreshToken,
-				credentials,
-				profile,
-				done,
+				req 
+				, accessToken
+				, refreshToken
+				, credentials
+				, profile
+				, done
 
-				provider: "google",
-				email: profile.emails[0].value,
-				userData: {
-					name: profile.displayName,
-					gender: profile.gender,
-					picture: profile.photos && profile.photos.length > 0 ? profile.photos[0].value.replace("sz=50", "sz=200") : null,
-					location: null
+				, provider: "google"
+				, email: profile.emails[0].value
+				, userData: {
+					name: profile.displayName
+					, gender: profile.gender
+					, picture: profile.photos && profile.photos.length > 0 ? profile.photos[0].value.replace("sz=50", "sz=200") : null
+					, location: null
 				}
 			});
 

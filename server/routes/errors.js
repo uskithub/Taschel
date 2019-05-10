@@ -18,8 +18,8 @@ module.exports = function(app, db) {
 		// Respond with html page
 		if (req.accepts("html")) {
 			return res.render("500", {
-				url: req.originalUrl,
-				error: err
+				url: req.originalUrl
+				, error: err
 			});
 		}
 
@@ -39,8 +39,8 @@ module.exports = function(app, db) {
 			let err = new Error("404 Page Not Found");
 			err.status = 404;
 			return res.render("404", {
-				url: req.originalUrl,
-				error: err
+				url: req.originalUrl
+				, error: err
 			});
 		}
 

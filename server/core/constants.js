@@ -15,29 +15,29 @@ C.append = function(items, prefix) {
  * User role constants
  */
 C.append([
-	"admin",
-	"user",
-	"guest"
+	"admin"
+	, "user"
+	, "guest"
 ], "ROLE");
 
 /**
  * User permission constants
  */
 C.append([
-	"admin",
-	"owner",
-	"loggedIn",
-	"public"
+	"admin"
+	, "owner"
+	, "loggedIn"
+	, "public"
 ], "PERM");
 
 /**
  * Response error reasons
  */
 C.append([
-	"VALIDATION_ERROR",
-	"INVALID_CODE",
-	"MODEL_NOT_FOUND",
-	"ONLY_OWNER_CAN_EDIT_AND_DELETE"
+	"VALIDATION_ERROR"
+	, "INVALID_CODE"
+	, "MODEL_NOT_FOUND"
+	, "ONLY_OWNER_CAN_EDIT_AND_DELETE"
 ], "ERR");
 
 

@@ -72,8 +72,8 @@ class Cacher {
 	 */
 	set(key, data) {
 		this.cache[this.prefix + key] = {
-			data: data,
-			expire: Date.now() + this.ttl * 1000
+			data: data
+			, expire: Date.now() + this.ttl * 1000
 		};
 		logger.debug(`[Cacher] SET ${this.prefix}${key}`);
 		return Promise.resolve(data);

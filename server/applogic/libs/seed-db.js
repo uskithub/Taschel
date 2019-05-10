@@ -20,12 +20,12 @@ module.exports = function() {
 			_.times(36, () => {
 
 				let device = new Device({
-					address: fakerator.internet.ip(),
-					type: fakerator.random.arrayElement(["rasperry", "odroid", "nanopi", "pc"]),
-					name: fakerator.populate("#{names.firstName}'s device"),
-					description: fakerator.lorem.sentence(),
-					status: fakerator.random.boolean("80") ? 1 : 0,
-					lastCommunication: Date.now()
+					address: fakerator.internet.ip()
+					, type: fakerator.random.arrayElement(["rasperry", "odroid", "nanopi", "pc"])
+					, name: fakerator.populate("#{names.firstName}'s device")
+					, description: fakerator.lorem.sentence()
+					, status: fakerator.random.boolean("80") ? 1 : 0
+					, lastCommunication: Date.now()
 				});
 
 				return device.save().then(() => {
@@ -43,12 +43,12 @@ module.exports = function() {
 				if (users && users.length > 0) {
 					_.times(60, () => {
 
-						let fakePost = fakerator.entity.post(fakerator.random.number(2,1));
+						let fakePost = fakerator.entity.post(fakerator.random.number(2, 1));
 
 						let post = new Post({
-							title: fakePost.title,
-							content: fakePost.content,
-							author: fakerator.random.arrayElement(users)._id
+							title: fakePost.title
+							, content: fakePost.content
+							, author: fakerator.random.arrayElement(users)._id
 						});
 
 						return post.save().then(() => {

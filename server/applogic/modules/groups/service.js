@@ -22,7 +22,7 @@ const DEFAULT_WEEKLY_GROUPS = [
 const DEFAULT_DAILY_GROUPS = [
 	{ name: "Monday", purpose: "for_monday" }
 	, { name: "Tuesday", purpose: "for_tuesday" }
-	, { name: "Wednesday" , purpose: "for_wednesday" }
+	, { name: "Wednesday", purpose: "for_wednesday" }
 	, { name: "Thursday", purpose: "for_thursday" }
 	, { name: "Friday", purpose: "for_friday" }
 ];
@@ -60,17 +60,17 @@ const deleteClassified = (inArr, excludes) => {
 
 module.exports = {
 	settings: {
-		name: "groups",
-		version: 1,
-		namespace: "groups",
-		rest: true,
-		ws: true,
-		graphql: true,
-		permission: C.PERM_LOGGEDIN,
-		role: "user",
-		collection: Group,
+		name: "groups"
+		, version: 1
+		, namespace: "groups"
+		, rest: true
+		, ws: true
+		, graphql: true
+		, permission: C.PERM_LOGGEDIN
+		, role: "user"
+		, collection: Group
 		
-		modelPropFilter: "code type purpose name parent children author lastCommunication createdAt updatedAt"
+		, modelPropFilter: "code type purpose name parent children author lastCommunication createdAt updatedAt"
 
 		// TODO: populateModelsを改造すれば、下にのみpopulate、上にのみpopulateもできる
 		, modelPopulates: {
@@ -82,9 +82,9 @@ module.exports = {
 			"parent": "tasks"
 			, "author": "persons"
 		}
-	},
+	}
 	
-	actions: {
+	, actions: {
 		/**
 		 * ProjectのGroupを取得し、分類されていない"Unclassified"なGroupを先頭にappendして返す。
 		 * 
@@ -98,64 +98,64 @@ module.exports = {
 					const projectId = this.taskService.decodeID(projectCode);
 					// getting selected project model.
 					return this.taskService.getByID(projectId)
-					.then(projectJson => {
-						let filter = {
-							type : "kanban"
-							, parent : projectId
-						};
-						let query = Group.find(filter);
-						return ctx.queryPageSort(query).exec().then(docs => {
-							return this.toJSON(docs);
-						})
-						.then(jsons => {
-							return this.populateModels(jsons);
-						}).then(jsons => {
-							// for getting unclassified tasks, create the classified tasks code array.
-							let classifiedTaskCodes = jsons.reduce((arr, g) => {
-								return arr.concat(g.children.map(child => { return child.code; }));
-							}, []);
-							
-							// exclude status is closed or already classified tasks.
-							const recursiveUnclassifiedFilter = (task, classifiedArray) => {
-								task.children = task.children.filter(child => {
-									return !(child.status < 0 || child.isDeleted == 1 || classifiedTaskCodes.includes(child.code));
-								})
-								.map(child => {
-									return recursiveUnclassifiedFilter(child, classifiedArray);
-								});
-								return task;
+						.then(projectJson => {
+							let filter = {
+								type : "kanban"
+								, parent : projectId
 							};
+							let query = Group.find(filter);
+							return ctx.queryPageSort(query).exec().then(docs => {
+								return this.toJSON(docs);
+							})
+								.then(jsons => {
+									return this.populateModels(jsons);
+								}).then(jsons => {
+									// for getting unclassified tasks, create the classified tasks code array.
+									let classifiedTaskCodes = jsons.reduce((arr, g) => {
+										return arr.concat(g.children.map(child => { return child.code; }));
+									}, []);
+							
+									// exclude status is closed or already classified tasks.
+									const recursiveUnclassifiedFilter = (task, classifiedArray) => {
+										task.children = task.children.filter(child => {
+											return !(child.status < 0 || child.isDeleted == 1 || classifiedTaskCodes.includes(child.code));
+										})
+											.map(child => {
+												return recursiveUnclassifiedFilter(child, classifiedArray);
+											});
+										return task;
+									};
 
-							let unclassifiedGroups = projectJson.children.reduce((result, child) => {
-								if (child.status < 0 || child.isDeleted == 1 || classifiedTaskCodes.includes(child.code)) {
-									return result;
-								}
-								child = recursiveUnclassifiedFilter(child, classifiedTaskCodes);
-								if (child.type == "milestone") {
-									result.push({
-										code: `MILESTONE-${child.code}`
+									let unclassifiedGroups = projectJson.children.reduce((result, child) => {
+										if (child.status < 0 || child.isDeleted == 1 || classifiedTaskCodes.includes(child.code)) {
+											return result;
+										}
+										child = recursiveUnclassifiedFilter(child, classifiedTaskCodes);
+										if (child.type == "milestone") {
+											result.push({
+												code: `MILESTONE-${child.code}`
+												, type: "kanban"
+												, name: child.name
+												, purpose: "for_classify"
+												, parent: projectCode
+												, children: child.children
+											});
+										} else {
+											result[0].children.push(child);
+										}
+										return result;
+									}, [{
+										code: UNCLASSIFIED
 										, type: "kanban"
-										, name: child.name
+										, name: "unclassified"
 										, purpose: "for_classify"
 										, parent: projectCode
-										, children: child.children
-									});
-								} else {
-									result[0].children.push(child);
-								}
-								return result;
-							}, [{
-								code: UNCLASSIFIED
-								, type: "kanban"
-								, name: "unclassified"
-								, purpose: "for_classify"
-								, parent: projectCode
-								, children: []
-							}]);
+										, children: []
+									}]);
 
-							return unclassifiedGroups.concat(jsons);
+									return unclassifiedGroups.concat(jsons);
+								});
 						});
-					});
 
 				} else if (ctx.params.weekly !== undefined || ctx.params.week !== undefined) {
 					const week = ctx.params.weekly || ctx.params.week;
@@ -187,135 +187,135 @@ module.exports = {
 					});
 					let query = Group.find(filter);
 					return ctx.queryPageSort(query).exec()
-					.then(docs => { 
-						return this.toJSON(docs);
-					})
-					.then(jsons => {
-						return this.populateModels(jsons, excludeTaskRule);
-					})
-					.then(groupJsons => {
+						.then(docs => { 
+							return this.toJSON(docs);
+						})
+						.then(jsons => {
+							return this.populateModels(jsons, excludeTaskRule);
+						})
+						.then(groupJsons => {
 						// status is open ( > -1)
 						// type is "requirement", "way", "step" or "todo"
 						// author or asignee is user
-						let filter = {
-							status : { $gt : -1 }
-							, isDeleted : { $eq : 0 }
-							, type : { $in: ["requirement", "issue", "way", "step", "todo"] }
-							, $or : [ { author : userId }, { asignee : userId } ]
-						};
+							let filter = {
+								status : { $gt : -1 }
+								, isDeleted : { $eq : 0 }
+								, type : { $in: ["requirement", "issue", "way", "step", "todo"] }
+								, $or : [ { author : userId }, { asignee : userId } ]
+							};
 
-						let query = Task.find(filter);
-						return ctx.queryPageSort(query).exec()
-						.then(docs => {
-							return this.taskService.toJSON(docs);
-						})
-						.then(jsons => {
-							return this.taskService.populateModels(jsons, excludeTaskRule);
-						})
-						.then(taskJsons => {
-
-							if (groupJsons.length == 0) {
-								// generating and returning default groups.
-								// using reduce for array will be correct sequence.
-								return DEFAULT_WEEKLY_GROUPS.reduce((promise, g) => {
-									return promise.then(docs => {
-										g.type = type;
-										g.parent =  -1;
-										g.author = userId;
-										let group = new Group(g);
-										return group.save()
-										.then(doc => {
-											docs.push(doc);
-											return docs;
-										});
-									});
-								}, Promise.resolve([]))
+							let query = Task.find(filter);
+							return ctx.queryPageSort(query).exec()
 								.then(docs => {
-									return this.toJSON(docs);
+									return this.taskService.toJSON(docs);
 								})
 								.then(jsons => {
-									return this.populateModels(jsons);
+									return this.taskService.populateModels(jsons, excludeTaskRule);
 								})
-								.then(jsons => {
-									// exclude what is descendant of the other task.
-									taskJsons = taskJsons.reduce((result, t) => {
-										const otherJsons = taskJsons.filter(_t => { return _t.code != t.code; });
-										for (let i in otherJsons) {
-											const other = otherJsons[i];
-											if (isDescendant(t, other)) {
-												return result;
-											}
-										}
-										result.push(t);
-										return result;
-									}, []);
+								.then(taskJsons => {
 
-									let unclassifiedGroup = {
-										code: UNCLASSIFIED
-										, type: type
-										, name: "unclassified"
-										, purpose: "for_classify"
-										, children: taskJsons
-									};
-									jsons.unshift(unclassifiedGroup);
-									return jsons;
-								});
-							} else {
-								// make a classified tasks an array. 
-								let classifiedTaskCodes = groupJsons
-									.reduce((arr, g) => { 
-										return g.children.reduce((ret, t) => { 
-											return ret.concat(flatTree(t)); 
-										}, arr); 
-									}, [])
-									.map(j => { return j.code; });
+									if (groupJsons.length == 0) {
+										// generating and returning default groups.
+										// using reduce for array will be correct sequence.
+										return DEFAULT_WEEKLY_GROUPS.reduce((promise, g) => {
+											return promise.then(docs => {
+												g.type = type;
+												g.parent =  -1;
+												g.author = userId;
+												let group = new Group(g);
+												return group.save()
+													.then(doc => {
+														docs.push(doc);
+														return docs;
+													});
+											});
+										}, Promise.resolve([]))
+											.then(docs => {
+												return this.toJSON(docs);
+											})
+											.then(jsons => {
+												return this.populateModels(jsons);
+											})
+											.then(jsons => {
+												// exclude what is descendant of the other task.
+												taskJsons = taskJsons.reduce((result, t) => {
+													const otherJsons = taskJsons.filter(_t => { return _t.code != t.code; });
+													for (let i in otherJsons) {
+														const other = otherJsons[i];
+														if (isDescendant(t, other)) {
+															return result;
+														}
+													}
+													result.push(t);
+													return result;
+												}, []);
+
+												let unclassifiedGroup = {
+													code: UNCLASSIFIED
+													, type: type
+													, name: "unclassified"
+													, purpose: "for_classify"
+													, children: taskJsons
+												};
+												jsons.unshift(unclassifiedGroup);
+												return jsons;
+											});
+									} else {
+										// make a classified tasks an array. 
+										let classifiedTaskCodes = groupJsons
+											.reduce((arr, g) => { 
+												return g.children.reduce((ret, t) => { 
+													return ret.concat(flatTree(t)); 
+												}, arr); 
+											}, [])
+											.map(j => { return j.code; });
 									
-								// make an unclassified group
-								let unclassifiedTaskJsons = taskJsons.filter(t => { return !classifiedTaskCodes.includes(t.code); });
+										// make an unclassified group
+										let unclassifiedTaskJsons = taskJsons.filter(t => { return !classifiedTaskCodes.includes(t.code); });
 
-								// exclude what is descendant of the other task.
-								unclassifiedTaskJsons = unclassifiedTaskJsons.reduce((result, t) => {
-									const otherJsons = unclassifiedTaskJsons.filter(_t => { return _t.code != t.code; });
-									for (let i in otherJsons) {
-										const other = otherJsons[i];
-										if (isDescendant(t, other)) {
+										// exclude what is descendant of the other task.
+										unclassifiedTaskJsons = unclassifiedTaskJsons.reduce((result, t) => {
+											const otherJsons = unclassifiedTaskJsons.filter(_t => { return _t.code != t.code; });
+											for (let i in otherJsons) {
+												const other = otherJsons[i];
+												if (isDescendant(t, other)) {
+													return result;
+												}
+											}
+											result.push(t);
 											return result;
-										}
+										}, []);
+
+										// delete classified children which are in the classified group from unclassified group
+										unclassifiedTaskJsons = deleteClassified(unclassifiedTaskJsons, classifiedTaskCodes);
+
+										let unclassifiedGroup = {
+											code: UNCLASSIFIED
+											, type: `weekly_${week}`
+											, name: "unclassified"
+											, purpose: "for_classify"
+											, children: unclassifiedTaskJsons
+										};
+
+										// delete classified top level children which are in the classified group from classified tasks' children
+
+										// make a classified top level tasks an array. 
+										let classifiedTopLevelTaskCodes = groupJsons
+											.reduce((arr, g) => { 
+												return arr.concat(g.children); 
+											}, [])
+											.map(j => { return j.code; });
+
+										groupJsons = groupJsons.map( g => { 
+											g.children = deleteClassified(g.children, classifiedTopLevelTaskCodes);
+											return g;
+										});
+
+										groupJsons.unshift(unclassifiedGroup);
+										return groupJsons;
 									}
-									result.push(t);
-									return result;
-								}, []);
-
-								// delete classified children which are in the classified group from unclassified group
-								unclassifiedTaskJsons = deleteClassified(unclassifiedTaskJsons, classifiedTaskCodes);
-
-								let unclassifiedGroup = {
-									code: UNCLASSIFIED
-									, type: `weekly_${week}`
-									, name: "unclassified"
-									, purpose: "for_classify"
-									, children: unclassifiedTaskJsons
-								};
-
-								// delete classified top level children which are in the classified group from classified tasks' children
-
-								// make a classified top level tasks an array. 
-								let classifiedTopLevelTaskCodes = groupJsons
-									.reduce((arr, g) => { 
-										return arr.concat(g.children); 
-									}, [])
-									.map(j => { return j.code; });
-
-								groupJsons = groupJsons.map( g => { 
-									g.children = deleteClassified(g.children, classifiedTopLevelTaskCodes);
-									return g;
 								});
-
-								groupJsons.unshift(unclassifiedGroup);
-								return groupJsons;
-							}
 						});
-					});
 				} else if (ctx.params.daily !== undefined || ctx.params.day !== undefined) {
 					//
 					// weeklyのgroupにアサインされているtaskをがっちゃんこして返す
@@ -339,60 +339,60 @@ module.exports = {
 					return ctx.queryPageSort(query).exec().then(docs => {
 						return this.toJSON(docs);
 					})
-					.then(jsons => {
-						if (jsons.length == 0) {
+						.then(jsons => {
+							if (jsons.length == 0) {
 							// generating and returning default groups.
 							// using reduce for array will be correct sequence.
-							return DEFAULT_WEEKLY_GROUPS.reduce((promise, g) => {
-								return promise.then(docs => {
-									g.type = type;
-									g.parent =  -1;
-									g.author = userId;
-									let group = new Group(g);
-									return group.save()
-									.then(doc => {
-										docs.push(doc);
-										return docs;
+								return DEFAULT_WEEKLY_GROUPS.reduce((promise, g) => {
+									return promise.then(docs => {
+										g.type = type;
+										g.parent =  -1;
+										g.author = userId;
+										let group = new Group(g);
+										return group.save()
+											.then(doc => {
+												docs.push(doc);
+												return docs;
+											});
 									});
-								});
-							}, Promise.resolve([]))
-							.then(docs => {
-								const assignedInWeeklyGroup = {
-									code: ASSIGNED_IN_WEEKLY
-									, type: type
-									, name: "assignedInWeekly"
-									, purpose: "for_assigning"
-									, children: []
-								};
-								return [assignedInWeeklyGroup];
-							});
-						} else {
-							return this.populateModels(jsons, excludeRule)
-							.then(jsons => {
-								const assignedInWeekly = jsons.reduce((arr, g) => {
-									return arr.concat(g.children);
-								}, []);
+								}, Promise.resolve([]))
+									.then(docs => {
+										const assignedInWeeklyGroup = {
+											code: ASSIGNED_IN_WEEKLY
+											, type: type
+											, name: "assignedInWeekly"
+											, purpose: "for_assigning"
+											, children: []
+										};
+										return [assignedInWeeklyGroup];
+									});
+							} else {
+								return this.populateModels(jsons, excludeRule)
+									.then(jsons => {
+										const assignedInWeekly = jsons.reduce((arr, g) => {
+											return arr.concat(g.children);
+										}, []);
 	
-								const assignedInWeeklyGroup = {
-									code: ASSIGNED_IN_WEEKLY
-									, type: type
-									, name: "assignedInWeekly"
-									, purpose: "for_assigning"
-									, children: assignedInWeekly
-								};
+										const assignedInWeeklyGroup = {
+											code: ASSIGNED_IN_WEEKLY
+											, type: type
+											, name: "assignedInWeekly"
+											, purpose: "for_assigning"
+											, children: assignedInWeekly
+										};
 	
-								return [assignedInWeeklyGroup];
-							});
-						}
-					});
+										return [assignedInWeeklyGroup];
+									});
+							}
+						});
 				}
 			}
 		}
 
 		// return a model by ID
 		, get: {
-			cache: true,
-			handler(ctx) {
+			cache: true
+			, handler(ctx) {
 				ctx.assertModelIsExist(ctx.t("app:GroupNotFound"));
 				return Promise.resolve(ctx.model);
 			}
@@ -410,16 +410,16 @@ module.exports = {
 			});
 
 			return group.save()
-			.then(doc => {
-				return this.toJSON(doc);
-			})
-			.then(json => {
-				return this.populateModels(json);
-			})
-			.then(json => {
-				this.notifyModelChanges(ctx, "created", { user: ctx.user, json: json } );
-				return json;
-			});
+				.then(doc => {
+					return this.toJSON(doc);
+				})
+				.then(json => {
+					return this.populateModels(json);
+				})
+				.then(json => {
+					this.notifyModelChanges(ctx, "created", { user: ctx.user, json: json } );
+					return json;
+				});
 		}
 
 		, update(ctx) {
@@ -458,97 +458,97 @@ module.exports = {
 			//	  2. from, to => xxx, xxx
 			//		- to（=from）内で移動
 			return Promise.resolve()
-			.then(() => {
-				if (ctx.params.from) {
-					let toId = ctx.modelID;
-					let fromId = this.decodeID(ctx.params.from);
-					if (toId != fromId) {
+				.then(() => {
+					if (ctx.params.from) {
+						let toId = ctx.modelID;
+						let fromId = this.decodeID(ctx.params.from);
+						if (toId != fromId) {
 						// ③-1 from, to => xxx, yyy
-						return this.collection.findById(toId).exec()
-						.then(doc => {
-							doc.children.splice(index, 0, movingId);
-							return doc.save()
-							.then(toDoc => {
-								return this.collection.findById(fromId).exec()
+							return this.collection.findById(toId).exec()
+								.then(doc => {
+									doc.children.splice(index, 0, movingId);
+									return doc.save()
+										.then(toDoc => {
+											return this.collection.findById(fromId).exec()
+												.then(fromDoc => {
+													fromDoc.children = fromDoc.children.filter( c => { return c != movingId; });
+													return fromDoc.save();
+												})
+												.then(fromDoc => {
+													// return [toDoc, fromDoc];
+													return this.actions.find(ctx);
+												});
+										});
+								});	
+						} else {
+						// ③-2 from, to => xxx, xxx
+							return this.collection.findById(toId).exec()
+								.then(doc => {
+									doc.children = doc.children.filter( c => { return c != movingId; });
+									doc.children.splice(index, 0, movingId);
+									return doc.save()
+										.then(doc => {
+											// return [doc];
+											return this.actions.find(ctx);
+										});
+								});
+						}
+				
+					} else {
+						if (ctx.params.remove) {
+						// ② from, to => xxx, UNCLASSIFIED|task
+							let fromId = ctx.modelID;
+							return this.collection.findById(fromId).exec()
 								.then(fromDoc => {
 									fromDoc.children = fromDoc.children.filter( c => { return c != movingId; });
 									return fromDoc.save();
 								})
 								.then(fromDoc => {
-									// return [toDoc, fromDoc];
+									// return [fromDoc];
 									return this.actions.find(ctx);
 								});
-							});
-						});	
-					} else {
-						// ③-2 from, to => xxx, xxx
-						return this.collection.findById(toId).exec()
-						.then(doc => {
-							doc.children = doc.children.filter( c => { return c != movingId; });
-							doc.children.splice(index, 0, movingId);
-							return doc.save()
-							.then(doc => {
-								// return [doc];
-								return this.actions.find(ctx);
-							});
-						});
-					}
-				
-				} else {
-					if (ctx.params.remove) {
-						// ② from, to => xxx, UNCLASSIFIED|task
-						let fromId = ctx.modelID;
-						return this.collection.findById(fromId).exec()
-						.then(fromDoc => {
-							fromDoc.children = fromDoc.children.filter( c => { return c != movingId; });
-							return fromDoc.save();
-						})
-						.then(fromDoc => {
-							// return [fromDoc];
-							return this.actions.find(ctx);
-						});
-					} else {
+						} else {
 						// ① from, to => UNCLASSIFIED|task, group
-						let toId = ctx.modelID;
-						return this.collection.findById(toId).exec()
-						.then(doc => {
-							doc.children.splice(index, 0, movingId);
-							return doc.save()
-							.then(doc => {
-								// return [doc];
-								return this.actions.find(ctx);
-							});
-						});	
+							let toId = ctx.modelID;
+							return this.collection.findById(toId).exec()
+								.then(doc => {
+									doc.children.splice(index, 0, movingId);
+									return doc.save()
+										.then(doc => {
+											// return [doc];
+											return this.actions.find(ctx);
+										});
+								});	
+						}
 					}
-				}
-			})
+				})
 			// .then(docs => {
 			// 	return this.toJSON(docs);
 			// })
 			// .then(jsons => {
 			// 	return this.populateModels(jsons);
 			// })
-			.then(jsons => {
-				this.notifyModelChanges(ctx, "updated", jsons);
-				return jsons;
-			});								
+				.then(jsons => {
+					this.notifyModelChanges(ctx, "updated", jsons);
+					return jsons;
+				});								
 		}
 
 		, remove(ctx) {
 			ctx.assertModelIsExist(ctx.t("app:GroupNotFound"));
 
 			return Task.remove({ _id: ctx.modelID })
-			.then(() => {
-				return ctx.model;
-			})
-			.then((json) => {
-				this.notifyModelChanges(ctx, "removed", json);
-				return json;
-			});		
+				.then(() => {
+					return ctx.model;
+				})
+				.then((json) => {
+					this.notifyModelChanges(ctx, "removed", json);
+					return json;
+				});		
 		}
-	},
+	}
 	
-	methods: {
+	, methods: {
 		/**
 		 * Validate params of context.
 		 * We will call it in `create` and `update` actions
@@ -566,28 +566,28 @@ module.exports = {
 			if (ctx.hasValidationErrors())
 				throw ctx.errorBadRequest(C.ERR_VALIDATION_ERROR, ctx.validationErrors);			
 		}
-	},	
+	}	
 
-	init(ctx) {
+	, init(ctx) {
 		// Fired when start the service
 		this.taskService = ctx.services("tasks");
 		this.personService = ctx.services("persons");
-	},
+	}
 
-	socket: {
+	, socket: {
 		afterConnection(socket, io) {
 			// Fired when a new client connected via websocket
 		}
-	},
+	}
 
-	graphql: {
+	, graphql: {
 
 		query: `
 			groups(limit: Int, offset: Int, sort: String): [Task]
 			group(code: String): Task
-		`,
+		`
 
-		types: `
+		, types: `
 			type Group {
 				code: String!
 				purpose: String
@@ -596,24 +596,24 @@ module.exports = {
 				status: Int
 				lastCommunication: Timestamp
 			}
-		`,
+		`
 
-		mutation: `
+		, mutation: `
 			groupCreate(name: String!, purpose: String, type: String, goal: String, status: Int): Group
 			groupUpdate(code: String!, name: String, purpose: String, type: String, goal: String, status: Int): Group
 			groupRemove(code: String!): Group
-		`,
+		`
 
-		resolvers: {
+		, resolvers: {
 			Query: {
-				groups: "find",
-				group: "get"
-			},
+				groups: "find"
+				, group: "get"
+			}
 
-			Mutation: {
-				groupCreate: "create",
-				groupUpdate: "update",
-				groupRemove: "remove"
+			, Mutation: {
+				groupCreate: "create"
+				, groupUpdate: "update"
+				, groupRemove: "remove"
 			}
 		}
 	}

@@ -11,11 +11,11 @@ let hashids 		= require("../../../../libs/hashids")("works");
 let autoIncrement 	= require("mongoose-auto-increment");
 
 let schemaOptions = {
-	timestamps: true,
-	toObject: {
+	timestamps: true
+	, toObject: {
 		virtuals: true
-	},
-	toJSON: {
+	}
+	, toJSON: {
 		virtuals: true
 	}
 };
@@ -29,13 +29,13 @@ let WorkSchema = new Schema({
 		type: String
 		, trim: true
 	}
-    , start: {
+	, start: {
 		type: Date
 	}
 	, end: {
 		type: Date
 	}
-    , actualStart: {
+	, actualStart: {
 		type: Date
 	}
 	, actualEnd: {
@@ -65,7 +65,7 @@ let WorkSchema = new Schema({
 		type: String
 		, trim: true
 	}
-    , badSide: {
+	, badSide: {
 		type: String
 		, trim: true
 	}
@@ -78,9 +78,9 @@ let WorkSchema = new Schema({
 		, ref: "Comment"
 	}]
 	, author : {
-		type: Number,
-		required: "Please fill in an author ID",
-		ref: "User"
+		type: Number
+		, required: "Please fill in an author ID"
+		, ref: "User"
 	}
 	, status: {
 		// 0: open, -1: close
@@ -88,8 +88,8 @@ let WorkSchema = new Schema({
 		, "default": 0
 	}
 	, asignee : {
-		type: Number,
-		ref: "User"
+		type: Number
+		, ref: "User"
 	}
 	, metadata: {}
 
@@ -100,8 +100,8 @@ WorkSchema.virtual("code").get(function() {
 });
 
 WorkSchema.plugin(autoIncrement.plugin, {
-	model: "Work",
-	startAt: 1
+	model: "Work"
+	, startAt: 1
 });
 
 WorkSchema.methods.encodeID = function(id) {

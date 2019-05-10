@@ -21,51 +21,51 @@ module.exports = function() {
 			let users = [];
 
 			let admin = new User({
-				fullName: "Administrator",
-				email: "admin@jibunstyle.com",
-				username: "admin",
-				password: "admin1234",
-				provider: "local",
-				roles: [C.ROLE_ADMIN, C.ROLE_USER],
-				verified: true
+				fullName: "Administrator"
+				, email: "admin@jibunstyle.com"
+				, username: "admin"
+				, password: "admin1234"
+				, provider: "local"
+				, roles: [C.ROLE_ADMIN, C.ROLE_USER]
+				, verified: true
 			});
 			users.push(admin.save());
 
 			let test = new User({
-				fullName: "Test User",
-				email: "test@boilerplate-app.com",
-				username: "test",
-				password: "test1234",
-				provider: "local",
-				roles: [C.ROLE_USER],
-				verified: true,
-				apiKey: tokgen()
+				fullName: "Test User"
+				, email: "test@boilerplate-app.com"
+				, username: "test"
+				, password: "test1234"
+				, provider: "local"
+				, roles: [C.ROLE_USER]
+				, verified: true
+				, apiKey: tokgen()
 			});			
 			users.push(test.save());
 
 			return Promise.all(users)
-			.then(() => {
-				if (!config.isProductionMode()) {
+				.then(() => {
+					if (!config.isProductionMode()) {
 					// Create fake users
-					return Promise.all(_.times(10, () => {
-						let fakeUser = fakerator.entity.user();
-						let user = new User({
-							fullName: fakeUser.firstName + " " + fakeUser.lastName,
-							email: fakeUser.email,
-							username: fakeUser.userName,
-							password: fakeUser.password,
-							provider: "local",
-							roles: [C.ROLE_USER],
-							verified: true
+						return Promise.all(_.times(10, () => {
+							let fakeUser = fakerator.entity.user();
+							let user = new User({
+								fullName: fakeUser.firstName + " " + fakeUser.lastName
+								, email: fakeUser.email
+								, username: fakeUser.userName
+								, password: fakeUser.password
+								, provider: "local"
+								, roles: [C.ROLE_USER]
+								, verified: true
 							//apiKey: tokgen()
-						});
-						users.push(user.save());					
-					}));
-				}				
-			})
-			.then(() => {
-				logger.warn("Default users created!");
-			});
+							});
+							users.push(user.save());					
+						}));
+					}				
+				})
+				.then(() => {
+					logger.warn("Default users created!");
+				});
 		}
 	}).catch((err) => {
 		logger.error(err);

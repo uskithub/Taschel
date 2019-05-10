@@ -13,45 +13,45 @@ let hashids 		= require("../../../../libs/hashids")("posts");
 let autoIncrement 	= require("mongoose-auto-increment");
 
 let schemaOptions = {
-	timestamps: true,
-	toObject: {
+	timestamps: true
+	, toObject: {
 		virtuals: true
-	},
-	toJSON: {
+	}
+	, toJSON: {
 		virtuals: true
 	}
 };
 
 let PostSchema = new Schema({
 	title: {
-		type: String,
-		trim: true
-	},
-	content: {
-		type: String,
-		trim: true
-	},
-	author: {
-		type: Number,
-		required: "Please fill in an author ID",
-		ref: "User"
-	},
-	views: {
-		type: Number,
-		default: 0
-	},
-	voters: [{
-		type: Number,
-		ref: "User"
-	}],
-	votes: {
-		type: Number,
-		default: 0
-	},
-	editedAt: {
+		type: String
+		, trim: true
+	}
+	, content: {
+		type: String
+		, trim: true
+	}
+	, author: {
+		type: Number
+		, required: "Please fill in an author ID"
+		, ref: "User"
+	}
+	, views: {
+		type: Number
+		, default: 0
+	}
+	, voters: [{
+		type: Number
+		, ref: "User"
+	}]
+	, votes: {
+		type: Number
+		, default: 0
+	}
+	, editedAt: {
 		type: Date
-	},
-	metadata: {}
+	}
+	, metadata: {}
 
 }, schemaOptions);
 
@@ -60,8 +60,8 @@ PostSchema.virtual("code").get(function() {
 });
 
 PostSchema.plugin(autoIncrement.plugin, {
-	model: "Post",
-	startAt: 1
+	model: "Post"
+	, startAt: 1
 });
 
 PostSchema.methods.encodeID = function() {

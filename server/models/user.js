@@ -17,11 +17,11 @@ let hashids 		= require("../libs/hashids")("users");
 let autoIncrement 	= require("mongoose-auto-increment");
 
 let schemaOptions = {
-	timestamps: true,
-	toObject: {
+	timestamps: true
+	, toObject: {
 		virtuals: true
-	},
-	toJSON: {
+	}
+	, toJSON: {
 		virtuals: true
 	}
 };
@@ -36,113 +36,113 @@ let validateLocalStrategyPassword = function(password) {
 
 let UserSchema = new Schema({
 	fullName: {
-		type: String,
-		trim: true,
-		"default": "",
-		validate: [validateLocalStrategyProperty, "Please fill in your full name"]
-	},
-	email: {
-		type: String,
-		trim: true,
-		unique: true,
-		index: true,
-		lowercase: true,
-		"default": "",
-		validate: [validateLocalStrategyProperty, "Please fill in your email"],
-		match: [/.+\@.+\..+/, "Please fill a valid email address"]
-	},
-	username: {
-		type: String,
-		unique: true,
-		index: true,
-		lowercase: true,
-		required: "Please fill in a username",
-		trim: true,
-		match: [/^[\w][\w\-\._\@]*[\w]$/, "Please fill a valid username"]
-	},
-	password: {
-		type: String,
-		"default": "",
-		validate: [validateLocalStrategyPassword, "Password should be longer"]
-	},
-	passwordLess: {
-		type: Boolean,
-		default: false
-	},
-	passwordLessToken: {
 		type: String
-	},
-	provider: {
-		type: String,
-		"default": "local"
-	},
-	profile: {
-		name: { type: String },
-		gender: { type: String },
-		picture: { type: String },
-		location: { type: String }		
-	},	
-	socialLinks: {
-		facebook: { type: String, unique: true, sparse: true },
-		twitter: { type: String, unique: true, sparse: true },
-		google: { type: String, unique: true, sparse: true },
-		github: { type: String, unique: true, sparse: true }
-	},
-	roles: {
+		, trim: true
+		, "default": ""
+		, validate: [validateLocalStrategyProperty, "Please fill in your full name"]
+	}
+	, email: {
+		type: String
+		, trim: true
+		, unique: true
+		, index: true
+		, lowercase: true
+		, "default": ""
+		, validate: [validateLocalStrategyProperty, "Please fill in your email"]
+		, match: [/.+\@.+\..+/, "Please fill a valid email address"]
+	}
+	, username: {
+		type: String
+		, unique: true
+		, index: true
+		, lowercase: true
+		, required: "Please fill in a username"
+		, trim: true
+		, match: [/^[\w][\w\-\._\@]*[\w]$/, "Please fill a valid username"]
+	}
+	, password: {
+		type: String
+		, "default": ""
+		, validate: [validateLocalStrategyPassword, "Password should be longer"]
+	}
+	, passwordLess: {
+		type: Boolean
+		, default: false
+	}
+	, passwordLessToken: {
+		type: String
+	}
+	, provider: {
+		type: String
+		, "default": "local"
+	}
+	, profile: {
+		name: { type: String }
+		, gender: { type: String }
+		, picture: { type: String }
+		, location: { type: String }		
+	}	
+	, socialLinks: {
+		facebook: { type: String, unique: true, sparse: true }
+		, twitter: { type: String, unique: true, sparse: true }
+		, google: { type: String, unique: true, sparse: true }
+		, github: { type: String, unique: true, sparse: true }
+	}
+	, roles: {
 		type: [
 			{
-				type: String,
-				"enum": [
-					C.ROLE_ADMIN,
-					C.ROLE_USER,
-					C.ROLE_GUEST
+				type: String
+				, "enum": [
+					C.ROLE_ADMIN
+					, C.ROLE_USER
+					, C.ROLE_GUEST
 				]
 			}
-		],
-		"default": [C.ROLE_USER]
-	},
-	resetPasswordToken: String,
-	resetPasswordExpires: Date,
+		]
+		, "default": [C.ROLE_USER]
+	}
+	, resetPasswordToken: String
+	, resetPasswordExpires: Date
 	
-	verified: { 
-		type: Boolean, 
-		default: false 
-	},
+	, verified: { 
+		type: Boolean 
+		, default: false 
+	}
 
-	verifyToken: { 
+	, verifyToken: { 
 		type: String 
-	},
+	}
 
-	apiKey: {
-		type: String,
-		unique: true,
-		index: true,
-		sparse: true
-	},
-
-	lastLogin: {
-		type: Date
-	},
-
-	locale: {
+	, apiKey: {
 		type: String
-	},
+		, unique: true
+		, index: true
+		, sparse: true
+	}
 
-	status: {
-		type: Number,
-		default: 1
-	},
+	, lastLogin: {
+		type: Date
+	}
 
-	credentials: {
+	, locale: {
+		type: String
+	}
+
+	, status: {
+		type: Number
+		, default: 1
+	}
+
+	, credentials: {
 		access_token: { type: String }
 		, refresh_token: { type: String }
 		, token_type: { type: String }
 		, expiry_date: { type: Number }
 		, expires_in: { type: Number }
 		, id_token: { type: String }
-	},
+	}
 	
-	metadata: {}
+	, metadata: {}
 
 }, schemaOptions);
 
@@ -157,8 +157,8 @@ UserSchema.virtual("code").get(function() {
  * Auto increment for `_id`
  */
 UserSchema.plugin(autoIncrement.plugin, {
-	model: "User",
-	startAt: 1
+	model: "User"
+	, startAt: 1
 });
 
 /**

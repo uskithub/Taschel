@@ -11,42 +11,42 @@ let hashids 		= require("../../../../libs/hashids")("devices");
 let autoIncrement 	= require("mongoose-auto-increment");
 
 let schemaOptions = {
-	timestamps: true,
-	toObject: {
+	timestamps: true
+	, toObject: {
 		virtuals: true
-	},
-	toJSON: {
+	}
+	, toJSON: {
 		virtuals: true
 	}
 };
 
 let DeviceSchema = new Schema({
 	address: {
-		type: String,
-		trim: true
-	},
-	type: {
-		type: String,
-		trim: true
-	},
-	name: {
-		type: String,
-		trim: true
-	},
-	description: {
-		type: String,
-		trim: true,
-		"default": ""
-	},
-	status: {
-		type: Number,
-		"default": 1
-	},
-	lastCommunication: {
-		type: Date,	
-		"default": Date.now
-	},
-	metadata: {}
+		type: String
+		, trim: true
+	}
+	, type: {
+		type: String
+		, trim: true
+	}
+	, name: {
+		type: String
+		, trim: true
+	}
+	, description: {
+		type: String
+		, trim: true
+		, "default": ""
+	}
+	, status: {
+		type: Number
+		, "default": 1
+	}
+	, lastCommunication: {
+		type: Date	
+		, "default": Date.now
+	}
+	, metadata: {}
 
 }, schemaOptions);
 
@@ -55,8 +55,8 @@ DeviceSchema.virtual("code").get(function() {
 });
 
 DeviceSchema.plugin(autoIncrement.plugin, {
-	model: "Device",
-	startAt: 1
+	model: "Device"
+	, startAt: 1
 });
 
 DeviceSchema.methods.encodeID = function() {
