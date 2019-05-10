@@ -10,3 +10,8 @@ export const SESSION = {
 	, SET_USER_ORGNIZATIONS : "SET_USER_ORGNIZATIONS"
 	, SET_USER_TASKS : "SET_USER_TASKS"
 };
+
+// backlog
+export const BACKLOG = {
+	SET_TASK_TREE : "SET_TASK_TREE"
+};

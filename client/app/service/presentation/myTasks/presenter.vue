@@ -1,23 +1,25 @@
 <!-- // DDD: Presentation -->
 <template lang="pug">
-	my-tasks-view(:tableSchema="tableSchema", :formSchema="formSchema")
+	my-tasks-view(v-if="!isEditing", :schema="tableSchema", @add="onAdd" @select="onSelect")
+	my-tasks-view-editing(v-else, :entity="entity", :schema="formSchema" @close="onClose")
 </template>
 
 <script>
 	import Vue from "vue";
     import AbstractPresenter from "service/presentation/mixins/abstractPresenter";
-    import MyTasksView from "./view"
+	import MyTasksView from "./view"
+	import MyTasksViewEditing from "./editingView"
 
     import Task from "service/domain/entities/task";
 
-	// import Treenode from "../../plugins/gantt/treenode";
+	// import Treenode from "service/domain/entities/treenode";
 	
 	import schema from "./schema";
     import { mapActions } from "vuex";
 
     import { 
         自分のタスク一覧を取得する
-        , タスク詳細を取得する
+        , タスクをルートとしたタスクツリーを取得する
 	} from "service/application/usecases";
     
 	const _ = Vue.prototype._;
@@ -29,7 +31,8 @@
 		name : "MyTasks"
 		, mixins : [ AbstractPresenter ]
 		, components : {
-            MyTasksView
+			MyTasksView
+			, MyTasksViewEditing
 		}
 		, computed : { }
 		, data() {
@@ -43,23 +46,18 @@
 		, methods : {
             ...mapActions({
                 自分のタスク一覧を取得する
-                , タスク詳細を取得する
-            })
-			, didSelectRow(data) {
-				this.entity = data;
-				this.タスク詳細を取得する(entity)
-					.then(() => {
-						console.log("ほげ");
-						// if (this.currentEditingTaskTree !== null) {
-						// 	this.taskTree = new Treenode(this.currentEditingTaskTree);
-						// } else {
-						// 	// TODO: エラー
-						// }
-						// this.isEditing = true;
-					});
+                , タスクをルートとしたタスクツリーを取得する
+			})
+			, onAdd() {
+				this.isEditing = true;
 			}
-			, didReceiveCloseEvent() {
-				// this.isEditing = false;
+			, onSelect(entity) {
+				this.entity = entity;
+				this.タスクをルートとしたタスクツリーを取得する(entity)
+				.then(_ => { this.isEditing = true; });
+			}
+			, onClose() {
+				this.isEditing = false;
 				// this.popCrumb();
 				// this.$nextTick(() => {
 				// 	this.entity = null;

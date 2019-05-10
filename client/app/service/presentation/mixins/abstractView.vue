@@ -16,9 +16,7 @@
 			])
 		}
 		, data() {
-			return {
-				popup: null
-			}
+			return { }
 		}
 		, methods : { }
 		, created() { }

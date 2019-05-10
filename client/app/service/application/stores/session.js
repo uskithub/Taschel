@@ -8,6 +8,9 @@ import {
 	, 自分のタスク一覧を取得する
 } from "service/application/usecases";
 
+// Stores(Interactors)
+import backlog from "./backlog";
+
 // Repositories
 import sessions from "service/infrastructure/repositories/rest/sessions";
 import profiles from "service/infrastructure/repositories/rest/profiles";
@@ -20,7 +23,9 @@ import Task from "service/domain/entities/task";
 
 // DDD: Application Service
 export default {
-	modules: { }
+	modules: {
+		backlog
+	}
 	, state : {
 		isReady: false
 		, user: null
@@ -36,8 +41,6 @@ export default {
 		, profile(state) { return state.profile; }
 		, organizations(state) { return state.organizations; }
 		, tasks (state) { return state.tasks; }
-		, editingTaskTree (state) { return state.editingTaskTree; }
-		
 	}
 	// Vuex: Mutations can change states. It must run synchronously.
 	, mutations :  {
@@ -66,11 +69,13 @@ export default {
 	// Vuex: Actions can execute asynchronous transactions.
 	, actions : {
 		[サービスの利用を開始する]({ commit }) {
-		// getStartUsing({ commit }) {
 			return sessions.get()
 				.then(data => {
 					let user = new User(data);
 					commit(SESSION.SET_USER, user);
+				})
+				.then(_ => {
+					console.log("interacted ->", サービスの利用を開始する);
 				});
 		}
 		, [プロフィールを取得する]({ commit, getters }) {
@@ -80,6 +85,9 @@ export default {
 					// TODO: entityに詰める
 					// let user = new User(data);
 					commit(SESSION.SET_USER_PROFILE, data);
+				})
+				.then(_ => {
+					console.log("interacted ->", プロフィールを取得する);
 				});
 		}
 		, [所属組織一覧を取得する]({ commit, getters }) {
@@ -89,6 +97,9 @@ export default {
 					// TODO: entityに詰める
 					// let user = new User(data);
 					commit(SESSION.SET_USER_ORGNIZATIONS, data);
+				})
+				.then(_ => {
+					console.log("interacted ->", 所属組織一覧を取得する);
 				});
 		}
 		, [自分のタスク一覧を取得する] ({ commit, getters }) {
@@ -105,6 +116,9 @@ export default {
 						return new Task(rawValues, projects);
 					});
 					commit(SESSION.SET_USER_TASKS, tasks);
+				})
+				.then(_ => {
+					console.log("interacted ->", 自分のタスク一覧を取得する);
 				});
 		}
 	}
