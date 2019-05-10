@@ -71,7 +71,7 @@
 		}
 		, methods : {
 			
-			// didPushSaveButton() {
+			didPushSaveButton() {
 			// 	if (this.validate()) {
 			// 		return Promise.resolve().then(() => {
 			// 			if ( this.isNewEntity ) {
@@ -86,8 +86,8 @@
 			// 	} else {
 			// 		// Validation error
 			// 	}
-			// }
-			// , didPushCloseButton() {
+			}
+			, didPushCloseButton() {
 			// 	if (this.validateInClosing()) {
 			// 		return Promise.resolve().then(() => {
 			// 			return this.closeTask(this.rawValues);
@@ -98,7 +98,13 @@
 			// 	} else {
 			// 		// Validation error
 			// 	}
-			// }
+			}
+			, didArrangeTask() {
+				// TODO
+			}
+			, addIconDidPush() {
+				// TODO
+			}
 		}
 		, created() {
 			// this.pushCrumb({ id: this._uid, name: (this.entity ? this.entity.name : "新規作成") });

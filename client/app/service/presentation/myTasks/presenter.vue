@@ -1,9 +1,7 @@
-<!-- // DDD: Presentation -->
 <template lang="pug">
 	my-tasks-view(v-if="!isEditing", :schema="tableSchema", @add="onAdd" @select="onSelect")
 	my-tasks-view-editing(v-else, :entity="entity", :schema="formSchema" @close="onClose")
 </template>
-
 <script>
 	import Vue from "vue";
     import AbstractPresenter from "service/presentation/mixins/abstractPresenter";
@@ -11,8 +9,6 @@
 	import MyTasksViewEditing from "./editingView"
 
     import Task from "service/domain/entities/task";
-
-	// import Treenode from "service/domain/entities/treenode";
 	
 	import schema from "./schema";
     import { mapActions } from "vuex";
@@ -59,10 +55,10 @@
 			, onClose() {
 				this.isEditing = false;
 				// this.popCrumb();
-				// this.$nextTick(() => {
-				// 	this.entity = null;
-				// 	this.taskTree = null;
-				// });
+				this.$nextTick(() => {
+					this.isEditing = false;
+					this.entity = null;
+				});
 			}
 		}
 		, created() {
