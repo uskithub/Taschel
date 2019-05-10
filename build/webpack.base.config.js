@@ -103,8 +103,8 @@ module.exports = {
 			, "vue$": "vue/dist/vue.common.js"
 		}
 		,  modules: [
-			path.resolve("./client/app")
-			, path.resolve("./node_modules")
+			path.resolve(__dirname, "..", "client", "app")
+			, path.resolve(__dirname, "..", "node_modules")
 		]
 	}
 

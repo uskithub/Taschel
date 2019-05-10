@@ -4,7 +4,7 @@ import { cloneDeep, isArray, isNil } from "lodash";
 import { validators } from "vue-form-generator";
 
 
-import { taskTypes, taskProperties } from "service/application/constants";
+import { taskTypes, taskProperties } from "service/constants";
 
 const _ = Vue.prototype._;
 

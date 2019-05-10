@@ -3,8 +3,10 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 
-import Profile from "../service/presentation/profile/presenter";
+import Profile from "service/presentation/profile/presenter";
 import MyTasks from "../service/standards/myTasks/index";
+// import MyTasks from "service/presentation/myTasks/presenter";
+
 import Projects from "../service/standards/projects/index";
 import Weekly from "../service/standards/weekly/index";
 
