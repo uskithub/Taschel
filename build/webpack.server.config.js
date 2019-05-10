@@ -15,51 +15,51 @@ fs.readdirSync("node_modules")
 	});
 
 module.exports = {
-	target: "node",
-	node: {
-		console: false,
-		global: false,
-		process: false,
-		Buffer: false,
-		__filename: true,
-		__dirname: true
-	},
+	target: "node"
+	, node: {
+		console: false
+		, global: false
+		, process: false
+		, Buffer: false
+		, __filename: true
+		, __dirname: true
+	}
 
-	entry: "./server/index.js",
+	, entry: "./server/index.js"
 
-	output: {
-		path: path.join(__dirname, "..", "server"),
-		filename: "bundle.js"
-	},
+	, output: {
+		path: path.join(__dirname, "..", "server")
+		, filename: "bundle.js"
+	}
 
-	externals: _.defaults(nodeModules, {
+	, externals: _.defaults(nodeModules, {
 		"../../config.js": "commonjs ../config.js"
-	}),
+	})
 
 	// devtool: "sourcemap",
 
-	module: {
+	, module: {
 		rules: [
 			{
-				test: /\.js$/,
-				loader: "babel-loader",
-				exclude: [/node_modules/, /vendor/]
+				test: /\.js$/
+				, loader: "babel-loader"
+				, exclude: [/node_modules/, /vendor/]
 			}
 		]
-	},
+	}
 
-	plugins: [
+	, plugins: [
 		new webpack.DefinePlugin({
 			WEBPACK_BUNDLE: true			
-		}),
+		})
 		
-		new webpack.optimize.UglifyJsPlugin({
+		, new webpack.optimize.UglifyJsPlugin({
 			compress: {
 				warnings: false
-			},
-			mangle: true
-		}),
-		new webpack.LoaderOptionsPlugin({
+			}
+			, mangle: true
+		})
+		, new webpack.LoaderOptionsPlugin({
 			minimize: true
 		})		
 	]

@@ -36,9 +36,9 @@
 
 <script>
 	import Vue from "vue";
-    import AbstractView from "../mixins/abstractView";
+    import AbstractView from "service/presentation/mixins/abstractView";
     
-	import DataTable from "../../../system/components/organisms/table";
+	import DataTable from "system/components/organisms/table";
 	import schema from "./schema";
     import { mapGetters } from "vuex";
     

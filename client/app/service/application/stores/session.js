@@ -1,13 +1,13 @@
-import { COMMON, SESSION } from "../mutationTypes";
+import { COMMON, SESSION } from "service/application/mutationTypes";
 import {
 	サービスの利用を開始する
 	, プロフィールを取得する
 	, 所属組織一覧を取得する
-} from "../usecases";
-import User from "../../domain/entities/user";
-import sessions from "../../infrastructure/repositories/rest/sessions";
-import profiles from "../../infrastructure/repositories/rest/profiles";
-import organizations from "../../infrastructure/repositories/rest/organizations";
+} from "service/application/usecases";
+import User from "service/domain/entities/user";
+import sessions from "service/infrastructure/repositories/rest/sessions";
+import profiles from "service/infrastructure/repositories/rest/profiles";
+import organizations from "service/infrastructure/repositories/rest/organizations";
 
 // DDD: Application Service
 export default {

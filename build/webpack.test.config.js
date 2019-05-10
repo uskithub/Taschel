@@ -1,6 +1,5 @@
 "use strict";
 
-let path = require("path");
 let webpack = require("webpack");
 
 let merge = require("webpack-merge");
@@ -10,27 +9,27 @@ baseWpConfig.entry.app.unshift("webpack-hot-middleware/client");
 baseWpConfig.entry.frontend.unshift("webpack-hot-middleware/client");
 
 module.exports = merge(baseWpConfig, {
-	devtool: "#inline-cheap-module-source-map",
+	devtool: "#inline-cheap-module-source-map"
 
-	module: {
+	, module: {
 		rules: [
 			{
-				test: /\.scss$/,
-				loaders: ["style-loader", "css-loader", "postcss-loader", "sass-loader"]
-			},
-			{
-				test: /\.vue$/,
-				loader: "vue-loader"
+				test: /\.scss$/
+				, loaders: ["style-loader", "css-loader", "postcss-loader", "sass-loader"]
+			}
+			, {
+				test: /\.vue$/
+				, loader: "vue-loader"
 			}			
 		]
-	},
+	}
 
-	performance: {
+	, performance: {
 		hints: false
-	},
+	}
 
-	plugins: [
-		new webpack.HotModuleReplacementPlugin(),
-		new webpack.NoEmitOnErrorsPlugin()
+	, plugins: [
+		new webpack.HotModuleReplacementPlugin()
+		, new webpack.NoEmitOnErrorsPlugin()
 	]
 });

@@ -5,8 +5,8 @@
 	import moment from "moment";
 
 	import { mapGetters, mapActions } from "vuex";
-	import { COMMON } from "../../application/mutationTypes";
-    import { サービスの利用を開始する } from "../../application/usecases";
+	import { COMMON } from "service/application/mutationTypes";
+    import { サービスの利用を開始する } from "service/application/usecases";
 
 	const _ = Vue.prototype._;
 

@@ -1,5 +1,5 @@
 import axios from "axios";
-import toastr from "../../../../system/toastr";
+import toastr from "system/toastr";
 
 import { isObject } from "lodash";
 

@@ -3,7 +3,7 @@
 </template>
 <script>
 	import Vue from "vue";
-    import AbstractPresenter from "../mixins/abstractPresenter";
+    import AbstractPresenter from "service/presentation/mixins/abstractPresenter";
     import Profile from "./view"
 
 	import schema from "./schema";
@@ -12,7 +12,7 @@
 	import { 
 		プロフィールを取得する
 		, 所属組織一覧を取得する
-	} from "../../application/usecases";
+	} from "service/application/usecases";
 
     const _ = Vue.prototype._;
 

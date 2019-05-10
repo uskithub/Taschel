@@ -11,10 +11,10 @@ module.exports = merge(baseWpConfig, {
 	module: {
 		rules: [
 			{
-				test: /\.scss$/,
-				loader: ExtractTextPlugin.extract({
-					fallback: "style-loader",
-					use: [{
+				test: /\.scss$/
+				, loader: ExtractTextPlugin.extract({
+					fallback: "style-loader"
+					, use: [{
 						loader: "css-loader"/*,
 						options: {
 							modules: true
@@ -26,13 +26,13 @@ module.exports = merge(baseWpConfig, {
 					}]
 				})
 			}, {
-				test: /\.vue$/,
-				loader: "vue-loader",
-				options: {
+				test: /\.vue$/
+				, loader: "vue-loader"
+				, options: {
 					loaders: {
 						sass: ExtractTextPlugin.extract({
-							fallback: "vue-style-loader",
-							use: [{
+							fallback: "vue-style-loader"
+							, use: [{
 								loader: "css-loader"/*,
 								options: {
 									modules: true
@@ -47,25 +47,25 @@ module.exports = merge(baseWpConfig, {
 				}
 			}
 		]
-	},
-	plugins: [
+	}
+	, plugins: [
 		new webpack.DefinePlugin({
 			"process.env": {
 				"NODE_ENV": JSON.stringify("production")
 			}
-		}),
-		new webpack.optimize.CommonsChunkPlugin({
+		})
+		, new webpack.optimize.CommonsChunkPlugin({
 			name: "vendor"
-		}),		
-		new webpack.optimize.UglifyJsPlugin({
+		})		
+		, new webpack.optimize.UglifyJsPlugin({
 			compress: {
 				warnings: false
 			}
-		}),
-		new webpack.LoaderOptionsPlugin({
+		})
+		, new webpack.LoaderOptionsPlugin({
 			minimize: true
-		}),
+		})
 
-		new ExtractTextPlugin("styles/[name].css")
+		, new ExtractTextPlugin("styles/[name].css")
 	]
 });
