@@ -1,4 +1,3 @@
-<!-- // DDD: Presentation -->
 <template lang="pug">
     .container
         .flex.align-center.justify-space-around
@@ -41,7 +40,7 @@
 		, computed : {
 			...mapGetters([
 				"tasks"
-				, "currentEditingTaskTree"
+				, "editingTaskTree"
 			])
 		}
 		, data() {

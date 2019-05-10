@@ -1,12 +1,12 @@
 <!-- // DDD: Presentation -->
 <template lang="pug">
-	my-task(:tableSchema="tableSchema", :formSchema="formSchema")
+	my-tasks-view(:tableSchema="tableSchema", :formSchema="formSchema")
 </template>
 
 <script>
 	import Vue from "vue";
     import AbstractPresenter from "service/presentation/mixins/abstractPresenter";
-    import MyTask from "./view"
+    import MyTasksView from "./view"
 
     import Task from "service/domain/entities/task";
 
@@ -26,13 +26,12 @@
 	schema.form.fields = Task.createFormSchema(schema.form.fields);
 	
 	export default {
-		name : "MyTask"
+		name : "MyTasks"
 		, mixins : [ AbstractPresenter ]
 		, components : {
-            MyTask
+            MyTasksView
 		}
-		, computed : {
-		}
+		, computed : { }
 		, data() {
 			return {
 				isEditing: false
@@ -46,10 +45,6 @@
                 自分のタスク一覧を取得する
                 , タスク詳細を取得する
             })
-            , ...mapActions([
-				"getTaskDetail"
-			])
-			// Interfacial Operations
 			, didSelectRow(data) {
 				this.entity = data;
 				this.タスク詳細を取得する(entity)

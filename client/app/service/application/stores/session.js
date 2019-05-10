@@ -9,20 +9,18 @@ import {
 } from "service/application/usecases";
 
 // Repositories
-import User from "service/domain/entities/user";
 import sessions from "service/infrastructure/repositories/rest/sessions";
 import profiles from "service/infrastructure/repositories/rest/profiles";
 import organizations from "service/infrastructure/repositories/rest/organizations";
 import tasks from "service/infrastructure/repositories/rest/tasks";
 
 // Entities
+import User from "service/domain/entities/user";
 import Task from "service/domain/entities/task";
 
 // DDD: Application Service
 export default {
-	modules: { 
-		
-	}
+	modules: { }
 	, state : {
 		isReady: false
 		, user: null
@@ -37,7 +35,7 @@ export default {
 		, me(state) { return state.user; }
 		, profile(state) { return state.profile; }
 		, organizations(state) { return state.organizations; }
-		, tasks (state) { return state.entities; }
+		, tasks (state) { return state.tasks; }
 		, editingTaskTree (state) { return state.editingTaskTree; }
 		
 	}
@@ -82,7 +80,6 @@ export default {
 					// TODO: entityに詰める
 					// let user = new User(data);
 					commit(SESSION.SET_USER_PROFILE, data);
-					return data;
 				});
 		}
 		, [所属組織一覧を取得する]({ commit, getters }) {

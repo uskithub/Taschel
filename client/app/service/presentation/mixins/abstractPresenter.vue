@@ -85,7 +85,7 @@
 			}
 		}
 		, sessionEnsured(me) {
-			console.log("[sessionEnsured] plz override me at mixed in components.", me);
+			console.warn("[sessionEnsured] plz override me at mixed in components.", me);
 		}
 	};
 </script>

@@ -1,10 +1,10 @@
 <template lang="pug">
-	profile
+	profile-view
 </template>
 <script>
 	import Vue from "vue";
     import AbstractPresenter from "service/presentation/mixins/abstractPresenter";
-    import Profile from "./view"
+    import ProfileView from "./view"
 
 	import schema from "./schema";
 	import { mapMutations, mapActions } from "vuex";
@@ -20,7 +20,7 @@
 		name : "Home"
 		, mixins : [ AbstractPresenter ]
 		, components : {
-			Profile
+			ProfileView
 		}
 		, computed: { }
 		, data() {
@@ -29,8 +29,6 @@
 		, watch : { }
 		, methods: {
 			...mapActions({
-				// DDD: Domain Service
-				// Name actions in accordance with their use-cases.
 				プロフィールを取得する
 				, 所属組織一覧を取得する
 			})
