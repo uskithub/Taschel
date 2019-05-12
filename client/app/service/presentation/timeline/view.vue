@@ -22,40 +22,21 @@
 
 <script>
 	import Vue from "vue";
-	import Base from "../../fundamentals/mixins/base";
-	import Task from "../../fundamentals/entities/task";
-	import Treenode from "../../plugins/gantt/treenode";
-	
-	// import schema from "./schema";
-	import { mapGetters, mapActions } from "vuex";
+	import AbstractView from "service/presentation/mixins/abstractView";
+
+	import Task from "service/domain/entities/task";
+	import Treenode from "service/domain/entities/Treenode";
+
+	import { mapGetters } from "vuex";
+
 	const _ = Vue.prototype._;
 
 	export default {
-		name : "Timeline"
-		, mixins : [ Base ]
-		, components : {
-		}
+		mixins : [ AbstractView ]
 		, computed : {
 			...mapGetters([
 				"latestWorks"
 			])
-		}
-		, data() {
-			return {
-			};
-		}
-		, methods : {
-			...mapActions([
-				// Usecases
-				"getTimeline"
-			])
-			// UI Operations
-		}
-		, created() {
-			this.pushCrumb({ id: this._uid, name: _("Timeline") });
-		}
-		, sessionEnsured(me) {
-			this.getTimeline();
 		}
 	};
 </script>

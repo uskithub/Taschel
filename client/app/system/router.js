@@ -5,11 +5,11 @@ import VueRouter from "vue-router";
 
 import Profile from "service/presentation/profile/presenter";
 import MyTasks from "service/presentation/myTasks/presenter";
-import Projects from "../service/presentation/projects/presenter";
-import WeeklyLoop from "../service/presentation/weeklyLoop/presenter";
-import DailyLoop from "../service/presentation/dailyLoop/presenter";
+import Projects from "service/presentation/projects/presenter";
+import WeeklyLoop from "service/presentation/weeklyLoop/presenter";
+import DailyLoop from "service/presentation/dailyLoop/presenter";
 
-import TimeLine from "../service/standards/timeline/index";
+import TimeLine from "service/presentation/timeline/presenter";
 import Gantt from "../service/plugins/gantt/interface/index";
 
 Vue.use(VueRouter);

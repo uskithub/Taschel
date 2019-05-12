@@ -14,6 +14,7 @@ import {
 // Stores(Interactors)
 import backlog from "./backlog";
 import pdca from "./pdca";
+import feedback from "./feedback";
 
 // Repositories
 import sessions from "service/infrastructure/repositories/rest/sessions";
@@ -32,6 +33,7 @@ export default {
 	modules: {
 		backlog
 		, pdca
+		, feedback
 	}
 	, state : {
 		isReady: false

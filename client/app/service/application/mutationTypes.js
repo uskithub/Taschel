@@ -36,3 +36,7 @@ export const PDCA = {
 	, REVIEW : "REVIEW"
 	, UPDATE_REVIEW : "UPDATE_REVIEW"
 };
+
+export const FEEDBACK = {
+	UPDATE_TIMELINE : "UPDATE_TIMELINE"
+};
