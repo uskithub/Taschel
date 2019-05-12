@@ -6,8 +6,7 @@ import VueRouter from "vue-router";
 import Profile from "service/presentation/profile/presenter";
 import MyTasks from "service/presentation/myTasks/presenter";
 import Projects from "../service/presentation/projects/presenter";
-
-import Weekly from "../service/standards/weekly/index";
+import Weekly from "../service/presentation/weekly/presenter";
 
 import DailyLoop from "../service/plugins/dailyLoop/interface/index";
 import TimeLine from "../service/standards/timeline/index";

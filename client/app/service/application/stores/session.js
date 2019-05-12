@@ -13,6 +13,7 @@ import {
 
 // Stores(Interactors)
 import backlog from "./backlog";
+import pdca from "./pdca";
 
 // Repositories
 import sessions from "service/infrastructure/repositories/rest/sessions";
@@ -24,12 +25,14 @@ import tasks from "service/infrastructure/repositories/rest/tasks";
 import User from "service/domain/entities/user";
 import Project from "service/domain/entities/project";
 
+import moment from "moment";
 import { assign } from "lodash";
 
 // DDD: Application Service
 export default {
 	modules: {
 		backlog
+		, pdca
 	}
 	, state : {
 		isReady: false
@@ -37,8 +40,11 @@ export default {
 		, currentUser: null
 		, profile: null
 		, organizations: []
+		
 		, projects: []
 		, currentProjectRef: null // current project entity
+
+		, currentWeek: (() => { return moment().day(1); })()
 	}
 	, getters : {
 		isReady(state) { return state.isReady; }
@@ -47,6 +53,7 @@ export default {
 		, organizations(state) { return state.organizations; }
 		, projects(state) { return state.projects; }
 		, currentProject(state) { return state.currentProjectRef; }
+		, currentWeek(state) { return state.currentWeek; }
 	}
 	// Vuex: Mutations can change states. It must run synchronously.
 	, mutations :  {

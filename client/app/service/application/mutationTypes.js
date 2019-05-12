@@ -1,9 +1,9 @@
-// common
+// TODO: SETとLOADの使い分けができていないのでどうにかする
+
 export const COMMON = {
 	GET_READY : "GET_READY"
 };
 
-// session
 export const SESSION = {
 	SET_USER : "SET_USER"
 	, SET_USER_PROFILE : "SET_USER_PROFILE"
@@ -15,11 +15,14 @@ export const SESSION = {
 	, CLOSE_PROJECT : "CLOSE_PROJECT"
 };
 
-// backlog
 export const BACKLOG = {
 	SET_USER_TASKS : "SET_USER_TASKS"
 	, SET_TASK_TREE : "SET_TASK_TREE"
 	, ADD_TASK : "ADD_TASK"
 	, UPDATE_TASK : "UPDATE_TASK"
 	, CLOSE_TASK : "CLOSE_TASK"
+};
+
+export const PDCA = {
+	LOAD_WEEKLY_GROUPS : "LOAD_WEEKLY_GROUPS"
 };
