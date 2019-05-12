@@ -4,7 +4,9 @@ import { BACKLOG } from "service/application/mutationTypes";
 import {
 	自分のタスク一覧を取得する
 	, タスクをルートとしたタスクツリーを取得する
+	, 新しいタスクを追加する
 	, タスクを更新する
+	, タスクをクローズする
 } from "service/application/usecases";
 
 // Repositories
@@ -31,31 +33,19 @@ export default {
 	}
 	// DDD: Usecases
 	// Vuex: Mutations can change states. It must run synchronously.
-	, mutations: {
-		// [INITIALIZE] (state) {
-		// 	state.entities.splice(0);
-		// 	state.current = null;
-		// }
-		// , [LOAD_TASKS] (state, entities) {
-		// 	state.entities.splice(0);
-		// 	state.entities.push(...entities);
-		// }
-		// , [ADD_TASK] (state, entity) {
-		// 	const isFound = state.entities.find(e => e.code === entity.code);
-		// 	if (!isFound) {
-		// 		state.entities.push(entity);
-		// 	}
-		// }
-		
-		// , [CLOSE_TASK] (state, code) {
-		// 	state.entities = state.entities.filter(p => p.code !== code);
-		// }
+	, mutations: {	
 		[BACKLOG.SET_USER_TASKS] (state, entities) {
 			state.tasks.splice(0);
 			state.tasks.push(...entities);
 		}
 		, [BACKLOG.SET_TASK_TREE] (state, entity) {
 			state.taskTree = entity;
+		}
+		, [BACKLOG.ADD_TASK] (state, entity) {
+			const isFound = state.tasks.find(task => task.code === entity.code);
+			if (!isFound) {
+				state.tasks.push(entity);
+			}
 		}
 		, [BACKLOG.UPDATE_TASK] (state, entity) {
 			state.tasks.forEach(task => {
@@ -64,35 +54,14 @@ export default {
 				}
 			});
 		}
+		, [BACKLOG.CLOSE_TASK] (state, code) {
+			state.tasks = state.tasks.filter(task => task.code !== code);
+		}
 	}
 
 	// DDD: Usecases
 	// Vuex: Actions can execute asynchronous transactions.
 	, actions: {
-		// Usecase:
-		// , addTask ({ commit, getters }, rawValues) {
-		// 	const projects = getters.projects;
-		// 	return tasks.post(rawValues)
-		// 		.then(data => {
-		// 			const task = new Task(data, projects);
-		// 			// TODO: 既存のtasksのどこに突っ込むか（ソート、フィルタとか）
-		// 			commit(ADD_TASK, task);
-		// 		});
-		// }
-		// // Usecase:
-		
-		// // Usecase:
-		// , closeTask ({ commit, getters }, rawValues) {
-		// 	const projects = getters.projects;
-		// 	rawValues.status = -1;
-		// 	return tasks.put(rawValues)
-		// 		.then(data => {
-		// 			const task = new Task(data, projects);
-		// 			commit(CLOSE_TASK, task.code);
-		// 		});
-		// }
-		// Usecase: get an editing task's parent as detail if it has.
-        
 		[自分のタスク一覧を取得する] ({ commit, getters }) {
 			// TODO: module分割して疎結合にすべきなのに、globalで見えるmeを（このmoduleは知らないのに）使っているのがキモチワルイ
 			// 引数でComponent側から渡すべきか？
@@ -128,12 +97,30 @@ export default {
 				console.log("interacted ->", タスクをルートとしたタスクツリーを取得する);
 			}
 		}
+		, [新しいタスクを追加する] ({ commit, getters }, rawValues) {
+			const projects = getters.projects;
+			return tasks.post(rawValues)
+				.then(data => {
+					const task = new Task(data, projects);
+					// TODO: 既存のtasksのどこに突っ込むか（ソート、フィルタとか）
+					commit(BACKLOG.ADD_TASK, task);
+				});
+		}
 		, [タスクを更新する] ({ commit, getters }, rawValues) {
 			const projects = getters.projects;
 			return tasks.put(rawValues)
 				.then(data => {
 					const task = new Task(data, projects);
 					commit(BACKLOG.UPDATE_TASK, task);
+				});
+		}
+		, [タスクをクローズする] ({ commit, getters }, rawValues) {
+			const projects = getters.projects;
+			rawValues.status = -1;
+			return tasks.put(rawValues)
+				.then(data => {
+					const task = new Task(data, projects);
+					commit(BACKLOG.CLOSE_TASK, task.code);
 				});
 		}
 	}

@@ -9,10 +9,10 @@
 						button.button.outline(@click="$emit('endEditing')")
 							i.icon.fa.fa-chevron-left
 							| {{ _("Back") }}
-						button.button.primary(@click="didPushSaveButton")
+						button.button.primary(@click="saveButtonDidPush")
 							i.icon.fa.fa-save 
 							| {{ _("Save") }}
-						button.button.danger(v-if="!isNewEntity" @click="didPushCloseButton")
+						button.button.danger(v-if="!isNewEntity" @click="closeButtonDidPush")
 							i.icon.fa.fa-check
 							| {{ _("Close") }}
 		.panel(v-if="!isNewEntity")
@@ -71,24 +71,19 @@
 		}
 		, methods : {
 			
-			didPushSaveButton() {
+			saveButtonDidPush() {
 				if (this.validate()) {
 					this.$emit("save", this.rawValues, this.isNewEntity);
 				} else {
 					// Validation error
 				}
 			}
-			, didPushCloseButton() {
-			// 	if (this.validateInClosing()) {
-			// 		return Promise.resolve().then(() => {
-			// 			return this.closeTask(this.rawValues);
-			// 		}).then(() => {
-			// 			this.$emit("close", this.rawValues);
-			// 		});
-					
-			// 	} else {
-			// 		// Validation error
-			// 	}
+			, closeButtonDidPush() {
+				if (this.validateInClosing()) {
+                    this.$emit("close", this.rawValues);
+				} else {
+					// Validation error
+				}
 			}
 			, didArrangeTask() {
 				// TODO

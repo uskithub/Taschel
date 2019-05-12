@@ -2,10 +2,10 @@
 	.container
 		.flex.align-center.justify-space-around
 			.left
-				button.button.is-primary(@click="$('add')")
+				button.button.is-primary(@click="$emit('add')")
 					i.icon.fa.fa-plus {{ _("AddTask") }}
 			.right
-		data-table(:schema="schema", :rows="tasks", :order="order", :selectedRows="[]" @select="onSelect")
+		data-table(:schema="schema", :rows="tasks", :order="order", :selectedRows="[]" @select="selectButtonDidPush")
 </template>
 
 <script>
@@ -39,7 +39,7 @@
 			};
 		}
 		, methods : { 
-			onSelect(entity) {
+			selectButtonDidPush(entity) {
 				this.$emit("select", entity);
 			}
 		}

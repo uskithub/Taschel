@@ -1,6 +1,6 @@
 <template lang="pug">
 	my-tasks-view(v-if="!isEditing", :schema="tableSchema", @add="onAdd" @select="onSelect")
-	my-tasks-view-editing(v-else, :entity="entity", :schema="formSchema" @endEditing="onEndEditing" @save="onSave")
+	my-tasks-view-editing(v-else, :entity="entity", :schema="formSchema" @endEditing="onEndEditing" @save="onSave" @close="onClose")
 </template>
 <script>
 	import Vue from "vue";
@@ -16,7 +16,9 @@
     import { 
         自分のタスク一覧を取得する
 		, タスクをルートとしたタスクツリーを取得する
+		, 新しいタスクを追加する
 		, タスクを更新する
+		, タスクをクローズする
 	} from "service/application/usecases";
     
 	const _ = Vue.prototype._;
@@ -44,7 +46,9 @@
             ...mapActions({
                 自分のタスク一覧を取得する
 				, タスクをルートとしたタスクツリーを取得する
+				, 新しいタスクを追加する
 				, タスクを更新する
+				, タスクをクローズする
 			})
 			, onAdd() {
 				this.isEditing = true;
@@ -65,10 +69,17 @@
 			, onSave(data, isNewEntity) {
 				return Promise.resolve().then(() => {
 					if ( isNewEntity ) {
-						return this.addTask(data);
+						return this.新しいタスクを追加する(data);
 					} else {
 						return this.タスクを更新する(data);
 					}
+				}).then(() => {
+					this.onEndEditing();
+				});
+			}
+			, onClose(data) {
+				return Promise.resolve().then(() => {
+					return this.タスクをクローズする(data);
 				}).then(() => {
 					this.onEndEditing();
 				});
