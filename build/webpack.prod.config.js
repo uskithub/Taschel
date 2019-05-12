@@ -1,7 +1,7 @@
 "use strict";
 
-let path = require("path");
 let webpack = require("webpack");
+let path = require("path");
 
 let merge = require("webpack-merge");
 let baseWpConfig = require("./webpack.base.config");
@@ -32,16 +32,26 @@ module.exports = merge(baseWpConfig, {
 					loaders: {
 						sass: ExtractTextPlugin.extract({
 							fallback: "vue-style-loader"
-							, use: [{
-								loader: "css-loader"/*,
-								options: {
-									modules: true
-								}*/
-							}, {
-								loader: "postcss-loader"
-							}, {
-								loader: "sass-loader"
-							}]
+							, use: [
+								{
+									loader: "css-loader"/*,
+									options: {
+										modules: true
+									}*/
+								}
+								, {
+									loader: "postcss-loader"
+								} 
+								, {
+									loader: "sass-loader"
+									, options: {
+										includePaths: [
+											path.resolve(__dirname, "..", "client", "scss")
+									  		, path.resolve(__dirname, "..", "node_modules")
+								  		]
+							  		}
+								}
+							]
 						})
 					}
 				}

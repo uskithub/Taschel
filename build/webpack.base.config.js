@@ -1,7 +1,7 @@
 "use strict";
 
-let path = require("path");
 let webpack = require("webpack");
+let path = require("path");
 
 module.exports = {
 	devtool: "#inline-source-map"

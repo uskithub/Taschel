@@ -15,7 +15,7 @@
 							i.fa.fa-home
 						span.label {{ "Project" | i18n }}
 
-				router-link(tag="li", to="/weekly")
+				router-link(tag="li", to="/weeklyLoop")
 					a(:title="_('Weekly')")
 						span.icon
 							i.fa.fa-home

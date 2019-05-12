@@ -20,9 +20,7 @@ import "ion-rangeslider/css/ion.rangeSlider.css";
 import "ion-rangeslider/css/ion.rangeSlider.skinFlat.css";
 
 import SystemComponents from "system/components/index";
-// import ServiceFundamentals from "./service/fundamentals/index";
 
-import DailyLoopPlugin from "./service/plugins/dailyLoop/index";
 import GanttPlugin from "./service/plugins/gantt/index";
 
 import KanbanPlugin from "plugins/kanban/index";
@@ -59,6 +57,4 @@ Vue.use(VueI18Next, (i18next) => {
 Vue.use(SystemComponents);
 Vue.use(KanbanPlugin);
 
-Vue.use(ServiceFundamentals);
-Vue.use(DailyLoopPlugin);
 Vue.use(GanttPlugin);

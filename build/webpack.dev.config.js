@@ -1,6 +1,7 @@
 "use strict";
 
 let webpack = require("webpack");
+let path = require("path");
 
 let merge = require("webpack-merge");
 let baseWpConfig = require("./webpack.base.config");
@@ -15,7 +16,20 @@ module.exports = merge(baseWpConfig, {
 		rules: [
 			{
 				test: /\.scss$/
-				, loaders: ["style-loader", "css-loader", "postcss-loader", "sass-loader"]
+				, loaders: [
+					"style-loader"
+					, "css-loader"
+					, "postcss-loader"
+					, {
+						loader: 'sass-loader'
+						, options: {
+						  	includePaths: [
+								path.resolve(__dirname, "..", "client", "scss")
+								, path.resolve(__dirname, "..", "node_modules")
+							]
+						}
+					},
+				]
 			}
 			, {
 				test: /\.vue$/

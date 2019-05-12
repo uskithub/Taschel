@@ -1,0 +1,206 @@
+<template lang="pug">
+	.container
+		//- daily-loop-editing-view(v-if="isEditing", :entity="workEntity", :schema="formSchemaEditing" @close="didReceiveCloseEvent")
+		//- daily-loop-reviewing-view(v-else-if="isReviewing", :date="reviewingDate", :entity="reviewEntity", :reviewingWorks="reviewingWorks", :schema="formSchemaReviewing" @close="didReceiveCloseEvent")
+		daily-loop-view(:schema="fullcalendarSchema")
+</template>
+
+<script>
+	import Vue from "vue";
+	import AbstractPresenter from "service/presentation/mixins/abstractPresenter";
+	import DailyLoopView from "./view"
+	// import DailyLoopEditingView from "./editingView"
+
+	import Work from "service/domain/entities/work";
+	import Review from "service/domain/entities/review";
+	
+	import { mapActions } from "vuex";
+
+    import { 
+		自分のその週のタスク一覧を取得する
+		, 自分のその週のワーク一覧を取得する
+		, 自分のその週のレビュー一覧を取得する
+	} from "service/application/usecases";
+
+	import schema from "./schema";
+	import moment from "moment";
+
+	const _ = Vue.prototype._;
+
+	const closedEventColor = schema.fullCalendar.closedEventColor;
+	const googleCalendarEventColor = schema.fullCalendar.googleCalendarEventColor;
+
+
+	const makeDraggable = () => {
+		const kanbanItems = Array.from(document.querySelectorAll(".kanban-item"), el => { 
+			el.dataset.duration = "1:00";
+			return el; 
+		});
+		if (kanbanItems.length == 0) {
+			return;
+		}
+		kanbanItems.forEach( t => {
+			$(t).draggable({
+				zIndex: 999
+				, containment: ".kanban-system-container"
+				, revert: true	// immediately snap back to original position
+				, revertDuration: 0
+				, start: e => {
+					// $(this).addClass("is-moving");
+				}
+				, drag: e => {}
+				, stop: e => {
+					// $(this).removeClass("is-moving");
+				}
+			});
+		});
+	};
+
+	// finding the task object has the code from the objects in the array.
+	// recursivly finding its children.
+	const findTask = (code, taskArr) => {
+		for (let i in taskArr) {
+			let t = taskArr[i];
+			if (t.code === code) {
+				return t;
+			} else if (t.tasks.length > 0) {
+				let result = findTask(code, t.tasks);
+				if (result) {
+					return result;
+				}
+			}
+		}
+		return null;
+	};
+
+	schema.formEditing.groups = Work.createFormSchema(schema.formEditing.groups);
+	schema.formReviewing.groups = Review.createFormSchema(schema.formReviewing.groups);
+
+	export default {
+		name : "DailyLoop"
+		, mixins : [ AbstractPresenter ]
+		, components : {
+			DailyLoopView
+			// , DailyLoopEditingView
+			// , DailyLoopReviewingView
+		}
+		, data() {
+			schema.fullCalendar.drop = this.didDropTask;
+			schema.fullCalendar.eventDrop = this.didRelocateEvent;
+			schema.fullCalendar.eventResize = this.didResizeEvent;
+			schema.fullCalendar.eventClick = this.didClickEvent;
+			schema.fullCalendar.viewRender = this.didChangeWeek;
+
+			return {
+				isEditing: false
+				, isReviewing: false
+				, workEntity: null
+				, reviewingDate: null
+				, reviewEntity: null
+				, reviewingWorks: null
+				, formSchemaEditing : schema.formEditing
+				, formSchemaReviewing : schema.formReviewing
+				, fullcalendarSchema: schema.fullCalendar
+			};
+		}
+		, methods : {
+			...mapActions([
+				自分のその週のタスク一覧を取得する
+				, 自分のその週のワーク一覧を取得する
+				, 自分のその週のレビュー一覧を取得する
+				// Usecases
+				, "addWork"
+				, "editWork"
+				, "changeWeek"
+			])
+			// Interfacial operations
+			, didDropTask(date, jqEvent, ui, resourceId) {
+				console.log("drop");
+				// ignore dropped at all-day slot.
+				if (!date.hasTime()) { return; }
+
+				const code = $(jqEvent.target).data("id");
+				const task = findTask(code, this.currentweekTaskGroup.tasks);
+				const work = {
+					title: task.name
+					, start: date.utc().format()
+					, end: date.add(1, "h").utc().format()
+					, parent_code: task.code
+					, week: this.currentWeek.format("YYYY-MM-DD")
+					, author: this.me.code
+				};
+				this.addWork(work);
+			}
+			, didRelocateEvent(event, delta, revertFunc, jqEvent, ui, view) {
+				const code = event.id;
+				const start = moment(event.start).format();
+				const end = moment(event.end).format();
+				console.log("eventDrop", code, start, end);
+				this.editWork({ code, start, end });
+			}
+			, didResizeEvent(event, delta, revertFunc, jqEvent, ui, view) {
+				const code = event.id;
+				const end = moment(event.end).format();
+				console.log("eventResize");
+				this.editWork({ code, end });
+			}
+			, didClickEvent(event, jqEvent, view) {
+				if (event.id == "GOOGLE_CALENDAR") return;
+				if (event.allDay) {
+					this.reviewingDate = moment(event.start);
+					const dayOfWeek = event.start.day();
+					let review = this.currentWeekReviews.find(r => r.code == event.id);
+					this.reviewEntity = review ? review : null;
+					
+					this.reviewingWorks = this.currentWeekWorks.filter(w => {
+						return moment(w.start).day() === dayOfWeek && w.status < 0;
+					});
+					this.isReviewing = true;
+
+				} else {
+					for (let i in this.currentWeekWorks) {
+						let work = this.currentWeekWorks[i];
+						if (work.code == event.id) {
+							this.workEntity = work;
+							this.isEditing = true;
+							return;
+						}
+					}
+				}
+			}
+			// 実際にはediting/reviewingから戻ってきた時の再描画でもviewRenderが呼ばれるので走っている
+			, didChangeWeek(view, elem) {
+				if (!this.isReady) return;
+
+				this.changeWeek(view.start)
+					.then(() => {
+						// this.popCrumb();
+						// this.pushCrumb({ id: "week", name: this.currentWeekOfMonth });
+						this.自分のその週のタスク一覧を取得する();
+						this.自分のその週のワーク一覧を取得する();
+						this.自分のその週のレビュー一覧を取得する();
+					});
+			}
+			, didReceiveCloseEvent(rawValues, withTask = false) {
+				this.isEditing = false;
+				this.isReviewing = false;
+				// this.popCrumb();
+				this.$nextTick(() => {
+					this.workEntity = null;
+					this.reviewingDate = null;
+					this.reivewEntity = null;
+					this.reviewingWorks = null;
+				});
+			}
+		}
+		, created() {
+			// this.pushCrumb({ id: this._uid, name: _("DailyLoop") });
+			// this.pushCrumb({ id: "week", name: this.currentWeekOfMonth });
+		}
+		, sessionEnsured(me) {
+			this.自分のその週のタスク一覧を取得する();
+			this.自分のその週のワーク一覧を取得する();
+			this.自分のその週のレビュー一覧を取得する();
+		}
+	};
+</script>

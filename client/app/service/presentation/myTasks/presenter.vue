@@ -1,12 +1,12 @@
 <template lang="pug">
 	my-tasks-view(v-if="!isEditing", :schema="tableSchema", :entity="entity" @add="onAdd" @select="onSelect")
-	my-tasks-view-editing(v-else, :schema="formSchema", :entity="entity" @endEditing="onEndEditing" @save="onSave" @close="onClose")
+	my-tasks-editing-view(v-else, :schema="formSchema", :entity="entity" @endEditing="onEndEditing" @save="onSave" @close="onClose")
 </template>
 <script>
 	import Vue from "vue";
     import AbstractPresenter from "service/presentation/mixins/abstractPresenter";
 	import MyTasksView from "./view"
-	import MyTasksViewEditing from "./editingView"
+	import MyTasksEditingView from "./editingView"
 
     import Task from "service/domain/entities/task";
 	
@@ -31,7 +31,7 @@
 		, mixins : [ AbstractPresenter ]
 		, components : {
 			MyTasksView
-			, MyTasksViewEditing
+			, MyTasksEditingView
 		}
 		, data() {
 			return {

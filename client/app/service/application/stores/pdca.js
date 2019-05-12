@@ -4,20 +4,24 @@ import { PDCA } from "service/application/mutationTypes";
 import {
 	自分の週次タスクを取得する
 	, その週に実施するタスクの貢献度と緊急度を決める
+	, 自分のその週のタスク一覧を取得する
+	, 自分のその週のワーク一覧を取得する
+	, 自分のその週のレビュー一覧を取得する
 } from "service/application/usecases";
 
 // Repositories
 import groups from "service/infrastructure/repositories/rest/groups";
+import works from "service/infrastructure/repositories/rest/works";
+import reviews from "service/infrastructure/repositories/rest/reviews";
+
 // Entities
 import Group from "service/domain/entities/group";
+import Work from "service/domain/entities/group";
+import Review from "service/domain/entities/group";
 
-
-// import Work from "../entities/work";
-// import Review from "../entities/review";
 
 // import { assign } from "lodash";
-// import works from "../repositories/rest/works";
-// import reviews from "../repositories/rest/reviews";
+
 // import domainGlue from "../domainGlue";
 
 // taskの再配置が業務ルール的にOKかどうか検査して返します
@@ -70,7 +74,8 @@ const validateArrange = (groups, task, from, to) => {
 
 /**
  * This state is used in below:
- * 	- Weekly
+ * 	- WeeklyLoop
+ *  - DailyLoop
  */
 export default {
 	state : {
@@ -92,17 +97,17 @@ export default {
 			state.groups.splice(0);
 			state.groups.push(...entities);
 		}
-		// , [LOAD_CURRENTWEEK_TASK_GROUP] (state, entity) {
-		// 	state.currentweekTaskGroup = entity;
-		// }
-		// , [LOAD_WEEKLY_WORKS] (state, entities) {
-		// 	state.currentWeekWorks.splice(0);
-		// 	state.currentWeekWorks.push(...entities);
-		// }
-		// , [LOAD_WEEKLY_REVIEWS] (state, entities) {
-		// 	state.currentWeekReviews.splice(0);
-		// 	state.currentWeekReviews.push(...entities);
-		// }
+		, [PDCA.LOAD_CURRENTWEEK_TASK_GROUP] (state, entity) {
+			state.currentweekTaskGroup = entity;
+		}
+		, [PDCA.LOAD_WEEKLY_WORKS] (state, entities) {
+			state.currentWeekWorks.splice(0);
+			state.currentWeekWorks.push(...entities);
+		}
+		, [PDCA.LOAD_WEEKLY_REVIEWS] (state, entities) {
+			state.currentWeekReviews.splice(0);
+			state.currentWeekReviews.push(...entities);
+		}
 		// , [ADD_WORK] (state, entity) {
 		// 	let isFound = state.currentWeekWorks.find(e => e.code === entity.code);
 		// 	if (!isFound) {
@@ -207,46 +212,46 @@ export default {
 			}
 		}
 		// Usecase: a user watches tasks that the user decided to do in the current week.
-		// , getCurrentWeekTasks({ commit, getters }) {
-		// 	// TODO: getMyWeeklyTasks同様に week で取得して、クライアント側でガッチャンコすれば、サーバ側のロジックを統一できる
-		// 	const user = getters.me;
-		// 	const currentWeek = getters.currentWeek;
-		// 	const options = { user: user.code, day: currentWeek };
-		// 	return groups.get(options)
-		// 		.then(data => {
-		// 			if (data.length > 0) {
-		// 				commit(LOAD_CURRENTWEEK_TASK_GROUP, new Group(data[0]));
-		// 			} else {
-		// 				commit(LOAD_CURRENTWEEK_TASK_GROUP, null);
-		// 			}
-		// 		});
-		// }
-		// // Usecase: a user watches works that the user scheduled to do in the current week.
-		// , getCurrentWeekWorks({ commit, getters }) {
-		// 	const user = getters.me;
-		// 	const currentWeek = getters.currentWeek;
-		// 	const options = { user: user.code, week: currentWeek };
-		// 	return works.get(options)
-		// 		.then(data => {
-		// 			let works = data.map(rawValues => {
-		// 				return new Work(rawValues);
-		// 			});
-		// 			commit(LOAD_WEEKLY_WORKS, works);
-		// 		});
-		// }
-		// // Usecase:
-		// , getCurrentWeekReviews({ commit, getters }) {
-		// 	const user = getters.me;
-		// 	const currentWeek = getters.currentWeek;
-		// 	const options = { user: user.code, week: currentWeek };
-		// 	return reviews.get(options)
-		// 		.then(data => {
-		// 			let reviews = data.map(rawValues => {
-		// 				return new Review(rawValues);
-		// 			});
-		// 			commit(LOAD_WEEKLY_REVIEWS, reviews);
-		// 		});
-		// }
+		, [自分のその週のタスク一覧を取得する]({ commit, getters }) {
+			// TODO: getMyWeeklyTasks同様に week で取得して、クライアント側でガッチャンコすれば、サーバ側のロジックを統一できる
+			const user = getters.me;
+			const currentWeek = getters.currentWeek;
+			const options = { user: user.code, day: currentWeek };
+			return groups.get(options)
+				.then(data => {
+					if (data.length > 0) {
+						commit(PDCA.LOAD_CURRENTWEEK_TASK_GROUP, new Group(data[0]));
+					} else {
+						commit(PDCA.LOAD_CURRENTWEEK_TASK_GROUP, null);
+					}
+				});
+		}
+		// Usecase: a user watches works that the user scheduled to do in the current week.
+		, [自分のその週のワーク一覧を取得する]({ commit, getters }) {
+			const user = getters.me;
+			const currentWeek = getters.currentWeek;
+			const options = { user: user.code, week: currentWeek };
+			return works.get(options)
+				.then(data => {
+					let works = data.map(rawValues => {
+						return new Work(rawValues);
+					});
+					commit(PDCA.LOAD_WEEKLY_WORKS, works);
+				});
+		}
+		// Usecase:
+		, [自分のその週のレビュー一覧を取得する]({ commit, getters }) {
+			const user = getters.me;
+			const currentWeek = getters.currentWeek;
+			const options = { user: user.code, week: currentWeek };
+			return reviews.get(options)
+				.then(data => {
+					let reviews = data.map(rawValues => {
+						return new Review(rawValues);
+					});
+					commit(PDCA.LOAD_WEEKLY_REVIEWS, reviews);
+				});
+		}
 		// // Usecase: a user add new work.
 		// , addWork({ commit }, rawValues) {
 		// 	return works.post(rawValues)
