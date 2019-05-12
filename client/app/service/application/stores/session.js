@@ -25,7 +25,6 @@ import tasks from "service/infrastructure/repositories/rest/tasks";
 import User from "service/domain/entities/user";
 import Project from "service/domain/entities/project";
 
-import moment from "moment";
 import { assign } from "lodash";
 
 // DDD: Application Service
@@ -43,8 +42,6 @@ export default {
 		
 		, projects: []
 		, currentProjectRef: null // current project entity
-
-		, currentWeek: (() => { return moment().day(1); })()
 	}
 	, getters : {
 		isReady(state) { return state.isReady; }
@@ -53,7 +50,6 @@ export default {
 		, organizations(state) { return state.organizations; }
 		, projects(state) { return state.projects; }
 		, currentProject(state) { return state.currentProjectRef; }
-		, currentWeek(state) { return state.currentWeek; }
 	}
 	// Vuex: Mutations can change states. It must run synchronously.
 	, mutations :  {

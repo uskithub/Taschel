@@ -1,6 +1,6 @@
 <template lang="pug">
 	.container
-		//- daily-loop-editing-view(v-if="isEditing", :entity="workEntity", :schema="formSchemaEditing" @close="didReceiveCloseEvent")
+		daily-loop-editing-view(v-if="isEditing", :entity="workEntity", :schema="formSchemaEditing" @endEditing="onEndEditing" @save="onSave" @close="onClose")
 		//- daily-loop-reviewing-view(v-else-if="isReviewing", :date="reviewingDate", :entity="reviewEntity", :reviewingWorks="reviewingWorks", :schema="formSchemaReviewing" @close="didReceiveCloseEvent")
 		daily-loop-view(:schema="fullcalendarSchema")
 </template>
@@ -9,7 +9,7 @@
 	import Vue from "vue";
 	import AbstractPresenter from "service/presentation/mixins/abstractPresenter";
 	import DailyLoopView from "./view"
-	// import DailyLoopEditingView from "./editingView"
+	import DailyLoopEditingView from "./editingView"
 
 	import Work from "service/domain/entities/work";
 	import Review from "service/domain/entities/review";
@@ -17,10 +17,15 @@
 	import { mapGetters, mapActions } from "vuex";
 
     import { 
-		自分のその週のタスク一覧を取得する
+		操作対象の週を変更する
+		, 自分のその週のタスク一覧を取得する
 		, 自分のその週のワーク一覧を取得する
 		, 自分のその週のレビュー一覧を取得する
 		, ワークを追加する
+		, ワークを編集する
+		, ワークをクローズする
+		, 日次レビューする
+		, レビューを編集する
 	} from "service/application/usecases";
 
 	import schema from "./schema";
@@ -53,13 +58,14 @@
 		, mixins : [ AbstractPresenter ]
 		, components : {
 			DailyLoopView
-			// , DailyLoopEditingView
+			, DailyLoopEditingView
 			// , DailyLoopReviewingView
 		}
 		, computed : {
 			...mapGetters([
 				"currentWeek"
 				, "currentweekTaskGroup"
+				, "currentWeekWorks"
 			])
 		}
 		, data() {
@@ -83,14 +89,15 @@
 		}
 		, methods : {
 			...mapActions([
-				自分のその週のタスク一覧を取得する
+				操作対象の週を変更する
+				, 自分のその週のタスク一覧を取得する
 				, 自分のその週のワーク一覧を取得する
 				, 自分のその週のレビュー一覧を取得する
 				, ワークを追加する
-				// Usecases
-				, "addWork"
-				, "editWork"
-				, "changeWeek"
+				, ワークを編集する
+				, ワークをクローズする
+				, 日次レビューする
+				, レビューを編集する
 			])
 			// Interfacial operations
 			, didDropTask(date, jqEvent, ui, resourceId) {
@@ -115,16 +122,17 @@
 				const start = moment(event.start).format();
 				const end = moment(event.end).format();
 				console.log("eventDrop", code, start, end);
-				this.editWork({ code, start, end });
+				this.ワークを編集する({ code, start, end });
 			}
 			, didResizeEvent(event, delta, revertFunc, jqEvent, ui, view) {
 				const code = event.id;
 				const end = moment(event.end).format();
 				console.log("eventResize");
-				this.editWork({ code, end });
+				this.ワークを編集する({ code, end });
 			}
 			, didClickEvent(event, jqEvent, view) {
-				if (event.id == "GOOGLE_CALENDAR") return;
+				console.log("呼ばrているのか", event);
+				if (event.id === "GOOGLE_CALENDAR") return;
 				if (event.allDay) {
 					this.reviewingDate = moment(event.start);
 					const dayOfWeek = event.start.day();
@@ -151,7 +159,7 @@
 			, didChangeWeek(view, elem) {
 				if (!this.isReady) return;
 
-				this.changeWeek(view.start)
+				this.操作対象の週を変更する(view.start)
 					.then(() => {
 						// this.popCrumb();
 						// this.pushCrumb({ id: "week", name: this.currentWeekOfMonth });
@@ -160,7 +168,7 @@
 						this.自分のその週のレビュー一覧を取得する();
 					});
 			}
-			, didReceiveCloseEvent(rawValues, withTask = false) {
+			, onEndEditing(rawValues, withTask = false) {
 				this.isEditing = false;
 				this.isReviewing = false;
 				// this.popCrumb();
@@ -169,6 +177,27 @@
 					this.reviewingDate = null;
 					this.reivewEntity = null;
 					this.reviewingWorks = null;
+				});
+			}
+			, onSave(data) {
+				return Promise.resolve().then(() => {
+					return this.ワークを編集する(data);
+				}).then(() => {
+					this.onEndEditing();
+				});
+			}
+			, onClose(data, withTask) {
+				return Promise.resolve().then(() => {
+					return this.ワークをクローズする(data);
+				}).then(() => {
+					if (withTask) {
+						// TODO: タスクをクローズする。　TaskのrawValuesがあるわけでないのでどうやるか。。。
+					// 	return this.closeTask(this.rawValues)
+					// } else {
+					// 	return;
+					}
+				}).then(() => {
+					this.onEndEditing();
 				});
 			}
 		}

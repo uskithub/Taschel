@@ -2,12 +2,17 @@ import { PDCA } from "service/application/mutationTypes";
 
 // Usecases
 import {
-	自分の週次タスクを取得する
+	操作対象の週を変更する
+	, 自分の週次タスクを取得する
 	, その週に実施するタスクの貢献度と緊急度を決める
 	, 自分のその週のタスク一覧を取得する
 	, 自分のその週のワーク一覧を取得する
 	, 自分のその週のレビュー一覧を取得する
 	, ワークを追加する
+	, ワークを編集する
+	, ワークをクローズする
+	, 日次レビューする
+	, レビューを編集する
 } from "service/application/usecases";
 
 // Repositories
@@ -20,10 +25,9 @@ import Group from "service/domain/entities/group";
 import Work from "service/domain/entities/work";
 import Review from "service/domain/entities/review";
 
+import moment from "moment";
 
-// import { assign } from "lodash";
-
-// import domainGlue from "../domainGlue";
+import { assign } from "lodash";
 
 // taskの再配置が業務ルール的にOKかどうか検査して返します
 // ① from, to => UNCLASSIFIED|task, group	/api/groups/${to}?task=${moving}&index=${index}
@@ -81,12 +85,14 @@ const validateArrange = (groups, task, from, to) => {
 export default {
 	state : {
 		groups: []
+		, currentWeek: (() => { return moment().day(1); })()
 		, currentweekTaskGroup: null
 		, currentWeekWorks: []
 		, currentWeekReviews: []
 	}
 	, getters : {
 		groups(state) { return state.groups; }
+		, currentWeek(state) { return state.currentWeek; }
 		, currentweekTaskGroup(state) { return state.currentweekTaskGroup; }
 		, currentWeekWorks(state) { return state.currentWeekWorks; }
 		, currentWeekReviews(state) { return state.currentWeekReviews; }
@@ -97,6 +103,9 @@ export default {
 		[PDCA.LOAD_WEEKLY_GROUPS] (state, entities) {
 			state.groups.splice(0);
 			state.groups.push(...entities);
+		}
+		, [PDCA.SET_CURRENT_WEEK] (state, entity) {
+			state.currentWeek = entity;
 		}
 		, [PDCA.LOAD_CURRENTWEEK_TASK_GROUP] (state, entity) {
 			state.currentweekTaskGroup = entity;
@@ -115,34 +124,40 @@ export default {
 				state.currentWeekWorks.push(entity);
 			}
 		}
-		// , [REVIEW] (state, entity) {
-		// 	let isFound = state.currentWeekReviews.find(e => e.code === entity.code);
-		// 	if (!isFound) {
-		// 		state.currentWeekReviews.push(entity);
-		// 	}
-		// }
-		// , [UPDATE_WORK] (state, entity) {
-		// 	state.currentWeekReviews.forEach(e => {
-		// 		if (e.code === entity.code) {
-		// 			assign(e, entity);
-		// 		}
-		// 	});
-		// }
-		// , [UPDATE_REVIEW] (state, entity) {
-		// 	state.currentWeekWorks.forEach(e => {
-		// 		if (e.code === entity.code) {
-		// 			assign(e, entity);
-		// 		}
-		// 	});
-		// }
+		, [PDCA.UPDATE_WORK] (state, entity) {
+			state.currentWeekWorks.forEach(work => {
+				if (work.code === entity.code) {
+					assign(work, entity);
+				}
+			});
+		}
+		, [PDCA.REVIEW] (state, entity) {
+			let isFound = state.currentWeekReviews.find(rview => rview.code === entity.code);
+			if (!isFound) {
+				state.currentWeekReviews.push(entity);
+			}
+		}
+		, [PDCA.UPDATE_REVIEW] (state, entity) {
+			state.currentWeekReviews.forEach(rview => {
+				if (rview.code === entity.code) {
+					assign(rview, entity);
+				}
+			});
+		}
 	}
 
 	// DDD: Usecases
 	// Vuex: Actions can execute asynchronous transactions.
 	, actions : {
-
+		[操作対象の週を変更する]({ commit }, momentObj) {
+			const m = momentObj.day(1);
+			return Promise.resolve()
+				.then(() => {
+					commit(PDCA.SET_CURRENT_WEEK, m);
+				});
+		}
 		// Usecase: a user watches tasks that the user do or did in the current week.
-		[自分の週次タスクを取得する]({ commit, getters }) {
+		, [自分の週次タスクを取得する]({ commit, getters }) {
 			const user = getters.me;
 			const currentWeek = getters.currentWeek;
 			const options = { user: user.code, week: currentWeek };
@@ -261,39 +276,39 @@ export default {
 					commit(PDCA.ADD_WORK, work);
 				});
 		}
-		// // Usecase: a user edit a work. 
-		// , editWork({ commit }, rawValues) {
-		// 	return works.put(rawValues)
-		// 		.then(data => {
-		// 			let work = new Work(data);
-		// 			commit(UPDATE_WORK, work);
-		// 		});
-		// }
-		// // Usecase: a user close a work. 
-		// , closeWork({ commit }, rawValues) {
-		// 	rawValues.status = -1;
-		// 	return works.put(rawValues)
-		// 		.then(data => {
-		// 			let work = new Work(data);
-		// 			commit(UPDATE_WORK, work);
-		// 			return work;
-		// 		});
-		// }
-		// // Usecase: a user review a day.
-		// , review({ commit }, rawValues) {
-		// 	return reviews.post(rawValues)
-		// 		.then(data => {
-		// 			let review = new Review(data);
-		// 			commit(REVIEW, review);
-		// 		});
-		// }
-		// // Usecase: a user edit a review.
-		// , editReview({ commit }, rawValues) {
-		// 	return reviews.put(rawValues)
-		// 		.then(data => {
-		// 			let review = new Review(data);
-		// 			commit(UPDATE_REVIEW, review);
-		// 		});
-		// }
+		// Usecase: a user edit a work. 
+		, [ワークを編集する]({ commit }, rawValues) {
+			return works.put(rawValues)
+				.then(data => {
+					let work = new Work(data);
+					commit(PDCA.UPDATE_WORK, work);
+				});
+		}
+		// Usecase: a user close a work. 
+		, [ワークをクローズする]({ commit }, rawValues) {
+			rawValues.status = -1;
+			return works.put(rawValues)
+				.then(data => {
+					let work = new Work(data);
+					commit(PDCA.UPDATE_WORK, work);
+					return work;
+				});
+		}
+		// Usecase: a user review a day.
+		, [日次レビューする]({ commit }, rawValues) {
+			return reviews.post(rawValues)
+				.then(data => {
+					let review = new Review(data);
+					commit(PDCA.REVIEW, review);
+				});
+		}
+		// Usecase: a user edit a review.
+		, [レビューを編集する]({ commit }, rawValues) {
+			return reviews.put(rawValues)
+				.then(data => {
+					let review = new Review(data);
+					commit(PDCA.UPDATE_REVIEW, review);
+				});
+		}
 	}
 };
