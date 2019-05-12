@@ -1,8 +1,16 @@
 <template lang="pug">
 	.container
-		daily-loop-editing-view(v-if="isEditing", :entity="workEntity", :schema="formSchemaEditing" @endEditing="onEndEditing" @save="onSave" @close="onClose")
-		//- daily-loop-reviewing-view(v-else-if="isReviewing", :date="reviewingDate", :entity="reviewEntity", :reviewingWorks="reviewingWorks", :schema="formSchemaReviewing" @close="didReceiveCloseEvent")
-		daily-loop-view(:schema="fullcalendarSchema")
+		daily-loop-editing-view(v-if="isEditing", :entity="workEntity", :schema="formSchemaEditing"
+			@endEditing="onEndEditing"
+			@save="onSave"
+			@close="onClose"
+		)
+		daily-loop-reviewing-view(v-else-if="isReviewing", :date="reviewingDate", :entity="reviewEntity", :reviewingWorks="reviewingWorks", :schema="formSchemaReviewing"
+			@endReviewing="onEndReviewing"
+			@save="onSave" 
+			@review="onReview"
+		)
+		daily-loop-view(v-else, :schema="fullcalendarSchema")
 </template>
 
 <script>
@@ -10,6 +18,7 @@
 	import AbstractPresenter from "service/presentation/mixins/abstractPresenter";
 	import DailyLoopView from "./view"
 	import DailyLoopEditingView from "./editingView"
+	import DailyLoopReviewingView from "./reviewingView"
 
 	import Work from "service/domain/entities/work";
 	import Review from "service/domain/entities/review";
@@ -59,13 +68,14 @@
 		, components : {
 			DailyLoopView
 			, DailyLoopEditingView
-			// , DailyLoopReviewingView
+			, DailyLoopReviewingView
 		}
 		, computed : {
 			...mapGetters([
 				"currentWeek"
 				, "currentweekTaskGroup"
 				, "currentWeekWorks"
+				, "currentWeekReviews"
 			])
 		}
 		, data() {
@@ -168,15 +178,11 @@
 						this.自分のその週のレビュー一覧を取得する();
 					});
 			}
-			, onEndEditing(rawValues, withTask = false) {
+			, onEndEditing() {
 				this.isEditing = false;
-				this.isReviewing = false;
 				// this.popCrumb();
 				this.$nextTick(() => {
 					this.workEntity = null;
-					this.reviewingDate = null;
-					this.reivewEntity = null;
-					this.reviewingWorks = null;
 				});
 			}
 			, onSave(data) {
@@ -198,6 +204,28 @@
 					}
 				}).then(() => {
 					this.onEndEditing();
+				});
+			}
+			, onEndReviewing() {
+				this.isReviewing = false;
+				// this.popCrumb();
+				this.$nextTick(() => {
+					this.reviewingDate = null;
+					this.reivewEntity = null;
+					this.reviewingWorks = null;
+				});
+			}
+			, onReview(data) {
+				return Promise.resolve().then(() => {
+					if (this.reviewEntity) {
+						// update
+						return this.レビューを編集する(data);
+					} else {
+						// create
+						return this.日次レビューする(data);
+					}
+				}).then(() => {
+					this.onEndReviewing();
 				});
 			}
 		}
