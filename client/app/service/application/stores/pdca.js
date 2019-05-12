@@ -7,6 +7,7 @@ import {
 	, 自分のその週のタスク一覧を取得する
 	, 自分のその週のワーク一覧を取得する
 	, 自分のその週のレビュー一覧を取得する
+	, ワークを追加する
 } from "service/application/usecases";
 
 // Repositories
@@ -16,8 +17,8 @@ import reviews from "service/infrastructure/repositories/rest/reviews";
 
 // Entities
 import Group from "service/domain/entities/group";
-import Work from "service/domain/entities/group";
-import Review from "service/domain/entities/group";
+import Work from "service/domain/entities/work";
+import Review from "service/domain/entities/review";
 
 
 // import { assign } from "lodash";
@@ -108,12 +109,12 @@ export default {
 			state.currentWeekReviews.splice(0);
 			state.currentWeekReviews.push(...entities);
 		}
-		// , [ADD_WORK] (state, entity) {
-		// 	let isFound = state.currentWeekWorks.find(e => e.code === entity.code);
-		// 	if (!isFound) {
-		// 		state.currentWeekWorks.push(entity);
-		// 	}
-		// }
+		, [PDCA.ADD_WORK] (state, entity) {
+			let isFound = state.currentWeekWorks.find(work => work.code === entity.code);
+			if (!isFound) {
+				state.currentWeekWorks.push(entity);
+			}
+		}
 		// , [REVIEW] (state, entity) {
 		// 	let isFound = state.currentWeekReviews.find(e => e.code === entity.code);
 		// 	if (!isFound) {
@@ -252,14 +253,14 @@ export default {
 					commit(PDCA.LOAD_WEEKLY_REVIEWS, reviews);
 				});
 		}
-		// // Usecase: a user add new work.
-		// , addWork({ commit }, rawValues) {
-		// 	return works.post(rawValues)
-		// 		.then(data => {
-		// 			let work = new Work(data);
-		// 			commit(ADD_WORK, work);
-		// 		});
-		// }
+		// Usecase: a user add new work.
+		, [ワークを追加する]({ commit }, rawValues) {
+			return works.post(rawValues)
+				.then(data => {
+					let work = new Work(data);
+					commit(PDCA.ADD_WORK, work);
+				});
+		}
 		// // Usecase: a user edit a work. 
 		// , editWork({ commit }, rawValues) {
 		// 	return works.put(rawValues)

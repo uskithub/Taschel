@@ -20,6 +20,7 @@
 
 	import { mapGetters } from "vuex";
 
+	import _schema from "./schema";
 	import moment from "moment";
 
 	import $ from "jquery";
@@ -27,6 +28,10 @@
 	import "jquery-ui/ui/widgets/resizable"; // なくても動くがrequirementなので
 
 	const _ = Vue.prototype._;
+
+	// TODO: これどうにかする
+	const closedEventColor = _schema.fullCalendar.closedEventColor;
+	const googleCalendarEventColor = _schema.fullCalendar.googleCalendarEventColor;
 
 	const convertWork2Event = work => {
 		const isGoogleCalendar = (work.code === "GOOGLE_CALENDAR");
@@ -76,23 +81,6 @@
 				}
 			});
 		});
-	};
-
-	// finding the task object has the code from the objects in the array.
-	// recursivly finding its children.
-	const findTask = (code, taskArr) => {
-		for (let i in taskArr) {
-			let t = taskArr[i];
-			if (t.code === code) {
-				return t;
-			} else if (t.tasks.length > 0) {
-				let result = findTask(code, t.tasks);
-				if (result) {
-					return result;
-				}
-			}
-		}
-		return null;
 	};
 
 	export default {

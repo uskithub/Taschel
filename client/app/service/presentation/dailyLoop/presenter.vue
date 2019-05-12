@@ -14,47 +14,19 @@
 	import Work from "service/domain/entities/work";
 	import Review from "service/domain/entities/review";
 	
-	import { mapActions } from "vuex";
+	import { mapGetters, mapActions } from "vuex";
 
     import { 
 		自分のその週のタスク一覧を取得する
 		, 自分のその週のワーク一覧を取得する
 		, 自分のその週のレビュー一覧を取得する
+		, ワークを追加する
 	} from "service/application/usecases";
 
 	import schema from "./schema";
 	import moment from "moment";
 
 	const _ = Vue.prototype._;
-
-	const closedEventColor = schema.fullCalendar.closedEventColor;
-	const googleCalendarEventColor = schema.fullCalendar.googleCalendarEventColor;
-
-
-	const makeDraggable = () => {
-		const kanbanItems = Array.from(document.querySelectorAll(".kanban-item"), el => { 
-			el.dataset.duration = "1:00";
-			return el; 
-		});
-		if (kanbanItems.length == 0) {
-			return;
-		}
-		kanbanItems.forEach( t => {
-			$(t).draggable({
-				zIndex: 999
-				, containment: ".kanban-system-container"
-				, revert: true	// immediately snap back to original position
-				, revertDuration: 0
-				, start: e => {
-					// $(this).addClass("is-moving");
-				}
-				, drag: e => {}
-				, stop: e => {
-					// $(this).removeClass("is-moving");
-				}
-			});
-		});
-	};
 
 	// finding the task object has the code from the objects in the array.
 	// recursivly finding its children.
@@ -84,6 +56,12 @@
 			// , DailyLoopEditingView
 			// , DailyLoopReviewingView
 		}
+		, computed : {
+			...mapGetters([
+				"currentWeek"
+				, "currentweekTaskGroup"
+			])
+		}
 		, data() {
 			schema.fullCalendar.drop = this.didDropTask;
 			schema.fullCalendar.eventDrop = this.didRelocateEvent;
@@ -108,6 +86,7 @@
 				自分のその週のタスク一覧を取得する
 				, 自分のその週のワーク一覧を取得する
 				, 自分のその週のレビュー一覧を取得する
+				, ワークを追加する
 				// Usecases
 				, "addWork"
 				, "editWork"
@@ -129,7 +108,7 @@
 					, week: this.currentWeek.format("YYYY-MM-DD")
 					, author: this.me.code
 				};
-				this.addWork(work);
+				this.ワークを追加する(work);
 			}
 			, didRelocateEvent(event, delta, revertFunc, jqEvent, ui, view) {
 				const code = event.id;
