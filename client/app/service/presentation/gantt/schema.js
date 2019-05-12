@@ -1,6 +1,5 @@
 import Vue from "vue";
 
-
 const _ = Vue.prototype._;
 
 export default {

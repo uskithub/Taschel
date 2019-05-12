@@ -5,7 +5,9 @@ import {
 	サービスの利用を開始する
 	, プロフィールを取得する
 	, 所属組織一覧を取得する
+	, 組織を作成する
 	, 自分のプロジェクト一覧を取得する
+	, プロジェクトを選択する
 	, 新しいプロジェクトを追加する
 	, プロジェクトを更新する
 	, プロジェクトをクローズする
@@ -15,6 +17,7 @@ import {
 import backlog from "./backlog";
 import pdca from "./pdca";
 import feedback from "./feedback";
+import planning from "./planning";
 
 // Repositories
 import sessions from "service/infrastructure/repositories/rest/sessions";
@@ -34,6 +37,7 @@ export default {
 		backlog
 		, pdca
 		, feedback
+		, planning
 	}
 	, state : {
 		isReady: false
@@ -166,6 +170,9 @@ export default {
 						}
 					}
 				});
+		}
+		, [プロジェクトを選択する]({ commit }, project) {
+			commit(SESSION.SET_CURRENT_PROJECT, project);
 		}
 		, [新しいプロジェクトを追加する]({ commit, getters }, rawValues) {
 			let user = getters.me;

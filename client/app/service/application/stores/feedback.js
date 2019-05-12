@@ -11,7 +11,10 @@ import works from "service/infrastructure/repositories/rest/works";
 // Entities
 import Work from "service/domain/entities/work";
 
-
+/**
+ * This state is used in below:
+ * 	- Timeline
+ */
 export default {
 	state : {
 		// DDD: Entities

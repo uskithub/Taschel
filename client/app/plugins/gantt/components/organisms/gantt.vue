@@ -34,11 +34,11 @@
 		normalizeDate,
 		transformInputValues,
 	} from "../helpers";
-	import GanttHeader from "./ganttHeader";
-	import GanttBody from "./ganttBody";
-	import GanttFooter from "./ganttFooter";
+	import GanttHeader from "../atoms/ganttHeader";
+	import GanttBody from "../atoms/ganttBody";
+	import GanttFooter from "../atoms/ganttFooter";
 	
-	import Timeframe from "../timeframe.js";
+	import Timeframe from "../entities/timeframe";
 
 	import moment from "moment";
 	import { cloneDeep } from "lodash";

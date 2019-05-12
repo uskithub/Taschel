@@ -10,7 +10,7 @@ import WeeklyLoop from "service/presentation/weeklyLoop/presenter";
 import DailyLoop from "service/presentation/dailyLoop/presenter";
 
 import TimeLine from "service/presentation/timeline/presenter";
-import Gantt from "../service/plugins/gantt/interface/index";
+import Gantt from "service/presentation/gantt/presenter";
 
 Vue.use(VueRouter);
 

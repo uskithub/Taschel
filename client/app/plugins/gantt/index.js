@@ -1,11 +1,11 @@
-import Table from "./components/table";
-import TimeLine from "./components/treebasedtimeline";
-import TreeNode from "./components/timelinetreenode";
+import Treelist from "./components/atoms/treelist";
+import Treenode from "./components/atoms/treenode";
+import Gantt from "./components/organisms/gantt";
 
 const plugin = {
 	// @see https://jp.vuejs.org/v2/guide/plugins.html
 	install (Vue, options) {
-		console.log("★★★ install service fundamentals ★★★");
+		console.log("★★★ install Gantt plugin ★★★");
 		
 		const finalOptions = Object.assign({}, options);
 
@@ -14,10 +14,10 @@ const plugin = {
 		// strategies.googleMapsAPIsLoaded = strategies.created;
 
 		// componentの追加
-		Vue.component("data-table", Table);
-		Vue.component("time-line", TimeLine);
-		Vue.component("timeline-treenode", TreeNode);
-		
+		Vue.component("treelist", Treelist);
+		Vue.component("treenode", Treenode);
+		Vue.component("gantt", Gantt);
+
 		// maps.googleapiのロード
 		// if (finalOptions.load) {
 		// 	loader.load(finalOptions.load)

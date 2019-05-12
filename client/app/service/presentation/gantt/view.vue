@@ -1,22 +1,19 @@
 <template lang="pug">
-	section
-		editing(v-if="isEditing", :entity="entity", :parent="parentEntity", :sibling="presuppositionalSiblingEntity", :taskTree="taskTree" , :schema="formSchema" @close="didReceiveCloseEvent")
-		gantt(v-else, :data="mock", :treenodes="treenodes"
-			@addTopLevel="addTopLevelDidPush"
-			@arrange="didArrangeTask"
-			@edit="editIconDidPush"
-			@add="addIconDidPush"
-		)
+	gantt(v-:data="mock", :treenodes="treenodes"
+		@addTopLevel="addTopLevelDidPush"
+		@arrange="didArrangeTask"
+		@edit="editIconDidPush"
+		@add="addIconDidPush"
+	)
 </template>
 
 <script>
 	import Vue from "vue";
-	import Base from "../../../fundamentals/mixins/base";
-	import Task from "../../../fundamentals/entities/task";
-	import Treenode from "../treenode";
-	import Editing from "./editing";
-	import { mapGetters, mapActions } from "vuex";
-	import schema from "./schema";
+	import AbstractView from "service/presentation/mixins/abstractView";
+
+	import Treenode from "service/domain/entities/treenode";
+	
+	import { mapGetters } from "vuex";
 	import moment from "moment";
 	
 	import $ from "jquery";
@@ -25,14 +22,8 @@
 
 	const _ = Vue.prototype._;
 
-	schema.form.fields = Task.createFormSchema(schema.form.fields);
-	
 	export default {
-		name : "GanttChart"
-		, mixins : [ Base ]
-		, components : {
-			Editing
-		}
+		mixins : [ AbstractView ]
 		, computed : {
 			...mapGetters([
 				"projects"
@@ -50,9 +41,7 @@
 		}
 		, data() {
 			return {
-				isEditing: false
-				, entity: null
-				, parentEntity: null
+				parentEntity: null
 				, presuppositionalSiblingEntity: null
 				, taskTree: null
 				, formSchema : schema.form
@@ -60,14 +49,8 @@
 			};
 		}
 		, methods : {
-			...mapActions([
-				// Usecases
-				"getUserProjectList"
-				, "arrangeTasksInAnotherTask"
-				, "selectProject"
-			])
 			// Project Operations
-			, addTopLevelDidPush(e) {
+			addTopLevelDidPush(e) {
 				this.parentEntity = this.currentProject;
 				this.isEditing = true;
 			} 
@@ -107,28 +90,7 @@
 				});
 			}
 		}
-		, created() {
-			this.pushCrumb({ id: this._uid, name: _("GanttChart") });
-		}
-		, sessionEnsured(me) {
-			return this.getUserProjectList()
-				.then(() => {
-					this.setSelectorOnLastCrumb({
-						items: this.projects
-						, itemDidPush: (item) => {
-							this.selectProject(item);
-							this.popCrumb();
-							this.pushCrumb({ id: item.code, name: item.name });
-						}
-					});
-					this.pushCrumb({ 
-						id: this.currentProject.code
-						, name: this.currentProject.name
-					});
-				});
-		}
+		
 	};
 </script>
-
-<style lang="scss" scoped>
-</style>
+<style lang="scss" scoped></style>

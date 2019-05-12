@@ -14,7 +14,7 @@
 <script>
 	import Vue from "vue";
 	import { mapGetters, mapActions } from "vuex";
-	import { CLEAR_CRUKB } from "../../../service/fundamentals/mutationTypes";
+	
 	const _ = Vue.prototype._;
 
 	export default {
