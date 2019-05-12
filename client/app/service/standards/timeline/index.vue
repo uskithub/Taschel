@@ -25,7 +25,7 @@
 	import Base from "../../fundamentals/mixins/base";
 	import Task from "../../fundamentals/entities/task";
 	import Treenode from "../../plugins/gantt/treenode";
-	import Projects from "../projects/index"
+	
 	// import schema from "./schema";
 	import { mapGetters, mapActions } from "vuex";
 	const _ = Vue.prototype._;
