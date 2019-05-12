@@ -1,6 +1,6 @@
 <template lang="pug">
-	my-tasks-view(v-if="!isEditing", :schema="tableSchema", @add="onAdd" @select="onSelect")
-	my-tasks-view-editing(v-else, :entity="entity", :schema="formSchema" @endEditing="onEndEditing" @save="onSave" @close="onClose")
+	my-tasks-view(v-if="!isEditing", :schema="tableSchema", :entity="entity" @add="onAdd" @select="onSelect")
+	my-tasks-view-editing(v-else, :schema="formSchema", :entity="entity" @endEditing="onEndEditing" @save="onSave" @close="onClose")
 </template>
 <script>
 	import Vue from "vue";
@@ -33,7 +33,6 @@
 			MyTasksView
 			, MyTasksViewEditing
 		}
-		, computed : { }
 		, data() {
 			return {
 				isEditing: false
@@ -62,7 +61,6 @@
 				this.isEditing = false;
 				// this.popCrumb();
 				this.$nextTick(() => {
-					this.isEditing = false;
 					this.entity = null;
 				});
 			}

@@ -3,11 +3,11 @@
 		.flex.align-center.justify-space-around
 			.left
 				button.button.is-primary(@click="$emit('add')")
-					i.icon.fa.fa-plus {{ _("AddTask") }}
+					i.icon.fa.fa-plus 
+					| {{ _("AddTask") }}
 			.right
-		data-table(:schema="schema", :rows="tasks", :order="order", :selectedRows="[]" @select="selectButtonDidPush")
+		data-table(:schema="schema", :rows="tasks", :order="order", :selectedRows="[entity]" @select="selectButtonDidPush")
 </template>
-
 <script>
 	import Vue from "vue";
     import AbstractView from "service/presentation/mixins/abstractView";
@@ -18,15 +18,16 @@
 
 	export default {
 		mixins : [ AbstractView ]
-		, components : {
-			// Editing
-        }
         , props: {
 			schema : {
 				type: Object
 				, validator: function(value) { return true; } // TODO
 				, required : true
-            }
+			}
+			, entity : {
+				type: Object
+				, validator: (value) => { return true; } // TODO
+			}
         }
 		, computed : {
 			...mapGetters([
@@ -45,3 +46,4 @@
 		}
 	};
 </script>
+<style lang="scss" scoped></style>

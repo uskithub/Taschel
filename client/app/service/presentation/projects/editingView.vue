@@ -12,34 +12,29 @@
 						button.button.primary(@click="saveButtonDidPush")
 							i.icon.fa.fa-save 
 							| {{ _("Save") }}
-						button.button.danger(v-if="!isNewEntity" @click="closeButtonDidPush")
-							i.icon.fa.fa-check
+						button.button.danger(v-if="!isNewEntity && rawValues.status >= 0" @click="closeButtonDidPush")
+							i.icon.fa.fa-save 
 							| {{ _("Close") }}
-		.panel(v-if="!isNewEntity")
-			.header 親子関係
-			.body
-				treelist(:treenodes="treenodes" ref="legend" @arrange="didArrangeTask" @addIconDidPush="addIconDidPush")
 
-		.panel(v-if="!isNewEntity")
-			.header Timeline
-			.body
-				time-line(:treenodes="treenodes" ref="legend" @arrange="didArrangeTask" @addIconDidPush="addIconDidPush")
 </template>
 <script>
 	import Vue from "vue";
-    import AbstractView from "service/presentation/mixins/abstractView";
+	import AbstractView from "service/presentation/mixins/abstractView";
     import AbstractEditingView from "service/presentation/mixins/abstractEditingView";
     
-	import { mapGetters } from "vuex";
+    import Project from "service/domain/entities/project";
+
 	import { schema as schemaUtils } from "vue-form-generator";
-    import { cloneDeep, isArray } from "lodash";
-    
+	import { cloneDeep } from "lodash";
+
+	import { projectTypes } from "service/constants";
+
 	const _ = Vue.prototype._;
 
 	export default {
 		mixins : [ 
             AbstractView
-            , AbstractEditingView 
+            , AbstractEditingView
         ]
 		, props : {
             schema : {
@@ -52,44 +47,32 @@
 			}
 		}
 		, data() {
-            let _rawValues = this.entity 
-                ? this.entity.rawValues 
-                : schemaUtils.createDefaultObject(this.schema);
+			let _entity = this.entity || Project.newProjectFactory();
 
 			return {
-				rawValues: _rawValues
+				rawValues: _entity.rawValues
 				, options: {}
 			};
 		}
 		, computed: {
-            ...mapGetters([
-				"taskTree"
-			])
-			, isNewEntity() { return this.entity === null; }
+			isNewEntity() { return this.entity === null; }
 			, header() { return this.entity ? this.entity.name : "新規作成"; }
-			, treenodes() { return [this.taskTree]; }
 		}
 		, methods : {
-			
+
 			saveButtonDidPush() {
 				if (this.validate()) {
-					this.$emit("save", this.rawValues, this.isNewEntity);
+                    this.$emit("save", this.rawValues, this.isNewEntity);
 				} else {
-					// Validation error
+					// TODO: Validation error
 				}
 			}
 			, closeButtonDidPush() {
 				if (this.validateInClosing()) {
-                    this.$emit("close", this.rawValues);
+					this.$emit("close", this.rawValues);
 				} else {
 					// Validation error
 				}
-			}
-			, didArrangeTask() {
-				// TODO
-			}
-			, addIconDidPush() {
-				// TODO
 			}
 		}
 		, created() {
