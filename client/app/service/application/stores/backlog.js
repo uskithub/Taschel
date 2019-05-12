@@ -2,7 +2,9 @@ import { BACKLOG } from "service/application/mutationTypes";
 
 // Usecases
 import {
-	タスクをルートとしたタスクツリーを取得する
+	自分のタスク一覧を取得する
+	, タスクをルートとしたタスクツリーを取得する
+	, タスクを更新する
 } from "service/application/usecases";
 
 // Repositories
@@ -21,10 +23,10 @@ import { assign } from "lodash";
 export default {
 	state: {
 		tasks: []
-		, editingTaskTree: null
+		, taskTree: null
 	}
 	, getters: {
-		tasks (state) { return state.entities; }
+		tasks (state) { return state.tasks; }
 		, taskTree (state) { return state.taskTree; }
 	}
 	// DDD: Usecases
@@ -44,18 +46,23 @@ export default {
 		// 		state.entities.push(entity);
 		// 	}
 		// }
-		// , [UPDATE_TASK] (state, entity) {
-		// 	state.entities.forEach(e => {
-		// 		if (e.code === entity.code) {
-		// 			assign(e, entity);
-		// 		}
-		// 	});
-		// }
+		
 		// , [CLOSE_TASK] (state, code) {
 		// 	state.entities = state.entities.filter(p => p.code !== code);
 		// }
-		[BACKLOG.SET_TASK_TREE] (state, entity) {
+		[BACKLOG.SET_USER_TASKS] (state, entities) {
+			state.tasks.splice(0);
+			state.tasks.push(...entities);
+		}
+		, [BACKLOG.SET_TASK_TREE] (state, entity) {
 			state.taskTree = entity;
+		}
+		, [BACKLOG.UPDATE_TASK] (state, entity) {
+			state.tasks.forEach(task => {
+				if (task.code === entity.code) {
+					assign(task, entity);
+				}
+			});
 		}
 	}
 
@@ -73,14 +80,7 @@ export default {
 		// 		});
 		// }
 		// // Usecase:
-		// , editTask ({ commit, getters }, rawValues) {
-		// 	const projects = getters.projects;
-		// 	return tasks.put(rawValues)
-		// 		.then(data => {
-		// 			const task = new Task(data, projects);
-		// 			commit(UPDATE_TASK, task);
-		// 		});
-		// }
+		
 		// // Usecase:
 		// , closeTask ({ commit, getters }, rawValues) {
 		// 	const projects = getters.projects;
@@ -92,7 +92,27 @@ export default {
 		// 		});
 		// }
 		// Usecase: get an editing task's parent as detail if it has.
-		[タスクをルートとしたタスクツリーを取得する] ({ commit, getters }, task) {
+        
+		[自分のタスク一覧を取得する] ({ commit, getters }) {
+			// TODO: module分割して疎結合にすべきなのに、globalで見えるmeを（このmoduleは知らないのに）使っているのがキモチワルイ
+			// 引数でComponent側から渡すべきか？
+			// StoreはDDD的にはApplicationServiceに当たると思うので、ユースケースをactionで表現したい
+			// userが誰か知らないのもおかしい気がする
+			const user = getters.me;
+			const options = { user: user.code };
+			const projects = getters.projects;
+			return tasks.get(options)
+				.then(data => {
+					const tasks = data.map(rawValues => {
+						return new Task(rawValues, projects);
+					});
+					commit(BACKLOG.SET_USER_TASKS, tasks);
+				})
+				.then(_ => {
+					console.log("interacted ->", 自分のタスク一覧を取得する);
+				});
+		}
+		, [タスクをルートとしたタスクツリーを取得する] ({ commit, getters }, task) {
 			const projects = getters.projects;
 			if (task.parent !== -1) {
 				return tasks.get({ code: task.parent })
@@ -107,6 +127,14 @@ export default {
 				commit(BACKLOG.SET_TASK_TREE, new Treenode(task));
 				console.log("interacted ->", タスクをルートとしたタスクツリーを取得する);
 			}
+		}
+		, [タスクを更新する] ({ commit, getters }, rawValues) {
+			const projects = getters.projects;
+			return tasks.put(rawValues)
+				.then(data => {
+					const task = new Task(data, projects);
+					commit(BACKLOG.UPDATE_TASK, task);
+				});
 		}
 	}
 };

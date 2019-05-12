@@ -6,7 +6,7 @@
 				.form
 					vue-form-generator(:schema="schema", :model="rawValues", :options="options", :is-new-model="isNewEntity" ref="form")
 					.buttons.flex.justify-end
-						button.button.outline(@click="$emit('close')")
+						button.button.outline(@click="$emit('endEditing')")
 							i.icon.fa.fa-chevron-left
 							| {{ _("Back") }}
 						button.button.primary(@click="didPushSaveButton")
@@ -28,7 +28,7 @@
 <script>
 	import Vue from "vue";
     import AbstractView from "service/presentation/mixins/abstractView";
-    import AbstractEditingView from "service/presentation/mixins/abstractView";
+    import AbstractEditingView from "service/presentation/mixins/abstractEditingView";
 
     import Task from "service/domain/entities/task";
     // import Treenode from "service/domain/entities/treenode";
@@ -72,20 +72,11 @@
 		, methods : {
 			
 			didPushSaveButton() {
-			// 	if (this.validate()) {
-			// 		return Promise.resolve().then(() => {
-			// 			if ( this.isNewEntity ) {
-			// 				return this.addTask(this.rawValues);
-			// 			} else {
-			// 				return this.editTask(this.rawValues);
-			// 			}
-			// 		}).then(() => {
-			// 			this.$emit("close", this.rawValues);
-			// 		});
-					
-			// 	} else {
-			// 		// Validation error
-			// 	}
+				if (this.validate()) {
+					this.$emit("save", this.rawValues, this.isNewEntity);
+				} else {
+					// Validation error
+				}
 			}
 			, didPushCloseButton() {
 			// 	if (this.validateInClosing()) {
