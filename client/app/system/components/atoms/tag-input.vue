@@ -4,7 +4,6 @@
 		@blur="scope.cancelEdit(scope.index)"
 		@keydown.enter.prevent="scope.performSaveTag(scope.index)")
 </template>
-
 <script>
 	export default {
 		name: "TagInput"

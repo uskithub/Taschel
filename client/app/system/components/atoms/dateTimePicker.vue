@@ -4,7 +4,6 @@
 			span.glyphicon.glyphicon-calendar
 		input.form-control(type="text", v-model="value", :autocomplete="schema.autocomplete", :disabled="disabled", :placeholder="schema.placeholder", :readonly="schema.readonly", :name="schema.inputName", :id="getFieldID(schema)")
 </template>
-
 <script>
 	/* global $ */
 	import { abstractField } from "vue-form-generator";
@@ -80,7 +79,4 @@
 		}
 	};
 </script>
-
-
-<style lang="scss">
-</style>
+<style lang="scss"></style>

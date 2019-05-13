@@ -13,8 +13,8 @@ import VueI18Next from "./system/i18next.js";
 import VueFormGenerator from "vue-form-generator";
 import VueWebsocket from "vue-websocket";
 
-import fieldMyDateTimePicker from "./system/fundamentals/customField/dateTimePicker/index";
-import fieldTagsInput from "./system/fundamentals/customField/tagsInput/index";
+import fieldMyDateTimePicker from "system/components/atoms/dateTimePicker";
+import fieldTagsInput from "system/components/organisms/tagsInput";
 import "ion-rangeslider";
 import "ion-rangeslider/css/ion.rangeSlider.css";
 import "ion-rangeslider/css/ion.rangeSlider.skinFlat.css";

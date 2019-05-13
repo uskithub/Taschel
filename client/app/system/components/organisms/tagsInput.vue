@@ -3,11 +3,10 @@
 		@tags-changed="didTagChanged"
 	)
 </template>
-
 <script>
 	/* global $ */
 	import { abstractField } from "vue-form-generator";
-	import VueTagsInput from "./vue-tags-input";
+	import VueTagsInput from "../molecules/vue-tags-input";
 	import { defaults } from "lodash";
 
 	export default {
@@ -35,11 +34,8 @@
 		}
 	};
 </script>
-
 <style lang="scss">
-
 	.autocomplete {
 		color: #000;
 	}
-
 </style>

@@ -77,10 +77,9 @@
 					div(v-if="!$scopedSlots.autocompleteItem" @click="performAddTags(item)") {{ item.name }}
 					slot(v-else name="autocompleteItem", :item="item", :index="index", :perform-add="performAddTags", :selected="isSelected(index)")
 </template>
-
 <script>
-	import { createTag, createClasses } from "./create-tags";
-	import TagInput from "./tag-input";
+	import { createTag, createClasses } from "../create-tags";
+	import TagInput from "../atoms/tag-input";
 	import { clone } from "lodash";
 
 	const propValidatorTag = value => {
@@ -445,7 +444,6 @@
 		}
 	};
 </script>
-
 <style lang="scss" scoped>
 	$primary: #5C6BC0;
 	$error: #e54d42;
@@ -454,10 +452,10 @@
 
 	@font-face {
 		font-family: "icomoon";
-		src:  url("./assets/fonts/icomoon.eot?7grlse");
-		src:  url("./assets/fonts/icomoon.eot?7grlse#iefix") format("embedded-opentype"),
-			url("./assets/fonts/icomoon.ttf?7grlse") format("truetype"),
-			url("./assets/fonts/icomoon.woff?7grlse") format("woff");
+		src:  url("../assets/fonts/icomoon.eot?7grlse");
+		src:  url("../assets/fonts/icomoon.eot?7grlse#iefix") format("embedded-opentype"),
+			url("../assets/fonts/icomoon.ttf?7grlse") format("truetype"),
+			url("../assets/fonts/icomoon.woff?7grlse") format("woff");
 		font-weight: normal;
 		font-style: normal;
 	}
