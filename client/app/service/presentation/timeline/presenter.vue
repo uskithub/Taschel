@@ -28,7 +28,7 @@
 			// UI Operations
 		}
 		, created() {
-			// this.pushCrumb({ id: this._uid, name: _("Timeline") });
+			this.pushCrumb({ id: this._uid, name: _("Timeline") });
 		}
 		, sessionEnsured(me) {
 			this.タイムラインを取得する();

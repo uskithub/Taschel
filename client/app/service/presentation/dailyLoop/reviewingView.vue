@@ -198,7 +198,7 @@
 			}
 		}
 		, created() {
-			// this.pushCrumb({ id: this._uid, name: `${ this.date.format("MM/DD") } の振り返り` });
+			this.pushCrumb({ id: this._uid, name: `${ this.date.format("MM/DD") } の振り返り` });
 		}
 	}
 </script>

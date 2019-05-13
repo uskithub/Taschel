@@ -93,7 +93,7 @@
 			}
 		}
 		, created() {
-			// this.pushCrumb({ id: this._uid, name: (this.entity ? this.entity.name : "新規作成") });
+			this.pushCrumb({ id: this._uid, name: (this.entity ? this.entity.name : "新規作成") });
 		}
 	}
 </script>

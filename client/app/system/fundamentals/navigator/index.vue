@@ -36,7 +36,6 @@
 			, didPushCrumb(crumb) {
 				if (crumb.didPush) {
 					crumb.didPush();
-					console.log("falseってるけどな")
 					this.isHovering = false;
 				}
 			}

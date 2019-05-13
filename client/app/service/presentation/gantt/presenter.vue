@@ -1,6 +1,6 @@
 <template lang="pug">
 	section
-		gantt-editing-view(v-if="isEditing", :entity="entity", :parent="parentEntity", :sibling="presuppositionalSiblingEntity", :taskTree="taskTree" , :schema="formSchema" @close="didReceiveCloseEvent")
+		gantt-editing-view(v-if="isEditing", :entity="entity", :parent="parentEntity", :sibling="presuppositionalSiblingEntity", :taskTree="taskTree" , :schema="formSchema" @endEditing="onEndEditing")
 		gantt(v-else, :data="mock", :treenodes="treenodes"
 			@addTopLevel="addTopLevelDidPush"
 			@arrange="didArrangeTask"
@@ -103,7 +103,7 @@
 				}
 				this.isEditing = true;
 			}
-			, didReceiveCloseEvent() {
+			, onEndEditing() {
 				this.isEditing = false;
 				this.popCrumb();
 				this.$nextTick(() => {
@@ -115,23 +115,23 @@
 			}
 		}
 		, created() {
-			// this.pushCrumb({ id: this._uid, name: _("GanttChart") });
+			this.pushCrumb({ id: this._uid, name: _("GanttChart") });
 		}
 		, sessionEnsured(me) {
 			return this.自分のプロジェクト一覧を取得する()
 				.then(() => {
-					// this.setSelectorOnLastCrumb({
-					// 	items: this.projects
-					// 	, itemDidPush: (item) => {
-					// 		this.プロジェクトを選択する(item);
-					// 		this.popCrumb();
-					// 		this.pushCrumb({ id: item.code, name: item.name });
-					// 	}
-					// });
-					// this.pushCrumb({ 
-					// 	id: this.currentProject.code
-					// 	, name: this.currentProject.name
-					// });
+					this.setSelectorOnLastCrumb({
+						items: this.projects
+						, itemDidPush: (item) => {
+							this.プロジェクトを選択する(item);
+							this.popCrumb();
+							this.pushCrumb({ id: item.code, name: item.name });
+						}
+					});
+					this.pushCrumb({ 
+						id: this.currentProject.code
+						, name: this.currentProject.name
+					});
 				});
 		}
 	};

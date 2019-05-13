@@ -73,6 +73,7 @@
 		, computed : {
 			...mapGetters([
 				"currentWeek"
+				, "currentWeekOfMonth"
 				, "currentweekTaskGroup"
 				, "currentWeekWorks"
 				, "currentWeekReviews"
@@ -171,8 +172,8 @@
 
 				this.操作対象の週を変更する(view.start)
 					.then(() => {
-						// this.popCrumb();
-						// this.pushCrumb({ id: "week", name: this.currentWeekOfMonth });
+						this.popCrumb();
+						this.pushCrumb({ id: "week", name: this.currentWeekOfMonth });
 						this.自分のその週のタスク一覧を取得する();
 						this.自分のその週のワーク一覧を取得する();
 						this.自分のその週のレビュー一覧を取得する();
@@ -180,7 +181,7 @@
 			}
 			, onEndEditing() {
 				this.isEditing = false;
-				// this.popCrumb();
+				this.popCrumb();
 				this.$nextTick(() => {
 					this.workEntity = null;
 				});
@@ -208,7 +209,7 @@
 			}
 			, onEndReviewing() {
 				this.isReviewing = false;
-				// this.popCrumb();
+				this.popCrumb();
 				this.$nextTick(() => {
 					this.reviewingDate = null;
 					this.reivewEntity = null;
@@ -230,8 +231,8 @@
 			}
 		}
 		, created() {
-			// this.pushCrumb({ id: this._uid, name: _("DailyLoop") });
-			// this.pushCrumb({ id: "week", name: this.currentWeekOfMonth });
+			this.pushCrumb({ id: this._uid, name: _("DailyLoop") });
+			this.pushCrumb({ id: "week", name: this.currentWeekOfMonth });
 		}
 		, sessionEnsured(me) {
 			this.自分のその週のタスク一覧を取得する();

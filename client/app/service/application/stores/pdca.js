@@ -93,6 +93,13 @@ export default {
 	, getters : {
 		groups(state) { return state.groups; }
 		, currentWeek(state) { return state.currentWeek; }
+		, currentWeekOfMonth(state) { 
+			const todayWeek = state.currentWeek.week();
+			const firstDay = moment(state.currentWeek).startOf("month");
+			const firstDayWeek = firstDay.week();
+			const weekOfMonth = ((todayWeek > firstDayWeek) ? todayWeek - firstDayWeek : todayWeek - firstDayWeek + 52) + 1;
+			return `${ firstDay.format("YYYY年MM月") } 第${weekOfMonth}週`; 
+		}
 		, currentweekTaskGroup(state) { return state.currentweekTaskGroup; }
 		, currentWeekWorks(state) { return state.currentWeekWorks; }
 		, currentWeekReviews(state) { return state.currentWeekReviews; }

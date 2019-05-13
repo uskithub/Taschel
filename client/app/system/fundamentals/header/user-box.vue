@@ -37,8 +37,8 @@
 		name: "UserBox"
         , computed: mapGetters([
 			"me"
-			, "notifications"
-			, "messages"
+			// , "notifications"
+			// , "messages"
 		])
 		, components: {
 			UserDropdown
@@ -50,6 +50,8 @@
 				expandedUserMenu: false
 				, expandedNotifications: false
 				, expandedMessages: false
+				, notifications: [] // dummy 本当はgetterを使う
+				, messages: [] // dummy 本当はgetterを使う
 			};
 		}
 		, methods: {

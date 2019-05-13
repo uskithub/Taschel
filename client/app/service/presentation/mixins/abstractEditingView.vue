@@ -1,14 +1,20 @@
 <script>
 	import Vue from "vue";
-	
+    
+    import { mapActions } from "vuex";    
+
 	import { schema as schemaUtils } from "vue-form-generator";
 	import { get as objGet, cloneDeep, isArray, isFunction } from "lodash";
 	
 	const _ = Vue.prototype._;
 
 	export default {
-		methods : {
-			validate() {
+		methods : {	
+            ...mapActions([
+                // for Presentation
+                "setWayBackOnLastCrumb"
+            ])
+			, validate() {
 				let res = this.$refs.form.validate();
 				if (!res) {
 					// Set focus to first input with error
@@ -76,9 +82,10 @@
 			}
 		}
 		, created() {
-			// this.setWayBackOnLastCrumb(() => { 
-			// 	this.$emit("close"); 
-			// });
+			this.setWayBackOnLastCrumb(() => { 
+                // TODO: 日次レビューは endReviewing にしているので、戻れないのでどうにかする
+				this.$emit("endEditing"); 
+			});
 		}
 	}
 </script>

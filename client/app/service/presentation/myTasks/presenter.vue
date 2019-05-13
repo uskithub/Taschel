@@ -59,7 +59,7 @@
 			}
 			, onEndEditing() {
 				this.isEditing = false;
-				// this.popCrumb();
+				this.popCrumb();
 				this.$nextTick(() => {
 					this.entity = null;
 				});
@@ -84,7 +84,7 @@
 			}
 		}
 		, created() {
-			// this.pushCrumb({ id: this._uid, name: _("MyTask") });
+			this.pushCrumb({ id: this._uid, name: _("MyTask") });
 		}
 		, sessionEnsured(me) {
 			this.自分のタスク一覧を取得する();

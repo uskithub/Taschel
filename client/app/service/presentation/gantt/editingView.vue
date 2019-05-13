@@ -6,7 +6,7 @@
 				.form
 					vue-form-generator(:schema="dynamicSchema", :model="rawValues", :options="options", :is-new-model="isNewEntity" ref="form")
 					.buttons.flex.justify-end
-						button.button.outline(@click="didPushCancelButton")
+						button.button.outline(@click="$emit('endEditing')")
 							i.icon.fa.fa-chevron-left
 							| {{ _("Back") }}
 						button.button.primary(@click="didPushSaveButton")
@@ -111,7 +111,7 @@
 					// 		return this.editTaskInProjectTree(this.rawValues);
 					// 	}
 					// }).then(() => {
-					// 	this.$emit("close", this.rawValues);
+					// 	this.$emit("endEditing", this.rawValues);
 					// });
 					
 				} else {
@@ -119,9 +119,6 @@
 				}
 			}
 			// Usecase: a user cancels editing or adding a project.
-			, didPushCancelButton() {
-				this.$emit("close"); 
-			}
 			, didArrangeTask() {
 				// TODO
 			}
@@ -131,7 +128,7 @@
 		}
 		, created() {
 			const title = (this.entity ? this.entity.name : (this.parent ? `${this.parent.name} にタスクを追加` : "新規作成"));
-			// this.pushCrumb({ id: this._uid, name: title });
+			this.pushCrumb({ id: this._uid, name: title });
 		}
 	}
 </script>

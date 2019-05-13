@@ -87,7 +87,7 @@
 			}
 		}
 		, created() {
-			// this.pushCrumb({ id: this._uid, name: this.entity.title });
+			this.pushCrumb({ id: this._uid, name: this.entity.title });
 		}
 	}
 </script>

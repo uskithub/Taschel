@@ -30,13 +30,14 @@
 			...mapActions({
 				サービスの利用を開始する
 				// , "getUserProjectList"
-
-				// // for Presentation
-				// , "setWayBackOnLastCrumb"
-				// , "setSelectorOnLastCrumb"
-				// , "pushCrumb"
-				// , "popCrumb"
 			})
+			, ...mapActions([
+				// for Presentation
+				"setWayBackOnLastCrumb"
+				, "setSelectorOnLastCrumb"
+				, "pushCrumb"
+				, "popCrumb"
+			])
 		}
 		, created() {
 

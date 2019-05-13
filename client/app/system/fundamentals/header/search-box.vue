@@ -11,23 +11,25 @@
 	export default {
 		name: "SearchBox"
         , computed: {
-			...mapGetters([
-				"searchText"
-			])
-			, text: {
+			// ...mapGetters([
+			// 	"searchText"
+			// ])
+			// , 
+			text: {
 				get() {
-					return this.searchText;
+					// return this.searchText;
+					return "";
 				}
 				, set(value) {
-					this.searching(value);
+					// this.searching(value);
 				}
 			}
 		},
 
 		methods: {
-			...mapActions([
-				"searching"
-			])
+			// ...mapActions([
+			// 	"searching"
+			// ])
 		}
 	};
 	

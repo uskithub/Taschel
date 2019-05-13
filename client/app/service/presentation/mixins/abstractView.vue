@@ -1,6 +1,6 @@
 <script>
 	import Vue from "vue";
-	import { mapGetters } from "vuex";
+	import { mapGetters, mapActions } from "vuex";
 
 	const _ = Vue.prototype._;
 
@@ -18,7 +18,15 @@
 		, data() {
 			return { }
 		}
-		, methods : { }
+		, methods : { 
+			...mapActions([
+				// for Presentation
+				"setWayBackOnLastCrumb"
+				, "setSelectorOnLastCrumb"
+				, "pushCrumb"
+				, "popCrumb"
+			])
+		}
 		, created() { }
 	};
 </script>

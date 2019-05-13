@@ -26,6 +26,7 @@
 			...mapGetters([
 				"groups"
 				, "currentWeek"
+				, "currentWeekOfMonth"
 			])
 			, boardGroups() {
 				let boards = this.groups.map( g => new Board(g) );
@@ -64,19 +65,19 @@
 			}
 		}
 		, created() {
-			// this.pushCrumb({ id: this._uid, name: _("Weekly") });
-			// this.setSelectorOnLastCrumb({
-			// 	// TODO: 週の一覧を出す
-			// 	items:[
-			// 		{ id: "hoge1", name: "ajgoi;reagoi;" }
-			// 		, { id: "hoge2", name: "vf,l;geajg" }
-			// 		, { id: "hoge3", name: "vfald;gjejgo" }
-			// 	]
-			// 	, itemDidPush: (item) => { 
-			// 		console.log(item);
-			// 	}
-			// });
-			// this.pushCrumb({ id: "week", name: this.currentWeekOfMonth });
+			this.pushCrumb({ id: this._uid, name: _("Weekly") });
+			this.setSelectorOnLastCrumb({
+				// TODO: 週の一覧を出す
+				items:[
+					{ id: "hoge1", name: "ajgoi;reagoi;" }
+					, { id: "hoge2", name: "vf,l;geajg" }
+					, { id: "hoge3", name: "vfald;gjejgo" }
+				]
+				, itemDidPush: (item) => { 
+					console.log(item);
+				}
+			});
+			this.pushCrumb({ id: "week", name: this.currentWeekOfMonth });
 		}
 		, sessionEnsured(me) {
 			this.自分の週次タスクを取得する();
