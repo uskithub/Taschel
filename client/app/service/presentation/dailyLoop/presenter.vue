@@ -15,7 +15,7 @@
 
 <script>
 	import Vue from "vue";
-	import AbstractPresenter from "service/presentation/mixins/abstractPresenter";
+	import AbstractPresenter from "system/mixins/abstractPresenter";
 	import DailyLoopView from "./view"
 	import DailyLoopEditingView from "./editingView"
 	import DailyLoopReviewingView from "./reviewingView"

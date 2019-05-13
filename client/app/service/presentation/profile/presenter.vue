@@ -3,7 +3,7 @@
 </template>
 <script>
 	import Vue from "vue";
-    import AbstractPresenter from "service/presentation/mixins/abstractPresenter";
+    import AbstractPresenter from "system/mixins/abstractPresenter";
     import ProfileView from "./view"
 
 	import schema from "./schema";

@@ -4,7 +4,7 @@
 
 <script>
 	import Vue from "vue";
-    import AbstractPresenter from "service/presentation/mixins/abstractPresenter";
+    import AbstractPresenter from "system/mixins/abstractPresenter";
 	
 	import Board from "plugins/kanban/entities/board";
 	import BoardGroup from "plugins/kanban/entities/boardGroup";

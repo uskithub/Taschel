@@ -9,7 +9,7 @@
 
 <script>
 	import Vue from "vue";
-	import AbstractView from "service/presentation/mixins/abstractView";
+	import AbstractView from "system/mixins/abstractView";
 
 	import Treenode from "service/domain/entities/treenode";
 	

@@ -42,8 +42,8 @@
 </template>
 <script>
 	import Vue from "vue";
-	import AbstractView from "service/presentation/mixins/abstractView";
-	import AbstractEditingView from "service/presentation/mixins/abstractEditingView";
+	import AbstractView from "system/mixins/abstractView";
+	import AbstractEditingView from "system/mixins/abstractEditingView";
 	
 	import { mapGetters } from "vuex";
 	import { schema as schemaUtils } from "vue-form-generator";

@@ -14,7 +14,7 @@
 
 <script>
 	import Vue from "vue";
-	import AbstractPresenter from "service/presentation/mixins/abstractPresenter";
+	import AbstractPresenter from "system/mixins/abstractPresenter";
 
 	import Task from "service/domain/entities/task";
 	import Treenode from "service/domain/entities/treenode";

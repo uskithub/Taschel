@@ -14,7 +14,7 @@
 
 <script>
 	import Vue from "vue";
-	import AbstractView from "service/presentation/mixins/abstractView";
+	import AbstractView from "system/mixins/abstractView";
 
 	import Board from "plugins/kanban/entities/board";
 

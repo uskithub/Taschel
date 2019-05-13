@@ -24,8 +24,8 @@
 </template>
 <script>
 	import Vue from "vue";
-    import AbstractView from "service/presentation/mixins/abstractView";
-	import AbstractEditingView from "service/presentation/mixins/abstractEditingView";
+    import AbstractView from "system/mixins/abstractView";
+	import AbstractEditingView from "system/mixins/abstractEditingView";
 	
 	import Task from "service/domain/entities/task";
 	

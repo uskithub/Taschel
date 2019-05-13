@@ -36,7 +36,7 @@
 
 <script>
 	import Vue from "vue";
-    import AbstractView from "service/presentation/mixins/abstractView";
+    import AbstractView from "system/mixins/abstractView";
     
 	import DataTable from "system/components/organisms/table";
 	import schema from "./schema";
