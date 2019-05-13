@@ -1,4 +1,4 @@
-import { METHOD, api } from "./restClient";
+import { METHOD, api } from "system/restClient";
 
 const NAMESPACE= "/api/organizations";
 
