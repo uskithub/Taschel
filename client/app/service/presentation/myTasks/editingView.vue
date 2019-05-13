@@ -18,7 +18,7 @@
 		.panel(v-if="!isNewEntity")
 			.header 親子関係
 			.body
-				treelist(:treenodes="treenodes" ref="legend" @arrange="didArrangeTask" @addIconDidPush="addIconDidPush")
+				treelist(:treenodes="treenodes", :foldingConditionMap="foldingConditionMap" ref="legend" @arrange="didArrangeTask" @addIconDidPush="addIconDidPush")
 
 		.panel(v-if="!isNewEntity")
 			.header Timeline
@@ -58,12 +58,13 @@
 
 			return {
 				rawValues: _rawValues
-				, options: {}
+                , options: {}
+                , foldingConditionMap: {}
 			};
 		}
 		, computed: {
             ...mapGetters([
-				"taskTree"
+                "taskTree"
 			])
 			, isNewEntity() { return this.entity === null; }
 			, header() { return this.entity ? this.entity.name : "新規作成"; }

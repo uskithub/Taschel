@@ -9,7 +9,7 @@
 						button.button.outline(@click="$emit('endEditing')")
 							i.icon.fa.fa-chevron-left
 							| {{ _("Back") }}
-						button.button.primary(@click="didPushSaveButton")
+						button.button.primary(@click="saveButtonDidPush")
 							i.icon.fa.fa-save 
 							| {{ _("Save") }}
 		//- .panel
@@ -102,18 +102,9 @@
 			// 	"addTaskInProjectTree"
 			// 	, "editTaskInProjectTree"
 			// ])
-			didPushSaveButton() {
+			saveButtonDidPush() {
 				if (this.validate()) {
-					// return Promise.resolve().then(() => {
-					// 	if ( this.isNewEntity ) {
-					// 		return this.addTaskInProjectTree(this.rawValues);
-					// 	} else {
-					// 		return this.editTaskInProjectTree(this.rawValues);
-					// 	}
-					// }).then(() => {
-					// 	this.$emit("endEditing", this.rawValues);
-					// });
-					
+					this.$emit("save", this.rawValues, this.isNewEntity);
 				} else {
 					// Validation error
 				}

@@ -21,7 +21,7 @@
 </template>
 <script>
     import Vue from "vue";
-    import TreeNode from "../atoms/timelinetreenode";
+    import TimelineTreenode from "../atoms/timelinetreenode";
 
 	const isNotAncestor = (target, el) => {
 		if (target == el) {
@@ -60,7 +60,7 @@
 	export default {
         name: "TreeBasedTimeline"
         , components : {
-			TreeNode
+			TimelineTreenode
 		}
         , props: {
 			treenodes : {

@@ -97,6 +97,26 @@ export default {
 		, [SESSION.CLOSE_PROJECT] (state, code) {
 			state.projects = state.projects.filter(project => project.code != code);
 		}
+		, [SESSION.ADD_TASK_TO_PROJECT] (state, task) {
+			const findParentRecursivelyToAddChild = (targetTask, newTask) => {
+				if (targetTask.code === newTask.parent) {
+					targetTask.addChild(newTask);
+					return true;
+				} else {
+					let tasks = targetTask.tasks;
+					for (let i=0, len=tasks.length; i<len; i++) {
+						if (findParentRecursivelyToAddChild(tasks[i], newTask)) {
+							return true;
+						}
+					}
+					return false;
+				}
+			};
+			findParentRecursivelyToAddChild(state.currentProjectRef, task);
+		}
+		, [SESSION.UPDATE_TASK_OF_CURRENT_PROJECT] (state, entity) {
+			state.currentProjectRef.updateDescendant(entity);
+		}
 	}
 
 	// DDD: Usecases

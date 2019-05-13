@@ -1,6 +1,6 @@
 <template lang="pug">
-	gantt(:treenodes="treenodes"
-		@addTopLevel="addTopLevelDidPush"
+	gantt(:treenodes="treenodes", :data="data"
+		@addTopLevel="$emit('addTopLevel', $event)"
 		@arrange="didArrangeTask"
 		@edit="editIconDidPush"
 		@add="addIconDidPush"
@@ -24,6 +24,12 @@
 
 	export default {
 		mixins : [ AbstractView ]
+		, props: {
+			data : {
+				type: Object
+				, validator: function(value) { return true; } // TODO
+			}
+        }
 		, computed : {
 			...mapGetters([
 				"projects"
@@ -44,50 +50,18 @@
 				parentEntity: null
 				, presuppositionalSiblingEntity: null
 				, taskTree: null
-				, formSchema : schema.form
-				, mock : schema.data
 			};
 		}
 		, methods : {
-			// Project Operations
-			addTopLevelDidPush(e) {
-				this.parentEntity = this.currentProject;
-				this.isEditing = true;
-			} 
 			// UI Operations
-			, didArrangeTask({ treenode, from, to, index }) {
-				console.log(treenode, from, to, index);
-
-				let _from = { type: "task", code: from.id, entity: from.entity.task };
-				let _to = { type: "task", code: to.id, entity: to.entity.task };
-
-				this.arrangeTasksInAnotherTask({ task: treenode.task, from: _from, to: _to, index });
+			didArrangeTask({ treenode, from, to, index }) {
+				this.$emit("arrange", treenode, from, to, index);
 			}
 			, editIconDidPush(e, treenode) {
-				console.log("editIconDidPush", treenode)
-				this.entity = treenode.task;
-				this.taskTree = treenode;
-				this.isEditing = true;
+				this.$emit("edit", treenode);
 			}
 			, addIconDidPush(e, parent, sibling) {
-				// create default values for new task according to its parent task.
-				if (sibling) {
-					this.presuppositionalSiblingEntity = sibling.task;
-					this.parentEntity = parent ? parent.task : this.currentProject;
-				} else {
-					this.parentEntity = parent.task;
-				}
-				this.isEditing = true;
-			}
-			, didReceiveCloseEvent() {
-				this.isEditing = false;
-				this.popCrumb();
-				this.$nextTick(() => {
-					this.entity = null;
-					this.parentEntity = null;
-					this.presuppositionalSiblingEntity = null;
-					this.taskTree = null;
-				});
+				this.$emit("add", parent, sibling);
 			}
 		}
 		

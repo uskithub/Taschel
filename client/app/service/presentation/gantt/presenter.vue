@@ -1,11 +1,14 @@
 <template lang="pug">
 	section
-		gantt-editing-view(v-if="isEditing", :entity="entity", :parent="parentEntity", :sibling="presuppositionalSiblingEntity", :taskTree="taskTree" , :schema="formSchema" @endEditing="onEndEditing")
-		gantt(v-else, :data="mock", :treenodes="treenodes"
-			@addTopLevel="addTopLevelDidPush"
-			@arrange="didArrangeTask"
-			@edit="editIconDidPush"
-			@add="addIconDidPush"
+		gantt-editing-view(v-if="isEditing", :entity="entity", :parent="parentEntity", :sibling="presuppositionalSiblingEntity", :taskTree="taskTree" , :schema="formSchema"
+			@endEditing="onEndEditing"
+			@save="onSave"
+		)
+		gantt-view(v-else, :data="mock"
+			@addTopLevel="onAddTopLevel"
+			@arrange="onArrange"
+			@edit="onEdit"
+			@add="onAdd"
 		)
 </template>
 
@@ -24,6 +27,9 @@
     import { 
         自分のプロジェクト一覧を取得する
 		, プロジェクトを選択する
+		, プロジェクトにタスクを追加する
+		, プロジェクトのタスクを編集する
+		, タスクを別のタスクの子タスクにする
 	} from "service/application/usecases";
 
 	import schema from "./schema";
@@ -45,15 +51,6 @@
 				"projects"
 				, "currentProject"
 			])
-			, treenodes() {
-				if (this.currentProject !== null) {
-					return this.currentProject.tasks.map(t => {
-						return new Treenode(t);
-					});
-				} else {
-					return [];
-				}
-			}
 		}
 		, data() {
 			return {
@@ -70,30 +67,31 @@
 			...mapActions([
 				自分のプロジェクト一覧を取得する
 				, プロジェクトを選択する
-				// Usecases
-				, "arrangeTasksInAnotherTask"
+				, プロジェクトにタスクを追加する
+				, プロジェクトのタスクを編集する
+				, タスクを別のタスクの子タスクにする
 			])
 			// Project Operations
-			, addTopLevelDidPush(e) {
+			, onAddTopLevel(e) {
 				this.parentEntity = this.currentProject;
 				this.isEditing = true;
 			} 
 			// UI Operations
-			, didArrangeTask({ treenode, from, to, index }) {
+			, onArrange(treenode, from, to, index) {
 				console.log(treenode, from, to, index);
 
 				let _from = { type: "task", code: from.id, entity: from.entity.task };
 				let _to = { type: "task", code: to.id, entity: to.entity.task };
 
-				this.arrangeTasksInAnotherTask({ task: treenode.task, from: _from, to: _to, index });
+				this.タスクを別のタスクの子タスクにする({ task: treenode.task, from: _from, to: _to, index });
 			}
-			, editIconDidPush(e, treenode) {
+			, onEdit(treenode) {
 				console.log("editIconDidPush", treenode)
 				this.entity = treenode.task;
 				this.taskTree = treenode;
 				this.isEditing = true;
 			}
-			, addIconDidPush(e, parent, sibling) {
+			, onAdd(parent, sibling) {
 				// create default values for new task according to its parent task.
 				if (sibling) {
 					this.presuppositionalSiblingEntity = sibling.task;
@@ -111,6 +109,17 @@
 					this.parentEntity = null;
 					this.presuppositionalSiblingEntity = null;
 					this.taskTree = null;
+				});
+			}
+			, onSave(data, isNewEntity) {
+				return Promise.resolve().then(() => {
+					if ( isNewEntity ) {
+						return this.プロジェクトにタスクを追加する(data);
+					} else {
+						return this.プロジェクトのタスクを編集する(data);
+					}
+				}).then(() => {
+					this.onEndEditing();
 				});
 			}
 		}
