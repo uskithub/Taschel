@@ -6,7 +6,7 @@ import VueRouter from "vue-router";
 import Profile from "service/presentation/profile/presenter";
 import MyTasks from "service/presentation/myTasks/presenter";
 import Projects from "service/presentation/projects/presenter";
-import WeeklyLoop from "service/presentation/weeklyLoop/presenter";
+import WeeklyPlan from "service/presentation/weeklyPlan/presenter";
 import DailyLoop from "service/presentation/dailyLoop/presenter";
 
 import TimeLine from "service/presentation/timeline/presenter";
@@ -25,7 +25,7 @@ export default new VueRouter({
 
 		, { path: "/dailyLoop", component: DailyLoop }
 		, { path: "/projects", name: Projects.name, component: Projects }
-		, { path: "/weeklyLoop", name: WeeklyLoop.name, component: WeeklyLoop }
+		, { path: "/weeklyPlan", name: WeeklyPlan.name, component: WeeklyPlan }
 		, { path: "/gantt", component: Gantt }
 		, { path: "/timeline", component: TimeLine }
 	]

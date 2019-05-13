@@ -15,11 +15,11 @@
 							i.fa.fa-home
 						span.label {{ "Project" | i18n }}
 
-				router-link(tag="li", to="/weeklyLoop")
-					a(:title="_('Weekly')")
+				router-link(tag="li", to="/weeklyPlan")
+					a(:title="_('WeeklyPlan')")
 						span.icon
 							i.fa.fa-home
-						span.label {{ "Weekly" | i18n }}
+						span.label {{ "WeeklyPlan" | i18n }}
 
 				router-link(tag="li", to="/dailyLoop")
 					a(:title="_('DailyLoop')")

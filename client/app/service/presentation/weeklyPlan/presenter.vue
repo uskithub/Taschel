@@ -20,7 +20,7 @@
     const _ = Vue.prototype._;
 	
 	export default {
-		name : "Weekly"
+		name : "WeeklyPlan"
 		, mixins : [ AbstractPresenter ]
 		, computed : {
 			...mapGetters([
@@ -65,7 +65,7 @@
 			}
 		}
 		, created() {
-			this.pushCrumb({ id: this._uid, name: _("Weekly") });
+			this.pushCrumb({ id: this._uid, name: _("WeeklyPlan") });
 			this.setSelectorOnLastCrumb({
 				// TODO: 週の一覧を出す
 				items:[
