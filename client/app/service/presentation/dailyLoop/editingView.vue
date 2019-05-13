@@ -15,7 +15,7 @@
 						button.button.danger(v-if="rawValues.status >= 0" @click="closeButtonDidPush")
 							i.icon.fa.fa-save 
 							| {{ _("Close") }}
-						button.button.danger(v-if="rawValues.status >= 0 && false" @click="closeButtonDidPush($event, true)")
+						button.button.danger(v-if="rawValues.status >= 0" @click="closeButtonDidPush($event, true)")
 							i.icon.fa.fa-save 
 							| {{ _("CloseWithTask") }}
 </template>

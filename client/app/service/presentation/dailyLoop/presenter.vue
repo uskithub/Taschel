@@ -35,6 +35,7 @@
 		, ワークをクローズする
 		, 日次レビューする
 		, レビューを編集する
+		, タスクをクローズする
 	} from "service/application/usecases";
 
 	import schema from "./schema";
@@ -109,6 +110,7 @@
 				, ワークをクローズする
 				, 日次レビューする
 				, レビューを編集する
+				, タスクをクローズする
 			])
 			// Interfacial operations
 			, didDropTask(date, jqEvent, ui, resourceId) {
@@ -198,10 +200,8 @@
 					return this.ワークをクローズする(data);
 				}).then(() => {
 					if (withTask) {
-						// TODO: タスクをクローズする。　TaskのrawValuesがあるわけでないのでどうやるか。。。
-					// 	return this.closeTask(this.rawValues)
-					// } else {
-					// 	return;
+						const task = findTask(data.parent, this.currentweekTaskGroup.tasks);
+						this.タスクをクローズする(task.rawValues);
 					}
 				}).then(() => {
 					this.onEndEditing();
