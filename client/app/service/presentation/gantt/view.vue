@@ -1,5 +1,5 @@
 <template lang="pug">
-	gantt(v-:data="mock", :treenodes="treenodes"
+	gantt(:treenodes="treenodes"
 		@addTopLevel="addTopLevelDidPush"
 		@arrange="didArrangeTask"
 		@edit="editIconDidPush"

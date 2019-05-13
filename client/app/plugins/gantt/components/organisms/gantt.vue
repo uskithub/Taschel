@@ -33,18 +33,19 @@
 		getViewportInMilliseconds,
 		normalizeDate,
 		transformInputValues,
-	} from "../helpers";
+	} from "../../helpers";
+
 	import GanttHeader from "../atoms/ganttHeader";
 	import GanttBody from "../atoms/ganttBody";
 	import GanttFooter from "../atoms/ganttFooter";
 	
-	import Timeframe from "../entities/timeframe";
+	import Timeframe from "../../entities/timeframe";
 
 	import moment from "moment";
 	import { cloneDeep } from "lodash";
 	
 	import { mapMutations, mapGetters } from "vuex";
-	import store from "../store.js";
+	import store from "../../store.js";
 
 	const defaultOptions = {
 		cellWidth: 24

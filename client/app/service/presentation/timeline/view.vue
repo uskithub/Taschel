@@ -25,7 +25,7 @@
 	import AbstractView from "service/presentation/mixins/abstractView";
 
 	import Task from "service/domain/entities/task";
-	import Treenode from "service/domain/entities/Treenode";
+	import Treenode from "service/domain/entities/treenode";
 
 	import { mapGetters } from "vuex";
 

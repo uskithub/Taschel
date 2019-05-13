@@ -24,17 +24,22 @@
 </template>
 <script>
 	import Vue from "vue";
-    import BaseEditing from "../../../fundamentals/mixins/baseEditing";
-	import Task from "../../../fundamentals/entities/task";
-	// import { taskProperties } from "../../../constants";
-	import { mapGetters, mapMutations, mapActions } from "vuex";
+    import AbstractView from "service/presentation/mixins/abstractView";
+	import AbstractEditingView from "service/presentation/mixins/abstractEditingView";
+	
+	import Task from "service/domain/entities/task";
+	
+	import { mapGetters } from "vuex";
 	import { schema as schemaUtils } from "vue-form-generator";
     import { cloneDeep, isArray } from "lodash";
+	
 	const _ = Vue.prototype._;
 
 	export default {
-		name : "TaskEditing"
-		, mixins : [ BaseEditing ]
+		mixins : [ 
+			AbstractView
+			, AbstractEditingView
+		]
 		, props : {
 			entity : {
 				type: Object
@@ -92,22 +97,22 @@
 			, treenodes() { return [this.taskTree]; }
 		}
 		, methods : {
-			...mapActions([
-				// Usecases
-				"addTaskInProjectTree"
-				, "editTaskInProjectTree"
-			])
-			, didPushSaveButton() {
+			// ...mapActions([
+			// 	// Usecases
+			// 	"addTaskInProjectTree"
+			// 	, "editTaskInProjectTree"
+			// ])
+			didPushSaveButton() {
 				if (this.validate()) {
-					return Promise.resolve().then(() => {
-						if ( this.isNewEntity ) {
-							return this.addTaskInProjectTree(this.rawValues);
-						} else {
-							return this.editTaskInProjectTree(this.rawValues);
-						}
-					}).then(() => {
-						this.$emit("close", this.rawValues);
-					});
+					// return Promise.resolve().then(() => {
+					// 	if ( this.isNewEntity ) {
+					// 		return this.addTaskInProjectTree(this.rawValues);
+					// 	} else {
+					// 		return this.editTaskInProjectTree(this.rawValues);
+					// 	}
+					// }).then(() => {
+					// 	this.$emit("close", this.rawValues);
+					// });
 					
 				} else {
 					// Validation error
@@ -126,7 +131,7 @@
 		}
 		, created() {
 			const title = (this.entity ? this.entity.name : (this.parent ? `${this.parent.name} にタスクを追加` : "新規作成"));
-			this.pushCrumb({ id: this._uid, name: title });
+			// this.pushCrumb({ id: this._uid, name: title });
 		}
 	}
 </script>

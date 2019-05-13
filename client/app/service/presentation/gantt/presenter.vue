@@ -1,7 +1,7 @@
 <template lang="pug">
 	section
 		gantt-editing-view(v-if="isEditing", :entity="entity", :parent="parentEntity", :sibling="presuppositionalSiblingEntity", :taskTree="taskTree" , :schema="formSchema" @close="didReceiveCloseEvent")
-		gantt-view(v-else, :data="mock", :treenodes="treenodes"
+		gantt(v-else, :data="mock", :treenodes="treenodes"
 			@addTopLevel="addTopLevelDidPush"
 			@arrange="didArrangeTask"
 			@edit="editIconDidPush"
@@ -14,15 +14,16 @@
 	import AbstractPresenter from "service/presentation/mixins/abstractPresenter";
 
 	import Task from "service/domain/entities/task";
-
+	import Treenode from "service/domain/entities/treenode";
+	
 	import GanttView from "./view"
 	import GanttEditingView from "./editingView"
 
-	import { mapActions } from "vuex";
+	import { mapGetters, mapActions } from "vuex";
 
     import { 
         自分のプロジェクト一覧を取得する
-		
+		, プロジェクトを選択する
 	} from "service/application/usecases";
 
 	import schema from "./schema";
@@ -114,23 +115,23 @@
 			}
 		}
 		, created() {
-			this.pushCrumb({ id: this._uid, name: _("GanttChart") });
+			// this.pushCrumb({ id: this._uid, name: _("GanttChart") });
 		}
 		, sessionEnsured(me) {
 			return this.自分のプロジェクト一覧を取得する()
 				.then(() => {
-					this.setSelectorOnLastCrumb({
-						items: this.projects
-						, itemDidPush: (item) => {
-							this.プロジェクトを選択する(item);
-							this.popCrumb();
-							this.pushCrumb({ id: item.code, name: item.name });
-						}
-					});
-					this.pushCrumb({ 
-						id: this.currentProject.code
-						, name: this.currentProject.name
-					});
+					// this.setSelectorOnLastCrumb({
+					// 	items: this.projects
+					// 	, itemDidPush: (item) => {
+					// 		this.プロジェクトを選択する(item);
+					// 		this.popCrumb();
+					// 		this.pushCrumb({ id: item.code, name: item.name });
+					// 	}
+					// });
+					// this.pushCrumb({ 
+					// 	id: this.currentProject.code
+					// 	, name: this.currentProject.name
+					// });
 				});
 		}
 	};
