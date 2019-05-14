@@ -27,11 +27,12 @@ module.exports = {
 		// TODO: populateModelsを改造すれば、下にのみpopulate、上にのみpopulateもできる
 		, modelPopulates: {
 			// "root": "tasks"			// 親にchildrenを持たせたので、populateすると循環参照になってpopulateが終わらなくなるので注意
-			comments : "comments"
+			works: "works"
+			, comments : "comments"
 		}
 		, idEncodes: {
-			"works": "works"
-			, "author": "persons"
+			// "works": "works"
+			"author": "persons"
 		}
 	}
 	
@@ -102,7 +103,7 @@ module.exports = {
 
 							message += `→ \`${doc.highOrderAwakening}\``;
 
-							slack.postMessage(`${ctx.user.username} の ${doc.date} のレビュー:sparkles:\n ${message}`);
+							// slack.postMessage(`${ctx.user.username} の ${doc.date} のレビュー:sparkles:\n ${message}`);
 						});
 					// あくまでworkのdocを返すこと
 					return doc;

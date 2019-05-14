@@ -1,6 +1,7 @@
 import DataTable from "./organisms/table";
 import TimeLine from "./organisms/treebasedtimeline";
 import Fullcalendar from "./organisms/fullcalendar";
+import WorkReview from "./atoms/workReview";
 
 const plugin = {
 	// @see https://jp.vuejs.org/v2/guide/plugins.html
@@ -17,6 +18,7 @@ const plugin = {
 		Vue.component("data-table", DataTable);
 		Vue.component("time-line", TimeLine);
 		Vue.component("fullcalendar", Fullcalendar);
+		Vue.component("work-review", WorkReview);
 
 		// maps.googleapiのロード
 		// if (finalOptions.load) {

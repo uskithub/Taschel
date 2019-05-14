@@ -144,7 +144,6 @@
 				this.ワークを編集する({ code, end });
 			}
 			, didClickEvent(event, jqEvent, view) {
-				console.log("呼ばrているのか", event);
 				if (event.id === "GOOGLE_CALENDAR") return;
 				if (event.allDay) {
 					this.reviewingDate = moment(event.start);

@@ -30,16 +30,20 @@
     "DescriptionPlaceholder": "実施した内容の要点をまとめて",
     
     "ReviewOfWorks": "作業の振返り",
+    "Description": "内容",
+    "GoodSideLabel": "😊",
     "GoodSide": "良かった側面",
     "GoodSidePlaceholder": "なぜできたのか？／奏功した／工夫した／達成感があった／成長を感じた／他のメンバに共有したい気付き",
+    "BadSideLabel": "😫",
     "BadSide": "悪かった側面",
     "BadSidePlaceholder": "詰まったこと／予期せぬこと／気が乗らなかった／助けてもらった／気付き",
+    "ImprovementLabel": "🤔",
     "Improvement": "改善案",
     "ImprovementPlaceholder": "パフォーマンスを改善するには？／より伸ばすためにできること",
     
     "HighOrderReview": "1日通しての振返り",
-    "HighOrderAwakening": "1日を客観的に見た感想",
-    "HighOrderAwakeningPlaceholder": "一つ高い視点から見た気付き／パターン",
+    "HighOrderAwakening": "1日を客観的に見た抽象化",
+    "HighOrderAwakeningPlaceholder": "抽象化一つ高い視点から見た気付き／パターン／癖",
 
     "GroupType": "GroupType",
     "GroupNamePlaceholder": "GroupNamePlaceholder",

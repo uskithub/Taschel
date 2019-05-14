@@ -18,12 +18,7 @@
 							li(v-for="(work, i) in reviewingWorks", :class="{ active : index == i }", :data-code="work.code", :key="work.code" ref="items"
 								@click.prevent.stop="onSelect($event, work, i)"
 							)
-								slot(:name="work.title")
-									strong {{ work.title }}
-									.text-muted
-										dl(v-for="item in description(work)", :key="item.key")
-											dt {{ item.title }}
-											dd {{ item.value }}
+								work-review(:work="work")
 								message(v-for="comment in work.comments", :key="comment.code", :comment="comment", :user="getUser(comment.author)")
 					li.board.form(key="form")
 						vue-form-generator(:schema="dynamicForm", :model="dynamicModel", :options="options", ref="form", :is-new-model="isNewEntity")
@@ -83,6 +78,7 @@
 				_rawValues.week = moment(this.date).day(1).format("YYYY-MM-DD");
 				_rawValues.date = this.date.format("YYYY-MM-DD");
 			}
+
 			_rawValues.works = this.reviewingWorks.map(w => w.rawValues);
 		
 			return {
@@ -163,38 +159,6 @@
 			, cancelButtonDidPush() {
 				this.index = 0;
 				this.$emit("endReviewing");
-			}
-			// Application Service:
-			, description(work) {
-				let result = [
-					{
-						key: "description"
-						, title: _("Description")
-						, value: work.description
-					}
-				];
-				if (work.goodSide) { 
-					result.push({
-						key: "goodSide"
-						, title: _("GoodSide")
-						, value: work.goodSide
-					});	
-				}
-				if (work.badSide) {
-					result.push({
-						key: "badSide"
-						, title: _("BadSide")
-						, value: work.badSide
-					});
-				}
-				if (work.improvement) {
-					result.push({
-						key: "improvement"
-						, title: _("Improvement")
-						, value: work.improvement
-					});
-				}
-				return result;
 			}
 		}
 		, created() {
