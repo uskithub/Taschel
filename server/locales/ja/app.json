@@ -31,10 +31,13 @@
     
     "ReviewOfWorks": "作業の振返り",
     "GoodSide": "良かった側面",
+    "GoodSideLabel": "😊",
     "GoodSidePlaceholder": "なぜできたのか？／奏功した／工夫した／達成感があった／成長を感じた／他のメンバに共有したい気付き",
     "BadSide": "悪かった側面",
+    "BadSideLabel": "😫",
     "BadSidePlaceholder": "詰まったこと／予期せぬこと／気が乗らなかった／助けてもらった／気付き",
     "Improvement": "改善案",
+    "ImprovementLabel": "🤔",
     "ImprovementPlaceholder": "パフォーマンスを改善するには？／より伸ばすためにできること",
     
     "HighOrderReview": "1日通しての振返り",
@@ -43,5 +46,11 @@
 
     "GroupType": "GroupType",
     "GroupNamePlaceholder": "GroupNamePlaceholder",
-    "GroupPurposePlaceholder": "GroupPurposePlaceholder"
+    "GroupPurposePlaceholder": "GroupPurposePlaceholder",
+
+    "unclassified": "未分類",
+    "Conducive-Urgent": "貢献度高かつ緊急",
+    "Conducive-Unurgent": "貢献度高かつ緊急でない",
+    "Unconducive-Urgent": "貢献度低かつ緊急",
+    "Unconducive-Unurgent": "貢献度低かつ緊急でない"
 }

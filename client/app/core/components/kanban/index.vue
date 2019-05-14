@@ -3,7 +3,7 @@
 		ul.kanban-board-container.content.card-columns(v-for="group in boardGroups", :key="group.name")
 			li.kanban-board(v-for="board in group.boards", :key="board.code")
 				span.kanban-board-header
-					legend {{ board.name }}
+					legend {{ _(board.name) }}
 				div.drag-options
 				ul.kanban-list.draggable(data-type="group", :data-code="board.code")
 					kanban(v-for="task in board.children", :task="task", :key="task.code", :isDisplayShortname="true", :isDraggable="board.type=='kanban'||board.code=='UNCLASSIFIED'", :onClick="onClick")
