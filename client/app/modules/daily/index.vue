@@ -25,7 +25,7 @@
 	import moment from "moment";
 
 	import { mapGetters, mapMutations, mapActions } from "vuex";
-	import { SET_CURRENT_PROJECT, SET_CURRENT_WEEK, LOAD_USERS, SELECT_USER, SET_USER, LOAD, LOAD_WORKS, SELECT, CLEAR_SELECT, ADD , UPDATE, REMOVE, SHOW_POPUP, HIDE_POPUP, SELECT_DAY_OF_WEEK, LOAD_REVIEWS, ADD_REVIEW } from "../common/constants/mutationTypes";
+	import { SET_CURRENT_PROJECT, SET_CURRENT_WEEK, LOAD_USERS, SELECT_USER, SET_USER, LOAD, LOAD_WORKS, SELECT, CLEAR_SELECT, ADD , UPDATE, REMOVE, SHOW_POPUP, HIDE_POPUP, SELECT_DAY_OF_WEEK, LOAD_REVIEWS, ADD_REVIEW, UPDATE_TASK } from "../common/constants/mutationTypes";
 
 	// determine whether model is review model or not.
 	// return "highOrderReview", "reviewOfWorks", "works"
@@ -227,6 +227,7 @@
 				, readReviews : "readReviews"
 				, updateReview : "updateReview"
 				, getUsers : "readUsers"
+				, updateTask : "updateTask"
 			})
 			, selectUser(code) { 
 				this.setCurrentUser(code); 
@@ -262,10 +263,16 @@
 					this.updateWork( { model, mutation: UPDATE } );
 				}
 			}
-			, close(model) {
+			, close(model, taskModel) {
 				this.clearSelection();
 				model.status = -1;
-				this.updateWork( { model, mutation: UPDATE } );
+				this.updateWork( { model, mutation: UPDATE } )
+				.then(() => {
+					if (taskModel !== null && taskModel !== undefined ) {
+						taskModel.status = -1;
+						this.updateTask( { model: taskModel, mutation: UPDATE_TASK } );
+					}
+				});
 			}
 			, remove(){ 
 				this.deleteWork( { model: this.selected[0], mutation: REMOVE } );

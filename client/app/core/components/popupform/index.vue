@@ -18,6 +18,9 @@
 							button.button.outline(v-if="options.isCloseButtonEnable" @click="buttonCloseDidPush", :disabled="!isCloseButtonEnable")
 								i.icon.fa.fa-save
 								| {{ schema.resources.closeCaption || _("Close") }}
+							button.button.outline(v-if="options.isCloseWithTaskButtonEnable" @click="buttonCloseDidPush(true)", :disabled="!isCloseWithTaskButtonEnable")
+								i.icon.fa.fa-save
+								| {{ schema.resources.closeWithTaskCaption || _("CloseWithTask") }}
 							button.button.outline(v-if="options.isPostponeButtonEnable" @click="buttonPostponeDidPush", :disabled="!isPostponeButtonEnable")
 								i.icon.fa.fa-save
 								| {{ schema.resources.postponeCaption || _("Postpone") }}
@@ -96,6 +99,7 @@
 				let options = this.schema.options ? cloneDeep(this.schema.options) : {};
 				if (this.isNewModel) {
 					options.isCloseButtonEnable = null;
+					options.isCloseWithTaskButtonEnable = null;
 					options.isPostponeButtonEnable = null;
 					options.isBreakdownButtonEnable = null;
 					options.isCloneButtonEnable = null;
@@ -110,6 +114,11 @@
 			, isCloseButtonEnable() { 
 				return !this.isNewModel
 					&& this.options.isCloseButtonEnable !== false
+					; 
+			}
+			, isCloseWithTaskButtonEnable() { 
+				return !this.isNewModel
+					&& this.options.isCloseWithTaskButtonEnable !== false
 					; 
 			}
 			, isPostponeButtonEnable() { 
@@ -161,9 +170,9 @@
 					// Validation error
 				}
 			}
-			, buttonCloseDidPush() {
+			, buttonCloseDidPush(withTask = false) {
 				if (this.options.validateBeforeSave === false ||  this.closeVlidate(this.$refs.form)) {
-					this.$emit("close", this.finalize(this.model));
+					this.$emit("close", this.finalize(this.model), withTask);
 				} else {
 					// Validation error
 				}

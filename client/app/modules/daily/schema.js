@@ -45,7 +45,7 @@ module.exports = {
 			, end: "18:00"
 		}
 		// , dayNames : [_("Sunday"), _("Monday"), _("Tuesday"), _("Wednesday"), _("Thursday"), _("Friday"), _("Saturday")]
-		, weekends: false
+		, weekends: true
 		, aspectRatio: 1.5
 		, views: {
 			basic: {
@@ -170,6 +170,7 @@ module.exports = {
 			
 			, isSaveButtonEnable: true
 			, isCloseButtonEnable: true
+			, isCloseWithTaskButtonEnable: true
 			, isPostponeButtonEnable: true
 			, isDeleteButtonEnable: true
 			, isCancelButtonEnable: true
@@ -181,6 +182,7 @@ module.exports = {
 		, resources: {
 			saveCaption: _("Save")
 			, closeCaption: _("Close")
+			, closeWithTaskCaption: _("CloseWithTask")
 			, deleteCaption: _("Delete")
 			, cancelCaption: _("Cancel")
 		}
