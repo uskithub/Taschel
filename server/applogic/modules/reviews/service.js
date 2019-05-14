@@ -130,6 +130,9 @@ module.exports = {
 
 					if (ctx.params.highOrderAwakening != null)
 						doc.highOrderAwakening = ctx.params.highOrderAwakening;
+					
+					if (ctx.params.works.length > doc.works.length)
+						doc.works = ctx.params.works.map(code => { return this.workService.decodeID(code); });
 
 					return doc.save();
 				})
