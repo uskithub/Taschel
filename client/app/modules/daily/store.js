@@ -9,6 +9,7 @@ import {
 	, SELECT_DAY_OF_WEEK
 	, LOAD_REVIEWS
 	, ADD_REVIEW
+	, UPDATE_TASK
 } from "../common/constants/mutationTypes";
 
 import { each, find, assign, remove, isArray } from "lodash";
@@ -89,6 +90,12 @@ const mutations = {
 	, [ADD_REVIEW] (state, model) {
 		state.reviews.push(model);
 	}
+	, [UPDATE_TASK] (state, model) {
+		each(state.assignedInWeeklyTasks, (item) => {
+			if (item.code == model.code)
+				assign(item, model);
+		});
+	}
 };
 
 // import { createTask, readTasks, updateTask, deleteTask } from "../common/actions/tasks";
@@ -97,11 +104,12 @@ import { readGroups } from "../common/actions/groups";
 import { createWork, readWorks, updateWork, deleteWork } from "../common/actions/works";
 import { createReview, readReviews, updateReview } from "../common/actions/reviews";
 import { readUsers } from "../common/actions/persons";
+import { updateTask } from "../common/actions/tasks";
 
 export default {
 	namespaced : true
 	, state
 	, getters
-	, actions : { readGroups, createWork, readWorks, updateWork, deleteWork, createReview, readReviews, updateReview, readUsers }
+	, actions : { readGroups, createWork, readWorks, updateWork, deleteWork, createReview, readReviews, updateReview, readUsers, updateTask }
 	, mutations
 };

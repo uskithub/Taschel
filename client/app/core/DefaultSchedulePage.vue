@@ -44,7 +44,6 @@
 		)
 		review(v-if="reviewingDayOfWeek", :schema="schema.reviewForm", :works="worksOfReviewingDate", :template="reviewModel"
 			@save="save"
-			@close="close"
 			@remove="remove"
 			@cancel="cancel"
 		)
@@ -275,7 +274,14 @@
 				});
 			}
 			, save(model) { this.$emit("save", model); }
-			, close(model) { this.$emit("close", model); }
+			, close(model, withTask = false) { 
+				if (withTask) {
+					const task = findTask(model.parent, this.tasks);
+					this.$emit("close", model, task); 
+				} else {
+					this.$emit("close", model); 
+				}
+			}
 			, remove() { this.$emit("remove"); }		// deleteは予約語なので怒られる
 			, cancel() { this.$emit("cancel"); }
 		}

@@ -55,4 +55,4 @@ export const SET_REVIEWING_DAY  = "SET_REVIEWING_DAY";
 
 export const ADD_COMMENT  = "ADD_COMMENT"; 
 
-
+export const UPDATE_TASK = "UPDATE_TASK";

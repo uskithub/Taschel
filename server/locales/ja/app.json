@@ -1,6 +1,7 @@
 {
     "Add": "新規",
     "Close": "クローズ",
+    "CloseWithTask": "タスクごとクローズ",
     "Breakdown": "Breakdown",
     "Next": "Next",
     "Skip": "Skip",
@@ -41,8 +42,8 @@
     "ImprovementPlaceholder": "パフォーマンスを改善するには？／より伸ばすためにできること",
     
     "HighOrderReview": "1日通しての振返り",
-    "HighOrderAwakening": "1日を客観的に見た感想",
-    "HighOrderAwakeningPlaceholder": "一つ高い視点から見た気付き／パターン",
+    "HighOrderAwakening": "1日を客観的に見て抽象化",
+    "HighOrderAwakeningPlaceholder": "抽象化／一つ高い視点から見た気付き／見えてくるパターン／癖",
 
     "GroupType": "GroupType",
     "GroupNamePlaceholder": "GroupNamePlaceholder",
