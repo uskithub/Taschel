@@ -27,6 +27,12 @@
 							i.fa.fa-home
 						span.label {{ "DailyLoop" | i18n }}
 
+				router-link(tag="li", to="/weeklyReview")
+					a(:title="_('WeeklyReview')")
+						span.icon
+							i.fa.fa-home
+						span.label {{ "WeeklyReview" | i18n }}
+
 				router-link(tag="li", to="/timeline")
 					a(:title="_('Timeline')")
 						span.icon
