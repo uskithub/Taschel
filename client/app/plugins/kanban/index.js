@@ -1,5 +1,6 @@
 import Kanban from "./components/atoms/kanban";
-import Board from "./components/organisms/board";
+import KanbanLayer from "./components/molecules/kanbanLayer";
+import KanbanBoard from "./components/organisms/kanbanBoard";
 
 const plugin = {
 	install (Vue, options) {
@@ -9,7 +10,8 @@ const plugin = {
 
 		// componentの追加
 		Vue.component("kanban", Kanban);
-		Vue.component("board", Board);
+		Vue.component("kanban-layer", KanbanLayer);
+		Vue.component("kanban-board", KanbanBoard);
 	}
 };
 

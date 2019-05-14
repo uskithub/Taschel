@@ -9,12 +9,12 @@
 				.tag(v-if="isDisplayTag && kanban.tag != null") {{ kanban.tag }}
 				strong  {{ kanban.name }}
 				ul.kanban-list(v-if="kanban.kanbans !== undefined && kanban.kanbans.length > 0" data-type="kanban", :data-id="kanban.id"
-					@dragenter="ondragenter($event, kanban)"
+					@dragenter="onDragenter($event, kanban)"
 				)
 					kanban(v-for="child in kanban.kanbans", :parent="kanban", :kanban="child", :key="child.id"
-						@dragstart="ondragstart"
-						@dragend="ondragend"
-						@dragenter="ondragenter"
+						@dragstart="onDragstart"
+						@dragend="onDragend"
+						@dragenter="onDragenter"
 					)
 			.media-right(v-if="removable")
 				a.close(title="Remove" @click="$emit('remove', $event, parent, kanban)")
@@ -61,20 +61,16 @@
 			}
 		}
         , methods: {
-            ondragstart(e, parent, kanban) {
+            onDragstart(e, parent, kanban) {
 				this.$emit("dragstart", e, parent, kanban);
 				e.stopPropagation();
 			}
-			, ondragend(e, kanban) {
+			, onDragend(e, kanban) {
 				this.$emit("dragend", e, kanban);
 				e.stopPropagation();
 			}
-			, ondragenter(e, kanban) {
+			, onDragenter(e, kanban) {
 				this.$emit("dragenter", e, kanban);
-				e.stopPropagation();
-			}
-			, onremove(e, parent, kanban) {
-				this.$emit("remove", e, parent, kanban);
 				e.stopPropagation();
 			}
         }

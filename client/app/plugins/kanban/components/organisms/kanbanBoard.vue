@@ -1,22 +1,15 @@
 <template lang="pug">
 	.kanban-system-container
-		ul.kanban-board-container(v-for="boardGroup in boardGroups", :key="boardGroup.name")
-			li.kanban-board(v-for="board in boardGroup.boards", :key="board.id")
-				span.kanban-board-header
-					legend {{ board.name }}
-				.drag-options
-				ul.kanban-list(data-type="board", :data-id="board.id"
-					@dragenter="ondragenter($event, board)"
-				)
-					kanban.top-level-item(v-for="kanban in board.kanbans", :parent="board", :kanban="kanban", :key="kanban.id", :isDisplayTag="true", :removable="board.id!='UNCLASSIFIED'"
-						@dragstart="ondragstart"
-						@dragend="ondragend"
-						@dragenter="ondragenter"
-						@remove="onremove"
-					)
+		ul.kanban-board-container(v-for="board in boards", :key="board.name")
+			kanban-layer(v-for="layer in board.layers", :layer="layer", :key="layer.id", :removable="layer.id!='UNCLASSIFIED'"
+				@dragstart="onDragstart"
+				@dragend="onDragend"
+				@dragenter="onDragenter"
+				@remove="onRemove"
+			)
 </template>
 <script>
-	import KanbanLayer from "../atoms/kanban";
+	import KanbanLayer from "../molecules/kanbanLayer";
 
 	const isNotAncestor = (target, el) => {
 		if (target == el) {
@@ -53,14 +46,14 @@
 	};
 
 	export default {
-		name: "Board"
-		, components : {
-			Kanban
+		components : {
+			KanbanLayer
 		}
         , props: {
-			boardGroups : {
+			boards : {
 				type: Array
 				, validator: (value) => { return true; } // TODO
+				, required: true
 			}
 		}
 		, computed: {
@@ -72,7 +65,7 @@
 			}
 		}
 		, methods : {
-            ondragstart(e, parent, kanban) {
+            onDragstart(e, parent, kanban) {
 				const elem = e.target
 					, mirage = elem.cloneNode(true)
 					;
@@ -86,7 +79,7 @@
 					, mirage: mirage
 				};
 			}
-			, ondragend(e, kanban) {
+			, onDragend(e, kanban) {
 				const elem = e.target;
 				elem.classList.remove("dragging");
 
@@ -134,12 +127,12 @@
 					const elem = this.draggingOn.elem;
 					this.$nextTick(() => {
 						elem.classList.remove("drop-target");
-						elem.removeEventListener("dragover", this.ondragover);
+						elem.removeEventListener("dragover", this.onDragover);
 					});
 					this.draggingOn = null;
 				}
 			}
-			, ondragenter(e, board) {
+			, onDragenter(e, layer) {
 				const elem = e.target
 					, type = elem.dataset.type
 					, id = elem.dataset.id
@@ -154,18 +147,18 @@
 
 				if (this.draggingOn) {
 					this.draggingOn.elem.classList.remove("drop-target");
-					this.draggingOn.elem.removeEventListener("dragover", this.ondragover);
+					this.draggingOn.elem.removeEventListener("dragover", this.onDragover);
 					this.draggingOn = null;
 				}
 
 				elem.classList.add("drop-target");
-				elem.addEventListener("dragover", this.ondragover);
+				elem.addEventListener("dragover", this.onDragover);
 
 				this.draggingOn = {
 					elem: elem
-					, type: type // board or kanban
+					, type: type // layer or kanban
 					, id: id
-					, entity: board
+					, entity: layer
 					, siblings: null
 				}
 
@@ -183,7 +176,7 @@
 					this.draggingOn.siblings = siblings;
 				}
 			}
-			, ondragover(e) {
+			, onDragover(e) {
 				const elem = e.target
 					, type = elem.dataset.type
 					, id = elem.dataset.id
@@ -211,11 +204,11 @@
 					}
 				}
 			}
-			, onremove(e, parent, kanban) {
+			, onRemove(e, parent, kanban) {
 				this.$emit("arrange", {
 					kanban: kanban
-					, from: { type: "board", id: parent.id, entity: parent }
-					, to: { type: "board", id: "UNCLASSIFIED", entity: this.boardGroups[0].boards[0] }
+					, from: { type: "layer", id: parent.id, entity: parent }
+					, to: { type: "layer", id: "UNCLASSIFIED", entity: this.boards[0].layers[0] }
 					, index: 0 
 				});
 			}

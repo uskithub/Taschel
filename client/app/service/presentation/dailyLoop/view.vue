@@ -1,14 +1,14 @@
 <template lang="pug">
 	.kanban-system-container.daily
 		ul.kanban-board-container
-			li.kanban-board.kanban-board-weekly-tasks(key="weekly")
-				span.kanban-board-header
+			li.layer.kanban-board-weekly-tasks(key="weekly")
+				span.layer-header
 					legend {{ _("Tasks") }}
 				.drag-options
-				ul.kanban-list(data-type="board", data-id="weekly")
+				ul.kanban-list(data-type="layer", data-id="weekly")
 					kanban.top-level-item(v-for="kanban in kanbans", :kanban="kanban", :key="kanban.id", :draggable="false")
 		ul.kanban-board-container.fullcalendar
-			li.kanban-board(key="schedule")
+			li.layer(key="schedule")
 				fullcalendar(:events="events", :options="schema", :currentWeek="currentWeek")
 </template>
 
@@ -16,7 +16,7 @@
 	import Vue from "vue";
 	import AbstractView from "system/mixins/abstractView";
 
-	import Board from "plugins/kanban/entities/board";
+	import Layer from "plugins/kanban/entities/layer";
 
 	import { mapGetters } from "vuex";
 
@@ -101,7 +101,7 @@
 			])
 			, kanbans() {
 				if (this.currentweekTaskGroup) {
-					return (new Board(this.currentweekTaskGroup)).kanbans;
+					return (new Layer(this.currentweekTaskGroup)).kanbans;
 				} else {
 					return [];
 				}

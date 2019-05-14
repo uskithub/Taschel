@@ -1,9 +1,12 @@
-import Kanban from "./kanban";
+import Layer from "./layer";
 
 export default class Board {
-	constructor(group) { this._group = group; }
-	get id() { return this._group.code; }
-	get name() { return this._group.name; }
-	get kanbans() { return this._group.tasks.map( t => new Kanban(t)); }
-	get group() { return this._group; }
+	// TODO: groupsを生身で渡して、layersを取る時に new Layer()するべき？
+	constructor(name, layers) { 
+		this._name = name;
+		this._layers = layers;
+	}
+	get name() { return this._name; }
+	// F5 Reload時、[undefined]になるのでfilterする
+	get layers() { return this._layers.filter(v => !!v); }
 }

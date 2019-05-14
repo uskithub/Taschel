@@ -1,13 +1,13 @@
 <template lang="pug">
-	board.weekly-grid(:boardGroups="boardGroups" @arrange="onArrange")
+	kanban-board.weekly-grid(:boards="boards" @arrange="onArrange")
 </template>
 
 <script>
 	import Vue from "vue";
     import AbstractPresenter from "system/mixins/abstractPresenter";
 	
+	import Layer from "plugins/kanban/entities/layer";
 	import Board from "plugins/kanban/entities/board";
-	import BoardGroup from "plugins/kanban/entities/boardGroup";
 	
     import { mapGetters, mapActions } from "vuex";
     
@@ -28,13 +28,13 @@
 				, "currentWeek"
 				, "currentWeekOfMonth"
 			])
-			, boardGroups() {
-				let boards = this.groups.map( g => new Board(g) );
-				const first = boards.shift();
-				let boardGroups = new Array();
-				boardGroups.push(new BoardGroup("unclassified", [first]));
-				boardGroups.push(new BoardGroup("classified", boards));
-				return boardGroups;
+			, boards() {
+				let layers = this.groups.map( g => new Layer(g) );
+				const first = layers.shift();
+				let boards = new Array();
+				boards.push(new Board("unclassified", [first]));
+				boards.push(new Board("classified", layers));
+				return boards;
 			}
 		}
 		, methods : {
@@ -101,7 +101,7 @@
 					align-items: stretch;
 					align-content: flex-start;
 
-					.kanban-board {
+					.layer {
 						flex: none;
 						width: 48%;
 						margin: 0 1% 1% 1%;

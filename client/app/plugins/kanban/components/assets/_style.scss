@@ -7,7 +7,7 @@
     margin: 0;
     padding: 0;
 
-    .kanban-board {
+    .layer {
         flex: 1;
         align-items: flex-start;
         margin: 0 0.5em;
@@ -15,7 +15,7 @@
         background: rgba(black, 0.2);
         overflow: hidden;
 
-        .kanban-board-header {
+        .layer-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
