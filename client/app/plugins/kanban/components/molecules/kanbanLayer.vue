@@ -1,7 +1,7 @@
 <template lang="pug">
     li.layer
         span.layer-header
-            legend {{ layer.name }}
+            legend {{ _(layer.name) }}
         .drag-options
         ul.kanban-list(data-type="layer", :data-id="layer.id"
             @dragenter="onDragenter($event, layer)"
@@ -14,7 +14,10 @@
             )
 </template>
 <script>
+    import Vue from "vue";
 	import Kanban from "../atoms/kanban";
+
+    const _ = Vue.prototype._;
 
 	export default {
 		components : {
@@ -23,9 +26,7 @@
         , props: {
 			layer : {
 				type: Object
-                , validator: (value) => { 
-                    console.log("validate", value);
-                    return true; } // TODO
+                , validator: (value) => { return true; } // TODO
                 , required: true
             }
             , removable : {

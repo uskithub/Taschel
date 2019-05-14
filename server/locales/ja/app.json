@@ -47,5 +47,11 @@
 
     "GroupType": "GroupType",
     "GroupNamePlaceholder": "GroupNamePlaceholder",
-    "GroupPurposePlaceholder": "GroupPurposePlaceholder"
+    "GroupPurposePlaceholder": "GroupPurposePlaceholder",
+
+    "unclassified": "未分類",
+    "Conducive-Urgent": "貢献度高かつ緊急",
+    "Conducive-Unurgent": "貢献度高かつ緊急でない",
+    "Unconducive-Urgent": "貢献度低かつ緊急",
+    "Unconducive-Unurgent": "貢献度低かつ緊急でない"
 }
