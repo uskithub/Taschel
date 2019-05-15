@@ -24,8 +24,8 @@ import reviews from "service/infrastructure/repositories/rest/reviews";
 import Group from "service/domain/entities/group";
 import Work from "service/domain/entities/work";
 import Review from "service/domain/entities/review";
-import Layer from "plugins/kanban/entities/layer";
-import Board from "plugins/kanban/entities/board";
+import Layer from "service/domain/entities/weeklyLayer";
+import Board from "service/domain/entities/weeklyBoard";
 
 import moment from "moment";
 
@@ -110,6 +110,13 @@ export default {
 			return `${ firstDay.format("YYYY年MM月") } 第${weekOfMonth}週`; 
 		}
 		, currentweekTaskGroup(state) { return state.currentweekTaskGroup; }
+		, currentweekTaskKanbans(state) { 
+			if (state.currentweekTaskGroup) {
+				return (new Layer(state.currentweekTaskGroup)).kanbans;
+			} else {
+				return [];
+			}
+		}
 		, currentWeekWorks(state) { return state.currentWeekWorks; }
 		, currentWeekReviews(state) { return state.currentWeekReviews; }
 	}

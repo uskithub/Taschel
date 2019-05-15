@@ -1,13 +1,7 @@
-import Kanban from "./kanban";
-
 export default class Layer {
-	constructor(group, iskanbanRemovable = true) { 
-		this._group = group; 
-		this._iskanbanRemovable = iskanbanRemovable; 
-	}
-	get id() { return this._group.code; }
-	get name() { return this._group.name; }
-	get kanbans() { return this._group.tasks.map( t => new Kanban(t)); }
-	get group() { return this._group; }
-	get removable() { return this._iskanbanRemovable; }
+	constructor() { }
+	get id() { throw new Error("Not Implemented! This method should return a value of String."); }
+	get name() { throw new Error("Not Implemented! This method should return a value of String."); }
+	get kanbans() { throw new Error("Not Implemented! This method should return an array of Kanban."); }
+	get removable() { throw new Error("Not Implemented! This method should return a value of Boolean."); }
 }

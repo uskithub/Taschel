@@ -6,7 +6,7 @@
 					legend {{ _("Tasks") }}
 				.drag-options
 				ul.kanban-list(data-type="layer", data-id="weekly")
-					kanban.top-level-item(v-for="kanban in kanbans", :kanban="kanban", :key="kanban.id", :draggable="false")
+					kanban.top-level-item(v-for="kanban in currentweekTaskKanbans", :kanban="kanban", :key="kanban.id", :draggable="false")
 		ul.kanban-board-container.fullcalendar
 			li.layer(key="schedule")
 				fullcalendar(:events="events", :options="schema", :currentWeek="currentWeek")
@@ -95,17 +95,10 @@
 		, computed : {
 			...mapGetters([
 				"currentWeek"
-				, "currentweekTaskGroup"
+				, "currentweekTaskKanbans"
 				, "currentWeekWorks"
 				, "currentWeekReviews"
 			])
-			, kanbans() {
-				if (this.currentweekTaskGroup) {
-					return (new Layer(this.currentweekTaskGroup)).kanbans;
-				} else {
-					return [];
-				}
-			}
 			, events() {
 				let sunDay = moment(this.currentWeek).add(-1, "d")
 				let days = [1, 2, 3, 4, 5, 6].reduce((arr, i) => {
