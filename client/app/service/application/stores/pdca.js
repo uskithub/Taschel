@@ -24,6 +24,8 @@ import reviews from "service/infrastructure/repositories/rest/reviews";
 import Group from "service/domain/entities/group";
 import Work from "service/domain/entities/work";
 import Review from "service/domain/entities/review";
+import Layer from "plugins/kanban/entities/layer";
+import Board from "plugins/kanban/entities/board";
 
 import moment from "moment";
 
@@ -91,7 +93,14 @@ export default {
 		, currentWeekReviews: []
 	}
 	, getters : {
-		groups(state) { return state.groups; }
+		boards(state) { 
+			let layers = state.groups.map( g => new Layer(g, g.code != "UNCLASSIFIED"));
+			const first = layers.shift();
+			let boards = new Array();
+			boards.push(new Board("unclassified", [first]));
+			boards.push(new Board("classified", layers));
+			return boards;
+		}
 		, currentWeek(state) { return state.currentWeek; }
 		, currentWeekOfMonth(state) { 
 			const todayWeek = state.currentWeek.week();

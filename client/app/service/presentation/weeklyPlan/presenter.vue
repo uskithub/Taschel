@@ -6,9 +6,6 @@
 	import Vue from "vue";
     import AbstractPresenter from "system/mixins/abstractPresenter";
 	
-	import Layer from "plugins/kanban/entities/layer";
-	import Board from "plugins/kanban/entities/board";
-	
     import { mapGetters, mapActions } from "vuex";
     
     import { 
@@ -24,18 +21,10 @@
 		, mixins : [ AbstractPresenter ]
 		, computed : {
 			...mapGetters([
-				"groups"
+				"boards"
 				, "currentWeek"
 				, "currentWeekOfMonth"
 			])
-			, boards() {
-				let layers = this.groups.map( g => new Layer(g, g.code != "UNCLASSIFIED"));
-				const first = layers.shift();
-				let boards = new Array();
-				boards.push(new Board("unclassified", [first]));
-				boards.push(new Board("classified", layers));
-				return boards;
-			}
 		}
 		, methods : {
 			...mapActions([
