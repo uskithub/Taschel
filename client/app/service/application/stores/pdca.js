@@ -118,7 +118,7 @@ export default {
 		}
 		, currentweekTaskKanbans(state) { 
 			if (state.currentweekTaskGroup) {
-				return (new Layer(state.currentweekTaskGroup)).kanbans;
+				return (new Layer(state.currentweekTaskGroup, false)).kanbans;
 			} else {
 				return [];
 			}

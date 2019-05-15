@@ -1,7 +1,7 @@
 <template lang="pug">
 	.kanban-system-container
 		ul.kanban-board-container(v-for="board in boards", :key="board.name")
-			kanban-layer(v-for="layer in board.layers", :layer="layer", :key="layer.id", :removable="layer.removable"
+			kanban-layer(v-for="layer in board.layers", :layer="layer", :key="layer.id"
 				@dragstart="onDragstart"
 				@dragend="onDragend"
 				@dragenter="onDragenter"

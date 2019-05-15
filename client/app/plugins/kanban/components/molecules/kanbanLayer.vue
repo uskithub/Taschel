@@ -6,7 +6,7 @@
         ul.kanban-list(data-type="layer", :data-id="layer.id"
             @dragenter="onDragenter($event, layer)"
         )
-            kanban.top-level-item(v-for="kanban in layer.kanbans", :parent="layer", :kanban="kanban", :key="kanban.id", :isDisplayTag="true", :removable="removable"
+            kanban.top-level-item(v-for="kanban in layer.kanbans", :parent="layer", :kanban="kanban", :key="kanban.id", :isDisplayTag="true", :removable="layer.removable"
                 @dragstart="onDragstart"
                 @dragend="onDragend"
                 @dragenter="onDragenter"
@@ -28,12 +28,6 @@
 				type: Object
                 , validator: (value) => { return true; } // TODO
                 , required: true
-            }
-            // kanbanを外す✕ボタンを表示するか否か（性質上、backlogなlayerは他から外したkanbanが戻ってくる場所であって、外すことはできない）
-            , removable : {
-                type: Boolean
-                , validator: (value) => { return true; } // TODO
-                , default: true
             }
 		}
 		, methods : {
