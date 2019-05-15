@@ -75,7 +75,7 @@
 			...mapGetters([
 				"currentWeek"
 				, "currentWeekOfMonth"
-				, "currentweekTaskGroup"
+				, "currentweekTasks"
 				, "currentWeekWorks"
 				, "currentWeekReviews"
 			])
@@ -119,7 +119,7 @@
 				if (!date.hasTime()) { return; }
 
 				const code = $(jqEvent.target).data("id");
-				const task = findTask(code, this.currentweekTaskGroup.tasks);
+				const task = findTask(code, this.currentweekTasks);
 				const work = {
 					title: task.name
 					, start: date.utc().format()
@@ -199,7 +199,7 @@
 					return this.ワークをクローズする(data);
 				}).then(() => {
 					if (withTask) {
-						const task = findTask(data.parent, this.currentweekTaskGroup.tasks);
+						const task = findTask(data.parent, this.currentweekTasks);
 						this.タスクをクローズする(task.rawValues);
 					}
 				}).then(() => {

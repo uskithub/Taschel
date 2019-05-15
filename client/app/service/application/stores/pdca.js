@@ -109,7 +109,13 @@ export default {
 			const weekOfMonth = ((todayWeek > firstDayWeek) ? todayWeek - firstDayWeek : todayWeek - firstDayWeek + 52) + 1;
 			return `${ firstDay.format("YYYY年MM月") } 第${weekOfMonth}週`; 
 		}
-		, currentweekTaskGroup(state) { return state.currentweekTaskGroup; }
+		, currentweekTasks(state) { 
+			if (state.currentweekTaskGroup) {
+				return state.currentweekTaskGroup.tasks; 
+			} else {
+				return [];
+			}
+		}
 		, currentweekTaskKanbans(state) { 
 			if (state.currentweekTaskGroup) {
 				return (new Layer(state.currentweekTaskGroup)).kanbans;
