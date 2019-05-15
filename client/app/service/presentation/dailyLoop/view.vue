@@ -16,8 +16,6 @@
 	import Vue from "vue";
 	import AbstractView from "system/mixins/abstractView";
 
-	import Layer from "plugins/kanban/entities/layer";
-
 	import { mapGetters } from "vuex";
 
 	import _schema from "./schema";
