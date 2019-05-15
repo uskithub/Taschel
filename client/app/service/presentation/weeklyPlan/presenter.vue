@@ -29,7 +29,7 @@
 				, "currentWeekOfMonth"
 			])
 			, boards() {
-				let layers = this.groups.map( g => new Layer(g) );
+				let layers = this.groups.map( g => new Layer(g, g.code != "UNCLASSIFIED"));
 				const first = layers.shift();
 				let boards = new Array();
 				boards.push(new Board("unclassified", [first]));
