@@ -21,12 +21,7 @@
 									li.kanban-item(v-for="(work, i) in works", :class="{ active : index == i }", :data-code="work.code", :key="work.code" ref="items"
 										@click.prevent.stop="select($event, work, i)"
 									)
-										slot(:name="work.title")
-											strong {{ work.title }}
-											.text-muted
-												dl(v-for="item in description(work)", :key="item.key")
-													dt {{ item.title }}
-													dd {{ item.value }}
+										work-review(:work="work")
 										message(v-for="comment in work.comments", :key="comment.code", :comment="comment", :user="getUser(comment.author)")
 							li.kanban-board.form(key="form")
 								vue-form-generator(:schema="dynamicForm", :model="dynamicModel", :options="options", ref="form", :is-new-model="isNewModel")
@@ -65,6 +60,8 @@
 	import "ion-rangeslider/css/ion.rangeSlider.css";
 	import "ion-rangeslider/css/ion.rangeSlider.skinFlat.css";
 
+	import WorkReview from "./workReview";
+
 	import Message from "../message";
 	import { schema as schemaUtils } from "vue-form-generator";
 	import { get as objGet, find, cloneDeep, isArray, isFunction } from "lodash";
@@ -78,6 +75,7 @@
 		name: "Review"
         , components: {
 			Message
+			, WorkReview
 		}
 		// properties set by it's parent component.
 		// somtimes, parent components set their methods as props.
@@ -169,38 +167,7 @@
 			}
 		}
 		, methods: {
-			description(work) {
-				let result = [
-					{
-						key: "description"
-						, title: _("Description")
-						, value: work.description
-					}
-				];
-				if (work.goodSide) { 
-					result.push({
-						key: "goodSide"
-						, title: _("GoodSide")
-						, value: work.goodSide
-					});	
-				}
-				if (work.badSide) {
-					result.push({
-						key: "badSide"
-						, title: _("BadSide")
-						, value: work.badSide
-					});
-				}
-				if (work.improvement) {
-					result.push({
-						key: "improvement"
-						, title: _("Improvement")
-						, value: work.improvement
-					});
-				}
-				return result;
-			}
-			, select(e, work, index) {
+			select(e, work, index) {
 				console.log(work, index);
 				this.index = index;
 			}
