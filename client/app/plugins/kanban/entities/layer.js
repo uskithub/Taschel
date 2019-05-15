@@ -6,4 +6,5 @@ export default class Layer {
 	get name() { return this._group.name; }
 	get kanbans() { return this._group.tasks.map( t => new Kanban(t)); }
 	get group() { return this._group; }
+	get removable() { return this.id != "UNCLASSIFIED"; }
 }

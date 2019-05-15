@@ -29,6 +29,7 @@
                 , validator: (value) => { return true; } // TODO
                 , required: true
             }
+            // kanbanを外す✕ボタンを表示するか否か（性質上、backlogなlayerは他から外したkanbanが戻ってくる場所であって、外すことはできない）
             , removable : {
                 type: Boolean
                 , validator: (value) => { return true; } // TODO
