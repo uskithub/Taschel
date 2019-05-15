@@ -356,7 +356,7 @@
 			};
 
 			this.schema.fullCalendar.viewRender = (view, elem) => {
-				this.$emit("setCurrentWeek", view.start.format("YYYY-MM-DD"));
+				this.$emit("setCurrentWeek", view.start.day(1).format("YYYY-MM-DD"));
 			};
 		}
 		, updated() {
