@@ -116,11 +116,11 @@ export default {
 				return [];
 			}
 		}
-		, currentweekTaskKanbans(state) { 
+		, currentweekTaskLayer(state) {
 			if (state.currentweekTaskGroup) {
-				return (new Layer(state.currentweekTaskGroup, false)).kanbans;
+				return new Layer(state.currentweekTaskGroup, false);
 			} else {
-				return [];
+				return new Layer({ code : "weekly", name : "Tasks", tasks : [] }, false);
 			}
 		}
 		, currentWeekWorks(state) { return state.currentWeekWorks; }

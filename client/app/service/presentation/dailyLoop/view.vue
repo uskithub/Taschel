@@ -1,12 +1,7 @@
 <template lang="pug">
 	.kanban-system-container.daily
 		ul.kanban-board-container
-			li.layer.kanban-board-weekly-tasks(key="weekly")
-				span.layer-header
-					legend {{ _("Tasks") }}
-				.drag-options
-				ul.kanban-list(data-type="layer", data-id="weekly")
-					kanban.top-level-item(v-for="kanban in currentweekTaskKanbans", :kanban="kanban", :key="kanban.id", :draggable="false")
+			kanban-layer.kanban-board-weekly-tasks(:layer="currentweekTaskLayer", :key="currentweekTaskLayer.id")
 		ul.kanban-board-container.fullcalendar
 			li.layer(key="schedule")
 				fullcalendar(:events="events", :options="schema", :currentWeek="currentWeek")
@@ -93,7 +88,7 @@
 		, computed : {
 			...mapGetters([
 				"currentWeek"
-				, "currentweekTaskKanbans"
+				, "currentweekTaskLayer"
 				, "currentWeekWorks"
 				, "currentWeekReviews"
 			])
