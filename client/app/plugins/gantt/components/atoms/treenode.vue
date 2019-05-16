@@ -1,7 +1,7 @@
 <template lang="pug">
 	li.treenode(:draggable="draggable", :key="treenode.id", :data-id="treenode.id", :class="getClass(treenode)" 
-		@mouseover.prevent.stop="onmouseover"
-		@mouseout.prevent.stop="onmouseout"
+		@mouseover.prevent.stop="onMouseover"
+		@mouseout.prevent.stop="onMouseout"
 		@click="$emit('click', $event, treenode)"
 		@dragstart="$emit('dragstart', $event, parent, treenode)"
 		@dragend="$emit('dragend', $event, treenode)"
@@ -25,13 +25,13 @@
 				treenode(v-for="childnode in treenode.subtrees", :parent="treenode", :treenode="childnode", :foldingConditionMap="foldingConditionMap", :key="childnode.id"
 					@editIconDidPush="editIconDidPush"
 					@addIconDidPush="addIconDidPush"
-					@dragstart="ondragstart"
-					@dragend="ondragend"
-					@dragenter="ondragenter"
+					@dragstart="onDragstart"
+					@dragend="onDragend"
+					@dragenter="onDragenter"
 					@toggle-caret="caratDidClick"
 				)
 			ul.treelist(v-else data-type="treelist", :data-id="treenode.id"
-				@dragenter="ondragenter($event, treenode)"
+				@dragenter="onDragenter($event, treenode)"
 			)
 </template>
 
@@ -82,10 +82,10 @@
 			}
 
             // for interactione
-			, onmouseover(e) {
+			, onMouseover(e) {
 				this.isHovering = true;
 			}
-			, onmouseout(e) {
+			, onMouseout(e) {
 				this.isHovering = false;
 			}
 			, editIconDidPush(e, treenode) {
@@ -96,15 +96,15 @@
 				this.$emit("addIconDidPush", e, parent, sibling);
 				e.stopPropagation();
 			}
-            , ondragstart(e, parent, treenode) {
+            , onDragstart(e, parent, treenode) {
 				this.$emit("dragstart", e, parent, treenode);
 				e.stopPropagation();
 			}
-			, ondragend(e, treenode) {
+			, onDragend(e, treenode) {
 				this.$emit("dragend", e, treenode);
 				e.stopPropagation();
 			}
-			, ondragenter(e, treenode) {
+			, onDragenter(e, treenode) {
 				this.$emit("dragenter", e, treenode);
 				e.stopPropagation();
 			}

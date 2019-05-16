@@ -28,7 +28,7 @@ import tasks from "service/infrastructure/repositories/rest/tasks";
 // Entities
 import User from "service/domain/entities/user";
 import Project from "service/domain/entities/project";
-import TaskTreenode from "service/domain/entities/tasktreenode";
+import TaskTreenode from "service/domain/entities/taskTreenode";
 
 import { assign } from "lodash";
 
