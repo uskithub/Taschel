@@ -166,7 +166,7 @@
 		}
 	}
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
 
 	.review-container {
 		display: flex;

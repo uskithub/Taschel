@@ -6,12 +6,13 @@
         ul.kanban-list(data-type="layer", :data-id="layer.id"
             @dragenter="onDragenter($event, layer)"
         )
-            kanban.top-level-item(v-for="kanban in layer.kanbans", :parent="layer", :kanban="kanban", :key="kanban.id", :isDisplayTag="true", :removable="layer.removable"
+            kanban.top-level-item(v-for="kanban in layer.kanbans" v-slot="{slotProps}" , :parent="layer", :kanban="kanban", :key="kanban.id", :isTopLevel="true", :isDisplayTag="true", :removable="layer.removable"
                 @dragstart="onDragstart"
                 @dragend="onDragend"
                 @dragenter="onDragenter"
                 @remove="onRemove"
             )
+                slot(:content="slotProps.content", :isTopLevel="slotProps.isTopLevel")
 </template>
 <script>
     import Vue from "vue";

@@ -4,20 +4,21 @@
 		@dragstart="$emit('dragstart', $event, parent, kanban)"
 		@dragend="$emit('dragend', $event, kanban)"
 	)
-		slot(:name="kanban.name")
-			.media-content
-				.tag(v-if="isDisplayTag && kanban.tag != null") {{ kanban.tag }}
-				strong  {{ kanban.name }}
-				ul.kanban-list(v-if="kanban.kanbans !== undefined && kanban.kanbans.length > 0" data-type="kanban", :data-id="kanban.id"
-					@dragenter="onDragenter($event, kanban)"
+		.media-content
+			.tag(v-if="isDisplayTag && kanban.tag != null") {{ kanban.tag }}
+			strong {{ kanban.name }}
+			slot(:content="'にゃお〜ん'", :isTopLevel="isTopLevel")
+			ul.kanban-list(v-if="kanban.kanbans !== undefined && kanban.kanbans.length > 0" data-type="kanban", :data-id="kanban.id"
+				@dragenter="onDragenter($event, kanban)"
+			)
+				kanban(v-for="child in kanban.kanbans" v-slot="'slotProps'", :parent="kanban", :kanban="child", :key="child.id"
+					@dragstart="onDragstart"
+					@dragend="onDragend"
+					@dragenter="onDragenter"
 				)
-					kanban(v-for="child in kanban.kanbans", :parent="kanban", :kanban="child", :key="child.id"
-						@dragstart="onDragstart"
-						@dragend="onDragend"
-						@dragenter="onDragenter"
-					)
-			.media-right(v-if="removable")
-				a.close(title="Remove" @click="$emit('remove', $event, parent, kanban)")
+					slot(:content="slotProps.content", :isTopLevel="slotProps.isTopLevel")
+		.media-right(v-if="removable")
+			a.close(title="Remove" @click="$emit('remove', $event, parent, kanban)")
 </template>
 
 <script>
@@ -50,6 +51,10 @@
 			, draggable: {
 				type: Boolean
 				, default: true
+			}
+			, isTopLevel: {
+				type: Boolean
+				, default: false
 			}
 			, isDisplayTag: {
 				type: Boolean
