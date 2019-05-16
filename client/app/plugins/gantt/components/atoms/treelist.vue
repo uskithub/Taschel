@@ -6,7 +6,7 @@
 		)
 			.tree-item
 				input.checkbox(type="checkbox")
-				span.icon(v-if="treenode.subtree.length > 0" @click.prevent.stop="caratDidClick($event, treenode.id)")
+				span.icon(v-if="treenode.subtrees.length > 0" @click.prevent.stop="caratDidClick($event, treenode.id)")
 					i.fa(:class="{ 'fa-caret-down': !(foldingConditionMap[treenode.id]===false), 'fa-caret-right': foldingConditionMap[treenode.id]===false }")
 				span.treelist-board-header {{ treenode.name }}
 				span.operation(v-show="isHoveringMap[treenode.id]")
@@ -19,7 +19,7 @@
 			ul.treelist(v-if="!(foldingConditionMap[treenode.id]===false)" data-type="treelist", :data-id="treenode.id"
 				@dragenter="ondragenter($event, treenode)"
 			)
-				treenode(v-for="childnode in treenode.subtree", :parent="treenode", :treenode="childnode", :foldingConditionMap="foldingConditionMap", :key="childnode.id"
+				treenode(v-for="childnode in treenode.subtrees", :parent="treenode", :treenode="childnode", :foldingConditionMap="foldingConditionMap", :key="childnode.id"
 					@editIconDidPush="editIconDidPush"
 					@addIconDidPush="addIconDidPush"
 					@dragstart="ondragstart"

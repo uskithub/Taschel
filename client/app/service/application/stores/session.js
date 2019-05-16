@@ -28,6 +28,7 @@ import tasks from "service/infrastructure/repositories/rest/tasks";
 // Entities
 import User from "service/domain/entities/user";
 import Project from "service/domain/entities/project";
+import TaskTreenode from "service/domain/entities/tasktreenode";
 
 import { assign } from "lodash";
 
@@ -56,6 +57,15 @@ export default {
 		, organizations(state) { return state.organizations; }
 		, projects(state) { return state.projects; }
 		, currentProject(state) { return state.currentProjectRef; }
+		, currentProjectTaskSubTrees(state) {
+			if (state.currentProjectRef !== null) {
+				return state.currentProjectRef.tasks.map(t => {
+					return new TaskTreenode(t);
+				});
+			} else {
+				return [];
+			}
+		}
 	}
 	// Vuex: Mutations can change states. It must run synchronously.
 	, mutations :  {

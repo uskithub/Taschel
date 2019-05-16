@@ -230,8 +230,8 @@
 				const _treeToArrayRecursively = (treenodes, arr = []) => {
 					return treenodes.reduce( (arr, treenode) => {
 						arr.push(treenode.id);
-						if ( !(this.foldingConditionMap[treenode.id]===false) && (treenode.subtree !== null || treenode.subtree !== undefined) && treenode.subtree.length > 0) {
-							arr = _treeToArrayRecursively(treenode.subtree, arr);
+						if ( !(this.foldingConditionMap[treenode.id]===false) && (treenode.subtrees !== null || treenode.subtrees !== undefined) && treenode.subtrees.length > 0) {
+							arr = _treeToArrayRecursively(treenode.subtrees, arr);
 						}
 						return arr;
 					}, arr);
@@ -283,8 +283,8 @@
 			, treenodeToIdTimeframeMapRecursively(treenodes, parentTimeframe = null, idTimeframeMap = {}) {
 				return treenodes.reduce((arr, treenode) => {
 					idTimeframeMap[treenode.id] = new Timeframe(treenode.task, parentTimeframe);
-					if ((treenode.subtree !== null || treenode.subtree !== undefined) && treenode.subtree.length > 0) {
-						idTimeframeMap = this.treenodeToIdTimeframeMapRecursively(treenode.subtree, idTimeframeMap[treenode.id], idTimeframeMap);
+					if ((treenode.subtrees !== null || treenode.subtrees !== undefined) && treenode.subtrees.length > 0) {
+						idTimeframeMap = this.treenodeToIdTimeframeMapRecursively(treenode.subtrees, idTimeframeMap[treenode.id], idTimeframeMap);
 					}
 					return idTimeframeMap;
 				}, idTimeframeMap);

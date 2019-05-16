@@ -17,7 +17,6 @@
 	import AbstractPresenter from "system/mixins/abstractPresenter";
 
 	import Task from "service/domain/entities/task";
-	import Treenode from "service/domain/entities/treenode";
 	
 	import GanttView from "./view"
 	import GanttEditingView from "./editingView"

@@ -8,7 +8,7 @@
 	)
 		slot(:name="treenode.name")
 			.media-content
-				span.icon(v-if="treenode.subtree.length > 0" @click.prevent.stop="$emit('toggle-caret', $event, treenode.id)")
+				span.icon(v-if="treenode.subtrees.length > 0" @click.prevent.stop="$emit('toggle-caret', $event, treenode.id)")
 					i.fa(:class="{ 'fa-caret-down': isOpeningMap[treenode.id], 'fa-caret-right': !isOpeningMap[treenode.id] }")
 				span.treelist-node-header  {{ treenode.name }}
 				span.operation(v-show="isHovering")
@@ -17,7 +17,7 @@
 				ul.treelist(v-show="isOpeningMap[treenode.id]" data-type="treenode", :data-id="treenode.id"
 					@dragenter="ondragenter($event, treenode)"
 				)
-					timeline-treenode(v-for="childnode in treenode.subtree", :parent="treenode", :treenode="childnode", :isOpeningMap="isOpeningMap", :key="childnode.id"
+					timeline-treenode(v-for="childnode in treenode.subtrees", :parent="treenode", :treenode="childnode", :isOpeningMap="isOpeningMap", :key="childnode.id"
 						@addIconDidPush="addIconDidPush"
 						@dragstart="ondragstart"
 						@dragend="ondragend"

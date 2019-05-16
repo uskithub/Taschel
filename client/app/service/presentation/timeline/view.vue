@@ -24,9 +24,6 @@
 	import Vue from "vue";
 	import AbstractView from "system/mixins/abstractView";
 
-	import Task from "service/domain/entities/task";
-	import Treenode from "service/domain/entities/treenode";
-
 	import { mapGetters } from "vuex";
 
 	const _ = Vue.prototype._;

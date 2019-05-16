@@ -1,5 +1,5 @@
 <template lang="pug">
-	gantt(:treenodes="treenodes", :data="data"
+	gantt(:treenodes="currentProjectTaskSubTrees", :data="data"
 		@addTopLevel="$emit('addTopLevel', $event)"
 		@arrange="didArrangeTask"
 		@edit="editIconDidPush"
@@ -10,8 +10,6 @@
 <script>
 	import Vue from "vue";
 	import AbstractView from "system/mixins/abstractView";
-
-	import Treenode from "service/domain/entities/treenode";
 	
 	import { mapGetters } from "vuex";
 	import moment from "moment";
@@ -34,16 +32,8 @@
 			...mapGetters([
 				"projects"
 				, "currentProject"
+				, "currentProjectTaskSubTrees"
 			])
-			, treenodes() {
-				if (this.currentProject !== null) {
-					return this.currentProject.tasks.map(t => {
-						return new Treenode(t);
-					});
-				} else {
-					return [];
-				}
-			}
 		}
 		, data() {
 			return {

@@ -14,7 +14,7 @@ import tasks from "service/infrastructure/repositories/rest/tasks";
 
 // Entities
 import Task from "service/domain/entities/task";
-import Treenode from "service/domain/entities/treenode";
+import TaskTreenode from "service/domain/entities/taskTreenode";
 
 import { assign } from "lodash";
 
@@ -86,14 +86,14 @@ export default {
 			if (task.parent !== -1) {
 				return tasks.get({ code: task.parent })
 					.then(data => {
-						commit(BACKLOG.SET_TASK_TREE, new Treenode(new Task(data, projects)));
+						commit(BACKLOG.SET_TASK_TREE, new TaskTreenode(new Task(data, projects)));
 					})
 					.then(_ => {
 						console.log("interacted ->", タスクをルートとしたタスクツリーを取得する);
 					});
                     
 			} else {
-				commit(BACKLOG.SET_TASK_TREE, new Treenode(task));
+				commit(BACKLOG.SET_TASK_TREE, new TaskTreenode(task));
 				console.log("interacted ->", タスクをルートとしたタスクツリーを取得する);
 			}
 		}
