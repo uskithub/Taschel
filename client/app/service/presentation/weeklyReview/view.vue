@@ -3,7 +3,7 @@
 		.panel
 			.header {{ header }}
 			.body
-				kanban-board(v-slot="{slotProps}", :boards="[currentweekReviewBoard]" @arrange="") {{ slotProps.content }}
+				kanban-board(:boards="[currentweekReviewBoard]" @arrange="")
 </template>
 <script>
 	import Vue from "vue";

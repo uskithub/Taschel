@@ -1,13 +1,12 @@
 <template lang="pug">
 	.kanban-system-container
 		ul.kanban-board-container(v-for="board in boards", :key="board.name")
-			kanban-layer(v-for="layer in board.layers" v-slot="{slotProps}", :layer="layer", :key="layer.id"
+			kanban-layer(v-for="layer in board.layers", :layer="layer", :key="layer.id"
 				@dragstart="onDragstart"
 				@dragend="onDragend"
 				@dragenter="onDragenter"
 				@remove="onRemove"
 			)
-				slot(:content="slotProps.content", :isTopLevel="slotProps.isTopLevel")
 </template>
 <script>
 	import KanbanLayer from "../molecules/kanbanLayer";
