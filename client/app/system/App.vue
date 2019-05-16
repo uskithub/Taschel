@@ -1,5 +1,5 @@
 <template lang="pug">
-	div
+	v-app(:dark="true")
 		page-header(:toggle-sidebar="toggleSidebar")
 		sidebar(:minimized="miniSidebar")
 		section.app-main(:class="{ miniSidebar: miniSidebar }")
