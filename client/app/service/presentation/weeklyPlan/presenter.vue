@@ -1,5 +1,5 @@
 <template lang="pug">
-	kanban-board.weekly-grid(:boards="boards" @arrange="onArrange")
+	kanban-board.weekly-grid(:boards="currentWeekPlanningBoards" @arrange="onArrange")
 </template>
 
 <script>
@@ -21,7 +21,7 @@
 		, mixins : [ AbstractPresenter ]
 		, computed : {
 			...mapGetters([
-				"boards"
+				"currentWeekPlanningBoards"
 				, "currentWeek"
 				, "currentWeekOfMonth"
 			])

@@ -36,7 +36,7 @@
 </template>
 <script>
 	import Vue from "vue";
-    import AbstractView from "system/mixins/abstractView";
+	import AbstractView from "system/mixins/abstractView";
     
     import { mapGetters } from "vuex";
     
@@ -58,9 +58,11 @@
 			...mapGetters([
                 "currentWeek"
                 , "currentWeekOfMonth"
-                , "currentWeekReviews"
+				, "currentWeekReviews"
+				, "currentweekReviewLayer"
+				, "currentweekReviewBoard"
             ])
-            , header() { return `${ this.currentWeekOfMonth } の振り返り`; }
+			, header() { return `${ this.currentWeekOfMonth } の振り返り`; }
 		}
 		, data() {
 			return {

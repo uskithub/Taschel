@@ -24,8 +24,10 @@ import reviews from "service/infrastructure/repositories/rest/reviews";
 import Group from "service/domain/entities/group";
 import Work from "service/domain/entities/work";
 import Review from "service/domain/entities/review";
-import Layer from "service/domain/entities/weeklyLayer";
-import Board from "service/domain/entities/weeklyBoard";
+import TaskLayer from "service/domain/entities/taskLayer";
+import ReviewLayer from "service/domain/entities/reviewLayer";
+import Board from "service/domain/entities/genericBoard";
+
 
 import moment from "moment";
 
@@ -93,8 +95,8 @@ export default {
 		, currentWeekReviews: []
 	}
 	, getters : {
-		boards(state) { 
-			let layers = state.groups.map( g => new Layer(g, g.code != "UNCLASSIFIED"));
+		currentWeekPlanningBoards(state) { 
+			let layers = state.groups.map( g => new TaskLayer(g, g.code != "UNCLASSIFIED"));
 			const first = layers.shift();
 			let boards = new Array();
 			boards.push(new Board("unclassified", [first]));
@@ -118,13 +120,36 @@ export default {
 		}
 		, currentweekTaskLayer(state) {
 			if (state.currentweekTaskGroup) {
-				return new Layer(state.currentweekTaskGroup, false);
+				return new TaskLayer(state.currentweekTaskGroup, false);
 			} else {
-				return new Layer({ code : "weekly", name : "Tasks", tasks : [] }, false);
+				return new TaskLayer({ code : "weekly", name : "Tasks", tasks : [] }, false);
 			}
 		}
 		, currentWeekWorks(state) { return state.currentWeekWorks; }
 		, currentWeekReviews(state) { return state.currentWeekReviews; }
+		, currentweekReviewLayer(state) {
+			return new ReviewLayer({ 
+				code : "weekly"
+				, name : "Tasks"
+				, reviews : state.currentWeekReviews 
+			}
+			, false);
+		}
+		, currentweekReviewBoard(state) {
+			const reviewLayer = new ReviewLayer({ 
+				code : "daily-reviews"
+				, name : "Daily Reviews"
+				, reviews : state.currentWeekReviews 
+			}
+			, false);
+			const selectedReviewLayer = new ReviewLayer({ 
+				code : "weekly-reviews"
+				, name : "Weekly Reviews"
+				, reviews : []
+			}
+			, false);
+			return new Board("unclassified", [reviewLayer, selectedReviewLayer]);
+		}
 	}
 	// DDD: Usecases
 	// Vuex: Mutations can change states. It must run synchronously.

@@ -1,6 +1,6 @@
 import Board from "plugins/kanban/entities/board";
 
-export default class WeeklyBoard extends Board {
+export default class GenericBoard extends Board {
 	// TODO: groupsを生身で渡して、layersを取る時に new Layer()するべき？
 	constructor(name, layers) { 
 		super();
