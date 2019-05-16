@@ -7,6 +7,7 @@
 		.media-content
 			.tag(v-if="isDisplayTag && kanban.tag != null") {{ kanban.tag }}
 			strong {{ kanban.name }}
+			slot(name="kanban", :content="kanban.content", :isTopLevel="true")
 			ul.kanban-list(v-if="kanban.kanbans !== undefined && kanban.kanbans.length > 0" data-type="kanban", :data-id="kanban.id"
 				@dragenter="onDragenter($event, kanban)"
 			)
@@ -15,6 +16,8 @@
 					@dragend="onDragend"
 					@dragenter="onDragenter"
 				)
+					template(v-slot:kanban="slotProps")
+						slot(name="kanban", :content="slotProps.content", :isTopLevel="false")
 		.media-right(v-if="removable")
 			a.close(title="Remove" @click="$emit('remove', $event, parent, kanban)")
 </template>

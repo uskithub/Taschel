@@ -12,6 +12,8 @@
                 @dragenter="onDragenter"
                 @remove="onRemove"
             )
+                template(v-slot:kanban="slotProps")
+                    slot(name="kanban", :content="slotProps.content", :isTopLevel="slotProps.isTopLevel")
 </template>
 <script>
     import Vue from "vue";

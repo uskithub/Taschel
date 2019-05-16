@@ -4,6 +4,18 @@
 			.header {{ header }}
 			.body
 				kanban-board(:boards="[currentweekReviewBoard]" @arrange="")
+					template(v-slot:kanban="slotProps")
+						.text-muted(v-if="slotProps.isTopLevel") {{ slotProps.content }}
+						table(v-else)
+							tr(v-show="slotProps.content.goodSide")
+								th {{ _("GoodSideLabel") }} 
+								td {{ slotProps.content.goodSide }}
+							tr(v-show="slotProps.content.badSide")
+								th {{ _("BadSideLabel") }}
+								td {{ slotProps.content.badSide }}
+							tr(v-show="slotProps.content.improvement")
+								th {{ _("ImprovementLabel") }}
+								td {{ slotProps.content.improvement }}
 </template>
 <script>
 	import Vue from "vue";
