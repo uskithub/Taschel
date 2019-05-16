@@ -61,10 +61,10 @@ module.exports = {
 					filter.isDeleted = { $eq: 0 };
 					filter.status = { $gt : -1 };
 
-					excludeRule = ((serviceName, json) => {
-						if ( serviceName != "tasks" ) { return true; }
-						return json.status > -1 && json.isDeleted == 0;
-					});
+					// excludeRule = ((serviceName, json) => {
+					// 	if ( serviceName != "tasks" ) { return true; }
+					// 	return json.status > -1 && json.isDeleted == 0;
+					// });
 
 				} else if (ctx.params.root_code != undefined) {
 					// find from TasksPage
