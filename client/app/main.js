@@ -3,6 +3,8 @@
 require("es6-promise/auto");
 
 import Vue from "vue";
+import Vuetify from "vuetify";
+import "vuetify/dist/vuetify.min.css"; 
 
 import axios from "axios";
 axios.defaults.headers.post["Content-Type"] = "application/json";
@@ -25,6 +27,7 @@ import GanttPlugin from "plugins/gantt/index";
 
 import App from "./system/App";
 
+Vue.use(Vuetify);
 Vue.use(Filters);
 
 Vue.component("fieldMyDateTimePicker", fieldMyDateTimePicker);
