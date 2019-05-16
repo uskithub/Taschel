@@ -8,7 +8,7 @@
 				input.checkbox(type="checkbox")
 				span.icon(v-if="treenode.subtrees.length > 0" @click.prevent.stop="caratDidClick($event, treenode.id)")
 					i.fa(:class="{ 'fa-caret-down': !(foldingConditionMap[treenode.id]===false), 'fa-caret-right': foldingConditionMap[treenode.id]===false }")
-				span.treelist-board-header {{ treenode.name }}
+				span.treelist-board-header(:class="treenode.styleClass") {{ treenode.name }}
 				span.operation(v-show="isHoveringMap[treenode.id]")
 					span.icon(@click.prevent.stop="$emit('editIconDidPush', $event, treenode)")
 						i.fa.fa-edit

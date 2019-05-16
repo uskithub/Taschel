@@ -320,6 +320,8 @@ export default class Task {
 	get goal() { return this._rawValues.goal; }
 	set goal(goal) { this._rawValues.goal = goal; }
 
+	get isClosed() { return this._rawValues.status < 0; }
+
 	get deadline() { return this._rawValues.deadline; }
 	get manhour() { return this._rawValues.manhour; }
 	get schedule() { return this._rawValues.schedule; }

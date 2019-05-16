@@ -11,7 +11,7 @@
 				input.checkbox(type="checkbox")
 				span.icon(v-if="treenode.subtrees.length > 0" @click.prevent.stop="$emit('toggle-caret', $event, treenode.id)")
 					i.fa(:class="{ 'fa-caret-down': !(foldingConditionMap[treenode.id]===false), 'fa-caret-right': foldingConditionMap[treenode.id]===false }")
-				span.treelist-node-header  {{ treenode.name }}
+				span.treelist-node-header(:class="treenode.styleClass")  {{ treenode.name }}
 				span.operation(v-show="isHovering")
 					span.icon(@click.prevent.stop="$emit('editIconDidPush', $event, treenode)")
 						i.fa.fa-edit
