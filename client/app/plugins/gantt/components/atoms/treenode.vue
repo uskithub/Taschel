@@ -20,7 +20,7 @@
 					span.icon(@click.prevent.stop="$emit('addIconDidPush', $event, parent, treenode)")
 						i.fa.fa-arrow-right
 			ul.treelist(v-if="!(foldingConditionMap[treenode.id]===false)" data-type="treenode", :data-id="treenode.id"
-				@dragenter="ondragenter($event, treenode)"
+				@dragenter="onDragenter($event, treenode)"
 			)
 				treenode(v-for="childnode in treenode.subtrees", :parent="treenode", :treenode="childnode", :foldingConditionMap="foldingConditionMap", :key="childnode.id"
 					@editIconDidPush="editIconDidPush"
