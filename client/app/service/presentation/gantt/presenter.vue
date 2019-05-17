@@ -79,24 +79,24 @@
 			, onArrange(treenode, from, to, index) {
 				console.log(treenode, from, to, index);
 
-				let _from = { type: "task", code: from.id, entity: from.entity.task };
-				let _to = { type: "task", code: to.id, entity: to.entity.task };
+				let _from = { type: "task", code: from.id, entity: from.entity.content };
+				let _to = { type: "task", code: to.id, entity: to.entity.content };
 
-				this.タスクを別のタスクの子タスクにする({ task: treenode.task, from: _from, to: _to, index });
+				this.タスクを別のタスクの子タスクにする({ task: treenode.content, from: _from, to: _to, index });
 			}
 			, onEdit(treenode) {
 				console.log("editIconDidPush", treenode)
-				this.entity = treenode.task;
+				this.entity = treenode.content;
 				this.taskTree = treenode;
 				this.isEditing = true;
 			}
 			, onAdd(parent, sibling) {
 				// create default values for new task according to its parent task.
 				if (sibling) {
-					this.presuppositionalSiblingEntity = sibling.task;
-					this.parentEntity = parent ? parent.task : this.currentProject;
+					this.presuppositionalSiblingEntity = sibling.content;
+					this.parentEntity = parent ? parent.content : this.currentProject;
 				} else {
-					this.parentEntity = parent.task;
+					this.parentEntity = parent.content;
 				}
 				this.isEditing = true;
 			}
