@@ -12,6 +12,7 @@ import DailyLoop from "service/presentation/dailyLoop/presenter";
 
 import TimeLine from "service/presentation/timeline/presenter";
 import Gantt from "service/presentation/gantt/presenter";
+import Kanban from "service/presentation/kanban/presenter";
 
 Vue.use(VueRouter);
 
@@ -31,5 +32,7 @@ export default new VueRouter({
 		
 		, { path: "/gantt", component: Gantt }
 		, { path: "/timeline", component: TimeLine }
+		, { path: "/kanban", component: Kanban }
+		
 	]
 });
