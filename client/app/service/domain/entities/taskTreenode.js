@@ -6,7 +6,7 @@ export default class TaskTreenode extends Treenode {
 		this._task = task;
 		this._subtrees = task.tasks.map(t => new TaskTreenode(t));
 	}
-	get task() { return this._task; }
+	// override
 	get id() { return this._task.code; }
 	get name() { return this._task.name; }
 	get styleClass() { 
@@ -16,5 +16,6 @@ export default class TaskTreenode extends Treenode {
 			return null;
 		}
 	}
+	get content() { return this._task; }
 	get subtrees() { return this._subtrees; }
 }

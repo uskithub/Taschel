@@ -4,8 +4,8 @@
 			@mouseover="onMouseover($event, treenode.id)" 
 			@mouseout="onMouseout($event, treenode.id)"
 		)
+			slot(name="treenode", :node="treenode", :parent="null", :isTopLevel="true")
 			.tree-item
-				input.checkbox(type="checkbox")
 				span.icon(v-if="treenode.subtrees.length > 0" @click.prevent.stop="caratDidClick($event, treenode.id)")
 					i.fa(:class="{ 'fa-caret-down': !(foldingConditionMap[treenode.id]===false), 'fa-caret-right': foldingConditionMap[treenode.id]===false }")
 				span.treelist-board-header(:class="treenode.styleClass") {{ treenode.name }}
@@ -16,6 +16,7 @@
 						i.fa.fa-plus
 					span.icon(@click.prevent.stop="$emit('addIconDidPush', $event, null, treenode)")
 						i.fa.fa-arrow-right
+
 			ul.treelist(v-if="!(foldingConditionMap[treenode.id]===false)" data-type="treelist", :data-id="treenode.id"
 				@dragenter="onDragenter($event, treenode)"
 			)
@@ -27,6 +28,8 @@
 					@dragenter="onDragenter"
 					@toggle-caret="caratDidClick"
 				)
+					template(v-slot:treenode="slotProps")
+						slot(name="treenode", :node="slotProps.node", :parent="slotProps.parent", :isTopLevel="false")
 			ul.treelist(v-else data-type="treelist", :data-id="treenode.id"
 				@dragenter="onDragenter($event, treenode)"
 			)
@@ -95,7 +98,7 @@
 		, methods : {
 			// for presentation
 			getClass(treenode) {
-				return treenode.task.type;
+				return treenode.content.type;
 			}
 
 			// for interactione

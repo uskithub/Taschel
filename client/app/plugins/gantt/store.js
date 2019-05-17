@@ -1,8 +1,6 @@
 import Vue from "vue";
 import Vuex from "vuex";
 
-import { each, find, assign, remove, isArray } from "lodash";
-
 const state = {
 	foldingConditionMap: {}
 };

@@ -12,6 +12,8 @@
 					@addIconDidPush="addIconDidPush"
 					@toggleFolding="didToggleFolding"
 				)
+					template(v-slot:treenode="slotProps")
+						slot(name="treenode", :node="slotProps.node", :parent="slotProps.parent", :isTopLevel="slotProps.isTopLevel")
 			.gantt-column(@wheel.prevent="handleWheel", :style="{ width: numberOfColumns * 24 }")
 				gantt-header(:rows="headerRows" @header-click="handleHeaderClick")
 				gantt-body(:rows="bodyRows")
@@ -221,7 +223,7 @@
 						}
 					});
 				};
-				_makeTimeframeRowsRecursively(this.treenodes.map(t => t.task));
+				_makeTimeframeRowsRecursively(this.treenodes.map(t => t.content));
 
 				// console.log("★★★ bodyRows", this.idTimeframeMap);
 
@@ -282,7 +284,7 @@
 			}
 			, treenodeToIdTimeframeMapRecursively(treenodes, parentTimeframe = null, idTimeframeMap = {}) {
 				return treenodes.reduce((arr, treenode) => {
-					idTimeframeMap[treenode.id] = new Timeframe(treenode.task, parentTimeframe);
+					idTimeframeMap[treenode.id] = new Timeframe(treenode.content, parentTimeframe);
 					if ((treenode.subtrees !== null || treenode.subtrees !== undefined) && treenode.subtrees.length > 0) {
 						idTimeframeMap = this.treenodeToIdTimeframeMapRecursively(treenode.subtrees, idTimeframeMap[treenode.id], idTimeframeMap);
 					}
