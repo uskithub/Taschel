@@ -18,6 +18,7 @@ import backlog from "./backlog";
 import pdca from "./pdca";
 import feedback from "./feedback";
 import planning from "./planning";
+import control from "./control";
 
 // Repositories
 import sessions from "service/infrastructure/repositories/rest/sessions";
@@ -39,6 +40,7 @@ export default {
 		, pdca
 		, feedback
 		, planning
+		, control
 	}
 	, state : {
 		isReady: false

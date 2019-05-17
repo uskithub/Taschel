@@ -5,6 +5,7 @@
 		@edit="editIconDidPush"
 		@add="addIconDidPush"
 	)
+		template(v-slot:treenode="slotProps")
 </template>
 
 <script>

@@ -1,3 +1,20 @@
+
+# TaskTYpes
+
+	            | Kanban            | Weekly
+------------|-------------------|--------
+project     | -                 | -
+subproject  | -                 | -
+milestone   | （※LAYERになる     | -
+requirement | TODO（子がなければ）| ◯
+issue       | TODO              | ◯  
+way         | 未分類             | ◯
+step        | TODO              | ◯
+todo        | TODO              | ◯
+
+
+
+
 # TODO
 - [] dailyPageで差し込みタスクを表現できるようにする
 - [] dailyPageで実施しなかったタスクを表現できるようにする
@@ -73,20 +90,6 @@ project
           +---milestone
           ...
 ```
-
-# タスク間の関係について
-
-**親子関係**
-
-task.chidlren = [task, task, ...]
-
-**前後関係**
-
-task.chidlren = [task, [task, task], ...]
-
-**依存関係**
-
-task.dependOn = [task, task, ...]
 
 # Lifecycle
 

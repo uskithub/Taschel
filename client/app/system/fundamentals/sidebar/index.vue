@@ -21,17 +21,23 @@
 							i.fa.fa-home
 						span.label {{ "WeeklyPlan" | i18n }}
 
+				router-link(tag="li", to="/weeklyReview")
+					a(:title="_('WeeklyReview')")
+						span.icon
+							i.fa.fa-home
+						span.label {{ "WeeklyReview" | i18n }}
+
 				router-link(tag="li", to="/dailyLoop")
 					a(:title="_('DailyLoop')")
 						span.icon
 							i.fa.fa-home
 						span.label {{ "DailyLoop" | i18n }}
 
-				router-link(tag="li", to="/weeklyReview")
-					a(:title="_('WeeklyReview')")
+				router-link(tag="li", to="/kanban")
+					a(:title="_('Kanban')")
 						span.icon
 							i.fa.fa-home
-						span.label {{ "WeeklyReview" | i18n }}
+						span.label {{ "Kanban" | i18n }}
 
 				router-link(tag="li", to="/timeline")
 					a(:title="_('Timeline')")

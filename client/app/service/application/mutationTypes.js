@@ -47,3 +47,7 @@ export const FEEDBACK = {
 export const PLANNING = {
 	ADD_TASK_TO_PROJECT : "ADD_TASK_TO_PROJECT"
 };
+
+export const CONTROL = {
+	LOAD_KANBAN : "LOAD_KANBAN"
+};

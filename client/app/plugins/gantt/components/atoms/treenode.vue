@@ -6,33 +6,35 @@
 		@dragstart="$emit('dragstart', $event, parent, treenode)"
 		@dragend="$emit('dragend', $event, treenode)"
 	)
-		slot(:name="treenode.name")
-			.tree-item
-				input.checkbox(type="checkbox")
-				span.icon(v-if="treenode.subtrees.length > 0" @click.prevent.stop="$emit('toggle-caret', $event, treenode.id)")
-					i.fa(:class="{ 'fa-caret-down': !(foldingConditionMap[treenode.id]===false), 'fa-caret-right': foldingConditionMap[treenode.id]===false }")
-				span.treelist-node-header(:class="treenode.styleClass")  {{ treenode.name }}
-				span.operation(v-show="isHovering")
-					span.icon(@click.prevent.stop="$emit('editIconDidPush', $event, treenode)")
-						i.fa.fa-edit
-					span.icon(@click.prevent.stop="$emit('addIconDidPush', $event, treenode)")
-						i.fa.fa-plus
-					span.icon(@click.prevent.stop="$emit('addIconDidPush', $event, parent, treenode)")
-						i.fa.fa-arrow-right
-			ul.treelist(v-if="!(foldingConditionMap[treenode.id]===false)" data-type="treenode", :data-id="treenode.id"
-				@dragenter="onDragenter($event, treenode)"
+		slot(name="treenode", :node="treenode", :parent="parent", :isTopLevel="true")
+		.tree-item
+			span.icon(v-if="treenode.subtrees.length > 0" @click.prevent.stop="$emit('toggle-caret', $event, treenode.id)")
+				i.fa(:class="{ 'fa-caret-down': !(foldingConditionMap[treenode.id]===false), 'fa-caret-right': foldingConditionMap[treenode.id]===false }")
+			span.treelist-node-header(:class="treenode.styleClass")  {{ treenode.name }}
+			span.operation(v-show="isHovering")
+				span.icon(@click.prevent.stop="$emit('editIconDidPush', $event, treenode)")
+					i.fa.fa-edit
+				span.icon(@click.prevent.stop="$emit('addIconDidPush', $event, treenode)")
+					i.fa.fa-plus
+				span.icon(@click.prevent.stop="$emit('addIconDidPush', $event, parent, treenode)")
+					i.fa.fa-arrow-right
+
+		ul.treelist(v-if="!(foldingConditionMap[treenode.id]===false)" data-type="treenode", :data-id="treenode.id"
+			@dragenter="onDragenter($event, treenode)"
+		)
+			treenode(v-for="childnode in treenode.subtrees", :parent="treenode", :treenode="childnode", :foldingConditionMap="foldingConditionMap", :key="childnode.id"
+				@editIconDidPush="editIconDidPush"
+				@addIconDidPush="addIconDidPush"
+				@dragstart="onDragstart"
+				@dragend="onDragend"
+				@dragenter="onDragenter"
+				@toggle-caret="caratDidClick"
 			)
-				treenode(v-for="childnode in treenode.subtrees", :parent="treenode", :treenode="childnode", :foldingConditionMap="foldingConditionMap", :key="childnode.id"
-					@editIconDidPush="editIconDidPush"
-					@addIconDidPush="addIconDidPush"
-					@dragstart="onDragstart"
-					@dragend="onDragend"
-					@dragenter="onDragenter"
-					@toggle-caret="caratDidClick"
-				)
-			ul.treelist(v-else data-type="treelist", :data-id="treenode.id"
-				@dragenter="onDragenter($event, treenode)"
-			)
+				template(v-slot:treenode="slotProps")
+					slot(name="treenode", :node="slotProps.node", :parent="slotProps.parent", :isTopLevel="false")
+		ul.treelist(v-else data-type="treelist", :data-id="treenode.id"
+			@dragenter="onDragenter($event, treenode)"
+		)
 </template>
 
 <script>
@@ -78,7 +80,7 @@
         , methods: {
 			// for presentation
 			getClass(treenode) {
-				return treenode.task.type;
+				return treenode.content.type;
 			}
 
             // for interactione

@@ -16,7 +16,6 @@ export const taskTypes = [
 	, { id: "way", name: _("Way") }
 	, { id: "step", name: _("Step") }
 	, { id: "todo", name: _("ToDo") }
-	// , { id: "work", name: "Work" }
 ];
 
 export const taskProperties = [
