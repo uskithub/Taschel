@@ -2,7 +2,7 @@
 	.vue-gantt
 		.gantt-row
 			.vue-gantt-legend
-				.title(:title="legendHelp") 
+				.title
 					button.button.outline(@click="$emit('addTopLevel')")
 						i.icon.fa.fa-plus
 						| {{ _("Add a top level task") }}
@@ -34,7 +34,6 @@
 		getMsInScale,
 		getViewportInMilliseconds,
 		normalizeDate,
-		transformInputValues,
 	} from "../../helpers";
 
 	import GanttHeader from "../atoms/ganttHeader";
@@ -68,11 +67,7 @@
 			, GanttFooter
 		}
 		, props: {
-			data: {
-				type: Object
-				, required: true
-			}
-			, treenodes: {
+			treenodes: {
 				type: Array
 			}
 		}
@@ -241,25 +236,6 @@
 				return _treeToArrayRecursively(this.treenodes).map(id => this.idTimeframeMap[id]);
 			}
 			// 以下、未整理
-			, parsedProps() {
-				const { rows } = this.data;
-				return transformInputValues(rows);
-			}
-			, legendHelp() {
-				return this.data.legendHelp;
-			}
-			, startDate() {
-				return this.parsedProps.startDate;
-			}
-			, endDate() {
-				return this.parsedProps.endDate;
-			}
-			, values() {
-				return this.parsedProps.values.map(value => value.sort((a, b) => a.from - b.from));
-			}
-			, tasks() {
-				return this.parsedProps.tasks;
-			}
 			, msInCell() {
 				let r = getMsInScale(this.scale) * this.step;
 				console.log("msInCell:", r / (60 * 60 * 24));
@@ -345,7 +321,7 @@
 		, mounted() {
 			window.addEventListener("resize", this.calculateColumns);
 			this.calculateColumns();
-			const maxScaleIdx = calcMaxScale(this.startDate, this.endDate, this.numberOfColumns, this.scales);
+			const maxScaleIdx = calcMaxScale(this.earliestDate, this.latestDate, this.numberOfColumns, this.scales);
 			const [scale, step] = this.scales[maxScaleIdx].split(' ');
 			this.scale = scale;
 			this.step = step;

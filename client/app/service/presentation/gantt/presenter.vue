@@ -1,10 +1,10 @@
 <template lang="pug">
 	section
-		gantt-editing-view(v-if="isEditing", :entity="entity", :parent="parentEntity", :sibling="presuppositionalSiblingEntity", :taskTree="taskTree" , :schema="formSchema"
+		gantt-editing-view(v-if="isEditing", :entity="entity", :parent="parentEntity", :sibling="presuppositionalSiblingEntity", :taskTree="taskTree"
 			@endEditing="onEndEditing"
 			@save="onSave"
 		)
-		gantt-view(v-else, :data="mock"
+		gantt-view(v-else
 			@addTopLevel="onAddTopLevel"
 			@arrange="onArrange"
 			@edit="onEdit"
@@ -15,8 +15,6 @@
 <script>
 	import Vue from "vue";
 	import AbstractPresenter from "system/mixins/abstractPresenter";
-
-	import Task from "service/domain/entities/task";
 	
 	import GanttView from "./view"
 	import GanttEditingView from "./editingView"
@@ -35,8 +33,6 @@
 	import moment from "moment";
 	
 	const _ = Vue.prototype._;
-
-	schema.form.fields = Task.createFormSchema(schema.form.fields);
 	
 	export default {
 		name : "GanttChart"
@@ -58,7 +54,6 @@
 				, parentEntity: null
 				, presuppositionalSiblingEntity: null
 				, taskTree: null
-				, formSchema : schema.form
 				, mock : schema.data
 			};
 		}
