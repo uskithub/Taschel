@@ -6,7 +6,7 @@
 	)
 		.media-content
 			.tag(v-if="isDisplayTag && kanban.tag != null") {{ kanban.tag }}
-			strong {{ kanban.name }}
+			strong(:class="kanban.styleClass") {{ kanban.name }}
 			slot(name="kanban", :content="kanban.content", :isTopLevel="true")
 			ul.kanban-list(v-if="kanban.kanbans !== undefined && kanban.kanbans.length > 0" data-type="kanban", :data-id="kanban.id"
 				@dragenter="onDragenter($event, kanban)"

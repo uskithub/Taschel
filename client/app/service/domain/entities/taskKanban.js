@@ -12,6 +12,13 @@ export default	class TaskKanban extends Kanban {
 	get name() { return this._task.name; }
 	get tag() { return isObject(this._task.root) ? this._task.root.shortname : null; }
 	get content() { return null; }
+	get styleClass() { 
+		if (this._task.isClosed) {
+			return { "text-muted" : true };
+		} else {
+			return null;
+		}
+	}
 	get kanbans() { return this._task.tasks.map( t => new TaskKanban(t)); }
 
 	// extension
