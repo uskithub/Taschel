@@ -5,8 +5,9 @@
 <script>
 	import Vue from "vue";
     import AbstractPresenter from "system/mixins/abstractPresenter";
-	import MyTasksView from "./view"
-	import MyTasksEditingView from "./editingView"
+	// import MyTasksView from "./view";
+	import MyTasksView from "./viewtify";
+	import MyTasksEditingView from "./editingView";
 
     import Task from "service/domain/entities/task";
 	

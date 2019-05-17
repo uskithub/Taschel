@@ -1,13 +1,17 @@
 <template lang="pug">
 	.container
-		.flex.align-center.justify-space-around
-			.left
-				button.button.is-primary(@click="$emit('add')")
-					i.icon.fa.fa-plus 
-					| {{ _("AddTask") }}
-			.right
-		data-table(:schema="schema", :rows="tasks", :order="order", :selectedRows="[entity]" @select="selectButtonDidPush")
+		v-toolbar(dark color="pink")
+			v-btn(icon)
+				v-icon more_vert
+			v-toolbar-title My Music
+			v-spacer
+			v-btn(icon)
+				v-icon search
+		v-card
+			v-container(fluid grid-list-lg)
+				data-table(:schema="schema", :rows="tasks", :order="order", :selectedRows="[entity]" @select="selectButtonDidPush")
 </template>
+
 <script>
 	import Vue from "vue";
     import AbstractView from "system/mixins/abstractView";
