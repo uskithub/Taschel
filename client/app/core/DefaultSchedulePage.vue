@@ -274,13 +274,9 @@
 				});
 			}
 			, save(model) { this.$emit("save", model); }
-			, close(model, withTask = false) { 
-				if (withTask) {
-					const task = findTask(model.parent, this.tasks);
-					this.$emit("close", model, task); 
-				} else {
-					this.$emit("close", model); 
-				}
+			, close(model, withTask = false) {
+				const task = findTask(model.parent, this.tasks);
+				this.$emit("close", model, task, withTask); 
 			}
 			, remove() { this.$emit("remove"); }		// deleteは予約語なので怒られる
 			, cancel() { this.$emit("cancel"); }

@@ -213,6 +213,9 @@ module.exports = {
 					if (ctx.params.closingComment != null)
 						doc.closingComment = ctx.params.closingComment;
 
+					if (ctx.params.lastCommunication != null)
+						doc.lastCommunication = ctx.params.lastCommunication;
+
 					return doc.save();
 				})
 				.then(doc => {

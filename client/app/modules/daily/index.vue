@@ -263,13 +263,14 @@
 					this.updateWork( { model, mutation: UPDATE } );
 				}
 			}
-			, close(model, taskModel) {
+			, close(model, taskModel, withTask = false) {
 				this.clearSelection();
 				model.status = -1;
 				this.updateWork( { model, mutation: UPDATE } )
 				.then(() => {
 					if (taskModel !== null && taskModel !== undefined ) {
-						taskModel.status = -1;
+						taskModel.lastCommunication = moment();
+						if (withTask) taskModel.status = -1;
 						this.updateTask( { model: taskModel, mutation: UPDATE_TASK } );
 					}
 				});
