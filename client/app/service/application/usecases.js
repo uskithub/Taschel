@@ -31,6 +31,7 @@ export const ワークを編集する = "ワークを編集する";
 export const ワークをクローズする = "ワークをクローズする";
 export const 日次レビューする = "日次レビューする";
 export const レビューを編集する = "レビューを編集する";
+export const タスクの最終実施日を更新する = "タスクの最終実施日を更新する"; 
 
 // timeline
 export const タイムラインを取得する = "タイムラインを取得する";

@@ -7,6 +7,7 @@ import {
 	, 新しいタスクを追加する
 	, タスクを更新する
 	, タスクをクローズする
+	, タスクの最終実施日を更新する
 } from "service/application/usecases";
 
 // Repositories
@@ -16,6 +17,7 @@ import tasks from "service/infrastructure/repositories/rest/tasks";
 import Task from "service/domain/entities/task";
 import TaskTreenode from "service/domain/entities/taskTreenode";
 
+import moment from "moment";
 import { assign } from "lodash";
 
 /**
@@ -116,11 +118,21 @@ export default {
 		}
 		, [タスクをクローズする] ({ commit, getters }, rawValues) {
 			const projects = getters.projects;
+			rawValues.lastCommunication = moment();
 			rawValues.status = -1;
 			return tasks.put(rawValues)
 				.then(data => {
 					const task = new Task(data, projects);
 					commit(BACKLOG.CLOSE_TASK, task.code);
+				});
+		}
+		, [タスクの最終実施日を更新する] ({ commit, getters }, rawValues) {
+			const projects = getters.projects;
+			rawValues.lastCommunication = moment();
+			return tasks.put(rawValues)
+				.then(data => {
+					const task = new Task(data, projects);
+					commit(BACKLOG.UPDATE_TASK, task.code);
 				});
 		}
 	}
