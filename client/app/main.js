@@ -17,8 +17,6 @@ import "vue-form-generator/dist/vfg.css";
 
 import VueWebsocket from "vue-websocket";
 
-import fieldMyDateTimePicker from "system/components/atoms/dateTimePicker";
-import fieldTagsInput from "system/components/organisms/tagsInput";
 import "ion-rangeslider";
 import "ion-rangeslider/css/ion.rangeSlider.css";
 import "ion-rangeslider/css/ion.rangeSlider.skinFlat.css";
@@ -31,9 +29,6 @@ import App from "./system/App";
 
 Vue.use(Vuetify);
 Vue.use(Filters);
-
-Vue.component("fieldMyDateTimePicker", fieldMyDateTimePicker);
-Vue.component("fieldTagsInput", fieldTagsInput);
 
 Vue.use(VueFormGenerator);
 Vue.use(VueWebsocket);

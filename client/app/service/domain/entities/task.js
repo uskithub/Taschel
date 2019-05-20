@@ -41,9 +41,46 @@ const _fields = {
 			}
 		}
 		, form: {
-			type: "select"
+			type: "selectWithDisabled"
 			, required: true
-			, values: taskTypes
+			// , values: taskTypes
+			, values : (model, field) => {
+				let _taskTypes = cloneDeep(taskTypes);
+				if (model.parent) {
+					switch (model.parent.type) {
+					case "milestone":
+						_taskTypes[0].disabled = true;
+						_taskTypes[1].disabled = true;
+						break;
+					case "requirement":
+						_taskTypes[0].disabled = true;
+						_taskTypes[1].disabled = true;
+						_taskTypes[2].disabled = true;
+						break;
+					case "issue":
+						_taskTypes[0].disabled = true;
+						_taskTypes[1].disabled = true;
+						_taskTypes[3].disabled = true;
+						break;
+					case "way":
+						_taskTypes[0].disabled = true;
+						_taskTypes[1].disabled = true;
+						break;
+					case "step":
+						_taskTypes[0].disabled = true;
+						_taskTypes[1].disabled = true;
+						break;
+					case "todo":
+						_taskTypes[0].disabled = true;
+						_taskTypes[1].disabled = true;
+						break;
+					default:
+						break;
+					}
+				}
+				console.log("_taskTypes", model, _taskTypes);
+				return _taskTypes;
+			}
 		}
 	}
 	, properties: {
@@ -348,7 +385,7 @@ export default class Task {
 		let child = Object.assign({
 			purpose: `${this.goal} にするため`
 			, root: this.root
-			, parent: this.code
+			, parent: this
 			, children: []
 		}, options);
 
