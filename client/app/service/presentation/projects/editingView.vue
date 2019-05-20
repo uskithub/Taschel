@@ -21,7 +21,8 @@
 	import Vue from "vue";
 	import AbstractView from "system/mixins/abstractView";
     import AbstractEditingView from "system/mixins/abstractEditingView";
-    
+	
+	import { mapGetters } from "vuex";
     import Project from "service/domain/entities/project";
 
 	import { schema as schemaUtils } from "vue-form-generator";
@@ -45,6 +46,11 @@
 				type: Object
 				, validator: (value) => { return true; } // TODO
 			}
+		}
+		, computed : {
+			...mapGetters([
+				"usersOfCurrentOrganization"
+			])
 		}
 		, data() {
 			let _entity = this.entity || Project.newProjectFactory();

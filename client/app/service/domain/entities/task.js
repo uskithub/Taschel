@@ -477,6 +477,7 @@ export default class Task {
 			, deadline: { required: false } 
 			, manhour: { required: false } 
 			, schedule: { required: false }
+			, asignee: { required: false }
 		};
 		
 		switch (rawValues.type) {

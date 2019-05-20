@@ -6,6 +6,7 @@ import {
 	, プロフィールを取得する
 	, 所属組織一覧を取得する
 	, 組織を作成する
+	, 組織のユーザ一覧を取得する
 	, 自分のプロジェクト一覧を取得する
 	, プロジェクトを選択する
 	, 新しいプロジェクトを追加する
@@ -23,6 +24,7 @@ import control from "./control";
 // Repositories
 import sessions from "service/infrastructure/repositories/rest/sessions";
 import profiles from "service/infrastructure/repositories/rest/profiles";
+import persons from "service/infrastructure/repositories/rest/persons";
 import organizations from "service/infrastructure/repositories/rest/organizations";
 import tasks from "service/infrastructure/repositories/rest/tasks";
 
@@ -48,7 +50,7 @@ export default {
 		, currentUser: null
 		, profile: null
 		, organizations: []
-		
+		, usersOfCurrentOrganization: []
 		, projects: []
 		, currentProjectRef: null // current project entity
 	}
@@ -57,6 +59,7 @@ export default {
 		, me(state) { return state.user; }
 		, profile(state) { return state.profile; }
 		, organizations(state) { return state.organizations; }
+		, usersOfCurrentOrganization(state) { return state.usersOfCurrentOrganization; }
 		, projects(state) { return state.projects; }
 		, currentProject(state) { return state.currentProjectRef; }
 		, currentProjectTaskSubTrees(state) {
@@ -92,6 +95,9 @@ export default {
 		}
 		, [SESSION.SET_CURRENT_PROJECT] (state, entity) {
 			state.currentProjectRef = entity;
+		}
+		, [SESSION.LOAD_ORGNIZATIONS_USERS] (state, entities) {
+			state.usersOfCurrentOrganization = entities;
 		}
 		, [SESSION.ADD_PROJECT] (state, entity) {
 			let isFound = state.projects.find(project => project.code === entity.code);
@@ -166,6 +172,14 @@ export default {
 				})
 				.then(_ => {
 					console.log("interacted ->", 所属組織一覧を取得する);
+				});
+		}
+		, [組織のユーザ一覧を取得する]({ commit, getters }) {
+			// TODO: 「現在の組織の」を抽出条件にする（今は全ユーザひっぱっている）
+			return persons.get()
+				.then(data => {
+					let users = data.map( d => new User(d));
+					commit(SESSION.LOAD_ORGNIZATIONS_USERS, users);
 				});
 		}
 		, [自分のプロジェクト一覧を取得する]({ commit, getters }, { options } = {}) {

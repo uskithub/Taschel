@@ -101,6 +101,11 @@ let TaskSchema = new Schema({
 		, required: "Please fill in an author ID"
 		, ref: "User"
 	}
+	// for Project
+	, members : [{
+		type: Number
+		, ref: "User"
+	}]
 	, asignee : {
 		type: Number
 		, ref: "User"
