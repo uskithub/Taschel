@@ -78,9 +78,10 @@
 
 				this.タスクを別のタスクの子タスクにする({ task: treenode.content, from: _from, to: _to, index });
 			}
-			, onEdit(treenode) {
-				console.log("editIconDidPush", treenode)
+			, onEdit(parent, treenode) {
+				console.log("editIconDidPush", parent, treenode)
 				this.entity = treenode.content;
+				this.parentEntity = parent ? parent.content : this.currentProject;
 				this.taskTree = treenode;
 				this.isEditing = true;
 			}

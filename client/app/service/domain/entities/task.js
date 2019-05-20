@@ -43,44 +43,7 @@ const _fields = {
 		, form: {
 			type: "selectWithDisabled"
 			, required: true
-			// , values: taskTypes
-			, values : (model, field) => {
-				let _taskTypes = cloneDeep(taskTypes);
-				if (model.parent) {
-					switch (model.parent.type) {
-					case "milestone":
-						_taskTypes[0].disabled = true;
-						_taskTypes[1].disabled = true;
-						break;
-					case "requirement":
-						_taskTypes[0].disabled = true;
-						_taskTypes[1].disabled = true;
-						_taskTypes[2].disabled = true;
-						break;
-					case "issue":
-						_taskTypes[0].disabled = true;
-						_taskTypes[1].disabled = true;
-						_taskTypes[3].disabled = true;
-						break;
-					case "way":
-						_taskTypes[0].disabled = true;
-						_taskTypes[1].disabled = true;
-						break;
-					case "step":
-						_taskTypes[0].disabled = true;
-						_taskTypes[1].disabled = true;
-						break;
-					case "todo":
-						_taskTypes[0].disabled = true;
-						_taskTypes[1].disabled = true;
-						break;
-					default:
-						break;
-					}
-				}
-				console.log("_taskTypes", model, _taskTypes);
-				return _taskTypes;
-			}
+			, values: taskTypes
 		}
 	}
 	, properties: {
@@ -385,7 +348,7 @@ export default class Task {
 		let child = Object.assign({
 			purpose: `${this.goal} にするため`
 			, root: this.root
-			, parent: this
+			, parent: this.code
 			, children: []
 		}, options);
 
@@ -504,7 +467,10 @@ export default class Task {
 	 * @param {*} fields 
 	 * @param {*} properties 
 	 */
-	static dynamicSchema(rawValues) {
+	static dynamicSchema(rawValues, parentType) {
+
+		console.log("parentType", parentType);
+
 		let fieldSet = { 
 			type: { required: true }
 			, name: { required: true }
@@ -557,6 +523,40 @@ export default class Task {
 			if (field.form.model === undefined) {
 				field.form.model = f;
 			}
+
+			if (f === "type" && parentType) {
+				switch (parentType) {
+				case "milestone":
+					field.form.values[0].disabled = true;
+					field.form.values[1].disabled = true;
+					break;
+				case "requirement":
+					field.form.values[0].disabled = true;
+					field.form.values[1].disabled = true;
+					field.form.values[2].disabled = true;
+					break;
+				case "issue":
+					field.form.values[0].disabled = true;
+					field.form.values[1].disabled = true;
+					field.form.values[3].disabled = true;
+					break;
+				case "way":
+					field.form.values[0].disabled = true;
+					field.form.values[1].disabled = true;
+					break;
+				case "step":
+					field.form.values[0].disabled = true;
+					field.form.values[1].disabled = true;
+					break;
+				case "todo":
+					field.form.values[0].disabled = true;
+					field.form.values[1].disabled = true;
+					break;
+				default:
+					break;
+				}
+			}
+
 			return field.form;
 		});
 	}

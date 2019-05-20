@@ -48,8 +48,8 @@
 			didArrangeTask({ treenode, from, to, index }) {
 				this.$emit("arrange", treenode, from, to, index);
 			}
-			, editIconDidPush(e, treenode) {
-				this.$emit("edit", treenode);
+			, editIconDidPush(e, parent, treenode) {
+				this.$emit("edit", parent, treenode);
 			}
 			, addIconDidPush(e, parent, sibling) {
 				this.$emit("add", parent, sibling);

@@ -306,8 +306,8 @@
 				this.$emit("arrange", { treenode, from, to, index });
 			}
 			// Task Operations
-			, editIconDidPush(e, treenode) {
-				this.$emit("edit", e, treenode);
+			, editIconDidPush(e, parent, treenode) {
+				this.$emit("edit", e, parent, treenode);
 			}
 			, addIconDidPush(e, parent, sibling) {
 				this.$emit("add", e, parent, sibling);
