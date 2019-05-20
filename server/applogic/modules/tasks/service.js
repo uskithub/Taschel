@@ -135,7 +135,7 @@ module.exports = {
 
 			return task.save()
 				.then(doc => {
-					if (ctx.params.type == "project") {
+					if (ctx.params.type === "project") {
 						// kanbanを作る
 						// 配列の順番になるように、reduceで作っている
 						return DEFAULT_KANBAN_GROUPS.reduce((promise, g) => {

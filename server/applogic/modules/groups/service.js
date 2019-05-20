@@ -19,14 +19,6 @@ const DEFAULT_WEEKLY_GROUPS = [
 	, { name: "Unconducive-Unurgent", purpose: "for_the_tasks_you_should_not_do" }
 ];
 
-const DEFAULT_DAILY_GROUPS = [
-	{ name: "Monday", purpose: "for_monday" }
-	, { name: "Tuesday", purpose: "for_tuesday" }
-	, { name: "Wednesday", purpose: "for_wednesday" }
-	, { name: "Thursday", purpose: "for_thursday" }
-	, { name: "Friday", purpose: "for_friday" }
-];
-
 // use this function to create an unclassifiedGroup.
 const flatTree = (model, arr = []) => {
 	arr.push(model);
@@ -93,7 +85,7 @@ module.exports = {
 			cache: true
 			, handler(ctx) {
 
-				if (ctx.params.parent_code != undefined) {
+				if (ctx.params.parent_code !== undefined) {
 					const projectCode = ctx.params.parent_code;
 					const projectId = this.taskService.decodeID(projectCode);
 					// getting selected project model.
@@ -104,9 +96,10 @@ module.exports = {
 								, parent : projectId
 							};
 							let query = Group.find(filter);
-							return ctx.queryPageSort(query).exec().then(docs => {
-								return this.toJSON(docs);
-							})
+							return ctx.queryPageSort(query).exec()
+								.then(docs => {
+									return this.toJSON(docs);
+								})
 								.then(jsons => {
 									return this.populateModels(jsons);
 								}).then(jsons => {
@@ -117,41 +110,43 @@ module.exports = {
 							
 									// exclude status is closed or already classified tasks.
 									const recursiveUnclassifiedFilter = (task, classifiedArray) => {
-										task.children = task.children.filter(child => {
-											return !(child.status < 0 || child.isDeleted == 1 || classifiedTaskCodes.includes(child.code));
-										})
+										task.children = task.children
+											.filter(child => {
+												return !(child.status < 0 || child.isDeleted === 1 || classifiedTaskCodes.includes(child.code));
+											})
 											.map(child => {
 												return recursiveUnclassifiedFilter(child, classifiedArray);
 											});
 										return task;
 									};
 
-									let unclassifiedGroups = projectJson.children.reduce((result, child) => {
-										if (child.status < 0 || child.isDeleted == 1 || classifiedTaskCodes.includes(child.code)) {
+									let unclassifiedGroups = projectJson.children
+										.reduce((result, child) => {
+											if (child.status < 0 || child.isDeleted === 1 || classifiedTaskCodes.includes(child.code)) {
+												return result;
+											}
+											child = recursiveUnclassifiedFilter(child, classifiedTaskCodes);
+											if (child.type == "milestone") {
+												result.push({
+													code: `MILESTONE-${child.code}`
+													, type: "kanban"
+													, name: child.name
+													, purpose: "for_classify"
+													, parent: projectCode
+													, children: child.children
+												});
+											} else {
+												result[0].children.push(child);
+											}
 											return result;
-										}
-										child = recursiveUnclassifiedFilter(child, classifiedTaskCodes);
-										if (child.type == "milestone") {
-											result.push({
-												code: `MILESTONE-${child.code}`
-												, type: "kanban"
-												, name: child.name
-												, purpose: "for_classify"
-												, parent: projectCode
-												, children: child.children
-											});
-										} else {
-											result[0].children.push(child);
-										}
-										return result;
-									}, [{
-										code: UNCLASSIFIED
-										, type: "kanban"
-										, name: "unclassified"
-										, purpose: "for_classify"
-										, parent: projectCode
-										, children: []
-									}]);
+										}, [{
+											code: UNCLASSIFIED
+											, type: "kanban"
+											, name: "unclassified"
+											, purpose: "for_classify"
+											, parent: projectCode
+											, children: []
+										}]);
 
 									return unclassifiedGroups.concat(jsons);
 								});

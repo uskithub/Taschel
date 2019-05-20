@@ -5,7 +5,7 @@
 ------------|-------------------|--------
 project     | -                 | -
 subproject  | -                 | -
-milestone   | （※LAYERになる     | -
+milestone   | （※LAYERになる）    | -
 requirement | TODO（子がなければ）| ◯
 issue       | TODO              | ◯  
 way         | 未分類             | ◯
