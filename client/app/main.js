@@ -13,6 +13,8 @@ import Filters from "./system/filters";
 import VueI18Next from "./system/i18next.js";
 
 import VueFormGenerator from "vue-form-generator";
+import "vue-form-generator/dist/vfg.css";
+
 import VueWebsocket from "vue-websocket";
 
 import fieldMyDateTimePicker from "system/components/atoms/dateTimePicker";

@@ -73,7 +73,7 @@
 		}
 		, data() {
 			return {
-				startOfTerm: null
+				startOfTerm: 0
 				, numberOfColumns: 0
 				, idTimeframeMap: (() => { return this.treenodeToIdTimeframeMapRecursively(this.treenodes); })()
 				// 以下、未整理
@@ -88,8 +88,7 @@
 			])
 			// { start, end, days }
 			, visibleTerm() {
-				const _startOfTerm = this.startOfTerm !== null ? this.startOfTerm : 0;
-				const { startDate, endDate } = calcViewport(_startOfTerm, this.scale, this.step, this.numberOfColumns);
+				const { startDate, endDate } = calcViewport(this.startOfTerm, this.scale, this.step, this.numberOfColumns);
 				const start = moment(startDate).startOf("day");
 				const end = moment(endDate).startOf("day");
 				return { start, end, days: end.diff(start, "days")};
