@@ -36,6 +36,7 @@
 		, 日次レビューする
 		, レビューを編集する
 		, タスクをクローズする
+		, タスクの最終実施日を更新する
 	} from "service/application/usecases";
 
 	import schema from "./schema";
@@ -111,6 +112,7 @@
 				, 日次レビューする
 				, レビューを編集する
 				, タスクをクローズする
+				, タスクの最終実施日を更新する
 			])
 			// Interfacial operations
 			, didDropTask(date, jqEvent, ui, resourceId) {
@@ -198,9 +200,11 @@
 				return Promise.resolve().then(() => {
 					return this.ワークをクローズする(data);
 				}).then(() => {
+					const task = findTask(data.parent, this.currentweekTasks);
 					if (withTask) {
-						const task = findTask(data.parent, this.currentweekTasks);
 						this.タスクをクローズする(task.rawValues);
+					} else {
+						this.タスクの最終実施日を更新する(task.rawValues);
 					}
 				}).then(() => {
 					this.onEndEditing();
