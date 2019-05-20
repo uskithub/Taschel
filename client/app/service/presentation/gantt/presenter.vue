@@ -54,7 +54,6 @@
 				, parentEntity: null
 				, presuppositionalSiblingEntity: null
 				, taskTree: null
-				, mock : schema.data
 			};
 		}
 		, methods : {
