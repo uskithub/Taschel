@@ -7,7 +7,7 @@ let C 	 		= require("../../../core/constants");
 let _			= require("lodash");
 
 let Group 		= require("./models/group");
-let Task 		= require("../tasks/models/task");
+let Task 		= require("../../../app/service/infrastructure/repositories/entities/task");
 
 const UNCLASSIFIED = "UNCLASSIFIED";
 const ASSIGNED_IN_WEEKLY = "ASSIGNED_IN_WEEKLY";
@@ -65,7 +65,7 @@ module.exports = {
 		, namespace: "groups"
 		, rest: true
 		, ws: true
-		, graphql: true
+		, graphql: false
 		, permission: C.PERM_LOGGEDIN
 		, role: "user"
 		, collection: Group

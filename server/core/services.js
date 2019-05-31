@@ -87,6 +87,19 @@ class Services extends EventEmitter {
 			}
 		}
 
+		if (WEBPACK_BUNDLE || fs.existsSync(path.join(__dirname, "..", "app", "service", "presentation"))) {
+			logger.info("");
+			logger.info(chalk.bold("Search presenters..."));
+
+			let modules = require.context("../app/service/presentation", true, /presenter\.js$/);
+			if (modules) {
+				modules.keys().map(function(module) {
+					logger.info("  Load", path.relative(path.join(__dirname, "..", "app", "service", "presentaion"), module), "presenter...");
+					addService(modules(module));
+				});
+			}
+		}
+
 		// Call `init` of services
 		_.forIn(self.services, (service) => {
 			if (_.isFunction(service.$schema.init)) {

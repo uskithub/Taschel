@@ -11,7 +11,7 @@ let base32Decode	= require("base32-decode");
 let google		= require("googleapis");
 
 let Work 		= require("./models/work");
-let Task 		= require("../tasks/models/task");
+let Task 		= require("../../../app/service/infrastructure/repositories/entities/task");
 let User 		= require("../persons/models/user");
 
 const clientID 		= config.authKeys.google.clientID;
@@ -29,7 +29,7 @@ module.exports = {
 		, namespace: "works"
 		, rest: true
 		, ws: true
-		, graphql: true
+		, graphql: false
 		, permission: C.PERM_LOGGEDIN
 		, role: "user"
 		, collection: Work

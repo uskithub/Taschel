@@ -1,13 +1,14 @@
 "use strict";
 
-let logger 		= require("../../../core/logger");
-let config 		= require("../../../config");
-let C 	 		= require("../../../core/constants");
+let logger 		= require("../../../../core/logger");
+let config 		= require("../../../../config");
+let C 	 		= require("../../../../core/constants");
 
 let _			= require("lodash");
 
-let Task 		= require("./models/task");
-let Group 		= require("../groups/models/group");
+let Task 		= require("../../infrastructure/repositories/entities/task");
+// let Group 		= require("../../infrastructure/repositories/entities/group");
+let Group 		= require("../../../../applogic/modules/groups/models/group");
 
 const DEFAULT_KANBAN_GROUPS = [
 	{ name: "TODO", purpose: "for_the_tasks_to_do_from_now" }
@@ -623,53 +624,3 @@ module.exports = {
 	}
 
 };
-
-/*
-## GraphiQL test ##
-
-# Find all devices
-query getDevices {
-  devices(sort: "lastCommunication", limit: 5) {
-    ...deviceFields
-  }
-}
-
-# Create a new device
-mutation createDevice {
-  deviceCreate(name: "New device", address: "192.168.0.1", type: "raspberry", description: "My device", status: 1) {
-    ...deviceFields
-  }
-}
-
-# Get a device
-query getDevice($code: String!) {
-  device(code: $code) {
-    ...deviceFields
-  }
-}
-
-# Update an existing device
-mutation updateDevice($code: String!) {
-  deviceUpdate(code: $code, address: "127.0.0.1") {
-    ...deviceFields
-  }
-}
-
-# Remove a device
-mutation removeDevice($code: String!) {
-  deviceRemove(code: $code) {
-    ...deviceFields
-  }
-}
-
-fragment deviceFields on Device {
-    code
-    address
-    type
-    name
-    description
-    status
-    lastCommunication
-}
-
-*/
