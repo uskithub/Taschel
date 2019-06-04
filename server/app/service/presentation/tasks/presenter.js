@@ -1,13 +1,26 @@
 "use strict";
 
-let logger 		= require("../../../core/logger");
-let config 		= require("../../../config");
-let C 	 		= require("../../../core/constants");
+let logger 			= require("../../../../core/logger");
+let config 			= require("../../../../config");
+let response		= require("../../../../core/response");
+let C 	 			= require("../../../../core/constants");
 
-let _			= require("lodash");
+let _				= require("lodash");
 
-let Task 		= require("./models/task");
-let Group 		= require("../groups/models/group");
+let TaskRepository	= require("../../infrastructure/repositories/taskRepository");
+// let Group 		= require("../../infrastructure/repositories/entities/group");
+let Group 			= require("../../../../applogic/modules/groups/models/group");
+
+const Backog = require("../../application/backlog");
+const Groundwork = require("../../application/groundwork");
+
+const notImplementedError = (funcName) => {
+	const msg = `TODO: ${this.constructor.name}.${funcName} は未実装です。`;
+	let err = new Error(msg);
+	err = _.defaults(response.NOT_IMPLEMENTED);
+	err.message = msg;
+	return err;
+};
 
 const DEFAULT_KANBAN_GROUPS = [
 	{ name: "TODO", purpose: "for_the_tasks_to_do_from_now" }
@@ -15,6 +28,9 @@ const DEFAULT_KANBAN_GROUPS = [
 	, { name: "DONE", purpose: "for_the_tasks_finished_already" }
 ];
 
+//
+//	PresenterはAPIとUsecaseの間の「検問」を行う
+//
 module.exports = {
 	settings: {
 		name: "tasks"
@@ -25,7 +41,7 @@ module.exports = {
 		, graphql: true
 		, permission: C.PERM_LOGGEDIN
 		, role: "user"
-		, collection: Task
+		, collection: TaskRepository
 		
 		, modelPropFilter: "code projectType type properties purpose name shortname goal description deadline manhour schedule root parent children works status closingComment author asignee isDeleted lastCommunication createdAt updatedAt"
 
@@ -49,53 +65,34 @@ module.exports = {
 			cache: true
 			, handler(ctx) {
 				// DEBUG
-				if (ctx.params.check) { return this.actions.check(ctx); }
+				// if (ctx.params.check) { return this.actions.check(ctx); }
 
-				let filter = {};
-				let excludeRule = null;
+				const userId = this.personService.decodeID(ctx.params.user_code);
+				const backlog = new Backog(ctx);
 
-				if (ctx.params.type != undefined) {
-					// find from ProjectsPage, GanttPage
-					// /tasks?type=project
-					filter.type = ctx.params.type;
-					filter.isDeleted = { $eq: 0 };
-					filter.status = { $gt : -1 };
+				if (ctx.params.type !== undefined) {
 
-					// excludeRule = ((serviceName, json) => {
-					// 	if ( serviceName != "tasks" ) { return true; }
-					// 	return json.status > -1 && json.isDeleted == 0;
-					// });
+					return backlog.自分のプロジェクト一覧を取得する(userId)
+						.then(docs => {
+							return this.toJSON(docs);
+						})
+						.then(json => {
+							return this.populateModels(json);
+						});
 
-				} else if (ctx.params.root_code != undefined) {
-					// find from TasksPage
-					// /tasks?root_code=${hash}
-					filter.root = this.decodeID(ctx.params.root_code);
-					filter.isDeleted = { $eq: 0 };
-					filter.status = { $gt : -1 };
-
-				} else if (ctx.params.user_code != undefined) {
-					// find from MyTasksPage
-					// /tasks?user_code=${hash}
-					let user_code = this.personService.decodeID(ctx.params.user_code);
-					filter.$or = [ {author : user_code}, {asignee : user_code} ];
-					filter.type = { $ne: "project" };
-					filter.isDeleted = { $eq: 0 };
-					filter.status = { $gt : -1 };
+				} else if (ctx.params.user_code !== undefined) {
 					
+					return backlog.自分のタスク一覧を取得する(userId)
+						.then(docs => {
+							return this.toJSON(docs);
+						})
+						.then(json => {
+							return this.populateModels(json);
+						});
+
 				} else {
-					filter.type = { $ne: "project" };
-					filter.isDeleted = { $eq: 0 };
-					filter.status = { $gt : -1 };
+					throw notImplementedError("tasks.find");
 				}
-
-				let query = Task.find(filter);
-
-				return ctx.queryPageSort(query).exec().then(docs => {
-					return this.toJSON(docs);
-				})
-					.then(json => {
-						return this.populateModels(json, excludeRule);
-					});
 			}
 		}
 
@@ -111,63 +108,83 @@ module.exports = {
 		, create(ctx) {
 			this.validateParams(ctx, true);
 
-			// MIGRATION: v1->v2
-			const parent = ctx.params.parent_code || ctx.params.parent;
-			const asignee = ctx.params.asignee_code || ctx.params.asignee;
+			if (ctx.params.type === "project") {
+				const groundwork = new Groundwork(ctx);
+				const newProject = {
+					type			: ctx.params.type
+					, projectType	: ctx.params.projectType 
+					, properties	: ctx.params.properties
+					, name			: ctx.params.name
+					, shortname		: ctx.params.shortname
+					, purpose		: ctx.params.purpose
+					, goal			: ctx.params.goal
+					, description	: ctx.params.description
+					, status		: ctx.params.status
+					, deadline		: ctx.params.deadline
+					, manhour		: (ctx.params.manhour != undefined) ? ctx.params.manhour : -1
+					, root			: (ctx.params.root_code != undefined) ? this.decodeID(ctx.params.root_code) : -1
+					, parent		: (ctx.params.parent !== undefined) ? this.decodeID(ctx.params.parent) : -1
+					, author		: (ctx.params.author != undefined) ? this.personService.decodeID(ctx.params.author) : ctx.user.id
+					, asignee		: (ctx.params.asignee !== undefined) ? this.personService.decodeID(ctx.params.asignee) : -1
+				};
 
-			let task = new Task({
-				type: ctx.params.type
-				, projectType: ctx.params.projectType 
-				, properties: ctx.params.properties
-				, name: ctx.params.name
-				, shortname: ctx.params.shortname
-				, purpose: ctx.params.purpose
-				, goal: ctx.params.goal
-				, description: ctx.params.description
-				, status: ctx.params.status
-				, deadline: ctx.params.deadline
-				, manhour: (ctx.params.manhour != undefined) ? ctx.params.manhour : -1
-				, root: (ctx.params.root_code != undefined) ? this.decodeID(ctx.params.root_code) : -1
-				, parent: (parent !== undefined) ? this.decodeID(parent) : -1
-				, author : (ctx.params.author != undefined) ? this.personService.decodeID(ctx.params.author) : ctx.user.id
-				, asignee : (asignee !== undefined) ? this.personService.decodeID(asignee) : -1
-			});
-
-			return task.save()
-				.then(doc => {
-					if (ctx.params.type === "project") {
+				return groundwork.新しいプロジェクトを追加する(newProject)
+					.then(doc => {
 						// kanbanを作る
 						// 配列の順番になるように、reduceで作っている
-						return DEFAULT_KANBAN_GROUPS.reduce((promise, g) => {
-							return promise.then(()=> {
-								g.type = "kanban";
-								g.parent =  doc.id;
-								g.author = doc.author;
-								let group = new Group(g);
-								return group.save();
-							});
-						}, Promise.resolve())
+						return DEFAULT_KANBAN_GROUPS
+							.reduce((promise, g) => {
+								return promise.then(()=> {
+									g.type = "kanban";
+									g.parent =  doc.id;
+									g.author = doc.author;
+									let group = new Group(g);
+									return group.save();
+								});
+							}, Promise.resolve())
 							.then(() => {
 								return this.toJSON(doc);
 							});
+					})
+					.then(json => {
+						return this.populateModels(json);
+					});
 
-					} else {
+			} else {
+				const backlog = new Backog(ctx);
+				const newTask = {
+					type			: ctx.params.type
+					, projectType	: ctx.params.projectType 
+					, properties	: ctx.params.properties
+					, name			: ctx.params.name
+					, purpose		: ctx.params.purpose
+					, goal			: ctx.params.goal
+					, description	: ctx.params.description
+					, status		: ctx.params.status
+					, deadline		: ctx.params.deadline
+					, manhour		: (ctx.params.manhour != undefined) ? ctx.params.manhour : -1
+					, root			: (ctx.params.root_code != undefined) ? this.decodeID(ctx.params.root_code) : -1
+					, parent		: (ctx.params.parent !== undefined) ? this.decodeID(ctx.params.parent) : -1
+					, author		: (ctx.params.author != undefined) ? this.personService.decodeID(ctx.params.author) : ctx.user.id
+					, asignee		: (ctx.params.asignee !== undefined) ? this.personService.decodeID(ctx.params.asignee) : -1
+				};
 
+				return backlog.新しいタスクを追加する(newTask)
+					.then(doc => {
 						return this.toJSON(doc);
-					}				
-				})
-				.then(json => {
-					return this.populateModels(json);
-				})
-				.then(json => {
-					if (parent != undefined) {
+					})
+					.then(json => {
+						return this.populateModels(json);
+					})
+					.then(json => {
+						if (ctx.params.parent !== undefined) {
 						// breakdownの場合
-						return this.actions.breakdown(ctx, parent, json);
-					} else {
-						this.notifyModelChanges(ctx, "created", json);
-						return json;
-					}
-				});
+							return this.actions.breakdown(ctx, parent, json);
+						} else {
+							return json;
+						}
+					});
+			}				
 		}
 
 		, update(ctx) {
@@ -294,7 +311,7 @@ module.exports = {
 
 			return this.collection.findById(parentId).exec()
 				.then(doc => {
-					return Task.findByIdAndUpdate(doc.id, { $addToSet: { children: childId }}, { "new": true });
+					return TaskRepository.findByIdAndUpdate(doc.id, { $addToSet: { children: childId }}, { "new": true });
 				})
 				.then(doc => {
 					return this.toJSON(doc);
@@ -623,53 +640,3 @@ module.exports = {
 	}
 
 };
-
-/*
-## GraphiQL test ##
-
-# Find all devices
-query getDevices {
-  devices(sort: "lastCommunication", limit: 5) {
-    ...deviceFields
-  }
-}
-
-# Create a new device
-mutation createDevice {
-  deviceCreate(name: "New device", address: "192.168.0.1", type: "raspberry", description: "My device", status: 1) {
-    ...deviceFields
-  }
-}
-
-# Get a device
-query getDevice($code: String!) {
-  device(code: $code) {
-    ...deviceFields
-  }
-}
-
-# Update an existing device
-mutation updateDevice($code: String!) {
-  deviceUpdate(code: $code, address: "127.0.0.1") {
-    ...deviceFields
-  }
-}
-
-# Remove a device
-mutation removeDevice($code: String!) {
-  deviceRemove(code: $code) {
-    ...deviceFields
-  }
-}
-
-fragment deviceFields on Device {
-    code
-    address
-    type
-    name
-    description
-    status
-    lastCommunication
-}
-
-*/

@@ -3,8 +3,6 @@
 @import "common/base";
 @import "v2/base";
 
-//@import "../../node_modules/vue-form-generator/dist/vue-form-generator.css";
-
 @include scrollbars(.5em, $color3-dark, $backgroundColor);
 
 html {

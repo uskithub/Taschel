@@ -1,3 +1,6 @@
+import fieldMyDateTimePicker from "./atoms/dateTimePicker";
+import fieldSelectWithDisabled from "./atoms/select-with-disabled";
+import fieldTagsInput from "./organisms/tagsInput";
 import DataTable from "./organisms/table";
 import TimeLine from "./organisms/treebasedtimeline";
 import Fullcalendar from "./organisms/fullcalendar";
@@ -15,6 +18,9 @@ const plugin = {
 		// strategies.googleMapsAPIsLoaded = strategies.created;
 
 		// componentの追加
+		Vue.component("fieldMyDateTimePicker", fieldMyDateTimePicker);
+		Vue.component("fieldSelectWithDisabled", fieldSelectWithDisabled);
+		Vue.component("fieldTagsInput", fieldTagsInput);
 		Vue.component("data-table", DataTable);
 		Vue.component("time-line", TimeLine);
 		Vue.component("fullcalendar", Fullcalendar);

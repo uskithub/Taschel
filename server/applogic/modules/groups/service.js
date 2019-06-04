@@ -7,7 +7,7 @@ let C 	 		= require("../../../core/constants");
 let _			= require("lodash");
 
 let Group 		= require("./models/group");
-let Task 		= require("../tasks/models/task");
+let TaskRepository 		= require("../../../app/service/infrastructure/repositories/taskRepository");
 
 const UNCLASSIFIED = "UNCLASSIFIED";
 const ASSIGNED_IN_WEEKLY = "ASSIGNED_IN_WEEKLY";
@@ -57,7 +57,7 @@ module.exports = {
 		, namespace: "groups"
 		, rest: true
 		, ws: true
-		, graphql: true
+		, graphql: false
 		, permission: C.PERM_LOGGEDIN
 		, role: "user"
 		, collection: Group
@@ -110,9 +110,10 @@ module.exports = {
 									return this.populateModels(jsons);
 								}).then(groupJsons => {
 									// for getting unclassified tasks, create the classified tasks code array.
-									let classifiedTaskCodes = groupJsons.reduce((arr, g) => {
-										return arr.concat(g.children.map(child => { return child.code; }));
-									}, []);
+									let classifiedTaskCodes = groupJsons
+										.reduce((arr, g) => {
+											return arr.concat(g.children.map(child => { return child.code; }));
+										}, []);
 							
 									// exclude status is closed or already classified tasks.
 									const recursiveUnclassifiedFilter = (task, classifiedArray) => {
@@ -208,7 +209,7 @@ module.exports = {
 								, $or : [ { author : userId }, { asignee : userId } ]
 							};
 
-							let query = Task.find(filter);
+							let query = TaskRepository.find(filter);
 							return ctx.queryPageSort(query).exec()
 								.then(docs => {
 									return this.taskService.toJSON(docs);
@@ -541,7 +542,7 @@ module.exports = {
 		, remove(ctx) {
 			ctx.assertModelIsExist(ctx.t("app:GroupNotFound"));
 
-			return Task.remove({ _id: ctx.modelID })
+			return TaskRepository.remove({ _id: ctx.modelID })
 				.then(() => {
 					return ctx.model;
 				})

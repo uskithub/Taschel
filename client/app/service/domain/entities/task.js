@@ -41,7 +41,7 @@ const _fields = {
 			}
 		}
 		, form: {
-			type: "select"
+			type: "selectWithDisabled"
 			, required: true
 			, values: taskTypes
 		}
@@ -467,7 +467,10 @@ export default class Task {
 	 * @param {*} fields 
 	 * @param {*} properties 
 	 */
-	static dynamicSchema(rawValues) {
+	static dynamicSchema(rawValues, parentType) {
+
+		console.log("parentType", parentType);
+
 		let fieldSet = { 
 			type: { required: true }
 			, name: { required: true }
@@ -477,6 +480,7 @@ export default class Task {
 			, deadline: { required: false } 
 			, manhour: { required: false } 
 			, schedule: { required: false }
+			, asignee: { required: false }
 		};
 		
 		switch (rawValues.type) {
@@ -519,6 +523,40 @@ export default class Task {
 			if (field.form.model === undefined) {
 				field.form.model = f;
 			}
+
+			if (f === "type" && parentType) {
+				switch (parentType) {
+				case "milestone":
+					field.form.values[0].disabled = true;
+					field.form.values[1].disabled = true;
+					break;
+				case "requirement":
+					field.form.values[0].disabled = true;
+					field.form.values[1].disabled = true;
+					field.form.values[2].disabled = true;
+					break;
+				case "issue":
+					field.form.values[0].disabled = true;
+					field.form.values[1].disabled = true;
+					field.form.values[3].disabled = true;
+					break;
+				case "way":
+					field.form.values[0].disabled = true;
+					field.form.values[1].disabled = true;
+					break;
+				case "step":
+					field.form.values[0].disabled = true;
+					field.form.values[1].disabled = true;
+					break;
+				case "todo":
+					field.form.values[0].disabled = true;
+					field.form.values[1].disabled = true;
+					break;
+				default:
+					break;
+				}
+			}
+
 			return field.form;
 		});
 	}

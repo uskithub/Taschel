@@ -91,7 +91,7 @@
 			}
             , dynamicSchema() { 
 				let schema = {};
-				schema.fields = Task.dynamicSchema(this.rawValues)
+				schema.fields = Task.dynamicSchema(this.rawValues, this.parent.type);
 				return schema;
 			}
 			, treenodes() { return [this.taskTree]; }
@@ -123,5 +123,4 @@
 		}
 	}
 </script>
-<style lang="scss">
-</style>
+<style lang="scss"></style>

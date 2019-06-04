@@ -87,6 +87,19 @@ class Services extends EventEmitter {
 			}
 		}
 
+		if (WEBPACK_BUNDLE || fs.existsSync(path.join(__dirname, "..", "app", "service", "presentation"))) {
+			logger.info("");
+			logger.info(chalk.bold("Search presenters..."));
+
+			let modules = require.context("../app/service/presentation", true, /presenter\.js$/);
+			if (modules) {
+				modules.keys().map(function(module) {
+					logger.info("  Load", path.relative(path.join(__dirname, "..", "app", "service", "presentaion"), module), "presenter...");
+					addService(modules(module));
+				});
+			}
+		}
+
 		// Call `init` of services
 		_.forIn(self.services, (service) => {
 			if (_.isFunction(service.$schema.init)) {
@@ -158,7 +171,15 @@ class Services extends EventEmitter {
 
 						// Response the error
 							.catch((err) => {
-								logger.error(err);
+								if (err.type === undefined) {
+									console.log("[SYSTEM ERROR]", err);
+									const name = err.name;
+									const message = err.message;
+									err = _.defaults(response.SERVER_ERROR);
+									err.message = `[SYSTEM ERROR] ${name}: ${message}`;
+								} else {
+									logger.error(err);
+								}
 								response.json(res, null, err);
 							})
 

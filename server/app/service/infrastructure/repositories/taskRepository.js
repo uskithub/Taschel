@@ -101,6 +101,11 @@ let TaskSchema = new Schema({
 		, required: "Please fill in an author ID"
 		, ref: "User"
 	}
+	// for Project
+	, members : [{
+		type: Number
+		, ref: "User"
+	}]
 	, asignee : {
 		type: Number
 		, ref: "User"
@@ -137,6 +142,6 @@ TaskSchema.methods.decodeID = function(code) {
 	return hashids.decodeHex(code);
 };
 
-let Task = mongoose.model("Task", TaskSchema);
+const TaskRepository = mongoose.model("Task", TaskSchema);
 
-module.exports = Task;
+module.exports = TaskRepository;

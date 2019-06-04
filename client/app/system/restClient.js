@@ -40,21 +40,14 @@ export const api = (method, url, model) => {
 			if (error instanceof TypeError) {	
 				reject(error);
 			} else if (error instanceof Error) {
-				// TODO サーバ側でエラーのスローの仕方が違うので統一する
-				if (error.status == 400 && error.response.data && error.response.data.error) {
-					error.message = `${error.message} (type: ${error.response.data.error.type}, message: ${error.response.data.error.message})`;
-				} else if (error.response.status == 500 && error.response.data.error.errors) {
-					error.message = `[${error.response.statusText}: ${error.response.data.error.name}] ${error.response.data.error._message}`;
-				}
+				error.message = `${error.message} (type: ${error.response.data.error.type}, message: ${error.response.data.error.message})`;
 				reject(error);
-
 			} else {
 				reject(new Error(`error: ${error}`));
 			}
 		});
 	}).catch(error => {
-		console.error(`API ERROR: [${method}] ${url}`, model);
-		console.error(error);
+		console.error(`API ERROR: [${method}] ${url}`, model, error);
 		toastr.error(error.message);
 	});
 };
