@@ -1,13 +1,22 @@
 "use strict";
 
-let logger 		= require("../../../core/logger");
-let config 		= require("../../../config");
-let C 	 		= require("../../../core/constants");
+let logger 		= require("../../../../core/logger");
+let config 		= require("../../../../config");
+let response	= require("../../../../core/response");
+let C 	 		= require("../../../../core/constants");
 
 let _			= require("lodash");
 
-let Group 		= require("./models/group");
-let TaskRepository 		= require("../../../app/service/infrastructure/repositories/taskRepository");
+let GroupRepository = require("../../infrastructure/repositories/groupRepository");
+let TaskRepository	= require("../../infrastructure/repositories/taskRepository");
+
+const notImplementedError = (funcName) => {
+	const msg = `TODO: ${this.constructor.name}.${funcName} は未実装です。`;
+	let err = new Error(msg);
+	err = _.defaults(response.NOT_IMPLEMENTED);
+	err.message = msg;
+	return err;
+};
 
 const UNCLASSIFIED = "UNCLASSIFIED";
 const ASSIGNED_IN_WEEKLY = "ASSIGNED_IN_WEEKLY";
@@ -56,11 +65,11 @@ module.exports = {
 		, version: 1
 		, namespace: "groups"
 		, rest: true
-		, ws: true
+		, ws: false
 		, graphql: false
 		, permission: C.PERM_LOGGEDIN
 		, role: "user"
-		, collection: Group
+		, collection: GroupRepository
 		
 		, modelPropFilter: "code type purpose name parent children author lastCommunication createdAt updatedAt"
 
@@ -101,7 +110,7 @@ module.exports = {
 								type : "kanban"
 								, parent : projectId
 							};
-							let query = Group.find(filter);
+							let query = GroupRepository.find(filter);
 							return ctx.queryPageSort(query).exec()
 								.then(docs => {
 									return this.toJSON(docs);
@@ -190,7 +199,7 @@ module.exports = {
 							&& ["requirement", "issue", "way", "step", "todo"].includes(json.type)
 							&& (json.author == userId || json.asignee == userId);
 					});
-					let query = Group.find(filter);
+					let query = GroupRepository.find(filter);
 					return ctx.queryPageSort(query).exec()
 						.then(docs => { 
 							return this.toJSON(docs);
@@ -227,8 +236,7 @@ module.exports = {
 												g.type = type;
 												g.parent =  -1;
 												g.author = userId;
-												let group = new Group(g);
-												return group.save()
+												return GroupRepository.create(g)
 													.then(doc => {
 														docs.push(doc);
 														return docs;
@@ -338,7 +346,7 @@ module.exports = {
 						if ( serviceName != "tasks" ) { return true; }
 						return json.status > -1 && (json.author == userId || json.asignee == userId);
 					});
-					let query = Group.find(filter);
+					let query = GroupRepository.find(filter);
 
 					// 該当週のGroupを取得
 					return ctx.queryPageSort(query).exec().then(docs => {
@@ -353,8 +361,7 @@ module.exports = {
 										g.type = type;
 										g.parent =  -1;
 										g.author = userId;
-										let group = new Group(g);
-										return group.save()
+										return GroupRepository.create(g)
 											.then(doc => {
 												docs.push(doc);
 												return docs;
@@ -406,15 +413,13 @@ module.exports = {
 		, create(ctx) {
 			this.validateParams(ctx, true);
 
-			let group = new Group({
+			return GroupRepository.create({
 				type: ctx.params.type
 				, name: ctx.params.name
 				, purpose: ctx.params.purpose
 				, parent: (ctx.params.parent_code !== undefined) ? this.taskService.decodeID(ctx.params.parent_code) : -1
 				, author : ctx.user.id
-			});
-
-			return group.save()
+			})
 				.then(doc => {
 					return this.toJSON(doc);
 				})
@@ -579,98 +584,4 @@ module.exports = {
 		this.personService = ctx.services("persons");
 	}
 
-	, socket: {
-		afterConnection(socket, io) {
-			// Fired when a new client connected via websocket
-		}
-	}
-
-	, graphql: {
-
-		query: `
-			groups(limit: Int, offset: Int, sort: String): [Task]
-			group(code: String): Task
-		`
-
-		, types: `
-			type Group {
-				code: String!
-				purpose: String
-				type: String
-				name: String
-				status: Int
-				lastCommunication: Timestamp
-			}
-		`
-
-		, mutation: `
-			groupCreate(name: String!, purpose: String, type: String, goal: String, status: Int): Group
-			groupUpdate(code: String!, name: String, purpose: String, type: String, goal: String, status: Int): Group
-			groupRemove(code: String!): Group
-		`
-
-		, resolvers: {
-			Query: {
-				groups: "find"
-				, group: "get"
-			}
-
-			, Mutation: {
-				groupCreate: "create"
-				, groupUpdate: "update"
-				, groupRemove: "remove"
-			}
-		}
-	}
-
 };
-
-/*
-## GraphiQL test ##
-
-# Find all devices
-query getDevices {
-  devices(sort: "lastCommunication", limit: 5) {
-    ...deviceFields
-  }
-}
-
-# Create a new device
-mutation createDevice {
-  deviceCreate(name: "New device", address: "192.168.0.1", type: "raspberry", description: "My device", status: 1) {
-    ...deviceFields
-  }
-}
-
-# Get a device
-query getDevice($code: String!) {
-  device(code: $code) {
-    ...deviceFields
-  }
-}
-
-# Update an existing device
-mutation updateDevice($code: String!) {
-  deviceUpdate(code: $code, address: "127.0.0.1") {
-    ...deviceFields
-  }
-}
-
-# Remove a device
-mutation removeDevice($code: String!) {
-  deviceRemove(code: $code) {
-    ...deviceFields
-  }
-}
-
-fragment deviceFields on Device {
-    code
-    address
-    type
-    name
-    description
-    status
-    lastCommunication
-}
-
-*/

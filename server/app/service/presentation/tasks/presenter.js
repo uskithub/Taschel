@@ -8,8 +8,7 @@ let C 	 			= require("../../../../core/constants");
 let _				= require("lodash");
 
 let TaskRepository	= require("../../infrastructure/repositories/taskRepository");
-// let Group 		= require("../../infrastructure/repositories/entities/group");
-let Group 			= require("../../../../applogic/modules/groups/models/group");
+let GroupRepository = require("../../infrastructure/repositories/groupRepository");
 
 const Backog = require("../../application/backlog");
 const Groundwork = require("../../application/groundwork");
@@ -22,12 +21,6 @@ const notImplementedError = (funcName) => {
 	return err;
 };
 
-const DEFAULT_KANBAN_GROUPS = [
-	{ name: "TODO", purpose: "for_the_tasks_to_do_from_now" }
-	, { name: "IN_PROGRESS", purpose: "for_the_tasks_now_people_doing" }
-	, { name: "DONE", purpose: "for_the_tasks_finished_already" }
-];
-
 //
 //	PresenterはAPIとUsecaseの間の「検問」を行う
 //
@@ -37,8 +30,8 @@ module.exports = {
 		, version: 1
 		, namespace: "tasks"
 		, rest: true
-		, ws: true
-		, graphql: true
+		, ws: false
+		, graphql: false
 		, permission: C.PERM_LOGGEDIN
 		, role: "user"
 		, collection: TaskRepository
@@ -130,21 +123,7 @@ module.exports = {
 
 				return groundwork.新しいプロジェクトを追加する(newProject)
 					.then(doc => {
-						// kanbanを作る
-						// 配列の順番になるように、reduceで作っている
-						return DEFAULT_KANBAN_GROUPS
-							.reduce((promise, g) => {
-								return promise.then(()=> {
-									g.type = "kanban";
-									g.parent =  doc.id;
-									g.author = doc.author;
-									let group = new Group(g);
-									return group.save();
-								});
-							}, Promise.resolve())
-							.then(() => {
-								return this.toJSON(doc);
-							});
+						return this.toJSON(doc);
 					})
 					.then(json => {
 						return this.populateModels(json);
@@ -152,6 +131,8 @@ module.exports = {
 
 			} else {
 				const backlog = new Backog(ctx);
+				const parentId = (ctx.params.parent !== undefined) ? this.decodeID(ctx.params.parent) : -1;
+
 				const newTask = {
 					type			: ctx.params.type
 					, projectType	: ctx.params.projectType 
@@ -164,25 +145,17 @@ module.exports = {
 					, deadline		: ctx.params.deadline
 					, manhour		: (ctx.params.manhour != undefined) ? ctx.params.manhour : -1
 					, root			: (ctx.params.root_code != undefined) ? this.decodeID(ctx.params.root_code) : -1
-					, parent		: (ctx.params.parent !== undefined) ? this.decodeID(ctx.params.parent) : -1
+					, parent		: parentId
 					, author		: (ctx.params.author != undefined) ? this.personService.decodeID(ctx.params.author) : ctx.user.id
 					, asignee		: (ctx.params.asignee !== undefined) ? this.personService.decodeID(ctx.params.asignee) : -1
 				};
 
-				return backlog.新しいタスクを追加する(newTask)
+				return backlog.新しいタスクを追加する(parentId, newTask)
 					.then(doc => {
 						return this.toJSON(doc);
 					})
 					.then(json => {
 						return this.populateModels(json);
-					})
-					.then(json => {
-						if (ctx.params.parent !== undefined) {
-						// breakdownの場合
-							return this.actions.breakdown(ctx, parent, json);
-						} else {
-							return json;
-						}
 					});
 			}				
 		}
@@ -302,33 +275,6 @@ module.exports = {
 					this.notifyModelChanges(ctx, "removed", json);
 					return json;
 				});		
-		}
-
-		// 子タスクのcreate時に、同時に親の方に子タスクを付け加える
-		, breakdown(ctx, parent, childJson) {
-			let parentId = this.decodeID(parent);
-			let childId = this.decodeID(childJson.code);
-
-			return this.collection.findById(parentId).exec()
-				.then(doc => {
-					return TaskRepository.findByIdAndUpdate(doc.id, { $addToSet: { children: childId }}, { "new": true });
-				})
-				.then(doc => {
-					return this.toJSON(doc);
-				})
-				.then(json => {
-					return this.populateModels(json);
-				})
-				.then(json => {
-					//this.notifyModelChanges(ctx, "brokedown", { parent : json, child : childJson });
-					
-					// MIGRATION: v1->v2
-					if (ctx.params.parent_code) {
-						return { parent : json, child : childJson };	
-					} else {
-						return childJson;
-					}
-				});
 		}
 
 		// タスクの入れ替え
@@ -593,50 +539,4 @@ module.exports = {
 		this.groupService = ctx.services("groups");
 		this.workService = ctx.services("works");
 	}
-
-	, socket: {
-		afterConnection(socket, io) {
-			// Fired when a new client connected via websocket
-		}
-	}
-
-	, graphql: {
-
-		query: `
-			tasks(limit: Int, offset: Int, sort: String): [Task]
-			task(code: String): Task
-		`
-
-		, types: `
-			type Task {
-				code: String!
-				purpose: String
-				type: String
-				name: String
-				goal: String
-				status: Int
-				lastCommunication: Timestamp
-			}
-		`
-
-		, mutation: `
-			taskCreate(name: String!, purpose: String, type: String, goal: String, status: Int): Task
-			taskUpdate(code: String!, name: String, purpose: String, type: String, goal: String, status: Int): Task
-			taskRemove(code: String!): Task
-		`
-
-		, resolvers: {
-			Query: {
-				tasks: "find"
-				, task: "get"
-			}
-
-			, Mutation: {
-				taskCreate: "create"
-				, taskUpdate: "update"
-				, taskRemove: "remove"
-			}
-		}
-	}
-
 };

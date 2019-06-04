@@ -12,7 +12,6 @@ module.exports = class Backlog {
 	
 	constructor(context) {
 		this.context = context;
-		this.repository = TaskRepository;	
 	}
 
 	自分のプロジェクト一覧を取得する(userId) {
@@ -24,7 +23,7 @@ module.exports = class Backlog {
 			, status : { $gt : -1 }
 		};
 
-		const query = this.repository.find(filter);
+		const query = TaskRepository.find(filter);
 
 		return this.context
 			.queryPageSort(query)
@@ -40,16 +39,29 @@ module.exports = class Backlog {
 			, status : { $gt : -1 }
 		};
 
-		const query = this.repository.find(filter);
+		const query = TaskRepository.find(filter);
 
 		return this.context
 			.queryPageSort(query)
 			.exec();
 	}
 
-	新しいタスクを追加する(task) {
-
-		return this.repository.create(task);
+	新しいタスクを追加する(parentId, task) {
+		return TaskRepository.create(task)
+			.then(doc => {
+				if (parentId) {
+					// 同時に親の子としてタスクを加える
+					const childId = doc.id;
+					return TaskRepository.findByIdAndUpdate(
+						parentId
+						, { $addToSet : { children: childId }}
+					).then(() => {
+						return doc;
+					});
+				} else {
+					return doc;
+				}
+			});
 	}
 
 };
