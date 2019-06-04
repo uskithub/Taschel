@@ -11,7 +11,7 @@ let base32Decode	= require("base32-decode");
 let google		= require("googleapis");
 
 let Work 		= require("./models/work");
-let Task 		= require("../../../app/service/infrastructure/repositories/entities/task");
+let TaskRepository 		= require("../../../app/service/infrastructure/repositories/taskRepository");
 let User 		= require("../persons/models/user");
 
 const clientID 		= config.authKeys.google.clientID;
@@ -199,7 +199,7 @@ module.exports = {
 			return work.save()
 				.then(doc => {
 				// 親のTaskに追加（本来Promiseだが、待つ必要がないので非同期処理）
-					Task.findById(doc.parent).exec()
+					TaskRepository.findById(doc.parent).exec()
 						.then(taskDoc => {
 							if (taskDoc.works == null) {
 								taskDoc.work = [doc.id];
@@ -339,7 +339,7 @@ module.exports = {
 					return ctx.model;
 				})
 				.then(json => {
-					return Task.findById(this.taskService.decodeID(json.parent)).exec()
+					return TaskRepository.findById(this.taskService.decodeID(json.parent)).exec()
 						.then(taskDoc => {
 							taskDoc.works = taskDoc.works.filter(id => { return id != ctx.modelID; });
 							return taskDoc.save();

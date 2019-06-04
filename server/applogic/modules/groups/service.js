@@ -7,7 +7,7 @@ let C 	 		= require("../../../core/constants");
 let _			= require("lodash");
 
 let Group 		= require("./models/group");
-let Task 		= require("../../../app/service/infrastructure/repositories/entities/task");
+let TaskRepository 		= require("../../../app/service/infrastructure/repositories/taskRepository");
 
 const UNCLASSIFIED = "UNCLASSIFIED";
 const ASSIGNED_IN_WEEKLY = "ASSIGNED_IN_WEEKLY";
@@ -104,56 +104,60 @@ module.exports = {
 								, parent : projectId
 							};
 							let query = Group.find(filter);
-							return ctx.queryPageSort(query).exec().then(docs => {
-								return this.toJSON(docs);
-							})
+							return ctx.queryPageSort(query).exec()
+								.then(docs => {
+									return this.toJSON(docs);
+								})
 								.then(jsons => {
 									return this.populateModels(jsons);
-								}).then(jsons => {
+								}).then(groupJsons => {
 									// for getting unclassified tasks, create the classified tasks code array.
-									let classifiedTaskCodes = jsons.reduce((arr, g) => {
-										return arr.concat(g.children.map(child => { return child.code; }));
-									}, []);
+									let classifiedTaskCodes = groupJsons
+										.reduce((arr, g) => {
+											return arr.concat(g.children.map(child => { return child.code; }));
+										}, []);
 							
 									// exclude status is closed or already classified tasks.
 									const recursiveUnclassifiedFilter = (task, classifiedArray) => {
-										task.children = task.children.filter(child => {
-											return !(child.status < 0 || child.isDeleted == 1 || classifiedTaskCodes.includes(child.code));
-										})
+										task.children = task.children
+											.filter(child => {
+												return !(child.status < 0 || child.isDeleted == 1 || classifiedTaskCodes.includes(child.code));
+											})
 											.map(child => {
 												return recursiveUnclassifiedFilter(child, classifiedArray);
 											});
 										return task;
 									};
 
-									let unclassifiedGroups = projectJson.children.reduce((result, child) => {
-										if (child.status < 0 || child.isDeleted == 1 || classifiedTaskCodes.includes(child.code)) {
+									let unclassifiedGroups = projectJson.children
+										.reduce((result, child) => {
+											if (child.status < 0 || child.isDeleted == 1 || classifiedTaskCodes.includes(child.code)) {
+												return result;
+											}
+											child = recursiveUnclassifiedFilter(child, classifiedTaskCodes);
+											if (child.type == "milestone") {
+												result.push({
+													code: `MILESTONE-${child.code}`
+													, type: "kanban"
+													, name: child.name
+													, purpose: "for_classify"
+													, parent: projectCode
+													, children: child.children
+												});
+											} else {
+												result[0].children.push(child);
+											}
 											return result;
-										}
-										child = recursiveUnclassifiedFilter(child, classifiedTaskCodes);
-										if (child.type == "milestone") {
-											result.push({
-												code: `MILESTONE-${child.code}`
-												, type: "kanban"
-												, name: child.name
-												, purpose: "for_classify"
-												, parent: projectCode
-												, children: child.children
-											});
-										} else {
-											result[0].children.push(child);
-										}
-										return result;
-									}, [{
-										code: UNCLASSIFIED
-										, type: "kanban"
-										, name: "unclassified"
-										, purpose: "for_classify"
-										, parent: projectCode
-										, children: []
-									}]);
+										}, [{
+											code: UNCLASSIFIED
+											, type: "kanban"
+											, name: "unclassified"
+											, purpose: "for_classify"
+											, parent: projectCode
+											, children: []
+										}]);
 
-									return unclassifiedGroups.concat(jsons);
+									return unclassifiedGroups.concat(groupJsons);
 								});
 						});
 
@@ -204,7 +208,7 @@ module.exports = {
 								, $or : [ { author : userId }, { asignee : userId } ]
 							};
 
-							let query = Task.find(filter);
+							let query = TaskRepository.find(filter);
 							return ctx.queryPageSort(query).exec()
 								.then(docs => {
 									return this.taskService.toJSON(docs);
@@ -537,7 +541,7 @@ module.exports = {
 		, remove(ctx) {
 			ctx.assertModelIsExist(ctx.t("app:GroupNotFound"));
 
-			return Task.remove({ _id: ctx.modelID })
+			return TaskRepository.remove({ _id: ctx.modelID })
 				.then(() => {
 					return ctx.model;
 				})

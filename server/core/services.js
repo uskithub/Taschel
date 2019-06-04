@@ -172,12 +172,14 @@ class Services extends EventEmitter {
 						// Response the error
 							.catch((err) => {
 								if (err.type === undefined) {
+									console.log("[SYSTEM ERROR]", err);
 									const name = err.name;
 									const message = err.message;
 									err = _.defaults(response.SERVER_ERROR);
 									err.message = `[SYSTEM ERROR] ${name}: ${message}`;
+								} else {
+									logger.error(err);
 								}
-								logger.error(err);
 								response.json(res, null, err);
 							})
 
