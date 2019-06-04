@@ -1,12 +1,12 @@
 
 # TaskTYpes
 
-	            | Kanban            | Weekly
+	          | Kanban            | Weekly
 ------------|-------------------|--------
 project     | -                 | -
 subproject  | -                 | -
 milestone   | （※LAYERになる）    | -
-requirement | TODO（子がなければ）| ◯
+requirement | 未分類             | ◯
 issue       | TODO              | ◯  
 way         | 未分類             | ◯
 step        | TODO              | ◯

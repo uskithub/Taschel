@@ -85,6 +85,12 @@ module.exports = {
 			cache: true
 			, handler(ctx) {
 
+				// カンバン
+				// 前提：看板用の group は proejct の create 時に task の service.js で作っている
+				// 仕様：
+				//	- milestone は一つの Layer となる
+				//	- Layer 内に表示するのは TODO粒度のタスクのみ（issue, way, step, todo
+
 				if (ctx.params.parent_code !== undefined) {
 					const projectCode = ctx.params.parent_code;
 					const projectId = this.taskService.decodeID(projectCode);
@@ -102,9 +108,9 @@ module.exports = {
 								})
 								.then(jsons => {
 									return this.populateModels(jsons);
-								}).then(jsons => {
+								}).then(groupJsons => {
 									// for getting unclassified tasks, create the classified tasks code array.
-									let classifiedTaskCodes = jsons.reduce((arr, g) => {
+									let classifiedTaskCodes = groupJsons.reduce((arr, g) => {
 										return arr.concat(g.children.map(child => { return child.code; }));
 									}, []);
 							
@@ -126,15 +132,18 @@ module.exports = {
 												return result;
 											}
 											child = recursiveUnclassifiedFilter(child, classifiedTaskCodes);
-											if (child.type == "milestone") {
-												result.push({
-													code: `MILESTONE-${child.code}`
-													, type: "kanban"
-													, name: child.name
-													, purpose: "for_classify"
-													, parent: projectCode
-													, children: child.children
-												});
+											// if (child.type === "milestone") {
+											// 	result.push({
+											// 		code: `MILESTONE-${child.code}`
+											// 		, type: "kanban"
+											// 		, name: child.name
+											// 		, purpose: "for_classify"
+											// 		, parent: projectCode
+											// 		, children: child.children
+											// 	});
+											// }
+											if (child.type === "issue" || child.type === "step" || child.type === "todo") {
+												result[1].children.push(child);
 											} else {
 												result[0].children.push(child);
 											}
@@ -148,7 +157,7 @@ module.exports = {
 											, children: []
 										}]);
 
-									return unclassifiedGroups.concat(jsons);
+									return unclassifiedGroups.concat(groupJsons);
 								});
 						});
 
