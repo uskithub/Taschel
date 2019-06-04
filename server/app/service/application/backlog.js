@@ -64,4 +64,11 @@ module.exports = class Backlog {
 			});
 	}
 
+	タスクを更新する(taskId, valuesForUpdate) {
+		return TaskRepository.findByIdAndUpdate(
+			taskId
+			, { $set : valuesForUpdate }
+			, { "new" : true }
+		);
+	}
 };

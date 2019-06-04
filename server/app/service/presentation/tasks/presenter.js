@@ -164,17 +164,29 @@ module.exports = {
 			ctx.assertModelIsExist(ctx.t("app:TaskNotFound"));
 			this.validateParams(ctx);
 
+			const valuesForUpdate = Object.keys(TaskRepository.schema.obj)
+				.reduce((valuesForUpdate, key) => {
+					const value = ctx.params[key];
+					if (value) { 
+						if (key === "parent") {
+							valuesForUpdate[key] = Number(this.decodeID(value));
+						} else if (key === "children") {
+							valuesForUpdate[key] = value.map(code => { return Number(this.decodeID(code)); });
+						} else {
+							valuesForUpdate[key] = value;	
+						}
+					}
+					return valuesForUpdate;
+				}, {});
+
+			console.log("&&&", valuesForUpdate);
+
 			// for v2 arrange
 			if (ctx.req.method === "PATCH") {
-				return this.collection.findById(ctx.modelID).exec()
+				const backlog = new Backog(ctx);
+				return backlog.タスクを更新する(ctx.modelID, valuesForUpdate)
 					.then(doc => {
-						if (ctx.params.parent) {
-							doc.parent = Number(this.decodeID(ctx.params.parent));
-						}
-						if (ctx.params.children) {
-							doc.children = ctx.params.children.map(code => { return Number(this.decodeID(code)); });
-						}
-						return doc.save();
+						return this.toJSON(doc);
 					})
 					.then(json => {
 						return this.populateModels(json);
