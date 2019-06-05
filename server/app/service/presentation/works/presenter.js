@@ -1,18 +1,18 @@
+
 "use strict";
 
-let logger 		= require("../../../core/logger");
-let config 		= require("../../../config");
-let C 	 		= require("../../../core/constants");
+let logger 			= require("../../../../core/logger");
+let config 			= require("../../../../config");
+let C 	 			= require("../../../../core/constants");
 
-let _			= require("lodash");
-let moment 		= require("moment");
+let _				= require("lodash");
+let moment 			= require("moment");
 let base32Encode	= require("base32-encode");
 let base32Decode	= require("base32-decode");
-let google		= require("googleapis");
+let google			= require("googleapis");
 
-let Work 		= require("./models/work");
-let TaskRepository 		= require("../../../app/service/infrastructure/repositories/taskRepository");
-let User 		= require("../persons/models/user");
+let Workepository 	= require("../../infrastructure/repositories/workRepository");
+let TaskRepository 	= require("../../infrastructure/repositories/taskRepository");
 
 const clientID 		= config.authKeys.google.clientID;
 const clientSecret	= config.authKeys.google.clientSecret;
@@ -28,11 +28,11 @@ module.exports = {
 		, version: 1
 		, namespace: "works"
 		, rest: true
-		, ws: true
+		, ws: false
 		, graphql: false
 		, permission: C.PERM_LOGGEDIN
 		, role: "user"
-		, collection: Work
+		, collection: Workepository
 		
 		, modelPropFilter: "code goal title start end actualStart actualEnd description week parent goodSide badSide improvement comments author status asignee lastCommunication createdAt updatedAt"
 
@@ -61,7 +61,7 @@ module.exports = {
 						"$gte" : start, "$lt" : end
 					};
 
-					let query = Work.find(filter);
+					let query = Workepository.find(filter);
 					return ctx.queryPageSort(query).exec().then(docs => {
 						return this.toJSON(docs);
 					})
@@ -74,7 +74,7 @@ module.exports = {
 						asignee : userId
 						, week : ctx.params.week
 					};
-					let query = Work.find(filter);
+					let query = Workepository.find(filter);
 
 					return ctx.queryPageSort(query).exec()
 						.then(docs => {
@@ -161,7 +161,7 @@ module.exports = {
 						
 					};
 
-					let query = Work.find().sort({ updatedAt : -1 }).skip(0).limit(10);
+					let query = Workepository.find().sort({ updatedAt : -1 }).skip(0).limit(10);
 
 					return ctx.queryPageSort(query).exec()
 						.then(docs => {
@@ -186,7 +186,7 @@ module.exports = {
 		, create(ctx) {
 			this.validateParams(ctx, true);
 			
-			let work = new Work({
+			return Workepository.create({
 				title: ctx.params.title
 				, start: ctx.params.start
 				, end: ctx.params.end
@@ -194,80 +194,77 @@ module.exports = {
 				, parent: this.taskService.decodeID(ctx.params.parent_code)
 				, author : ctx.user.id
 				, asignee : ctx.user.id
-			});
-
-			return work.save()
-				.then(doc => {
+			}).then(doc => {
 				// 親のTaskに追加（本来Promiseだが、待つ必要がないので非同期処理）
-					TaskRepository.findById(doc.parent).exec()
-						.then(taskDoc => {
-							if (taskDoc.works == null) {
-								taskDoc.work = [doc.id];
-							} else {
-								taskDoc.works.push(doc.id);
-							}
-							taskDoc.save();
-						});
+				TaskRepository.findById(doc.parent).exec()
+					.then(taskDoc => {
+						if (taskDoc.works == null) {
+							taskDoc.work = [doc.id];
+						} else {
+							taskDoc.works.push(doc.id);
+						}
+						taskDoc.save();
+					});
 
-					// Google Calendarに追加
-					const userId = ctx.user.id;
+				// Google Calendarに追加
+				const userId = ctx.user.id;
 
-					if (userId) {
+				if (userId) {
 					// 本来Promiseだが、待つ必要がないので非同期処理
-						this.personService.collection.findById(userId).exec()
-							.then(userDoc => {
-								if (userDoc.credentials.access_token) {
-									let oauth2Client = new OAuth2(clientID, clientSecret, redirectUrl);
-									oauth2Client.credentials = userDoc.credentials;
+					this.personService.collection.findById(userId).exec()
+						.then(userDoc => {
+							if (userDoc.credentials.access_token) {
+								let oauth2Client = new OAuth2(clientID, clientSecret, redirectUrl);
+								oauth2Client.credentials = userDoc.credentials;
 
-									let calendar = google.calendar("v3");
-									// @see https://github.com/google/google-api-nodejs-client/blob/master/src/apis/calendar/v3.ts#L3433
+								let calendar = google.calendar("v3");
+								// @see https://github.com/google/google-api-nodejs-client/blob/master/src/apis/calendar/v3.ts#L3433
 			
-									return new Promise((resolve, reject) => {
+								return new Promise((resolve, reject) => {
 
-										let idEncoded = base32Encode(Uint8Array.from(Buffer.from(`${EVENT_ID_PREFIX}${doc.id}`)), "RFC4648-HEX", { padding: false }).toLowerCase();
+									let idEncoded = base32Encode(Uint8Array.from(Buffer.from(`${EVENT_ID_PREFIX}${doc.id}`)), "RFC4648-HEX", { padding: false }).toLowerCase();
 
-										console.log("****** 来てる");
+									console.log("****** 来てる");
 
-										calendar.events.insert(
-											// params: Params$Resource$Events$Insert
-											{ 
-												// Auth client or API Key for the request
-												// auth?: string|OAuth2Client|JWT|Compute|UserRefreshClient;
-												auth: oauth2Client
-												, calendarId: "primary"
-												, resource: {
-													// required
-													start: { dateTime: ctx.params.start }
-													, end: { dateTime: ctx.params.end }
-													// optional
-													, id : idEncoded
-													, summary : doc.title
-													, colorId : "2"
-													// , description: ""
-													, source : {
-														title : CALENDAR_SOURCE_ID
-														, url : "https://taschel.com/"
-													}
+									calendar.events.insert(
+										// params: Params$Resource$Events$Insert
+										{ 
+											// Auth client or API Key for the request
+											// auth?: string|OAuth2Client|JWT|Compute|UserRefreshClient;
+											auth: oauth2Client
+											, calendarId: "primary"
+											, resource: {
+												// required
+												start: { dateTime: ctx.params.start }
+												, end: { dateTime: ctx.params.end }
+												// optional
+												, id : idEncoded
+												, summary : doc.title
+												, colorId : "2"
+												// , description: ""
+												, source : {
+													title : CALENDAR_SOURCE_ID
+													, url : "https://taschel.com/"
 												}
 											}
-											// callback: BodyResponseCallback<Schema$Event>
-											, (err, response) => {
-												if (err) {
-													console.log("●●●●●", err);
-													return reject(err);
-												}
-												console.log("●●◯●●", response.data.items);
-												return resolve(response.data.items);
-											});
-									});
-								}
-							});
-					}
+										}
+										// callback: BodyResponseCallback<Schema$Event>
+										, (err, response) => {
+											if (err) {
+												console.log("●●●●●", err);
+												return reject(err);
+											}
+											console.log("●●◯●●", response.data.items);
+											return resolve(response.data.items);
+										});
+								});
+							}
+						});
+				}
 
-					// あくまでworkのdocを返すこと
-					return doc;
-				})
+				// あくまでworkのdocを返すこと
+				return doc;
+			})
 				.then(doc => {
 					return this.toJSON(doc);
 				})
@@ -334,7 +331,7 @@ module.exports = {
 		, remove(ctx) {
 			ctx.assertModelIsExist(ctx.t("app:WorkNotFound"));
 
-			return Work.remove({ _id: ctx.modelID })
+			return Workepository.remove({ _id: ctx.modelID })
 				.then(() => {
 					return ctx.model;
 				})
@@ -381,100 +378,4 @@ module.exports = {
 		this.taskService = ctx.services("tasks");
 		this.personService = ctx.services("persons");
 	}
-
-	, socket: {
-		afterConnection(socket, io) {
-			// Fired when a new client connected via websocket
-		}
-	}
-
-	, graphql: {
-
-		query: `
-			works(limit: Int, offset: Int, sort: String): [Work]
-			work(code: String): Work
-		`
-
-		, types: `
-			type Work {
-				code: String!
-				purpose: String
-				type: String
-				name: String
-				goal: String
-				status: Int
-				lastCommunication: Timestamp
-			}
-		`
-
-		, mutation: `
-			workCreate(name: String!, purpose: String, type: String, goal: String, status: Int): Work
-			workUpdate(code: String!, name: String, purpose: String, type: String, goal: String, status: Int): Work
-			workRemove(code: String!): Work
-		`
-
-		, resolvers: {
-			Query: {
-				works: "find"
-				, work: "get"
-			}
-
-			, Mutation: {
-				workCreate: "create"
-				, workUpdate: "update"
-				, workRemove: "remove"
-			}
-		}
-	}
-
 };
-
-/*
-## GraphiQL test ##
-
-# Find all devices
-query getDevices {
-  devices(sort: "lastCommunication", limit: 5) {
-    ...deviceFields
-  }
-}
-
-# Create a new device
-mutation createDevice {
-  deviceCreate(name: "New device", address: "192.168.0.1", type: "raspberry", description: "My device", status: 1) {
-    ...deviceFields
-  }
-}
-
-# Get a device
-query getDevice($code: String!) {
-  device(code: $code) {
-    ...deviceFields
-  }
-}
-
-# Update an existing device
-mutation updateDevice($code: String!) {
-  deviceUpdate(code: $code, address: "127.0.0.1") {
-    ...deviceFields
-  }
-}
-
-# Remove a device
-mutation removeDevice($code: String!) {
-  deviceRemove(code: $code) {
-    ...deviceFields
-  }
-}
-
-fragment deviceFields on Device {
-    code
-    address
-    type
-    name
-    description
-    status
-    lastCommunication
-}
-
-*/

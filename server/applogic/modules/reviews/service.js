@@ -8,7 +8,7 @@ let slack		= require("../../libs/slack");
 let _			= require("lodash");
 
 let Review 		= require("./models/review");
-let Work 		= require("../works/models/work");
+let Work 		= require("../../../app/service/infrastructure/repositories/workRepository");
 
 module.exports = {
 	settings: {

@@ -114,6 +114,6 @@ WorkSchema.methods.decodeID = function(code) {
 	return hashids.decodeHex(code);
 };
 
-let Work = mongoose.model("Work", WorkSchema);
+let WorkRepository = mongoose.model("Work", WorkSchema);
 
-module.exports = Work;
+module.exports = WorkRepository;
