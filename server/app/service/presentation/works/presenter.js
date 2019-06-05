@@ -7,9 +7,6 @@ let C 	 			= require("../../../../core/constants");
 
 let _				= require("lodash");
 
-let base32Encode	= require("base32-encode");
-
-
 const Pdca 			= require("../../application/pdca");
 
 let WorkRepository 	= require("../../infrastructure/repositories/workRepository");
@@ -57,7 +54,7 @@ module.exports = {
 							return this.populateModels(json);
 						})
 						.then(json => {
-							return pdca.Googleカレンダーからイベントを取得する(week)
+							return pdca.getEventsFromGoogleCalendar(week)
 								.then(({ google, taschel }) => {
 									return json.concat(google);
 								});
@@ -77,8 +74,8 @@ module.exports = {
 
 		, create(ctx) {
 			this.validateParams(ctx, true);
-			
-			return WorkRepository.create({
+
+			const newWork = {
 				title: ctx.params.title
 				, start: ctx.params.start
 				, end: ctx.params.end
@@ -86,86 +83,16 @@ module.exports = {
 				, parent: this.taskService.decodeID(ctx.params.parent_code)
 				, author : ctx.user.id
 				, asignee : ctx.user.id
-			}).then(doc => {
-				// 親のTaskに追加（本来Promiseだが、待つ必要がないので非同期処理）
-				TaskRepository.findById(doc.parent).exec()
-					.then(taskDoc => {
-						if (taskDoc.works == null) {
-							taskDoc.work = [doc.id];
-						} else {
-							taskDoc.works.push(doc.id);
-						}
-						taskDoc.save();
-					});
-
-				// Google Calendarに追加
-				const userId = ctx.user.id;
-
-				if (userId) {
-					// 本来Promiseだが、待つ必要がないので非同期処理
-					this.personService.collection.findById(userId).exec()
-						.then(userDoc => {
-							if (userDoc.credentials.access_token) {
-								let oauth2Client = new OAuth2(clientID, clientSecret, redirectUrl);
-								oauth2Client.credentials = userDoc.credentials;
-
-								let calendar = google.calendar("v3");
-								// @see https://github.com/google/google-api-nodejs-client/blob/master/src/apis/calendar/v3.ts#L3433
+			};
 			
-								return new Promise((resolve, reject) => {
-
-									let idEncoded = base32Encode(Uint8Array.from(Buffer.from(`${EVENT_ID_PREFIX}${doc.id}`)), "RFC4648-HEX", { padding: false }).toLowerCase();
-
-									console.log("****** 来てる");
-
-									calendar.events.insert(
-										// params: Params$Resource$Events$Insert
-										{ 
-											// Auth client or API Key for the request
-											// auth?: string|OAuth2Client|JWT|Compute|UserRefreshClient;
-											auth: oauth2Client
-											, calendarId: "primary"
-											, resource: {
-												// required
-												start: { dateTime: ctx.params.start }
-												, end: { dateTime: ctx.params.end }
-												// optional
-												, id : idEncoded
-												, summary : doc.title
-												, colorId : "2"
-												// , description: ""
-												, source : {
-													title : CALENDAR_SOURCE_ID
-													, url : "https://taschel.com/"
-												}
-											}
-										}
-										// callback: BodyResponseCallback<Schema$Event>
-										, (err, response) => {
-											if (err) {
-												console.log("●●●●●", err);
-												return reject(err);
-											}
-											console.log("●●◯●●", response.data.items);
-											return resolve(response.data.items);
-										});
-								});
-							}
-						});
-				}
-
-				// あくまでworkのdocを返すこと
-				return doc;
-			})
+			const pdca = new Pdca(ctx);
+			return pdca.ワークを追加する(newWork)
 				.then(doc => {
 					return this.toJSON(doc);
 				})
 				.then(json => {
+					pdca.addEventToGoogleCalendar(newWork);
 					return this.populateModels(json);
-				})
-				.then(json => {
-					this.notifyModelChanges(ctx, "created", json);
-					return json;
 				});
 		}
 
@@ -223,7 +150,7 @@ module.exports = {
 		, remove(ctx) {
 			ctx.assertModelIsExist(ctx.t("app:WorkNotFound"));
 
-			return Workepository.remove({ _id: ctx.modelID })
+			return WorkRepository.remove({ _id: ctx.modelID })
 				.then(() => {
 					return ctx.model;
 				})

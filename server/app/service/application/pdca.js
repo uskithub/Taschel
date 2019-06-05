@@ -1,12 +1,13 @@
 const config 			= require("../../../config");
 const google			= require("googleapis");
-let moment 				= require("moment");
-let base32Decode		= require("base32-decode");
+const moment 			= require("moment");
+const base32Decode		= require("base32-decode");
+const base32Encode		= require("base32-encode");
 // const TaskService		= require("../domain/taskService");
 
 const WorkRepository 	= require("../infrastructure/repositories/workRepository");
 const UserRepository 	= require("../../../models/user");
-// const TaskRepository 	= require("../infrastructure/repositories/taskRepository");
+const TaskRepository 	= require("../infrastructure/repositories/taskRepository");
 // const GroupRepository 	= require("../infrastructure/repositories/groupRepository");
 
 // const taskService = new TaskService();
@@ -30,7 +31,7 @@ module.exports = class Pdca {
 		this.context = context;
 	}
 
-	Googleカレンダーからイベントを取得する(week) {
+	getEventsFromGoogleCalendar(week) {
 		let ret = { google: [], taschel: [] };
 		return UserRepository
 			.findById(this.context.user.id)
@@ -67,13 +68,8 @@ module.exports = class Pdca {
 						return resolve(response.data.items);
 					});
 				}).then(items => {
-					
-					console.log(items);
-
 					// Taschelで追加したイベントが重複して表示されないようにしている
 					return items.reduce((ret, item, idx) => {
-
-						console.log(`[${idx}] $[id}]`);
 
 						if (item.source && item.source.title === CALENDAR_SOURCE_ID) {
 							// an event is made by taschel.
@@ -106,6 +102,62 @@ module.exports = class Pdca {
 			});
 	}
 
+	addEventToGoogleCalendar(work) {
+		const userId = this.context.user.id;
+		// 本来Promiseだが、待つ必要がないので非同期処理
+		return UserRepository
+			.findById(userId)
+			.exec()
+			.then(doc => {
+				if (doc.credentials.access_token === undefined) {
+					return ret;
+				}
+
+				let oauth2Client = new OAuth2(clientID, clientSecret, redirectUrl);
+				oauth2Client.credentials = doc.credentials;
+
+				let calendar = google.calendar("v3");
+				// @see https://github.com/google/google-api-nodejs-client/blob/master/src/apis/calendar/v3.ts#L3433
+
+				return new Promise((resolve, reject) => {
+					const idEncoded = base32Encode(
+						Uint8Array.from(Buffer.from(`${EVENT_ID_PREFIX}${doc.id}`))
+						, "RFC4648-HEX"
+						, { padding: false }
+					)
+						.toLowerCase();
+
+					calendar.events.insert(
+						// params: Params$Resource$Events$Insert
+						{ 
+							// Auth client or API Key for the request
+							// auth?: string|OAuth2Client|JWT|Compute|UserRefreshClient;
+							auth: oauth2Client
+							, calendarId: "primary"
+							, resource: {
+								// required
+								start: { dateTime: work.start }
+								, end: { dateTime: work.end }
+								// optional
+								, id : idEncoded
+								, summary : work.title
+								, colorId : "2"
+								// , description: ""
+								, source : {
+									title : CALENDAR_SOURCE_ID
+									, url : "https://taschel.com/"
+								}
+							}
+						}
+						// callback: BodyResponseCallback<Schema$Event>
+						, (err, response) => {
+							if (err) { return reject(err); }
+							return resolve(response.data.items);
+						});
+				});
+			});
+	}
+
 	自分のその週のワーク一覧を取得する(week) {
 		const filter = {
 			asignee : this.context.user.id
@@ -117,6 +169,17 @@ module.exports = class Pdca {
 			.queryPageSort(query)
 			.exec();
 	}
-	
 
+	ワークを追加する(work) {
+		return WorkRepository.create(work)
+			.then(doc => {
+			// 同時に親のTaskに追加
+				return TaskRepository.findByIdAndUpdate(
+					doc.parent
+					, { $addToSet : { works: doc.id }}
+				).then(() => {
+					return doc;
+				});
+			});
+	}
 };
