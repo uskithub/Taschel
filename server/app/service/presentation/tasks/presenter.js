@@ -8,7 +8,6 @@ let C 	 			= require("../../../../core/constants");
 let _				= require("lodash");
 
 let TaskRepository	= require("../../infrastructure/repositories/taskRepository");
-let GroupRepository = require("../../infrastructure/repositories/groupRepository");
 
 const Backog = require("../../application/backlog");
 const Groundwork = require("../../application/groundwork");

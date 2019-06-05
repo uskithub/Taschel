@@ -6,21 +6,15 @@ let config 			= require("../../../../config");
 let C 	 			= require("../../../../core/constants");
 
 let _				= require("lodash");
-let moment 			= require("moment");
-let base32Encode	= require("base32-encode");
-let base32Decode	= require("base32-decode");
-let google			= require("googleapis");
 
-let Workepository 	= require("../../infrastructure/repositories/workRepository");
+let base32Encode	= require("base32-encode");
+
+
+const Pdca 			= require("../../application/pdca");
+
+let WorkRepository 	= require("../../infrastructure/repositories/workRepository");
 let TaskRepository 	= require("../../infrastructure/repositories/taskRepository");
 
-const clientID 		= config.authKeys.google.clientID;
-const clientSecret	= config.authKeys.google.clientSecret;
-const redirectUrl	= "/auth/google/callback";
-const OAuth2		= google.auth.OAuth2;
-
-const EVENT_ID_PREFIX = "taschel:";
-const CALENDAR_SOURCE_ID = "Taschel";
 
 module.exports = {
 	settings: {
@@ -32,7 +26,7 @@ module.exports = {
 		, graphql: false
 		, permission: C.PERM_LOGGEDIN
 		, role: "user"
-		, collection: Workepository
+		, collection: WorkRepository
 		
 		, modelPropFilter: "code goal title start end actualStart actualEnd description week parent goodSide badSide improvement comments author status asignee lastCommunication createdAt updatedAt"
 
@@ -52,123 +46,21 @@ module.exports = {
 		find: {
 			cache: true
 			, handler(ctx) {
-				let filter = {};
-
-				if (ctx.params.date) {
-					const start = moment(ctx.params.date).format();
-					const end = moment(ctx.params.date).add(1, "d").format();
-					filter.start = {
-						"$gte" : start, "$lt" : end
-					};
-
-					let query = Workepository.find(filter);
-					return ctx.queryPageSort(query).exec().then(docs => {
-						return this.toJSON(docs);
-					})
-						.then(json => {
-							return this.populateModels(json);
-						});
-				} else if (ctx.params.week) {
-					const userId = ctx.params.user_code ? this.personService.decodeID(ctx.params.user_code) : null;
-					filter = {
-						asignee : userId
-						, week : ctx.params.week
-					};
-					let query = Workepository.find(filter);
-
-					return ctx.queryPageSort(query).exec()
+				const week = ctx.params.week;
+				if (week) {
+					const pdca = new Pdca(ctx);
+					return pdca.自分のその週のワーク一覧を取得する(week)
 						.then(docs => {
 							return this.toJSON(docs);
 						})
-						.then(json => {	
+						.then(json => {
 							return this.populateModels(json);
 						})
 						.then(json => {
-							if (userId) {
-								return this.personService.collection.findById(userId).exec()
-									.then(doc => {
-										if (doc.credentials.access_token) {
-											let week = moment(ctx.params.week);
-											const min = week.format();
-											const max = week.add(5, "d").format();
-			
-											console.log(min, max);
-
-											let oauth2Client = new OAuth2(clientID, clientSecret, redirectUrl);
-											oauth2Client.credentials = doc.credentials;
-				
-											let calendar = google.calendar("v3");
-											// @see https://github.com/google/google-api-nodejs-client/blob/master/src/apis/calendar/v3.ts#L1025
-		
-											return new Promise((resolve, reject) => {
-		
-												calendar.events.list({
-													// Auth client or API Key for the request
-													// auth?: string|OAuth2Client|JWT|Compute|UserRefreshClient;
-													auth: oauth2Client
-													, calendarId: "primary"
-													, timeMax: max
-													, timeMin: min
-													, maxResults: 10
-													, singleEvents: true
-													, orderBy: "startTime"
-												}
-												, (err, response) => {
-													if (err) {
-														return reject(err);
-													}
-													return resolve(response.data.items);
-												});
-											}).then(items => {
-												// Taschelで追加したイベントが重複して表示されないようにしている
-												items.forEach(item => {
-
-													if (item.source && item.source.title == CALENDAR_SOURCE_ID) {
-														// an event is made by taschel.
-														let eventId = String.fromCharCode.apply("", new Uint8Array(base32Decode((item.id	).toUpperCase(), "RFC4648-HEX")));
-														let workId = eventId.replace(EVENT_ID_PREFIX, "");
-
-														// TODO: jsonの中身と比べて、Googleカレンダー側で更新されていたら、workを更新
-														let work = json.find(j => this.decodeID(j.code) == workId);
-														console.log("■□■", work, item);
-												
-													} else {
-														// TODO: Google Caldndarで追加したイベントにも振り返りを可能にする
-
-														// Google Calendarで作成した予定だけ追加
-														json.push({
-															code: "GOOGLE_CALENDAR"
-															, title: item.summary
-															, start: item.start.dateTime
-															, end: item.end.dateTime
-															, week: ctx.params.week
-														});
-													}
-												});
-												return json;
-											});
-										} else {
-											return json;
-										}
-									});
-							} else {
-								return json;
-							}
-						});
-				} else {
-					// for timeline
-					filter = {
-						
-					};
-
-					let query = Workepository.find().sort({ updatedAt : -1 }).skip(0).limit(10);
-
-					return ctx.queryPageSort(query).exec()
-						.then(docs => {
-							return this.toJSON(docs);
-						})
-						.then(json => {	
-							return this.populateModels(json);
+							return pdca.Googleカレンダーからイベントを取得する(week)
+								.then(({ google, taschel }) => {
+									return json.concat(google);
+								});
 						});
 				}
 			}
@@ -186,7 +78,7 @@ module.exports = {
 		, create(ctx) {
 			this.validateParams(ctx, true);
 			
-			return Workepository.create({
+			return WorkRepository.create({
 				title: ctx.params.title
 				, start: ctx.params.start
 				, end: ctx.params.end
