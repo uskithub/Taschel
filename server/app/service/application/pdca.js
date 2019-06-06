@@ -182,4 +182,25 @@ module.exports = class Pdca {
 				});
 			});
 	}
+
+	ワークを編集する(workId, valuesForUpdate) {
+		return WorkRepository.findByIdAndUpdate(
+			workId
+			, { $set : valuesForUpdate }
+			, { "new" : true }
+		);
+	}
+
+	// Workを親Taskから削除し、親Taskを返します
+	ワークを削除する(workId, parentTaskId) {
+		return WorkRepository.remove({ _id: workId })
+			.then(() => {
+				return TaskRepository
+					.findByIdAndUpdate(
+						parentTaskId
+						, { $pull : { works: workId }}
+						, { "new" : true }
+					);	
+			});
+	}
 };

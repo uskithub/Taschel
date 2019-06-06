@@ -100,70 +100,39 @@ module.exports = {
 			ctx.assertModelIsExist(ctx.t("app:WorkNotFound"));
 			this.validateParams(ctx);
 
-			return this.collection.findById(ctx.modelID).exec()
+			const valuesForUpdate = Object.keys(WorkRepository.schema.obj)
+				.reduce((valuesForUpdate, key) => {
+					const value = ctx.params[key];
+					if (value) { 
+						valuesForUpdate[key] = value;	
+					}
+					return valuesForUpdate;
+				}, {});
+
+			console.log("&&&", valuesForUpdate);
+
+			const pdca = new Pdca(ctx);
+			return pdca.ワークを編集する(ctx.modelID, valuesForUpdate)
 				.then(doc => {
-					if (ctx.params.goal != null)
-						doc.goal = ctx.params.goal;
-
-					if (ctx.params.start != null)
-						doc.start = ctx.params.start;
-
-					if (ctx.params.end != null)
-						doc.end = ctx.params.end;
-
-					if (ctx.params.actualStart != null)
-						doc.actualStart = ctx.params.actualStart;
-
-					if (ctx.params.actualEnd != null)
-						doc.actualEnd = ctx.params.actualEnd;
-
-					if (ctx.params.description != null)
-						doc.description = ctx.params.description;
-
-					if (ctx.params.status != null)
-						doc.status = ctx.params.status;
-
-					if (ctx.params.goodSide != null)
-						doc.goodSide = ctx.params.goodSide;
-
-					if (ctx.params.badSide != null)
-						doc.badSide = ctx.params.badSide;
-
-					if (ctx.params.improvement != null)
-						doc.improvement = ctx.params.improvement;
-
-					return doc.save();
-				})
-				.then((doc) => {
 					return this.toJSON(doc);
 				})
-				.then((json) => {
+				.then(json => {
 					return this.populateModels(json);
-				})
-				.then((json) => {
-				//this.notifyModelChanges(ctx, "updated", json);
-					return json;
-				});								
+				});
 		}
 
 		// removing the model and updating the parent task.
 		, remove(ctx) {
 			ctx.assertModelIsExist(ctx.t("app:WorkNotFound"));
 
-			return WorkRepository.remove({ _id: ctx.modelID })
-				.then(() => {
-					return ctx.model;
+			const pdca = new Pdca(ctx);
+			const parentTaskId = this.taskService.decodeID(ctx.model.parent);
+			return pdca.ワークを削除する(ctx.modelID, parentTaskId)
+				.then(doc => {
+					return this.toJSON(doc);
 				})
 				.then(json => {
-					return TaskRepository.findById(this.taskService.decodeID(json.parent)).exec()
-						.then(taskDoc => {
-							taskDoc.works = taskDoc.works.filter(id => { return id != ctx.modelID; });
-							return taskDoc.save();
-						})
-						.then(doc => {
-							this.notifyModelChanges(ctx, "removed", json);
-							return json;
-						});		
+					return this.populateModels(json);
 				});
 		}	
 	}
