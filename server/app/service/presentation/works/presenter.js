@@ -88,10 +88,10 @@ module.exports = {
 			const pdca = new Pdca(ctx);
 			return pdca.ワークを追加する(newWork)
 				.then(doc => {
+					pdca.addEventToGoogleCalendar(doc);
 					return this.toJSON(doc);
 				})
 				.then(json => {
-					pdca.addEventToGoogleCalendar(newWork);
 					return this.populateModels(json);
 				});
 		}

@@ -110,7 +110,7 @@ module.exports = class Pdca {
 			.exec()
 			.then(doc => {
 				if (doc.credentials.access_token === undefined) {
-					return ret;
+					return Promise.reject("no access token");
 				}
 
 				let oauth2Client = new OAuth2(clientID, clientSecret, redirectUrl);
@@ -121,7 +121,7 @@ module.exports = class Pdca {
 
 				return new Promise((resolve, reject) => {
 					const idEncoded = base32Encode(
-						Uint8Array.from(Buffer.from(`${EVENT_ID_PREFIX}${doc.id}`))
+						Uint8Array.from(Buffer.from(`${ EVENT_ID_PREFIX }${ work.id }`))
 						, "RFC4648-HEX"
 						, { padding: false }
 					)
@@ -152,9 +152,15 @@ module.exports = class Pdca {
 						// callback: BodyResponseCallback<Schema$Event>
 						, (err, response) => {
 							if (err) { return reject(err); }
-							return resolve(response.data.items);
+							return resolve(response.data);
 						});
 				});
+			})
+			.then(data => {
+				console.log("Googleカレンダーへの登録に成功", data);
+			})
+			.catch(err => {
+				console.log("Googleカレンダーへの登録に失敗", err.message);
 			});
 	}
 
@@ -200,7 +206,7 @@ module.exports = class Pdca {
 						parentTaskId
 						, { $pull : { works: workId }}
 						, { "new" : true }
-					);	
+					);
 			});
 	}
 };
