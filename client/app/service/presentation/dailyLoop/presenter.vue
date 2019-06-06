@@ -4,6 +4,7 @@
 			@endEditing="onEndEditing"
 			@save="onSave"
 			@close="onClose"
+			@delete="onDelete"
 		)
 		daily-loop-reviewing-view(v-else-if="isReviewing", :date="reviewingDate", :entity="reviewEntity", :reviewingWorks="reviewingWorks", :schema="formSchemaReviewing"
 			@endReviewing="onEndReviewing"
@@ -33,6 +34,7 @@
 		, ワークを追加する
 		, ワークを編集する
 		, ワークをクローズする
+		, ワークを削除する
 		, 日次レビューする
 		, レビューを編集する
 		, タスクをクローズする
@@ -109,6 +111,7 @@
 				, ワークを追加する
 				, ワークを編集する
 				, ワークをクローズする
+				, ワークを削除する
 				, 日次レビューする
 				, レビューを編集する
 				, タスクをクローズする
@@ -206,6 +209,13 @@
 					} else {
 						this.タスクの最終実施日を更新する(task.rawValues);
 					}
+				}).then(() => {
+					this.onEndEditing();
+				});
+			}
+			, onDelete(data) {
+				return Promise.resolve().then(() => {
+					return this.ワークを削除する(data);
 				}).then(() => {
 					this.onEndEditing();
 				});

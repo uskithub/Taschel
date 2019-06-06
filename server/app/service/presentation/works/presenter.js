@@ -128,11 +128,9 @@ module.exports = {
 			const pdca = new Pdca(ctx);
 			const parentTaskId = this.taskService.decodeID(ctx.model.parent);
 			return pdca.ワークを削除する(ctx.modelID, parentTaskId)
-				.then(doc => {
-					return this.toJSON(doc);
-				})
-				.then(json => {
-					return this.populateModels(json);
+				.then(taskDoc => {
+					// taskDocを このWorkのPresenterでpopulateModelsしないこと。WorkのmodelPropFilterがあたったりしておかしくなる
+					return {};
 				});
 		}	
 	}

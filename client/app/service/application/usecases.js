@@ -30,6 +30,7 @@ export const 自分のその週のレビュー一覧を取得する = "自分の
 export const ワークを追加する = "ワークを追加する";
 export const ワークを編集する = "ワークを編集する";
 export const ワークをクローズする = "ワークをクローズする";
+export const ワークを削除する = "ワークを削除する";
 export const 日次レビューする = "日次レビューする";
 export const レビューを編集する = "レビューを編集する";
 export const タスクの最終実施日を更新する = "タスクの最終実施日を更新する"; 

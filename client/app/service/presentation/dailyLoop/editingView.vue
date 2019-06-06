@@ -18,6 +18,9 @@
 						button.button.danger(v-if="rawValues.status >= 0" @click="closeButtonDidPush($event, true)")
 							i.icon.fa.fa-save 
 							| {{ _("CloseWithTask") }}
+						button.button.danger(v-if="rawValues.status >= 0" @click="deleteButtonDidPush($event, true)")
+							i.icon.fa.fa-save 
+							| {{ _("Delete") }}
 </template>
 <script>
 	import Vue from "vue";
@@ -84,6 +87,9 @@
 				} else {
 					// Validation error
 				} 
+			}
+			, deleteButtonDidPush(e) {
+				this.$emit("delete", this.rawValues);
 			}
 		}
 		, created() {

@@ -11,6 +11,7 @@ import {
 	, ワークを追加する
 	, ワークを編集する
 	, ワークをクローズする
+	, ワークを削除する
 	, 日次レビューする
 	, レビューを編集する
 } from "service/application/usecases";
@@ -346,6 +347,12 @@ export default {
 					let work = new Work(data);
 					commit(PDCA.UPDATE_WORK, work);
 					return work;
+				});
+		}
+		, [ワークを削除する]({ commit }, rawValues) {
+			return works.delete(rawValues)
+				.then(data => {
+					// do nothing
 				});
 		}
 		// Usecase: a user review a day.

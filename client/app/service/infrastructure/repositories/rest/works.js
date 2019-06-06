@@ -20,8 +20,13 @@ const put = rawValues => {
 	return api(METHOD.put, NAMESPACE + "/" + rawValues.code, rawValues);
 };
 
+const _delete = rawValues => {
+	return api(METHOD.delete, NAMESPACE + "/" + rawValues.code, rawValues);
+};
+
 export default {
 	get
 	, post
 	, put
+	, delete: _delete
 };
