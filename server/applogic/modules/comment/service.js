@@ -8,7 +8,7 @@ let _			= require("lodash");
 
 let Comment 	= require("./models/comment");
 let Work 		= require("../../../app/service/infrastructure/repositories/workRepository");
-let Review 		= require("../reviews/models/review");
+let Review 		= require("../../../app/service/infrastructure/repositories/reviewRepository");
 
 module.exports = {
 	settings: {

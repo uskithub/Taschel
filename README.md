@@ -1,5 +1,5 @@
 
-# TaskTYpes
+# TaskTypes
 
 	          | Kanban            | Weekly
 ------------|-------------------|--------
@@ -12,7 +12,12 @@ way         | 未分類             | ◯
 step        | TODO              | ◯
 todo        | TODO              | ◯
 
+# API
 
+## Works
+
+/api/works
+  ?week=YYYY-MM-DD
 
 
 # TODO

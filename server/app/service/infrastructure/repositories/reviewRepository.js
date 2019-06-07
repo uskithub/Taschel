@@ -69,6 +69,6 @@ ReviewSchema.methods.decodeID = function(code) {
 	return hashids.decodeHex(code);
 };
 
-let Review = mongoose.model("Review", ReviewSchema);
+let ReviewRepository = mongoose.model("Review", ReviewSchema);
 
-module.exports = Review;
+module.exports = ReviewRepository;
