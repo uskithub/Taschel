@@ -7,8 +7,8 @@ let C 	 		= require("../../../core/constants");
 let _			= require("lodash");
 
 let Comment 	= require("./models/comment");
-let Work 		= require("../../../app/service/infrastructure/repositories/workRepository");
-let Review 		= require("../../../app/service/infrastructure/repositories/reviewRepository");
+let Work 		= require("../../../app/service/infrastructure/repositories/monogodb/workRepository");
+let Review 		= require("../../../app/service/infrastructure/repositories/monogodb/reviewRepository");
 
 module.exports = {
 	settings: {

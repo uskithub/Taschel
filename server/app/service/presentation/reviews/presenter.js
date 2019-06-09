@@ -7,8 +7,8 @@ let slack				= require("../../../../applogic/libs/slack");
 
 let _					= require("lodash");
 
-let ReviewRepository	= require("../../infrastructure/repositories/reviewRepository");
-let WorkRepository		= require("../../infrastructure/repositories/workRepository");
+let ReviewRepository	= require("../../infrastructure/repositories/monogodb/reviewRepository");
+let WorkRepository		= require("../../infrastructure/repositories/monogodb/workRepository");
 
 module.exports = {
 	settings: {

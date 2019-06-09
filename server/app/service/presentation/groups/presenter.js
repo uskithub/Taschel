@@ -7,8 +7,8 @@ let C 	 		= require("../../../../core/constants");
 
 let _			= require("lodash");
 
-let GroupRepository = require("../../infrastructure/repositories/groupRepository");
-let TaskRepository	= require("../../infrastructure/repositories/taskRepository");
+let GroupRepository = require("../../infrastructure/repositories/monogodb/groupRepository");
+let TaskRepository	= require("../../infrastructure/repositories/monogodb/taskRepository");
 
 const notImplementedError = (funcName) => {
 	const msg = `TODO: ${this.constructor.name}.${funcName} は未実装です。`;

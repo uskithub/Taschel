@@ -1,6 +1,6 @@
 
 const TaskService		= require("../domain/taskService");
-const TaskRepository 	= require("../infrastructure/repositories/taskRepository");
+const TaskRepository 	= require("../infrastructure/repositories/monogodb/taskRepository");
 
 const taskService = new TaskService();
 

@@ -9,8 +9,8 @@ let _				= require("lodash");
 
 const Pdca 			= require("../../application/pdca");
 
-let WorkRepository 	= require("../../infrastructure/repositories/workRepository");
-let TaskRepository 	= require("../../infrastructure/repositories/taskRepository");
+let WorkRepository 	= require("../../infrastructure/repositories/monogodb/workRepository");
+let TaskRepository 	= require("../../infrastructure/repositories/monogodb/taskRepository");
 
 
 module.exports = {
