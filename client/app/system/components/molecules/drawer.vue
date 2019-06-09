@@ -28,16 +28,17 @@
 						v-list-tile
 							v-list-tile-content
 								v-list-tile-title {{ item.text }}
-					v-list-tile(
+					router-link(
 						v-for="(child, i) in item.children"
+						:to="child.href"
 						:key="i"
-						@click=""
+						tag="v-list-tile"
 					)
 						v-list-tile-action(v-if="child.icon")
 							v-icon {{ child.icon }}
 						v-list-tile-content
 							v-list-tile-title {{ child.text }}
-				v-list-tile(v-else :key="item.text" @click="")
+				router-link(v-else :to="item.href" :key="item.text" tag="v-list-tile")
 					v-list-tile-action
 						v-icon {{ item.icon }}
 					v-list-tile-content
