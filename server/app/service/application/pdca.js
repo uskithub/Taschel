@@ -1,8 +1,3 @@
-const config 			= require("../../../config");
-const google			= require("googleapis");
-const moment 			= require("moment");
-const base32Decode		= require("base32-decode");
-const base32Encode		= require("base32-encode");
 // const TaskService		= require("../domain/taskService");
 
 const WorkRepository 	= require("../infrastructure/repositories/monogodb/workRepository");
@@ -12,17 +7,10 @@ const TaskRepository 	= require("../infrastructure/repositories/monogodb/taskRep
 // const GroupRepository 	= require("../infrastructure/repositories/groupRepository");
 
 const CalendarRepository 	= require("../infrastructure/repositories/googleApis/CalendarRepository");
+const SlackRepository 	= require("../infrastructure/repositories/slack/SlackRepository");
 
 // const taskService = new TaskService();
 
-const clientID 		= config.authKeys.google.clientID;
-const clientSecret	= config.authKeys.google.clientSecret;
-
-const redirectUrl	= "/auth/google/callback";
-const OAuth2		= google.auth.OAuth2;
-
-const EVENT_ID_PREFIX = "taschel:";
-const CALENDAR_SOURCE_ID = "Taschel";
 
 //
 //	InteractorはUsecaseを実現する。
@@ -132,13 +120,30 @@ module.exports = class Pdca {
 	日次レビューする(review) {
 		return ReviewRepository.create(review)
 			.then(doc => {
-			// 同時に親のTaskに追加
-				return TaskRepository.findByIdAndUpdate(
-					doc.parent
-					, { $addToSet : { works: doc.id }}
-				).then(() => {
-					return doc;
-				});
+				// slackへのPOST用にworkを取得（後続処理に関係ない非同期処理）
+				const filter = {
+					_id : { $in : doc.works }
+				};
+				WorkRepository.find(filter)
+					.exec()
+					.then(docs => {
+						let message = docs.reduce((message, d) => {
+							message += `:fencer: *${d.title}*\n`;
+							message += `${d.description}\n`;
+							if (d.goodSide != undefined && d.goodSide != "") { message += `> :blush: ${d.goodSide}\n`; }
+							if (d.badSide != undefined && d.badSide != "") { message += `> :tired_face: ${d.badSide}\n`; }
+							if (d.improvement != undefined && d.improvement != "") { message += `> :thinking_face: ${d.improvement}\n`; }
+							message += "\n";
+							return message;
+						}, "");
+
+						message += `→ \`${doc.highOrderAwakening}\``;
+
+						const slackRepository = new SlackRepository();
+						slackRepository.postMessage(`${this.context.user.username} の ${doc.date} のレビュー:sparkles:\n ${message}`);
+					});
+				// あくまでworkのdocを返すこと
+				return doc;
 			});
 	}
 };

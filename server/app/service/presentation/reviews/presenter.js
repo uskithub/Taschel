@@ -79,39 +79,10 @@ module.exports = {
 			const pdca = new Pdca(ctx);
 			return pdca.日次レビューする(newReview)
 				.then(doc => {
-				// slackへのPOST用にworkを取得（後続処理に関係ない非同期処理）
-					let filter = {
-						_id : { $in : doc.works }
-					};
-					WorkRepository.find(filter).exec()
-						.then(docs => {
-							let message = docs.reduce((message, d) => {
-								message += `:fencer: *${d.title}*\n`;
-								message += `${d.description}\n`;
-								if (d.goodSide != undefined && d.goodSide != "") { message += `> :blush: ${d.goodSide}\n`; }
-								if (d.badSide != undefined && d.badSide != "") { message += `> :tired_face: ${d.badSide}\n`; }
-								if (d.improvement != undefined && d.improvement != "") { message += `> :thinking_face: ${d.improvement}\n`; }
-								message += "\n";
-								return message;
-							}, "");
-
-							message += `→ \`${doc.highOrderAwakening}\``;
-
-						// slack.postMessage(`${ctx.user.username} の ${doc.date} のレビュー:sparkles:\n ${message}`);
-						});
-					// あくまでworkのdocを返すこと
-					return doc;
-				})
-				.then(doc => {
 					return this.toJSON(doc);
 				})
 				.then(json => {
 					return this.populateModels(json);
-				})
-				.then(json => {
-					this.notifyModelChanges(ctx, "created", json);
-					//slack.postMessage(`${ctx.user.username} が日次レビューをした！`);
-					return json;
 				});
 		}
 
