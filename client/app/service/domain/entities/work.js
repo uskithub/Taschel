@@ -45,7 +45,10 @@ const _fields = {
 					rawValues.actualStart = moment(rawValues.start).hour(hhmm[0]).minute(hhmm[1]);
 				}
 			}
-			, validator: validators.date
+			, validator: (value, field, model, messages) => {
+				console.log(value, field, model, messages);
+				console.log(validators.date);
+			}
 		}
 	}
 	, actualEnd: {

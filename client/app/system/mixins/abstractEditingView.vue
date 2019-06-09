@@ -31,9 +31,9 @@
 
 				form.$children.forEach(child => {
 					// notice: the required option not work without the validator option.
-					if (child.schema.requiredInClosing) {
-						child.schema._required = child.schema.required;
-						child.schema.required = true;
+					if (child.field.requiredInClosing) {
+						child.field._required = child.field.required;
+						child.field.required = true;
 					}
 				});
 
@@ -55,7 +55,7 @@
 						if (isArray(err) && err.length > 0) {
 							err.forEach(error => {
 								formErrors.push({
-									field: fields[i].schema,
+									field: fields[i].field,
 									error: error,
 								});
 							});
@@ -66,8 +66,8 @@
 					form.$emit("validated", isValid, formErrors);
 
 					form.$children.forEach(child => {
-						if (child.schema.requiredInClosing) {
-							child.schema.required = child.schema._required;
+						if (child.field.requiredInClosing) {
+							child.field.required = child.field._required;
 						}
 					});
 
