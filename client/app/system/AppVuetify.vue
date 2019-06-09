@@ -23,7 +23,7 @@
 			, items: [
 				{ icon: "home", text: "Home", href: "/" }
 				, { icon: "home", text: "Projects", href: "/projects" }
-				, { icon: "home", text: "WeeklyPlan", href: "/WeeklyPlan" }
+				, { icon: "home", text: "WeeklyPlan", href: "/weeklyPlan" }
 				, { icon: "home", text: "WeeklyReview", href: "/weeklyReview" }
 				, { icon: "home", text: "DailyLoop", href: "/dailyLoop" }
 				, { icon: "home", text: "Kanban", href: "/kanban" }
