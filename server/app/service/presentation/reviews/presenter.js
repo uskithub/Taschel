@@ -7,6 +7,8 @@ let slack				= require("../../../../applogic/libs/slack");
 
 let _					= require("lodash");
 
+const Pdca 			= require("../../application/pdca");
+
 let ReviewRepository	= require("../../infrastructure/repositories/monogodb/reviewRepository");
 let WorkRepository		= require("../../infrastructure/repositories/monogodb/workRepository");
 
@@ -40,25 +42,17 @@ module.exports = {
 		find: {
 			cache: true
 			, handler(ctx) {
-				let filter = {};
-
-				if (ctx.params.date) {
-					filter.date = ctx.params.date;
-				} else {
-					filter = {
-						author : this.personService.decodeID(ctx.params.user_code)
-						, week : ctx.params.week
-					};
+				const week = ctx.params.week;
+				if (week) {
+					const pdca = new Pdca(ctx);
+					return pdca.自分のその週のレビュー一覧を取得する(week)
+						.then(docs => {
+							return this.toJSON(docs);
+						})
+						.then(json => {
+							return this.populateModels(json);
+						});
 				}
-				
-				let query = ReviewRepository.find(filter);
-
-				return ctx.queryPageSort(query).exec().then(docs => {
-					return this.toJSON(docs);
-				})
-					.then(json => {
-						return this.populateModels(json);
-					});
 			}
 		}
 
@@ -73,38 +67,41 @@ module.exports = {
 
 		, create(ctx) {
 			this.validateParams(ctx, true);
-			
-			return ReviewRepository.create({
+
+			const newReview = {
 				week: ctx.params.week
 				, date: ctx.params.date
-				// , works: this.workService.decodeID(ctx.params.work_code)
 				, highOrderAwakening: ctx.params.highOrderAwakening
-				, works: ctx.params.works.map(code => { return this.workService.decodeID(code); })
+				, works: ctx.params.works.map(code => this.workService.decodeID(code))
 				, author : ctx.user.id
-			}).then(doc => {
+			};
+			
+			const pdca = new Pdca(ctx);
+			return pdca.日次レビューする(newReview)
+				.then(doc => {
 				// slackへのPOST用にworkを取得（後続処理に関係ない非同期処理）
-				let filter = {
-					_id : { $in : doc.works }
-				};
-				WorkRepository.find(filter).exec()
-					.then(docs => {
-						let message = docs.reduce((message, d) => {
-							message += `:fencer: *${d.title}*\n`;
-							message += `${d.description}\n`;
-							if (d.goodSide != undefined && d.goodSide != "") { message += `> :blush: ${d.goodSide}\n`; }
-							if (d.badSide != undefined && d.badSide != "") { message += `> :tired_face: ${d.badSide}\n`; }
-							if (d.improvement != undefined && d.improvement != "") { message += `> :thinking_face: ${d.improvement}\n`; }
-							message += "\n";
-							return message;
-						}, "");
+					let filter = {
+						_id : { $in : doc.works }
+					};
+					WorkRepository.find(filter).exec()
+						.then(docs => {
+							let message = docs.reduce((message, d) => {
+								message += `:fencer: *${d.title}*\n`;
+								message += `${d.description}\n`;
+								if (d.goodSide != undefined && d.goodSide != "") { message += `> :blush: ${d.goodSide}\n`; }
+								if (d.badSide != undefined && d.badSide != "") { message += `> :tired_face: ${d.badSide}\n`; }
+								if (d.improvement != undefined && d.improvement != "") { message += `> :thinking_face: ${d.improvement}\n`; }
+								message += "\n";
+								return message;
+							}, "");
 
-						message += `→ \`${doc.highOrderAwakening}\``;
+							message += `→ \`${doc.highOrderAwakening}\``;
 
 						// slack.postMessage(`${ctx.user.username} の ${doc.date} のレビュー:sparkles:\n ${message}`);
-					});
-				// あくまでworkのdocを返すこと
-				return doc;
-			})
+						});
+					// あくまでworkのdocを返すこと
+					return doc;
+				})
 				.then(doc => {
 					return this.toJSON(doc);
 				})
