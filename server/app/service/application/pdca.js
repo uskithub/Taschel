@@ -5,10 +5,13 @@ const base32Decode		= require("base32-decode");
 const base32Encode		= require("base32-encode");
 // const TaskService		= require("../domain/taskService");
 
-const WorkRepository 	= require("../infrastructure/repositories/workRepository");
+const WorkRepository 	= require("../infrastructure/repositories/monogodb/workRepository");
+const ReviewRepository 	= require("../infrastructure/repositories/monogodb/reviewRepository");
 const UserRepository 	= require("../../../models/user");
-const TaskRepository 	= require("../infrastructure/repositories/taskRepository");
+const TaskRepository 	= require("../infrastructure/repositories/monogodb/taskRepository");
 // const GroupRepository 	= require("../infrastructure/repositories/groupRepository");
+
+const CalendarRepository 	= require("../infrastructure/repositories/googleApis/CalendarRepository");
 
 // const taskService = new TaskService();
 
@@ -41,64 +44,8 @@ module.exports = class Pdca {
 					return ret;
 				}
 
-				let _week = moment(week);
-				const min = _week.format();
-				const max = _week.add(5, "d").format();
-
-				let oauth2Client = new OAuth2(clientID, clientSecret, redirectUrl);
-				oauth2Client.credentials = doc.credentials;
-			
-				let calendar = google.calendar("v3");
-				// @see https://github.com/google/google-api-nodejs-client/blob/master/src/apis/calendar/v3.ts#L1025
-	
-				return new Promise((resolve, reject) => {
-					calendar.events.list({
-						// Auth client or API Key for the request
-						// auth?: string|OAuth2Client|JWT|Compute|UserRefreshClient;
-						auth: oauth2Client
-						, calendarId: "primary"
-						, timeMax: max
-						, timeMin: min
-						, maxResults: 10
-						, singleEvents: true
-						, orderBy: "startTime"
-					}
-					, (err, response) => {
-						if (err) { return reject(err); }
-						return resolve(response.data.items);
-					});
-				}).then(items => {
-					// Taschelで追加したイベントが重複して表示されないようにしている
-					return items.reduce((ret, item, idx) => {
-
-						if (item.source && item.source.title === CALENDAR_SOURCE_ID) {
-							// an event is made by taschel.
-							const eventId = String.fromCharCode.apply("", new Uint8Array(base32Decode((item.id).toUpperCase(), "RFC4648-HEX")));
-							const workId = eventId.replace(EVENT_ID_PREFIX, "");
-
-							// TODO: jsonの中身と比べて、Googleカレンダー側で更新されていたら、workを更新
-							ret.taschel.push({
-								_id: workId
-								, title: item.summary
-								, start: item.start.dateTime
-								, end: item.end.dateTime
-								, week: week
-							});			
-						} else {
-							// TODO: Google Caldndarで追加したイベントにも振り返りを可能にする
-
-							// Google Calendarで作成した予定だけ追加
-							ret.google.push({
-								code: "GOOGLE_CALENDAR"
-								, title: item.summary
-								, start: item.start.dateTime
-								, end: item.end.dateTime
-								, week: week
-							});
-						}
-						return ret;
-					}, ret);
-				});
+				const calendarRepository = new CalendarRepository(doc.credentials);
+				return calendarRepository.getEventsFromGoogleCalendar(week);
 			});
 	}
 
@@ -113,48 +60,8 @@ module.exports = class Pdca {
 					return Promise.reject("no access token");
 				}
 
-				let oauth2Client = new OAuth2(clientID, clientSecret, redirectUrl);
-				oauth2Client.credentials = doc.credentials;
-
-				let calendar = google.calendar("v3");
-				// @see https://github.com/google/google-api-nodejs-client/blob/master/src/apis/calendar/v3.ts#L3433
-
-				return new Promise((resolve, reject) => {
-					const idEncoded = base32Encode(
-						Uint8Array.from(Buffer.from(`${ EVENT_ID_PREFIX }${ work.id }`))
-						, "RFC4648-HEX"
-						, { padding: false }
-					)
-						.toLowerCase();
-
-					calendar.events.insert(
-						// params: Params$Resource$Events$Insert
-						{ 
-							// Auth client or API Key for the request
-							// auth?: string|OAuth2Client|JWT|Compute|UserRefreshClient;
-							auth: oauth2Client
-							, calendarId: "primary"
-							, resource: {
-								// required
-								start: { dateTime: work.start }
-								, end: { dateTime: work.end }
-								// optional
-								, id : idEncoded
-								, summary : work.title
-								, colorId : "2"
-								// , description: ""
-								, source : {
-									title : CALENDAR_SOURCE_ID
-									, url : "https://taschel.com/"
-								}
-							}
-						}
-						// callback: BodyResponseCallback<Schema$Event>
-						, (err, response) => {
-							if (err) { return reject(err); }
-							return resolve(response.data);
-						});
-				});
+				const calendarRepository = new CalendarRepository(doc.credentials);
+				return calendarRepository.addEventToGoogleCalendar(work);
 			})
 			.then(data => {
 				console.log("Googleカレンダーへの登録に成功", data);
@@ -207,6 +114,31 @@ module.exports = class Pdca {
 						, { $pull : { works: workId }}
 						, { "new" : true }
 					);
+			});
+	}
+
+	自分のその週のレビュー一覧を取得する(week) {
+		const filter = {
+			author : this.context.user.id
+			, week : week
+		};
+
+		const query = ReviewRepository.find(filter);
+		return this.context
+			.queryPageSort(query)
+			.exec();
+	}
+
+	日次レビューする(review) {
+		return ReviewRepository.create(review)
+			.then(doc => {
+			// 同時に親のTaskに追加
+				return TaskRepository.findByIdAndUpdate(
+					doc.parent
+					, { $addToSet : { works: doc.id }}
+				).then(() => {
+					return doc;
+				});
 			});
 	}
 };
