@@ -167,13 +167,28 @@ module.exports = {
 				.reduce((valuesForUpdate, key) => {
 					const value = ctx.params[key];
 					if (value) { 
-						if (key === "parent") {
-							valuesForUpdate[key] = Number(this.decodeID(value));
-						} else if (key === "children") {
-							valuesForUpdate[key] = value.map(code => { return Number(this.decodeID(code)); });
-						} else {
-							valuesForUpdate[key] = value;	
+						switch (key) {
+						case "parent": {
+							valuesForUpdate[key] = this.decodeID(value);
+							break;
 						}
+						case "children": {
+							valuesForUpdate[key] = value.map(code => this.decodeID(code));
+							break;
+						}
+						case "author": {
+							valuesForUpdate[key] = this.personService.decodeID(value.code);
+							break;
+						}
+						case "asignee": {
+							valuesForUpdate[key] = this.personService.decodeID(value);
+							break;
+						}
+						default:
+							valuesForUpdate[key] = value;
+							break;
+						}
+						
 					}
 					return valuesForUpdate;
 				}, {});

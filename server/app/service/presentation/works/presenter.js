@@ -104,7 +104,24 @@ module.exports = {
 				.reduce((valuesForUpdate, key) => {
 					const value = ctx.params[key];
 					if (value) { 
-						valuesForUpdate[key] = value;	
+						switch (key) {
+						case "parent": {
+							valuesForUpdate[key] = this.taskService.decodeID(value);
+							break;
+						}
+						case "author": {
+							valuesForUpdate[key] = this.personService.decodeID(value.code);
+							break;
+						}
+						case "asignee": {
+							valuesForUpdate[key] = this.personService.decodeID(value);
+							break;
+						}
+						default:
+							valuesForUpdate[key] = value;
+							break;
+						}
+						
 					}
 					return valuesForUpdate;
 				}, {});
