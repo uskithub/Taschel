@@ -1,6 +1,6 @@
 <template lang="pug">
 	.container
-		daily-loop-editing-view(v-if="isEditing", :entity="workEntity", :schema="formSchemaEditing"
+		daily-loop-editing-view(v-if="isEditing", :rawValues="workRawValuesForEditing", :schema="formSchemaEditing"
 			@endEditing="onEndEditing"
 			@save="onSave"
 			@close="onClose"
@@ -43,6 +43,7 @@
 
 	import schema from "./schema";
 	import moment from "moment";
+	import { cloneDeep } from "lodash";
 
 	const _ = Vue.prototype._;
 
@@ -74,15 +75,6 @@
 			, DailyLoopEditingView
 			, DailyLoopReviewingView
 		}
-		, computed : {
-			...mapGetters([
-				"currentWeek"
-				, "currentWeekOfMonth"
-				, "currentweekTasks"
-				, "currentWeekWorks"
-				, "currentWeekReviews"
-			])
-		}
 		, data() {
 			schema.fullCalendar.drop = this.didDropTask;
 			schema.fullCalendar.eventDrop = this.didRelocateEvent;
@@ -101,6 +93,34 @@
 				, formSchemaReviewing : schema.formReviewing
 				, fullcalendarSchema: schema.fullCalendar
 			};
+		}
+		, computed: {
+			...mapGetters([
+				"currentWeek"
+				, "currentWeekOfMonth"
+				, "currentweekTasks"
+				, "currentWeekWorks"
+				, "currentWeekReviews"
+			])
+			, workRawValuesForEditing() {
+				let rawValues = this.workEntity.rawValues;
+				console.log(rawValues);
+				if (this.workEntity && this.workEntity.status === 0) {
+					if (this.workEntity.actualStart === undefined) {
+						rawValues.actualStart = cloneDeep(rawValues.start);
+					}
+					if (this.workEntity.actualEnd === undefined) {
+						// 当日なら（作業後に入れているので）その時間を初期値に
+						if (moment().isSame(moment(this.workEntity.end), "day")) {
+							rawValues.actualEnd = new Date();
+						} else {
+							// 別の日なら後から入れているので終了予定時刻
+							rawValues.actualEnd = cloneDeep(rawValues.end);
+						}
+					}
+				}
+				return rawValues;
+			}
 		}
 		, methods : {
 			...mapActions([
@@ -164,7 +184,7 @@
 				} else {
 					for (let i in this.currentWeekWorks) {
 						let work = this.currentWeekWorks[i];
-						if (work.code == event.id) {
+						if (work.code === event.id) {
 							this.workEntity = work;
 							this.isEditing = true;
 							return;

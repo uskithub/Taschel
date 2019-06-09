@@ -33,9 +33,7 @@ const _fields = {
 				, stepping: 5
 			}
 			, get(rawValues) {
-				if (rawValues.actualStart === undefined) {
-					return moment(rawValues.start).format("HH:mm");
-				} else {
+				if (rawValues.actualStart !== undefined) {
 					return moment(rawValues.actualStart).format("HH:mm");
 				}
 			}
@@ -45,10 +43,7 @@ const _fields = {
 					rawValues.actualStart = moment(rawValues.start).hour(hhmm[0]).minute(hhmm[1]);
 				}
 			}
-			, validator: (value, field, model, messages) => {
-				console.log(value, field, model, messages);
-				console.log(validators.date);
-			}
+			, validator: validators.date
 		}
 	}
 	, actualEnd: {
@@ -65,10 +60,8 @@ const _fields = {
 				, stepping: 5
 			}
 			, get(rawValues) {
-				if (rawValues.actualEnd === undefined) {
-					return moment().format("HH:mm");
-				} else {
-					return moment(rawValues.actualEnd).format("HH:mm");
+				if (rawValues.actualEnd !== undefined) {
+					return moment(rawValues.actualEnd).format("HH:mm");					
 				}
 			}
 			, set(rawValues, newValue) {

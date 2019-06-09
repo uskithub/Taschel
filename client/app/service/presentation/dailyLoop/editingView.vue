@@ -1,10 +1,10 @@
 <template lang="pug">
 	fieldset
 		.panel
-			.header {{ entity.title }}
+			.header {{ rawValues.title }}
 			.body
 				.form
-					vue-form-generator(:schema="schema", :model="rawValues", :options="options", :is-new-model="isNewEntity" ref="form")
+					vue-form-generator(:schema="schema", :model="model", :options="options" ref="form")
 					.buttons.flex.justify-end
 						button.button.outline(@click="$emit('endEditing')")
 							i.icon.fa.fa-chevron-left
@@ -12,13 +12,13 @@
 						button.button.primary(@click="saveButtonDidPush")
 							i.icon.fa.fa-save 
 							| {{ _("Save") }}
-						button.button.danger(v-if="rawValues.status >= 0" @click="closeButtonDidPush")
+						button.button.danger(v-if="model.status >= 0" @click="closeButtonDidPush")
 							i.icon.fa.fa-save 
 							| {{ _("Close") }}
-						button.button.danger(v-if="rawValues.status >= 0" @click="closeButtonDidPush($event, true)")
+						button.button.danger(v-if="model.status >= 0" @click="closeButtonDidPush($event, true)")
 							i.icon.fa.fa-save 
 							| {{ _("CloseWithTask") }}
-						button.button.danger(v-if="rawValues.status >= 0" @click="deleteButtonDidPush($event, true)")
+						button.button.danger(v-if="model.status >= 0" @click="deleteButtonDidPush($event, true)")
 							i.icon.fa.fa-save 
 							| {{ _("Delete") }}
 </template>
@@ -39,7 +39,7 @@
             , AbstractEditingView 
         ]
 		, props : {
-			entity : {
+			rawValues : {
 				type: Object
 				, validator: (value) => { return true; } // TODO
 			}
@@ -53,28 +53,25 @@
 			}
 		}
 		, data() {
-			let _rawValues = this.entity ? this.entity.rawValues : schemaUtils.createDefaultObject(this.schema);
-
 			return {
-				rawValues: _rawValues
+				model: this.rawValues
 				, options: {}
 			};
 		}
 		, computed: {
-			isNewEntity() { return this.entity === null; }
-			, treenodes() { return [this.taskTree]; }
+			treenodes() { return [this.taskTree]; }
 		}
 		, methods : {
 			saveButtonDidPush() {
-				if (this.rawValues.status < 0) {
+				if (this.model.status < 0) {
 					if (this.validateInClosing() && this.validate()) {
-						this.$emit("save", this.rawValues);
+						this.$emit("save", this.model);
 					} else {
 						// Validation error
 					} 
 				} else {
 					if (this.validate()) {
-						this.$emit("save", this.rawValues);
+						this.$emit("save", this.model);
 					} else {
 						// Validation error
 					}
@@ -83,17 +80,17 @@
 			// Usecase: a user close the work.
 			, closeButtonDidPush(e, withTask = false) {
 				if (this.validateInClosing()) {
-					this.$emit("close", this.rawValues, withTask);
+					this.$emit("close", this.model, withTask);
 				} else {
 					// Validation error
 				} 
 			}
 			, deleteButtonDidPush(e) {
-				this.$emit("delete", this.rawValues);
+				this.$emit("delete", this.model);
 			}
 		}
 		, created() {
-			this.pushCrumb({ id: this._uid, name: this.entity.title });
+			this.pushCrumb({ id: this._uid, name: this.rawValues.title });
 		}
 	}
 </script>
