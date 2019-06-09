@@ -2,6 +2,7 @@
 
 let webpack = require("webpack");
 let path = require("path");
+const VueLoaderPlugin = require("vue-loader/lib/plugin");
 
 let merge = require("webpack-merge");
 let baseWpConfig = require("./webpack.base.config");
@@ -21,20 +22,24 @@ module.exports = merge(baseWpConfig, {
 					, "css-loader"
 					, "postcss-loader"
 					, {
-						loader: 'sass-loader'
+						loader: "sass-loader"
 						, options: {
-						  	includePaths: [
+							includePaths: [
 								path.resolve(__dirname, "..", "client", "scss")
 								, path.resolve(__dirname, "..", "node_modules")
 							]
 						}
-					},
+					}
 				]
 			}
 			, {
 				test: /\.vue$/
 				, loader: "vue-loader"
-			}			
+			}
+			, {
+				test: /\.pug$/
+				, loader: "pug-plain-loader"
+			}
 		]
 	}
 
@@ -43,7 +48,8 @@ module.exports = merge(baseWpConfig, {
 	}
 
 	, plugins: [
-		new webpack.HotModuleReplacementPlugin()
+		new VueLoaderPlugin()
+		, new webpack.HotModuleReplacementPlugin()
 		, new webpack.NoEmitOnErrorsPlugin()
 	]
 });

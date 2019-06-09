@@ -6,6 +6,7 @@ let path = require("path");
 let merge = require("webpack-merge");
 let baseWpConfig = require("./webpack.base.config");
 let ExtractTextPlugin = require("extract-text-webpack-plugin");
+const VueLoaderPlugin = require("vue-loader/lib/plugin");
 
 module.exports = merge(baseWpConfig, {
 	module: {
@@ -25,7 +26,8 @@ module.exports = merge(baseWpConfig, {
 						loader: "sass-loader"
 					}]
 				})
-			}, {
+			}
+			, {
 				test: /\.vue$/
 				, loader: "vue-loader"
 				, options: {
@@ -47,19 +49,24 @@ module.exports = merge(baseWpConfig, {
 									, options: {
 										includePaths: [
 											path.resolve(__dirname, "..", "client", "scss")
-									  		, path.resolve(__dirname, "..", "node_modules")
-								  		]
-							  		}
+											, path.resolve(__dirname, "..", "node_modules")
+										]
+									}
 								}
 							]
 						})
 					}
 				}
 			}
+			, {
+				test: /\.pug$/
+				, loader: "pug-plain-loader"
+			}
 		]
 	}
 	, plugins: [
-		new webpack.DefinePlugin({
+		new VueLoaderPlugin()
+		, new webpack.DefinePlugin({
 			"process.env": {
 				"NODE_ENV": JSON.stringify("production")
 			}

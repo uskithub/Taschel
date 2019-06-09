@@ -25,7 +25,8 @@ import SystemComponents from "system/components/index";
 import KanbanPlugin from "plugins/kanban/index";
 import GanttPlugin from "plugins/gantt/index";
 
-import App from "./system/App";
+// import App from "./system/App";
+import App from "./system/AppVuetify";
 
 Vue.use(Vuetify);
 Vue.use(Filters);

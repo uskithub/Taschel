@@ -33,7 +33,7 @@
     }
 </script>
 <style>
-    @import "fullcalendar/dist/fullcalendar.css";
+    @import "~fullcalendar/dist/fullcalendar.css";
 	
     /* .fc-divider.fc-widget-header { 
         width: 100%; 
