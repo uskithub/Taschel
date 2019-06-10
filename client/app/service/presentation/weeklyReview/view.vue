@@ -3,7 +3,7 @@
 		.panel
 			.header {{ header }}
 			.body
-				kanban-board(:boards="[currentweekReviewBoard]" @arrange="")
+				kanban-board(:boards="[currentweekReviewBoard]" @arrange="onArrange")
 					template(v-slot:kanban="slotProps")
 						.text-muted(v-if="slotProps.isTopLevel") {{ slotProps.content }}
 						table(v-else)
@@ -55,6 +55,9 @@
 		, methods : { 
 			selectButtonDidPush(entity) {
 				this.$emit("select", entity);
+			}
+			, onArrange({ kanban, from, to, index }) {
+				console.log(kanban, from, to, index);
 			}
         }
         , created() {

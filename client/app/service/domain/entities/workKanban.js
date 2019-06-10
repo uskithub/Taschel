@@ -10,5 +10,6 @@ export default	class WorkKanban extends Kanban {
 	get name() { return this._work.title; }
 	get tag() { return null; }
 	get content() { return this._work; }
+	get styleClass() { return null; }
 	get kanbans() { return []; }
 }

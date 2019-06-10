@@ -1,4 +1,4 @@
-import Kanban from "plugins/kanban/entities/kanban";
+import Kanban from "../../../plugins/kanban/entities/kanban";
 import WorkKanban from "./workKanban";
 
 export default class ReviewKanban extends Kanban {
@@ -11,5 +11,6 @@ export default class ReviewKanban extends Kanban {
 	get name() { return this._review.date; }
 	get tag() { return null; }
 	get content() { return this._review.highOrderAwakening; }
+	get styleClass() { return null; }
 	get kanbans() { return this._review.works.map( w => new WorkKanban(w)); }
 }
