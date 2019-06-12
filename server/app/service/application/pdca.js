@@ -2,6 +2,8 @@
 
 const WorkRepository 	= require("../infrastructure/repositories/monogodb/workRepository");
 const ReviewRepository 	= require("../infrastructure/repositories/monogodb/reviewRepository");
+const WeeklyReviewRepository 	= require("../infrastructure/repositories/monogodb/weeklyReviewRepository");
+const ReviewItemRepository 	= require("../infrastructure/repositories/monogodb/reviewItemRepository");
 const UserRepository 	= require("../../../models/user");
 const TaskRepository 	= require("../infrastructure/repositories/monogodb/taskRepository");
 // const GroupRepository 	= require("../infrastructure/repositories/groupRepository");
@@ -145,5 +147,34 @@ module.exports = class Pdca {
 				// あくまでworkのdocを返すこと
 				return doc;
 			});
+	}
+
+	レビュー対象を選択する(reviewItem) {
+		return ReviewItemRepository.create(reviewItem);
+	}
+
+	自分のその週の週次レビューを取得する(week) {
+		const filter = {
+			author : this.context.user.id
+			, week : week
+		};
+
+		const query = WeeklyReviewRepository.find(filter);
+		return this.context
+			.queryPageSort(query)
+			.exec();
+	}
+
+	週次レビューを追加する(weeklyReview) {
+		return WeeklyReviewRepository.create(weeklyReview);
+	}
+
+	週次レビューにレビュー対象を追加する(weeklyReviewId, itemId) {
+		return WeeklyReviewRepository
+			.findByIdAndUpdate(
+				weeklyReviewId
+				, { $set : { items: itemId }}
+				, { "new" : true }
+			);
 	}
 };
