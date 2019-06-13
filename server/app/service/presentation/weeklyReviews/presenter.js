@@ -25,7 +25,6 @@ module.exports = {
 		, permission: C.PERM_LOGGEDIN
 		, role: "user"
 		, collection: WeeklyReviewRepository
-		
 		, modelPropFilter: "code week items author createdAt updatedAt"
 
 		// TODO: populateModelsを改造すれば、下にのみpopulate、上にのみpopulateもできる
@@ -59,7 +58,7 @@ module.exports = {
 
 		// return a model by ID
 		, get: {
-			cache: true
+			cache: false
 			, handler(ctx) {
 				ctx.assertModelIsExist(ctx.t("app:TaskNotFound"));
 				return Promise.resolve(ctx.model);
@@ -156,14 +155,14 @@ module.exports = {
 			if (strictMode || ctx.hasParam("week"))
 				ctx.validateParam("week").trim().notEmpty(ctx.t("app:ReviewWeekCannotBeBlank")).end();
                 
-			if (strictMode || ctx.hasParam("date"))
-				ctx.validateParam("date").trim().notEmpty(ctx.t("app:ReviewDateCannotBeBlank")).end();
+			// if (strictMode || ctx.hasParam("date"))
+			// 	ctx.validateParam("date").trim().notEmpty(ctx.t("app:ReviewDateCannotBeBlank")).end();
                 
-			if (strictMode || ctx.hasParam("works"))
-				ctx.validateParam("works").notEmpty(ctx.t("app:ReviewworksCannotBeBlank")).end();
+			// if (strictMode || ctx.hasParam("works"))
+			// 	ctx.validateParam("works").notEmpty(ctx.t("app:ReviewworksCannotBeBlank")).end();
                 
-			if (strictMode || ctx.hasParam("highOrderAwakening"))
-				ctx.validateParam("highOrderAwakening").trim().notEmpty(ctx.t("app:ReviewHighOrderAwakeningCannotBeBlank")).end();
+			// if (strictMode || ctx.hasParam("highOrderAwakening"))
+			// 	ctx.validateParam("highOrderAwakening").trim().notEmpty(ctx.t("app:ReviewHighOrderAwakeningCannotBeBlank")).end();
 
 			if (ctx.hasValidationErrors())
 				throw ctx.errorBadRequest(C.ERR_VALIDATION_ERROR, ctx.validationErrors);			

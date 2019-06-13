@@ -19,6 +19,11 @@ todo        | TODO              | ◯
 /api/works
   ?week=YYYY-MM-DD
 
+GET /api/weeklyReviews/:week
+
+- week: "YYYY-MM-DD"
+
+
 # documents
 
 ## reviews

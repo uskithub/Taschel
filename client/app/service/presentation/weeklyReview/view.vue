@@ -57,7 +57,7 @@
 				this.$emit("select", entity);
 			}
 			, onArrange({ kanban, from, to, index }) {
-				console.log(kanban, from, to, index);
+				this.$emit("select", { kanban, from, to, index });
 			}
         }
         , created() {

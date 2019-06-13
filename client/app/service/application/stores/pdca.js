@@ -8,18 +8,21 @@ import {
 	, 自分のその週のタスク一覧を取得する
 	, 自分のその週のワーク一覧を取得する
 	, 自分のその週のレビュー一覧を取得する
+	, 自分のその週の週次レビューを取得する
 	, ワークを追加する
 	, ワークを編集する
 	, ワークをクローズする
 	, ワークを削除する
 	, 日次レビューする
 	, レビューを編集する
+	, レビュー対象を選択する
 } from "../usecases";
 
 // Repositories
 import groups from "../../infrastructure/repositories/rest/groups";
 import works from "../../infrastructure/repositories/rest/works";
 import reviews from "../../infrastructure/repositories/rest/reviews";
+import weeklyReviews from "../../infrastructure/repositories/rest/weeklyReviews";
 
 // Entities
 import Group from "../../domain/entities/group";
@@ -323,6 +326,18 @@ export default {
 					commit(PDCA.LOAD_WEEKLY_REVIEWS, reviews);
 				});
 		}
+		, [自分のその週の週次レビューを取得する]({ commit, getters }) {
+			const currentWeek = getters.currentWeek;
+			const options = { week: currentWeek };
+			return weeklyReviews.get(options)
+				.then(data => {
+					console.log(data);
+					// let reviews = data.map(rawValues => {
+					// 	return new Review(rawValues);
+					// });
+					// commit(PDCA.LOAD_WEEKLY_REVIEWS, reviews);
+				});
+		}
 		// Usecase: a user add new work.
 		, [ワークを追加する]({ commit }, rawValues) {
 			return works.post(rawValues)
@@ -369,6 +384,20 @@ export default {
 				.then(data => {
 					let review = new Review(data);
 					commit(PDCA.UPDATE_REVIEW, review);
+				});
+		}
+		, [レビュー対象を選択する]({ commit, getters }, { type, item, index }) {
+			const currentWeek = getters.currentWeek;
+			const rawValues = {
+				week: currentWeek
+				, type: type
+				, item: item.code
+			};
+			return weeklyReviews.post(rawValues)
+				.then(data => {
+					console.log(data);
+					// let review = new Review(data);
+					// commit(PDCA.REVIEW, review);
 				});
 		}
 	}
