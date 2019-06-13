@@ -6,14 +6,14 @@
     import AbstractPresenter from "system/mixins/abstractPresenter";
 	import WeeklyReviewView from "./view"
 
-    import Task from "service/domain/entities/task";
+    import Task from "../../domain/entities/task";
 	
 	// import schema from "./schema";
     import { mapActions } from "vuex";
 
     import {
         自分のその週のレビュー一覧を取得する
-    } from "service/application/usecases";
+    } from "../../application/usecases";
     
 	const _ = Vue.prototype._;
 

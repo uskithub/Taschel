@@ -1,4 +1,4 @@
-import { SESSION } from "service/application/mutationTypes";
+import { SESSION } from "../mutationTypes";
 
 // Usecases
 import {
@@ -6,13 +6,13 @@ import {
 	, プロジェクトのタスクを編集する
 	, 自分のプロジェクト一覧を取得する
 	, タスクを別のタスクの子タスクにする
-} from "service/application/usecases";
+} from "../usecases";
 
 // Repositories
-import tasks from "service/infrastructure/repositories/rest/tasks";
+import tasks from "../../infrastructure/repositories/rest/tasks";
 
 // Entities
-import Task from "service/domain/entities/task";
+import Task from "../../domain/entities/task";
 
 /**
  * This state is used in below:

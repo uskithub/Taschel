@@ -1,4 +1,4 @@
-import { PDCA } from "service/application/mutationTypes";
+import { PDCA } from "../mutationTypes";
 
 // Usecases
 import {
@@ -14,20 +14,20 @@ import {
 	, ワークを削除する
 	, 日次レビューする
 	, レビューを編集する
-} from "service/application/usecases";
+} from "../usecases";
 
 // Repositories
-import groups from "service/infrastructure/repositories/rest/groups";
-import works from "service/infrastructure/repositories/rest/works";
-import reviews from "service/infrastructure/repositories/rest/reviews";
+import groups from "../../infrastructure/repositories/rest/groups";
+import works from "../../infrastructure/repositories/rest/works";
+import reviews from "../../infrastructure/repositories/rest/reviews";
 
 // Entities
-import Group from "service/domain/entities/group";
-import Work from "service/domain/entities/work";
-import Review from "service/domain/entities/review";
-import TaskLayer from "service/domain/entities/taskLayer";
-import ReviewLayer from "service/domain/entities/reviewLayer";
-import Board from "service/domain/entities/genericBoard";
+import Group from "../../domain/entities/group";
+import Work from "../../domain/entities/work";
+import Review from "../../domain/entities/review";
+import TaskLayer from "../../domain/entities/taskLayer";
+import ReviewLayer from "../../domain/entities/reviewLayer";
+import Board from "../../domain/entities/genericBoard";
 
 
 import moment from "moment";

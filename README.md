@@ -19,6 +19,44 @@ todo        | TODO              | ◯
 /api/works
   ?week=YYYY-MM-DD
 
+# documents
+
+## reviews
+
+### daily reviews
+
+```json
+{
+    "_id" : 5,
+    "updatedAt" : ISODate("2019-06-10T13:11:09.895Z"),
+    "createdAt" : ISODate("2019-06-10T13:11:09.895Z"),
+    "week" : "2019-06-10",
+    "date" : "2019-06-10",
+    "highOrderAwakening" : "そうだね",
+    "author" : 1,
+    "comments" : [],
+    "works" : [ 
+        61
+    ]
+}
+```
+
+### weekly reviews
+
+```json
+{
+    "_id" : 5,
+    "updatedAt" : ISODate("2019-06-10T13:11:09.895Z"),
+    "createdAt" : ISODate("2019-06-10T13:11:09.895Z"),
+    "week" : "2019-06-10",
+    "author" : 1,
+    "type": "review"
+    , "id" : 5
+    , "abstract" : "ほげほげ"
+    , "てんよう" : "ふがづが"
+}
+```
+
 
 # TODO
 - [] dailyPageで差し込みタスクを表現できるようにする

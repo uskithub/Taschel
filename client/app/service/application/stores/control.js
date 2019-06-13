@@ -1,17 +1,17 @@
-import { CONTROL } from "service/application/mutationTypes";
+import { CONTROL } from "../mutationTypes";
 
 // Usecases
 import {
 	プロジェクトのカンバンを取得する
-} from "service/application/usecases";
+} from "../usecases";
 
 // Repositories
-import groups from "service/infrastructure/repositories/rest/groups";
+import groups from "../../infrastructure/repositories/rest/groups";
 
 // Entities
-import Group from "service/domain/entities/group";
-import TaskLayer from "service/domain/entities/taskLayer";
-import Board from "service/domain/entities/genericBoard";
+import Group from "../../domain/entities/group";
+import TaskLayer from "../../domain/entities/taskLayer";
+import Board from "../../domain/entities/genericBoard";
 
 /**
  * This state is used in below:

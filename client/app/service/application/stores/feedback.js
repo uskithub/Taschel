@@ -1,15 +1,15 @@
-import { FEEDBACK } from "service/application/mutationTypes";
+import { FEEDBACK } from "../mutationTypes";
 
 // Usecases
 import {
 	タイムラインを取得する
-} from "service/application/usecases";
+} from "../usecases";
 
 // Repositories
-import works from "service/infrastructure/repositories/rest/works";
+import works from "../../infrastructure/repositories/rest/works";
 
 // Entities
-import Work from "service/domain/entities/work";
+import Work from "../../domain/entities/work";
 
 /**
  * This state is used in below:

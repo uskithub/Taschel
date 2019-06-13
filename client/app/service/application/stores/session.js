@@ -1,4 +1,4 @@
-import { COMMON, SESSION } from "service/application/mutationTypes";
+import { COMMON, SESSION } from "../mutationTypes";
 
 // Usecases
 import {
@@ -12,7 +12,7 @@ import {
 	, 新しいプロジェクトを追加する
 	, プロジェクトを更新する
 	, プロジェクトをクローズする
-} from "service/application/usecases";
+} from "../usecases";
 
 // Stores(Interactors)
 import backlog from "./backlog";
@@ -22,16 +22,16 @@ import planning from "./planning";
 import control from "./control";
 
 // Repositories
-import sessions from "service/infrastructure/repositories/rest/sessions";
-import profiles from "service/infrastructure/repositories/rest/profiles";
-import persons from "service/infrastructure/repositories/rest/persons";
-import organizations from "service/infrastructure/repositories/rest/organizations";
-import tasks from "service/infrastructure/repositories/rest/tasks";
+import sessions from "../../infrastructure/repositories/rest/sessions";
+import profiles from "../../infrastructure/repositories/rest/profiles";
+import persons from "../../infrastructure/repositories/rest/persons";
+import organizations from "../../infrastructure/repositories/rest/organizations";
+import tasks from "../../infrastructure/repositories/rest/tasks";
 
 // Entities
-import User from "service/domain/entities/user";
-import Project from "service/domain/entities/project";
-import TaskTreenode from "service/domain/entities/taskTreenode";
+import User from "../../domain/entities/user";
+import Project from "../../domain/entities/project";
+import TaskTreenode from "../../domain/entities/taskTreenode";
 
 import { assign } from "lodash";
 

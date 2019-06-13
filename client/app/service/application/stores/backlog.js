@@ -1,4 +1,4 @@
-import { BACKLOG } from "service/application/mutationTypes";
+import { BACKLOG } from "../mutationTypes";
 
 // Usecases
 import {
@@ -8,14 +8,14 @@ import {
 	, タスクを更新する
 	, タスクをクローズする
 	, タスクの最終実施日を更新する
-} from "service/application/usecases";
+} from "../usecases";
 
 // Repositories
-import tasks from "service/infrastructure/repositories/rest/tasks";
+import tasks from "../../infrastructure/repositories/rest/tasks";
 
 // Entities
-import Task from "service/domain/entities/task";
-import TaskTreenode from "service/domain/entities/taskTreenode";
+import Task from "../../domain/entities/task";
+import TaskTreenode from "../../domain/entities/taskTreenode";
 
 import moment from "moment";
 import { assign } from "lodash";
