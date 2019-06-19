@@ -30,11 +30,12 @@ module.exports = {
 		// TODO: populateModelsを改造すれば、下にのみpopulate、上にのみpopulateもできる
 		, modelPopulates: {
 			// "root": "tasks"			// 親にchildrenを持たせたので、populateすると循環参照になってpopulateが終わらなくなるので注意
-			items: "reviewItems"
+			"items": "reviewItems"	// reviewItems は presenter（service）がないので populateModels で populate されない
+			, "author": "persons"
 		}
 		, idEncodes: {
 			// "works": "works"
-			"author": "persons"
+			// "author": "persons"
 		}
 	}
 	
@@ -47,10 +48,22 @@ module.exports = {
 					const pdca = new Pdca(ctx);
 					return pdca.自分のその週の週次レビューを取得する(week)
 						.then(docs => {
-							return this.toJSON(docs);
+							const doc = docs[0];
+							// reviewItems は presenter（service）がないので populateModels で populate されないので自前でやる
+							const promises = doc.items.map(itemId => ReviewItemRepository.findById(itemId).exec());
+							return Promise.all(promises)
+								.then(itemDocs => {
+									// TODO: 内包するWorkやReviewもPopulateしないと。。。
+									doc.items = itemDocs;
+									return this.toJSON(doc);
+								});
 						})
 						.then(json => {
 							return this.populateModels(json);
+						})
+						.then(json => {
+							console.log("%%%", json);
+							return json;
 						});
 				}
 			}
@@ -171,8 +184,7 @@ module.exports = {
 
 	, init(ctx) {
 		// Fired when start the service
-		this.workService = ctx.services("works");
-		this.reviewService = ctx.services("reviews");
+		this.reviewItemService = ctx.services("reviewItems");
 		this.personService = ctx.services("persons");
 	}
 };

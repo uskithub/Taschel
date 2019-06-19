@@ -28,8 +28,11 @@ import weeklyReviews from "../../infrastructure/repositories/rest/weeklyReviews"
 import Group from "../../domain/entities/group";
 import Work from "../../domain/entities/work";
 import Review from "../../domain/entities/review";
+import WeeklyReview from "../../domain/entities/weeklyReview";
+import ReviewItem from "../../domain/entities/reviewItem";
 import TaskLayer from "../../domain/entities/taskLayer";
 import ReviewLayer from "../../domain/entities/reviewLayer";
+import ReviewItemLayer from "../../domain/entities/reviewItemLayer";
 import Board from "../../domain/entities/genericBoard";
 
 
@@ -97,6 +100,7 @@ export default {
 		, currentweekTaskGroup: null
 		, currentWeekWorks: []
 		, currentWeekReviews: []
+		, currentWeekSelectedReviews: null
 	}
 	, getters : {
 		currentWeekPlanningBoards(state) { 
@@ -140,18 +144,16 @@ export default {
 			, false);
 		}
 		, currentweekReviewBoard(state) {
-			const reviewLayer = new ReviewLayer({ 
-				code : "daily-reviews"
-				, name : "Daily Reviews"
-				, reviews : state.currentWeekReviews 
-			}
-			, false);
-			const selectedReviewLayer = new ReviewLayer({ 
-				code : "weekly-reviews"
-				, name : "Weekly Reviews"
-				, reviews : []
-			}
-			, false);
+			const reviewLayer = new ReviewLayer( 
+				"daily-reviews"
+				, "Daily Reviews"
+				, state.currentWeekReviews 
+				, false);
+			const selectedReviewLayer = new ReviewItemLayer( 
+				"weekly-reviews"
+				, "Weekly Reviews"
+				, (state.currentWeekSelectedReviews) ? state.currentWeekSelectedReviews.items : []
+				, false);
 			return new Board("unclassified", [reviewLayer, selectedReviewLayer]);
 		}
 	}
@@ -175,6 +177,9 @@ export default {
 		, [PDCA.LOAD_WEEKLY_REVIEWS] (state, entities) {
 			state.currentWeekReviews.splice(0);
 			state.currentWeekReviews.push(...entities);
+		}
+		, [PDCA.LOAD_WEEKLY_SELECTED_REVIEWS] (state, entity) {
+			state.currentWeekSelectedReviews = entity;
 		}
 		, [PDCA.ADD_WORK] (state, entity) {
 			let isFound = state.currentWeekWorks.find(work => work.code === entity.code);
@@ -331,11 +336,7 @@ export default {
 			const options = { week: currentWeek };
 			return weeklyReviews.get(options)
 				.then(data => {
-					console.log(data);
-					// let reviews = data.map(rawValues => {
-					// 	return new Review(rawValues);
-					// });
-					// commit(PDCA.LOAD_WEEKLY_REVIEWS, reviews);
+					commit(PDCA.LOAD_WEEKLY_SELECTED_REVIEWS, new WeeklyReview(data));
 				});
 		}
 		// Usecase: a user add new work.

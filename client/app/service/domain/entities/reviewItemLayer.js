@@ -1,19 +1,19 @@
 import Layer from "plugins/kanban/entities/layer";
-import ReviewKanban from "./reviewKanban";
+import ReviewItemKanban from "./reviewItemKanban";
 
-export default class ReviewLayer extends Layer {
+export default class ReviewItemLayer extends Layer {
 
-	constructor(code, name, reviews, iskanbanRemovable = true) {
+	constructor(code, name, items, iskanbanRemovable = true) {
 		super();
 		this._code = code;
 		this._name = name;
-		this._reviews = reviews;
+		this._items = items;
 		this._iskanbanRemovable = iskanbanRemovable; 
 	}
 	// Layer の override
 	get id() { return this._code; }
 	get name() { return this._name; }
-	get kanbans() { return this._reviews.map( r => new ReviewKanban(r)); }
+	get kanbans() { return this._items.map(item => new ReviewItemKanban(item)); }
 	get removable() { return this._iskanbanRemovable; }
 
 	// extension

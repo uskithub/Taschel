@@ -25,7 +25,6 @@ let WeeklyReviewSchema = new Schema({
 		type: String // "YYYY-MM-DD"
 		, trim: true
 	}
-
 	, items : [{
 		type: Number
 		, ref: "ReviewItem"
