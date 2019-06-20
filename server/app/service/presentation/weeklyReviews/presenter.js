@@ -75,8 +75,6 @@ module.exports = {
 			this.validateParams(ctx, true);
 
 			const type = ctx.params.type;
-			const weeklyReview = ctx.params.weeklyReview;
-            
 			const newItem = {
 				week: ctx.params.week
 				, type : type
@@ -88,16 +86,12 @@ module.exports = {
 			const pdca = new Pdca(ctx);
 			return pdca.レビュー対象を選択する(newItem)
 				.then(itemDoc => {
-					if (weeklyReview) {
-						return pdca.週次レビューにレビュー対象を追加する(weeklyReview, itemDoc.id);
-					} else {
-						const newReview = {
-							week: ctx.params.week
-							, items: [ itemDoc.id ]
-							, author : ctx.user.id
-						};
-						return pdca.週次レビューを追加する(newReview);
-					}
+					const newReview = {
+						week: ctx.params.week
+						, items: [ itemDoc.id ]
+						, author : ctx.user.id
+					};
+					return pdca.週次レビューを追加する(newReview);
 				})
 				.then(weeklyReviewDoc => {
 					// weeklyReviewのdocを返す
@@ -112,27 +106,29 @@ module.exports = {
 			ctx.assertModelIsExist(ctx.t("app:ReviewNotFound"));
 			this.validateParams(ctx);
 
-			return this.collection.findById(ctx.modelID).exec()
-				.then(doc => {
+			const type = ctx.params.type;
+			const weeklyReview = ctx.params.weeklyReview;
 
-					if (ctx.params.highOrderAwakening != null)
-						doc.highOrderAwakening = ctx.params.highOrderAwakening;
-					
-					if (ctx.params.works.length > doc.works.length)
-						doc.works = ctx.params.works.map(code => { return this.workService.decodeID(code); });
-
-					return doc.save();
+			const newItem = {
+				week: ctx.params.week
+				, type : type
+				, work: (type === "work") ? this.workService.decodeID(ctx.params.item) : undefined
+				, review: (type === "review") ? this.reviewService.decodeID(ctx.params.item) : undefined
+				, author : ctx.user.id
+			};
+			
+			const pdca = new Pdca(ctx);
+			return pdca.レビュー対象を選択する(newItem)
+				.then(itemDoc => {
+					return pdca.週次レビューにレビュー対象を追加する(ctx.modelID, itemDoc.id);
 				})
-				.then(doc => {
-					return this.toJSON(doc);
+				.then(weeklyReviewDoc => {
+					// weeklyReviewのdocを返す
+					return this.toJSON(weeklyReviewDoc);
 				})
 				.then(json => {
 					return this.populateModels(json);
-				})
-				.then(json => {
-					this.notifyModelChanges(ctx, "updated", json);
-					return json;
-				});								
+				});						
 		}
 
 		, remove(ctx) {

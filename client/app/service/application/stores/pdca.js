@@ -387,19 +387,30 @@ export default {
 					commit(PDCA.UPDATE_REVIEW, review);
 				});
 		}
-		, [レビュー対象を選択する]({ commit, getters }, { type, item, index }) {
+		, [レビュー対象を選択する]({ commit, getters, state }, { type, item, index }) {
 			const currentWeek = getters.currentWeek;
-			const rawValues = {
-				week: currentWeek
-				, type: type
-				, item: item.code
-			};
-			return weeklyReviews.post(rawValues)
-				.then(data => {
-					console.log(data);
-					// let review = new Review(data);
-					// commit(PDCA.REVIEW, review);
-				});
+			if (state.currentWeekSelectedReviews === null) {
+				const rawValues = {
+					week: currentWeek
+					, type: type
+					, item: item.code
+				};
+				return weeklyReviews.post(rawValues)
+					.then(data => {
+						commit(PDCA.LOAD_WEEKLY_SELECTED_REVIEWS, new WeeklyReview(data));
+					});
+			} else {
+				const rawValues = {
+					code: state.currentWeekSelectedReviews.code
+					, week: currentWeek
+					, type: type
+					, item: item.code
+				};
+				return weeklyReviews.put(rawValues)
+					.then(data => {
+						commit(PDCA.LOAD_WEEKLY_SELECTED_REVIEWS, new WeeklyReview(data));
+					});
+			}
 		}
 	}
 };

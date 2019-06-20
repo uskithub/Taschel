@@ -173,7 +173,7 @@ module.exports = class Pdca {
 		return WeeklyReviewRepository
 			.findByIdAndUpdate(
 				weeklyReviewId
-				, { $set : { items: itemId }}
+				, { $addToSet : { items: itemId }}
 				, { "new" : true }
 			);
 	}
