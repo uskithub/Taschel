@@ -135,7 +135,7 @@ export default {
 		}
 		, currentWeekWorks(state) { return state.currentWeekWorks; }
 		, currentWeekReviews(state) { return state.currentWeekReviews; }
-		, currentweekReviewLayer(state) {
+		, currentWeekReviewLayer(state) {
 			return new ReviewLayer({ 
 				code : "weekly"
 				, name : "Tasks"
@@ -143,7 +143,7 @@ export default {
 			}
 			, false);
 		}
-		, currentweekReviewBoard(state) {
+		, currentWeekReviewBoard(state) {
 			const reviewLayer = new ReviewLayer( 
 				"daily-reviews"
 				, "Daily Reviews"

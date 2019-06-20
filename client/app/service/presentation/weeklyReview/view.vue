@@ -3,7 +3,7 @@
 		.panel
 			.header {{ header }}
 			.body
-				kanban-board(:boards="[currentweekReviewBoard]" @arrange="onArrange")
+				kanban-board(:boards="[currentWeekReviewBoard]" @arrange="onArrange")
 					template(v-slot:kanban="slotProps")
 						.text-muted(v-if="typeof slotProps.content === 'string'") {{ slotProps.content }}
 						table(v-else)
@@ -42,8 +42,8 @@
                 "currentWeek"
                 , "currentWeekOfMonth"
 				, "currentWeekReviews"
-				, "currentweekReviewLayer"
-				, "currentweekReviewBoard"
+				, "currentWeekReviewLayer"
+				, "currentWeekReviewBoard"
             ])
 			, header() { return `${ this.currentWeekOfMonth } の振り返り`; }
 		}
