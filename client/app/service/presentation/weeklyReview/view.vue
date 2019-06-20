@@ -5,7 +5,7 @@
 			.body
 				kanban-board(:boards="[currentweekReviewBoard]" @arrange="onArrange")
 					template(v-slot:kanban="slotProps")
-						.text-muted(v-if="slotProps.isTopLevel") {{ slotProps.content }}
+						.text-muted(v-if="typeof slotProps.content === 'string'") {{ slotProps.content }}
 						table(v-else)
 							tr(v-show="slotProps.content.goodSide")
 								th {{ _("GoodSideLabel") }} 
