@@ -22,7 +22,6 @@
 		, computed : {
 			...mapGetters([
 				"currentWeekPlanningBoards"
-				, "currentWeek"
 				, "currentWeekOfMonth"
 			])
 		}

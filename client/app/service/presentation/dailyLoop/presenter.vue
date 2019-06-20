@@ -150,7 +150,7 @@
 					, start: date.utc().format()
 					, end: date.add(1, "h").utc().format()
 					, parent_code: task.code
-					, week: this.currentWeek.format("YYYY-MM-DD")
+					, week: this.currentWeek
 					, author: this.me.code
 				};
 				this.ワークを追加する(work);

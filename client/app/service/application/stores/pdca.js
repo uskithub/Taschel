@@ -111,7 +111,7 @@ export default {
 			boards.push(new Board("classified", layers));
 			return boards;
 		}
-		, currentWeek(state) { return state.currentWeek; }
+		, currentWeek(state) { return state.currentWeek.format("YYYY-MM-DD"); }
 		, currentWeekOfMonth(state) { 
 			const todayWeek = state.currentWeek.week();
 			const firstDay = moment(state.currentWeek).startOf("month");

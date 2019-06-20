@@ -6,7 +6,7 @@ const get = options => {
 	let url = NAMESPACE;
 
 	if (options.week !== undefined) {
-		url = `${url}?week=${options.week.format("YYYY-MM-DD")}`;
+		url = `${ url }?week=${ options.week }`;
 	}
 
 	return api(METHOD.get, url);
