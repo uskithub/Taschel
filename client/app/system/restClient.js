@@ -26,8 +26,10 @@ export const api = (method, url, model) => {
 
 	return new Promise((resolve, reject) => {
 		if (!METHOD[method]) {
-			reject(new Error(`Unknown HTTP Method was called: ${ method }`));
-			return;
+			const error = new Error(`Unknown HTTP Method was called: ${ method }`);
+			console.error(`API ERROR: [${method}] ${url}`, model, error);
+			toastr.error(error.message);
+			return reject(error);
 		}
 		axios[method] (url, model).then(response => {
 			let res = response.data;
@@ -38,16 +40,15 @@ export const api = (method, url, model) => {
 			}
 		}).catch(error => {
 			if (error instanceof TypeError) {	
-				reject(error);
+				// do nothing
 			} else if (error instanceof Error) {
 				error.message = `${error.message} (type: ${error.response.data.error.type}, message: ${error.response.data.error.message})`;
-				reject(error);
 			} else {
-				reject(new Error(`error: ${error}`));
+				error = new Error(`error: ${error}`);
 			}
+			console.error(`API ERROR: [${method}] ${url}`, model, error);
+			toastr.error(error.message);
+			reject(error);
 		});
-	}).catch(error => {
-		console.error(`API ERROR: [${method}] ${url}`, model, error);
-		toastr.error(error.message);
 	});
 };
